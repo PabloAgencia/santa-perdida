@@ -2,11 +2,13 @@ import { BootScene } from './scenes/BootScene.js';
 import { MenuScene } from './scenes/MenuScene.js';
 import { CityScene } from './scenes/CityScene.js';
 import { UIScene } from './scenes/UIScene.js';
+import { HideoutScene } from './scenes/HideoutScene.js';
 
 // Phaser dibuja el texto sobre el lienzo una sola vez: si la fuente no esta
 // cargada antes de arrancar, los titulos salen con la de repuesto y ya no se
 // corrigen solos.
 try {
+  await document.fonts.load('64px Pricedown');
   await document.fonts.load('64px Anton');
   await document.fonts.ready;
 } catch {
@@ -28,7 +30,7 @@ const game = new Phaser.Game({
     antialias: true,
     powerPreference: 'high-performance',
   },
-  scene: [BootScene, MenuScene, CityScene, UIScene],
+  scene: [BootScene, MenuScene, CityScene, UIScene, HideoutScene],
 });
 
 window.SantaPerdida = { game };

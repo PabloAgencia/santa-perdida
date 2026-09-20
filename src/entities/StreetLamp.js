@@ -1,0 +1,76 @@
+const RADIO = 8;
+
+// Farola con cuerpo: base en la acera, brazo sobre la calzada y foco al final.
+// Se puede tirar con el coche, y si cae se apaga.
+export class StreetLamp {
+  constructor(scene, x, y, angleHaciaCalle) {
+    this.scene = scene;
+    this.x = x;
+    this.y = y;
+    this.angle = angleHaciaCalle;
+    this.radius = RADIO;
+    this.alive = true;
+
+    const cos = Math.cos(angleHaciaCalle);
+    const sin = Math.sin(angleHaciaCalle);
+    const brazo = 34;
+    this.headX = x + cos * brazo;
+    this.headY = y + sin * brazo;
+
+    this.light = scene.add.image(this.headX, this.headY, 'lamp')
+      .setDisplaySize(170, 170)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setAlpha(0.42)
+      .setDepth(-900);
+
+    this.sombra = scene.add.image(x + 3, y + 4, 'px')
+      .setDisplaySize(brazo + 16, 9)
+      .setTint(0x05060a).setAlpha(0.4)
+      .setRotation(angleHaciaCalle)
+      .setOrigin(0.2, 0.5)
+      .setDepth(-880);
+
+    this.arm = scene.add.image(x, y, 'px')
+      .setDisplaySize(brazo, 5)
+      .setTint(0x2a2e35)
+      .setRotation(angleHaciaCalle)
+      .setOrigin(0, 0.5)
+      .setDepth(-870);
+
+    this.base = scene.add.image(x, y, 'px')
+      .setDisplaySize(11, 11)
+      .setTint(0x1b1f25)
+      .setDepth(-869);
+
+    this.head = scene.add.image(this.headX, this.headY, 'px')
+      .setDisplaySize(13, 8)
+      .setTint(0xf2dfa8)
+      .setRotation(angleHaciaCalle)
+      .setDepth(-868);
+  }
+
+  romper(desdeX, desdeY) {
+    if (!this.alive) return false;
+    this.alive = false;
+
+    // el brazo cae hacia el lado contrario al golpe
+    const caida = Math.atan2(this.y - desdeY, this.x - desdeX);
+    this.scene.tweens.add({
+      targets: [this.arm, this.sombra],
+      rotation: caida,
+      duration: 380,
+      ease: 'Bounce.out',
+    });
+    this.scene.tweens.add({
+      targets: this.head,
+      x: this.x + Math.cos(caida) * 34,
+      y: this.y + Math.sin(caida) * 34,
+      duration: 380,
+      ease: 'Bounce.out',
+    });
+    this.head.setTint(0x4a4a44);
+    this.scene.tweens.add({ targets: this.light, alpha: 0, duration: 260 });
+    this.base.setTint(0x14171c);
+    return true;
+  }
+}

@@ -404,6 +404,21 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
        Si Pablo baja Pricedown de un sitio de fiar, se cambia en un minuto:
        solo hay que sustituir el fichero y la constante TITULO.
 
+  OCTAVA TANDA: fuente de verdad, farolas con cuerpo y escondite por dentro
+     - FUENTE PRICEDOWN: Pablo la bajo y la dejo en `fonts/`. Renombrada a
+       `pricedown.otf` (tenia un espacio en el nombre, que complica la URL).
+       Va en titulos, menu, dinero y carteles. Anton queda de repuesto.
+     - FAROLAS DE VERDAD (`entities/StreetLamp.js`): base en la acera, brazo
+       sobre la calzada y foco al final. Tienen colision: a pie no se
+       atraviesan y en coche, si vas despacio rebotas y **si vas a mas de
+       120 px/s la tiras**. Al caer, el brazo gira hacia el lado del golpe,
+       el foco se apaga y esa calle se queda a oscuras. Al coche le cuesta
+       6 de vida y frena en seco.
+     - ESCONDITE POR DENTRO (`scenes/HideoutScene.js`): marcador giratorio
+       en la puerta, entras con E y se abre una habitacion con cama, mesa y
+       sofa, un icono verde de GUARDAR al que te acercas, y una puerta para
+       SALIR. Entrar cura del todo. Con la policia detras no te deja pasar.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

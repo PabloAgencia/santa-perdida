@@ -4,7 +4,7 @@ import { Audio } from '../core/Audio.js';
 import { COLORS } from '../config/balance.js';
 
 const FONT = 'Consolas, "Courier New", monospace';
-const TITULO = 'Anton, Impact, sans-serif';
+const TITULO = 'Pricedown, Anton, Impact, sans-serif';
 
 export class MenuScene extends Phaser.Scene {
   constructor() {

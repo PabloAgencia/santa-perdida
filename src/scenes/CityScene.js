@@ -10,6 +10,7 @@ import { RoadNetwork, LANE_OFFSET } from '../world/RoadNetwork.js';
 import { TrafficSystem } from '../systems/TrafficSystem.js';
 import { NPCSystem } from '../systems/NPCSystem.js';
 import { PoliceSystem } from '../systems/PoliceSystem.js';
+import { StreetLamp } from '../entities/StreetLamp.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
 import { T } from '../config/city.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
@@ -89,6 +90,7 @@ export class CityScene extends Phaser.Scene {
     if (!this.jobs.active) this.jobs.offerNew({ x: this.player.x, y: this.player.y });
 
     this.drawStreetLights();
+    this.drawHideoutMarker();
     this.setupCamera();
     this.setupInput();
     this.setupEvents();
@@ -347,23 +349,13 @@ export class CityScene extends Phaser.Scene {
           const y = cy + e.ry * BORDE * lado;
           if (this.map.isRoadPoint(x, y)) continue;
           if (this.map.isSolidPoint(x, y)) continue;
-          puntos.push({ x, y });
+          // el brazo apunta hacia el centro de la calle
+          puntos.push({ x, y, haciaCalle: Math.atan2(-e.ry * lado, -e.rx * lado) });
         }
       }
     }
 
-    for (const p of puntos) {
-      this.add.image(p.x, p.y, 'lamp')
-        .setDisplaySize(160, 160)
-        .setBlendMode(Phaser.BlendModes.ADD)
-        .setAlpha(0.4)
-        .setDepth(-900);
-      // el poste, para que la luz venga de algo y no del aire
-      this.add.image(p.x, p.y, 'px')
-        .setDisplaySize(5, 5)
-        .setTint(0x15181d)
-        .setDepth(-895);
-    }
+    this.lamps = puntos.map((p) => new StreetLamp(this, p.x, p.y, p.haciaCalle));
   }
 
   findStartSpot() {
@@ -559,7 +551,7 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
       if (this.drivingVehicle) this.exitVehicle();
-      else if (!this.restInHideout()) {
+      else if (!this.enterHideout()) {
         const v = this.nearestVehicle();
         if (v) this.enterVehicle(v);
       }
@@ -611,6 +603,7 @@ export class CityScene extends Phaser.Scene {
     this.police.update(dt, this.player, this.drivingVehicle);
     this.factions.update(dt, this.player.x, this.player.y);
     this.resolvePlayerVsVehicles();
+    this.updateLamps();
     this.checkPlayerHarm(dt);
 
     if (this.drivingVehicle) {
@@ -676,6 +669,67 @@ export class CityScene extends Phaser.Scene {
         } else if (!this.map.isSolidBox(this.player.x, py, r, r)) {
           this.player.setPosition(this.player.x, py);
         }
+      }
+    }
+  }
+
+  // farolas: se las lleva por delante el que va rapido, y frenan a quien pasa
+  updateLamps() {
+    const cerca = [];
+    for (const lamp of this.lamps) {
+      if (Phaser.Math.Distance.Between(lamp.x, lamp.y, this.player.x, this.player.y) > 1000) {
+        continue;
+      }
+      cerca.push(lamp);
+    }
+
+    for (const lamp of cerca) {
+      if (!lamp.alive) continue;
+
+      for (const v of this.vehicles) {
+        if (v.speed < 35) continue;
+        if (Phaser.Math.Distance.Between(v.x, v.y, lamp.x, lamp.y) > v.stats.length) continue;
+
+        let toca = false;
+        for (const c of v.getCircles()) {
+          if (Math.hypot(c.x - lamp.x, c.y - lamp.y) < c.r + lamp.radius) {
+            toca = true;
+            break;
+          }
+        }
+        if (!toca) continue;
+
+        if (v.speed > 120) {
+          if (lamp.romper(v.x, v.y)) {
+            v.vx *= 0.72;
+            v.vy *= 0.72;
+            v.hp = Math.max(0, v.hp - 6);
+            Audio.crash(0.4);
+            if (v === this.drivingVehicle) this.cameras.main.shake(160, 0.006);
+          }
+        } else {
+          // despacio no la tiras: rebotas
+          const a = Math.atan2(v.y - lamp.y, v.x - lamp.x);
+          v.vx += Math.cos(a) * 70;
+          v.vy += Math.sin(a) * 70;
+        }
+      }
+    }
+
+    // a pie tampoco se atraviesa el poste
+    if (!this.drivingVehicle) {
+      for (const lamp of cerca) {
+        const dx = this.player.x - lamp.x;
+        const dy = this.player.y - lamp.y;
+        const d = Math.hypot(dx, dy);
+        const solape = lamp.radius + this.player.radius - d;
+        if (solape <= 0) continue;
+        const nx = d > 0.001 ? dx / d : 1;
+        const ny = d > 0.001 ? dy / d : 0;
+        this.player.setPosition(
+          this.player.x + nx * solape,
+          this.player.y + ny * solape
+        );
       }
     }
   }
@@ -746,21 +800,47 @@ export class CityScene extends Phaser.Scene {
     });
   }
 
-  // el escondite cura, guarda y te quita el marron de encima
-  restInHideout() {
+  // marcador giratorio en la puerta del escondite, como los de GTA
+  drawHideoutMarker() {
     const h = this.map.hideout;
-    if (!h) return false;
-    if (Phaser.Math.Distance.Between(this.player.x, this.player.y, h.px, h.py) > 130) return false;
+    if (!h) return;
+    this.hideoutDoor = { x: h.px, y: h.py + h.ph / 2 + 26 };
+
+    const aro = this.add.image(this.hideoutDoor.x, this.hideoutDoor.y, 'ring')
+      .setDisplaySize(64, 64).setTint(0xe8b54a).setDepth(6);
+    this.tweens.add({
+      targets: aro, scale: { from: 0.85, to: 1.1 },
+      duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+    });
+    this.add.image(this.hideoutDoor.x, this.hideoutDoor.y, 'px')
+      .setDisplaySize(16, 20).setTint(0xe8b54a).setAlpha(0.8).setDepth(6);
+  }
+
+  // entrar al escondite: se pausa la ciudad y se abre el interior
+  enterHideout() {
+    if (!this.hideoutDoor) return false;
+    const d = Phaser.Math.Distance.Between(
+      this.player.x, this.player.y, this.hideoutDoor.x, this.hideoutDoor.y
+    );
+    if (d > 60) return false;
+
     if (GameState.wanted > 0) {
       EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
       return true;
     }
 
-    GameState.heal(100);
-    SaveSystem.save();
-    this.cameras.main.flash(320, 20, 24, 30);
-    Audio.notes([392, 523.25, 659.25], 0.11);
-    EventBus.emit(EVT.NOTIFY, { text: 'Descansas en el escondite. Partida guardada', tone: 'money' });
+    Audio.engine(false, 0, false);
+    Audio.skid(0);
+    this.captureState();
+    this.cameras.main.fadeOut(360, 0, 0, 0);
+    this.time.delayedCall(380, () => {
+      this.scene.pause();
+      this.scene.setVisible(false);
+      this.scene.pause('UIScene');
+      this.scene.setVisible(false, 'UIScene');
+      this.scene.launch('HideoutScene');
+      this.cameras.main.fadeIn(1, 0, 0, 0);
+    });
     return true;
   }
 

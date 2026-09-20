@@ -3,7 +3,7 @@ import { GameState } from '../core/GameState.js';
 import { COLORS, TILE } from '../config/balance.js';
 
 const FONT = 'Consolas, "Courier New", monospace';
-const TITULO = 'Anton, Impact, sans-serif';
+const TITULO = 'Pricedown, Anton, Impact, sans-serif';
 
 export class UIScene extends Phaser.Scene {
   constructor() {
