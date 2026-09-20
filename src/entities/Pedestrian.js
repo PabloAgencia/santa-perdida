@@ -1,3 +1,5 @@
+import { FASES } from '../world/personArt.js';
+
 export class Pedestrian {
   constructor(scene, map, x, y, skin, faction = null) {
     this.scene = scene;
@@ -21,7 +23,10 @@ export class Pedestrian {
     this.baseSpeed = 38 + Math.random() * 24;
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.3).setAlpha(0.4);
-    this.sprite = scene.add.image(x, y, faction ? `gang-${faction}` : `ped-${skin}`);
+    this.base = faction ? `gang-${faction}` : `ped-${skin}`;
+    this.paso = 0;
+    this.fase = 0;
+    this.sprite = scene.add.image(x, y, `${this.base}-0`);
   }
 
   knockDown(fatal = false) {
@@ -111,6 +116,7 @@ export class Pedestrian {
         this.tryMove((dx / dist) * speed * dt, 0);
         this.tryMove(0, (dy / dist) * speed * dt);
         this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(dy, dx), 14 * dt);
+        this.animar(speed, dt);
       }
       this.syncSprite();
       return;
@@ -162,9 +168,19 @@ export class Pedestrian {
     } else {
       this.stuck = 0;
       this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(stepY, stepX), 12 * dt);
+      this.animar(speed, dt);
     }
 
     this.syncSprite();
+  }
+
+  animar(speed, dt) {
+    this.paso += (speed / 42) * dt;
+    const fase = Math.floor(this.paso) % FASES;
+    if (fase !== this.fase) {
+      this.fase = fase;
+      this.sprite.setTexture(`${this.base}-${fase}`);
+    }
   }
 
   tryMove(dx, dy) {

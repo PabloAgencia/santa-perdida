@@ -3,6 +3,7 @@ import { TILE } from '../config/balance.js';
 import { VEHICLES, GLASS } from '../config/vehicles.js';
 import { shade } from '../core/color.js';
 import { FACTIONS } from '../config/factions.js';
+import { makeWalkFrames } from '../world/personArt.js';
 
 // Todo el arte se dibuja por codigo. Asi no hay ficheros sueltos que se
 // desparejen y toda la ciudad comparte la misma direccion artistica.
@@ -253,32 +254,14 @@ export class BootScene extends Phaser.Scene {
   }
 
   makePlayer() {
-    const g = this.g();
-    const s = 28;
-    // contorno oscuro primero: el suelo es oscuro y sin borde no se lee
-    g.fillStyle(0x0a0c10, 1);
-    g.fillRoundedRect(4, 5, 19, 18, 6);
-    g.fillStyle(0xa8552f, 1);
-    g.fillRoundedRect(5, 6, 17, 16, 5);
-    g.fillStyle(0xc16a3c, 1);
-    g.fillRoundedRect(6, 8, 12, 12, 4);
-    // cremallera y cuello, para que la chaqueta se lea como prenda
-    g.fillStyle(0x7d3d20, 1);
-    g.fillRect(6, 13, 12, 1.6);
-    g.fillStyle(0x8a4526, 1);
-    g.fillRect(15, 8, 3, 12);
-    // hombros
-    g.fillStyle(0x7d3d20, 1);
-    g.fillRect(8, 5, 6, 2.4);
-    g.fillRect(8, 20.6, 6, 2.4);
-    g.fillStyle(0x0a0c10, 1);
-    g.fillCircle(19, 14, 5.6);
-    g.fillStyle(0xd8b48c, 1);
-    g.fillCircle(19, 14, 4.4);
-    g.fillStyle(0x2b2118, 1);
-    g.fillCircle(17.4, 14, 3.4);
-    g.generateTexture('player', s, s);
-    g.destroy();
+    makeWalkFrames(this, 'player', {
+      chaqueta: 0xa8552f,
+      piel: 0xd8b48c,
+      pelo: 0x2b2118,
+      detalle: 0x7d3d20,
+      ancho: 15,
+      largo: 16,
+    }, 32);
   }
 
   makePedestrians() {
@@ -289,76 +272,38 @@ export class BootScene extends Phaser.Scene {
     const skins = [0xc9a882, 0x8c6a4a, 0xd8b48c, 0xa07b55, 0x6f5136, 0xe0c19c];
     const hairs = [0x241c14, 0x3d2a18, 0x6b6257, 0x14100c, 0x8a7a5c, 0x4a2c1e];
 
-    jackets.forEach((jacket, i) => {
-      const g = this.g();
-      const s = 24;
-      const skin = skins[i % skins.length];
-      const hair = hairs[(i * 2 + 1) % hairs.length];
-      const ancho = i % 3 === 0 ? 14 : i % 3 === 1 ? 13 : 12;
-
-      g.fillStyle(0x0a0c10, 1);
-      g.fillRoundedRect(4, 5, ancho + 2, 15, 5);
-      g.fillStyle(jacket, 1);
-      g.fillRoundedRect(5, 6, ancho, 13, 4);
-      g.fillStyle(shade(jacket, 1.28), 1);
-      g.fillRoundedRect(6, 8, ancho - 4, 9, 3);
-      // los brazos marcan la silueta y hacen que se lea el sentido de la marcha
-      g.fillStyle(shade(jacket, 0.72), 1);
-      g.fillRect(8, 5, 4, 2);
-      g.fillRect(8, 18, 4, 2);
-      g.fillStyle(0x0a0c10, 1);
-      g.fillCircle(16, 12, 4.6);
-      g.fillStyle(skin, 1);
-      g.fillCircle(16, 12, 3.6);
-      g.fillStyle(hair, 1);
-      g.fillCircle(14.8, 12, 2.9);
-      g.generateTexture(`ped-${i}`, s, s);
-      g.destroy();
+    jackets.forEach((chaqueta, i) => {
+      makeWalkFrames(this, `ped-${i}`, {
+        chaqueta,
+        piel: skins[i % skins.length],
+        pelo: hairs[(i * 2 + 1) % hairs.length],
+        ancho: 12 + (i % 3),
+        largo: 13 + (i % 2),
+      });
     });
   }
 
   makeOfficer() {
-    const g = this.g();
-    g.fillStyle(0x0a0c10, 1);
-    g.fillRoundedRect(4, 5, 16, 16, 5);
-    g.fillStyle(0x2b3a52, 1);
-    g.fillRoundedRect(5, 6, 14, 14, 4);
-    g.fillStyle(0x3b4e6b, 1);
-    g.fillRoundedRect(6, 8, 10, 10, 3);
-    // chaleco reflectante
-    g.fillStyle(0xd8d3c4, 1);
-    g.fillRect(8, 6, 3, 14);
-    g.fillStyle(0x0a0c10, 1);
-    g.fillCircle(17, 13, 4.8);
-    g.fillStyle(0xc9a882, 1);
-    g.fillCircle(17, 13, 3.8);
-    g.fillStyle(0x1b2436, 1);
-    g.fillCircle(15.6, 13, 3.2);
-    g.generateTexture('officer', 26, 26);
-    g.destroy();
+    makeWalkFrames(this, 'officer', {
+      chaqueta: 0x2b3a52,
+      piel: 0xc9a882,
+      pelo: 0x1b2436,
+      detalle: 0xd8d3c4,
+      ancho: 13,
+      largo: 14,
+    });
   }
 
   makeGangs() {
     for (const f of Object.values(FACTIONS)) {
-      const g = this.g();
-      const s = 24;
-      g.fillStyle(0x0a0c10, 1);
-      g.fillRoundedRect(4, 5, 15, 15, 5);
-      g.fillStyle(f.color, 1);
-      g.fillRoundedRect(5, 6, 13, 13, 4);
-      g.fillStyle(f.accent, 1);
-      g.fillRoundedRect(6, 8, 9, 9, 3);
-      // panuelo del color de la banda, para reconocerles de un vistazo
-      g.fillStyle(f.accent, 1);
-      g.fillRect(12, 6, 3, 13);
-      g.fillStyle(0x0a0c10, 1);
-      g.fillCircle(16, 12, 4.6);
-      g.fillStyle(0xb08560, 1);
-      g.fillCircle(16, 12, 3.6);
-      g.fillStyle(0x1e1812, 1);
-      g.fillCircle(14.8, 12, 2.9);
-      g.generateTexture(`gang-${f.key}`, s, s);
-      g.destroy();
+      makeWalkFrames(this, `gang-${f.key}`, {
+        chaqueta: f.color,
+        piel: 0xb08560,
+        pelo: 0x1e1812,
+        detalle: f.accent,
+        ancho: 13,
+        largo: 14,
+      });
     }
   }
 

@@ -46,27 +46,27 @@ export const CITY = {
   zones: {
     residencial: {
       label: 'Residencial',
-      palette: [0x4a4038, 0x554840, 0x3f3730, 0x51443a],
+      palette: [0x4a4038, 0x554840, 0x3f3730, 0x51443a, 0x5e4a38, 0x463c34],
       minSize: 3, maxSize: 4,
     },
     centro: {
       label: 'Centro',
-      palette: [0x3b414f, 0x454b5a, 0x2f3540, 0x424859],
+      palette: [0x3b414f, 0x454b5a, 0x2f3540, 0x424859, 0x4e5568, 0x363c49],
       minSize: 3, maxSize: 5,
     },
     conflictivo: {
       label: 'Los Rompientes',
-      palette: [0x3a3430, 0x443b33, 0x2e2926, 0x3d3229],
+      palette: [0x3a3430, 0x443b33, 0x2e2926, 0x3d3229, 0x4a3d31, 0x332c26],
       minSize: 3, maxSize: 4,
     },
     comercial: {
       label: 'Comercial',
-      palette: [0x46424f, 0x4f4a58, 0x3a3644, 0x4a4553],
+      palette: [0x46424f, 0x4f4a58, 0x3a3644, 0x4a4553, 0x5a4f63, 0x403c4c],
       minSize: 3, maxSize: 5,
     },
     industrial: {
       label: 'Industrial',
-      palette: [0x3d4238, 0x474c40, 0x333830, 0x424a3b],
+      palette: [0x3d4238, 0x474c40, 0x333830, 0x424a3b, 0x4f5545, 0x2e332b],
       minSize: 4, maxSize: 7,
     },
     puerto: {

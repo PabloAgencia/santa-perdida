@@ -1,4 +1,5 @@
 import { PLAYER } from '../config/balance.js';
+import { FASES } from '../world/personArt.js';
 
 export class Player {
   constructor(scene, map, x, y) {
@@ -11,7 +12,9 @@ export class Player {
     this.running = false;
 
     this.shadow = scene.add.image(x, y + 5, 'shadow').setScale(0.42).setAlpha(0.5);
-    this.sprite = scene.add.image(x, y, 'player');
+    this.paso = 0;
+    this.fase = 0;
+    this.sprite = scene.add.image(x, y, 'player-0');
     this.sprite.setOrigin(0.5);
   }
 
@@ -47,6 +50,18 @@ export class Player {
 
       const target = Math.atan2(dy, dx);
       this.angle = Phaser.Math.Angle.RotateTo(this.angle, target, 14 * dt);
+
+      // el ciclo de paso corre con la velocidad: si andas despacio, anda despacio
+      this.paso += (speed / 46) * dt;
+      const fase = Math.floor(this.paso) % FASES;
+      if (fase !== this.fase) {
+        this.fase = fase;
+        this.sprite.setTexture(`player-${fase}`);
+      }
+    } else if (this.fase !== 0) {
+      this.fase = 0;
+      this.paso = 0;
+      this.sprite.setTexture('player-0');
     }
 
     this.syncSprite();

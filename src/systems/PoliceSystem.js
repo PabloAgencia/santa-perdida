@@ -14,16 +14,16 @@ export const ESTADO = {
   BLOQUEO: 'bloqueo',
 };
 
-const UNIDADES_POR_BUSCA = [1, 2, 4, 6];
-const VISION = 430;
-const VISION_PERSIGUIENDO = 640;
+const UNIDADES_POR_BUSCA = [1, 2, 3, 5];
+const VISION = 360;
+const VISION_PERSIGUIENDO = 540;
 const SPAWN_MIN = 700;
 const SPAWN_MAX = 1500;
 const DESPAWN = 2400;
-const SIN_VER_PARA_BAJAR = 9;
+const SIN_VER_PARA_BAJAR = 6.5;
 const DETENCION_DIST = 52;
-const TIEMPO_PARA_DETENER = 1.8;
-const BAJARSE_DIST = 210;
+const TIEMPO_PARA_DETENER = 2.8;
+const BAJARSE_DIST = 180;
 
 export class PoliceSystem {
   constructor(scene, map, network) {
@@ -87,7 +87,7 @@ export class PoliceSystem {
 
     this.roadblockTimer -= dt;
     if (GameState.wanted >= 3 && this.roadblockTimer <= 0) {
-      this.roadblockTimer = 14;
+      this.roadblockTimer = 22;
       this.spawnRoadblock(player, playerVehicle);
     }
 
@@ -301,7 +301,7 @@ export class PoliceSystem {
 
     if (u.state === ESTADO.PERSIGUIENDO) {
       goal = u.lastSeen || { x: player.x, y: player.y };
-      limit = v.stats.maxSpeed * 0.95;
+      limit = v.stats.maxSpeed * 0.86;
 
       // no van todos al mismo punto: cada unidad ataca por un lado y, si
       // huyes en coche, apuntan a donde VAS a estar, no a donde estas

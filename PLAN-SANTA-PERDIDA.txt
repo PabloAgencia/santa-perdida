@@ -452,6 +452,34 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
      2. En el paso de "aguantar", agotar el tiempo contaba como FRACASO
         cuando es justo lo contrario.
 
+  DECIMA TANDA: personalidad, personas con extremidades y policia mas blanda
+     - PERSONAS CON BRAZOS Y PIERNAS (`world/personArt.js`). Se generan 4
+       fases de paso por personaje y se van alternando segun la velocidad a
+       la que anda, asi que el que corre mueve las piernas mas rapido. Vale
+       para el jugador, los 12 peatones, los de banda y los agentes.
+       Costo dos pasadas: en la primera version los brazos quedaban dentro
+       de la silueta del tronco y no se veian; hubo que sacarlos fuera.
+     - EDIFICIOS CON CARACTER SEGUN EL BARRIO (`decorarPorBarrio`). Ya no es
+       el mismo bloque de otro color:
+         residencial   tejado a dos aguas con cumbrera y chimenea
+         comercial     toldo a rayas hacia la calle y cartel en la azotea
+         centro        climatizadores en fila y helipuerto en los grandes
+         industrial    cubierta de chapa y porton de carga
+         conflictivo   ventanas tapiadas y pintadas en la pared
+         puerto        contenedores apilados en la cubierta
+       Y seis colores por barrio en vez de cuatro.
+     - MOBILIARIO DE CALLE (idea propia): arboles con copa y sombra,
+       papeleras, bancos y bocas de riego repartidos por las aceras. No son
+       solidos a proposito: si lo fuesen, los peatones se quedarian
+       encerrados entre ellos.
+     - POLICIA MAS BLANDA, a peticion de Pablo: menos unidades (1/2/3/5 en
+       vez de 1/2/4/6), menos vista (360 en vez de 430), te pierden antes
+       (6,5 s en vez de 9), tardan mas en detenerte (2,8 s en vez de 1,8),
+       corren menos, persiguen algo mas despacio y los controles de calle
+       salen cada 22 s en vez de cada 14.
+
+  RENDIMIENTO: 4.395 objetos en escena y 60 fps estables.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

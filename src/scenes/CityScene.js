@@ -93,6 +93,7 @@ export class CityScene extends Phaser.Scene {
     if (!this.jobs.active) this.jobs.offerNew({ x: this.player.x, y: this.player.y });
 
     this.drawStreetLights();
+    this.drawStreetProps();
     this.drawHideoutMarker();
     this.setupCamera();
     this.setupInput();
@@ -145,19 +146,7 @@ export class CityScene extends Phaser.Scene {
         );
       }
 
-      // trastos de azotea: deposito, claraboya, caja de escalera
-      const props = 1 + Math.floor(rnd() * 3);
-      for (let i = 0; i < props; i++) {
-        const size = 9 + Math.round(rnd() * 13);
-        if (size + 14 > Math.min(b.pw, b.ph)) continue;
-        const ox = (rnd() - 0.5) * (b.pw - size - 16);
-        const oy = (rnd() - 0.5) * (b.ph - size - 16);
-        const kind = rnd();
-        const tint =
-          kind < 0.34 ? 0x6b6257 : kind < 0.67 ? shade(b.color, 1.6) : shade(b.color, 0.5);
-        block(b.px + ox + 2, b.py + oy + 2, size, size, 0x05060a, -1175, 0.4);
-        block(b.px + ox, b.py + oy, size, size, tint, -1170);
-      }
+      this.decorarPorBarrio(b, block, rnd);
 
       // ventanas por la fachada, para que se lea como edificio y no como caja
       if (b.pw >= 96 && b.ph >= 96) {
@@ -332,6 +321,165 @@ export class CityScene extends Phaser.Scene {
         .setAlpha(0.55)
         .setDepth(-900);
     }
+  }
+
+  // Cada barrio construye distinto. Es lo que le da caracter a la ciudad:
+  // no es el mismo bloque pintado de otro color, es otra clase de edificio.
+  decorarPorBarrio(b, block, rnd) {
+    const techo = shade(b.color, 1.15 + rnd() * 0.3);
+    const oscuro = shade(b.color, 0.5);
+
+    const trasto = (ox, oy, w, h, tint) => {
+      block(b.px + ox + 2, b.py + oy + 2, w, h, 0x05060a, -1175, 0.4);
+      block(b.px + ox, b.py + oy, w, h, tint, -1170);
+    };
+
+    switch (b.zone) {
+      case 'residencial': {
+        // tejado a dos aguas: dos franjas y una cumbrera en medio
+        const horizontal = b.pw >= b.ph;
+        if (horizontal) {
+          block(b.px, b.py - b.ph * 0.25, b.pw - 12, b.ph * 0.44, techo, -1179, 0.9);
+          block(b.px, b.py, b.pw - 12, 3, shade(b.color, 1.7), -1177);
+        } else {
+          block(b.px - b.pw * 0.25, b.py, b.pw * 0.44, b.ph - 12, techo, -1179, 0.9);
+          block(b.px, b.py, 3, b.ph - 12, shade(b.color, 1.7), -1177);
+        }
+        // chimenea
+        const cx = (rnd() - 0.5) * (b.pw - 40);
+        trasto(cx, (rnd() - 0.5) * (b.ph - 40), 12, 12, 0x6b5142);
+        break;
+      }
+
+      case 'comercial': {
+        // toldo a rayas hacia la calle y cartel en la azotea
+        const rayas = 7;
+        const anchoToldo = Math.min(b.pw - 20, 96);
+        for (let i = 0; i < rayas; i++) {
+          block(
+            b.px - anchoToldo / 2 + (i + 0.5) * (anchoToldo / rayas),
+            b.py + b.ph / 2 - 12,
+            anchoToldo / rayas - 1, 16,
+            i % 2 ? 0xb8483c : 0xe0d6c2,
+            -1177, 0.9
+          );
+        }
+        block(b.px, b.py - b.ph * 0.28, Math.min(b.pw - 26, 84), 16, 0x1d2027, -1176);
+        block(b.px, b.py - b.ph * 0.28, Math.min(b.pw - 34, 74), 9, 0xe8b54a, -1175, 0.75);
+        break;
+      }
+
+      case 'centro': {
+        // azotea tecnica: climatizadores en fila y helipuerto en los grandes
+        const n = 2 + Math.floor(rnd() * 3);
+        for (let i = 0; i < n; i++) {
+          trasto(
+            -b.pw * 0.3 + i * 22, (rnd() - 0.5) * (b.ph - 44),
+            14, 11, 0x7a7d84
+          );
+        }
+        if (b.pw > 150 && b.ph > 150) {
+          this.add.circle(b.px, b.py, 26, shade(b.color, 0.55)).setDepth(-1174);
+          this.add.circle(b.px, b.py, 20).setStrokeStyle(3, 0xe0d6c2, 0.7).setDepth(-1173);
+        }
+        break;
+      }
+
+      case 'industrial': {
+        // cubierta de chapa y porton de carga
+        for (let i = 0; i * 14 < b.ph - 20; i++) {
+          block(b.px, b.py - b.ph / 2 + 12 + i * 14, b.pw - 14, 2, oscuro, -1177, 0.5);
+        }
+        block(b.px, b.py + b.ph / 2 - 10, Math.min(b.pw * 0.45, 70), 14, 0x2a2e35, -1176);
+        block(b.px, b.py + b.ph / 2 - 10, Math.min(b.pw * 0.4, 62), 8, 0x585d66, -1175);
+        trasto((rnd() - 0.5) * (b.pw - 40), -b.ph * 0.28, 18, 18, 0x6b6257);
+        break;
+      }
+
+      case 'conflictivo': {
+        // ventanas tapiadas y pintadas en la pared
+        const n = 2 + Math.floor(rnd() * 3);
+        for (let i = 0; i < n; i++) {
+          const ox = (rnd() - 0.5) * (b.pw - 30);
+          const oy = (rnd() - 0.5) * (b.ph - 30);
+          block(b.px + ox, b.py + oy, 13, 4, 0x4a3f33, -1174);
+          block(b.px + ox, b.py + oy, 4, 13, 0x4a3f33, -1174);
+        }
+        const gx = (rnd() - 0.5) * (b.pw - 40);
+        block(b.px + gx, b.py + b.ph / 2 - 8, 26, 9, 0x8a4a2f, -1173, 0.55);
+        trasto((rnd() - 0.5) * (b.pw - 34), (rnd() - 0.5) * (b.ph - 34), 15, 15, 0x55504a);
+        break;
+      }
+
+      case 'puerto': {
+        // contenedores apilados en la cubierta
+        const colores = [0xa8442f, 0x2f6b7a, 0x8a7a2f, 0x3f6b45];
+        const n = 2 + Math.floor(rnd() * 3);
+        for (let i = 0; i < n; i++) {
+          const w = 26 + rnd() * 14;
+          const ox = (rnd() - 0.5) * (b.pw - w - 14);
+          const oy = (rnd() - 0.5) * (b.ph - 24);
+          trasto(ox, oy, w, 15, colores[Math.floor(rnd() * colores.length)]);
+        }
+        break;
+      }
+
+      default: {
+        const size = 9 + Math.round(rnd() * 13);
+        if (size + 14 <= Math.min(b.pw, b.ph)) {
+          trasto(
+            (rnd() - 0.5) * (b.pw - size - 16),
+            (rnd() - 0.5) * (b.ph - size - 16),
+            size, size, 0x6b6257
+          );
+        }
+      }
+    }
+  }
+
+  // Mobiliario de calle. No estorba el paso (si fuese solido los peatones se
+  // quedarian encerrados en las aceras), pero rompe la uniformidad del suelo.
+  drawStreetProps() {
+    let puestos = 0;
+    for (const spot of this.map.sidewalkSpots) {
+      const rnd = buildingRng(spot.tx * 3 + 11, spot.ty * 7 + 5);
+      if (rnd() > 0.13) continue;
+
+      const x = spot.x + (rnd() - 0.5) * 14;
+      const y = spot.y + (rnd() - 0.5) * 14;
+      const tipo = rnd();
+      const img = (ox, oy, w, h, tint, depth, alpha = 1) =>
+        this.add.image(x + ox, y + oy, 'px')
+          .setDisplaySize(w, h).setTint(tint).setAlpha(alpha).setDepth(depth);
+
+      if (tipo < 0.42) {
+        // arbol: sombra, copa y tronco asomando
+        this.add.circle(x + 4, y + 5, 15, 0x05060a, 0.4).setDepth(-880);
+        img(0, 0, 6, 6, 0x4a3a28, -876);
+        this.add.circle(x, y, 14, 0x2c3a29).setDepth(-875);
+        this.add.circle(x - 3, y - 3, 8, 0x3a4c35).setDepth(-874);
+      } else if (tipo < 0.62) {
+        // papelera
+        img(2, 3, 11, 11, 0x05060a, -876, 0.35);
+        img(0, 0, 10, 10, 0x3a3f45, -875);
+        img(0, -1, 8, 3, 0x22262c, -874);
+      } else if (tipo < 0.82) {
+        // banco
+        const vertical = rnd() > 0.5;
+        const w = vertical ? 8 : 30;
+        const h = vertical ? 30 : 8;
+        img(2, 3, w, h, 0x05060a, -876, 0.35);
+        img(0, 0, w, h, 0x5a4634, -875);
+        img(0, 0, vertical ? 3 : w - 6, vertical ? h - 6 : 3, 0x6d5741, -874);
+      } else {
+        // boca de riego
+        img(2, 3, 7, 9, 0x05060a, -876, 0.35);
+        img(0, 0, 6, 8, 0xa8442f, -875);
+        img(0, -3, 8, 2, 0x8a3526, -874);
+      }
+      puestos++;
+    }
+    return puestos;
   }
 
   drawStreetLights() {

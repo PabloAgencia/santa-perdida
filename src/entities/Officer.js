@@ -1,3 +1,5 @@
+import { FASES } from '../world/personArt.js';
+
 const RADIO = 9;
 
 // Agente a pie. Sale del coche cuando vas andando y te persigue para
@@ -10,11 +12,13 @@ export class Officer {
     this.y = y;
     this.angle = 0;
     this.radius = RADIO;
-    this.speed = 132 + Math.random() * 26;
+    this.speed = 112 + Math.random() * 22;
     this.stuck = 0;
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.32).setAlpha(0.45);
-    this.sprite = scene.add.image(x, y, 'officer');
+    this.paso = 0;
+    this.fase = 0;
+    this.sprite = scene.add.image(x, y, 'officer-0');
   }
 
   update(dt, tx, ty) {
@@ -40,6 +44,12 @@ export class Officer {
     }
 
     this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(dy, dx), 12 * dt);
+    this.paso += (this.speed / 44) * dt;
+    const fase = Math.floor(this.paso) % FASES;
+    if (fase !== this.fase) {
+      this.fase = fase;
+      this.sprite.setTexture(`officer-${fase}`);
+    }
     this.sync();
     return dist;
   }
