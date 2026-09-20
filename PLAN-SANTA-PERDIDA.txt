@@ -550,3 +550,57 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
   ARMAS: decidido dejarlas para despues de la fase 2. Un arma sin policia
   ni peatones que reaccionen no tiene consecuencia; en cuanto exista la
   policia, el arma cobra sentido sola.
+
+
+================================================================================
+PENDIENTE — LO SIGUIENTE QUE HAY QUE HACER  (apuntado el 20-sep-2026)
+================================================================================
+Pablo se quedo sin cuota de sesion aqui. Esto es lo que pidio y NO esta hecho.
+Se retoma por este orden.
+
+1. PEATONES QUE CRUZAN EN DIAGONAL Y LOS ATROPELLAN
+   Sintoma: "no paran de cruzar en diagonal y los atropellan".
+   Estado: se penalizo el asfalto x6 en el A* (`world/Pathfinder.js`), pero
+   siguen saliendo 8 de 20 sobre la calzada.
+   Que falta:
+     - Cruzar SOLO por puntos de cruce, no por donde pille. Marcar pasos de
+       peatones en la rejilla (en los cruces de la red de carriles) y que el
+       A* solo permita pisar asfalto en esas casillas.
+     - Cruzar en perpendicular, nunca en diagonal: al entrar en calzada,
+       fijar el rumbo al eje de la calle hasta salir al otro lado.
+     - Mirar antes de cruzar: si viene un coche a menos de X, esperar en el
+       bordillo.
+
+2. LOS COCHES NO DETECTAN BIEN A LOS PEATONES
+   `peopleAhead()` en `systems/driving.js` existe, pero el cono es estrecho y
+   corto (40 + velocidad*0.4). Hay que ampliarlo y anticipar: mirar tambien
+   hacia donde se mueve el peaton, no solo donde esta.
+
+3. CONDUCTORES CRIMINALES (5%)
+   Que un 5% de los coches de trafico sean temerarios: no frenan por
+   peatones, y si atropellan a alguien ACELERAN y huyen. Sitio: al crear el
+   coche en `TrafficSystem.topUp()`, marcar `car.temerario = Math.random() < 0.05`
+   y usarlo en `driveCar` (saltarse `genteDelante`) y al recibir PED_HIT.
+
+4. ROBO DE COCHES CON CONDUCTOR DENTRO (como GTA)
+   Ahora los coches de trafico van vacios. Deberia:
+     - Verse al conductor dentro.
+     - Al robarlo, que SALGA el NPC y eche a correr (la mayoria de veces).
+     - Que a veces el conductor sea hostil y se ponga a pegarte.
+   Piezas que ya existen y sirven: `entities/Pedestrian.js` sabe huir
+   (`flee`) y sabe ser hostil y pegar (`hostile` + NPCSystem.checkAttacks).
+   Lo que falta es que el coche de trafico tenga un peaton asociado, que se
+   cree al bajarse y que se le diga si huye o si se encara.
+
+5. CAMARA QUE SE QUEDA SUELTA
+   Pablo la vio dejar de seguir al personaje. En arranque limpio sigue bien,
+   asi que es algo puntual (volver del escondite, reaparecer, una pausa).
+   YA SE PUSO UN SEGURO que la reengancha sola cada fotograma si se suelta,
+   pero NO se ha reproducido la causa real. Si vuelve a pasar, hay que buscar
+   el momento exacto en que se suelta.
+
+6. TEXTO PEQUEÑO EN PRICEDOWN
+   Todo esta en Pricedown por peticion de Pablo, pero en tamaños pequeños se
+   lee peor que la monoespaciada. Si molesta, cambiar SOLO los textos chicos
+   (ayuda de controles, distancias, etiquetas del minimapa).
+

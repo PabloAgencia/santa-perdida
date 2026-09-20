@@ -643,6 +643,9 @@ export class CityScene extends Phaser.Scene {
       if (this.hideoutDoor) this.player.setPosition(this.hideoutDoor.x, this.hideoutDoor.y);
       this.player.setVisible(true);
       this.hurtCooldown = 1.5;
+      this.cameras.main.startFollow(
+        this.player.sprite, true, CAMERA.followLerp, CAMERA.followLerp
+      );
       this.cameras.main.fadeIn(420, 0, 0, 0);
     };
     this.onDead = () => this.respawn('muerto');
@@ -976,6 +979,9 @@ export class CityScene extends Phaser.Scene {
       const spot = this.findStartSpot();
       this.player.setPosition(spot.x, spot.y);
       this.hurtCooldown = 2;
+      this.cameras.main.startFollow(
+        this.player.sprite, true, CAMERA.followLerp, CAMERA.followLerp
+      );
       this.cameras.main.fadeIn(600, 0, 0, 0);
       this.respawning = false;
     });
@@ -1053,6 +1059,12 @@ export class CityScene extends Phaser.Scene {
 
   updateCamera(dt) {
     const cam = this.cameras.main;
+
+    // Seguro: si por lo que sea la camara se queda suelta (volver del
+    // escondite, reaparecer, una pausa rara), se vuelve a enganchar sola.
+    if (cam._follow !== this.player.sprite) {
+      cam.startFollow(this.player.sprite, true, CAMERA.followLerp, CAMERA.followLerp);
+    }
     const driving = !!this.drivingVehicle;
     const targetZoom = driving ? CAMERA.zoomDrive : CAMERA.zoomFoot;
     cam.setZoom(Phaser.Math.Linear(cam.zoom, targetZoom, CAMERA.zoomLerp * 60 * dt));
