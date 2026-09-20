@@ -480,6 +480,24 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
 
   RENDIMIENTO: 4.395 objetos en escena y 60 fps estables.
 
+  UNDECIMA TANDA: desaparecer al robar una patrulla, y NPCs con cabeza
+     - FALLO GRAVE: al subirte a un coche de POLICIA desaparecias. La causa:
+       el sistema de policia, al ver que el coche estaba ocupado, retiraba la
+       unidad y DESTRUIA el vehiculo... contigo dentro. Ahora, si te lo
+       quedas tu, se deshace la unidad pero el coche sigue vivo y pasa a ser
+       tuyo. Ademas robar una patrulla te sube el nivel de busca.
+     - El interior del escondite pedia la textura 'player', que dejo de
+       existir al pasar el personaje a cuatro fases de paso.
+     - PEATONES CON RUTA (`world/Pathfinder.js`): A* por casillas, con
+       diagonales que no se cuelan por las esquinas y suavizado del camino
+       para que no anden en zigzag. Antes iban en linea recta al destino y se
+       quedaban raspando la pared hasta rendirse.
+       Comprobado en 15 s simulados: atasco maximo 0 s, cero veces dentro de
+       un muro, 18 de 20 andando (los otros 2 parados a proposito), y todo
+       ello en 138 ms de calculo.
+     - TRAFICO CON DESATASCO: si un coche lleva 2,2 s sin avanzar, da marcha
+       atras girando y a los 3,4 s coge otra salida.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

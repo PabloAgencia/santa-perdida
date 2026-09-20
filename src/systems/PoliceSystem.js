@@ -418,8 +418,27 @@ export class PoliceSystem {
         !u.roadblock &&
         this.units.filter((x) => !x.roadblock).length > max &&
         u.state !== ESTADO.PERSIGUIENDO;
-      if (u.vehicle.occupied || lejos || sobra || caducado) this.removeUnit(i);
+
+      // OJO: si el jugador se ha subido a la patrulla NO se puede destruir el
+      // coche, que es justo lo que pasaba: desaparecia con el dentro.
+      if (u.vehicle.occupied) {
+        this.soltarUnidad(i);
+        continue;
+      }
+      if (lejos || sobra || caducado) this.removeUnit(i);
     }
+  }
+
+  // el jugador se queda el coche: se deshace la unidad pero el vehiculo vive
+  soltarUnidad(i) {
+    const u = this.units[i];
+    if (u.officer) u.officer.destroy();
+    u.siren.destroy();
+    u.vehicle.ai = false;
+    u.vehicle.police = false;
+    this.units.splice(i, 1);
+    GameState.raiseWanted(1);
+    EventBus.emit(EVT.NOTIFY, { text: 'Has robado un coche patrulla', tone: 'danger' });
   }
 
   removeUnit(i) {

@@ -69,7 +69,7 @@ export class HideoutScene extends Phaser.Scene {
       fontFamily: FONT, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
-    this.jugador = this.add.image(s.x + s.w / 2, s.y + s.h - 70, 'player');
+    this.jugador = this.add.image(s.x + s.w / 2, s.y + s.h - 70, 'player-0');
     this.px = this.jugador.x;
     this.py = this.jugador.y;
 

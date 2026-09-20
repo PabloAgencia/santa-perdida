@@ -91,6 +91,21 @@ export class TrafficSystem {
     const blocked =
       forwardBlocked(v, this.scene.vehicles) || peopleAhead(v, people || []);
 
+    // Desatasco: si lleva un rato sin avanzar es que se ha quedado clavado
+    // contra algo. Da marcha atras un momento y coge otra salida.
+    car.atasco = v.speed < 22 ? (car.atasco || 0) + dt : 0;
+
+    if (car.atasco > 2.2) {
+      v.update(dt, {
+        throttle: false, brake: true, left: true, right: false, handbrake: false,
+      });
+      if (car.atasco > 3.4) {
+        car.atasco = 0;
+        car.edge = this.net.nextEdge(car.edge) || this.net.randomEdge();
+      }
+      return;
+    }
+
     v.update(dt, steerTo(v, goal.x, goal.y, car.limit, blocked));
   }
 

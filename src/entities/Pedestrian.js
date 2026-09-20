@@ -1,9 +1,12 @@
 import { FASES } from '../world/personArt.js';
 
 export class Pedestrian {
-  constructor(scene, map, x, y, skin, faction = null) {
+  constructor(scene, map, x, y, skin, faction = null, pathfinder = null) {
     this.scene = scene;
     this.map = map;
+    this.pathfinder = pathfinder;
+    this.ruta = null;
+    this.rutaIdx = 0;
     this.x = x;
     this.y = y;
     this.angle = 0;
@@ -83,6 +86,22 @@ export class Pedestrian {
 
     this.target = best || fallback;
     this.stuck = 0;
+    this.trazarRuta();
+  }
+
+  // se calcula el camino rodeando edificios; si no hay, se va en linea recta
+  trazarRuta() {
+    this.ruta = null;
+    this.rutaIdx = 0;
+    if (!this.pathfinder || !this.target) return;
+    const camino = this.pathfinder.buscar(this.x, this.y, this.target.x, this.target.y);
+    if (camino && camino.length > 0) this.ruta = camino;
+  }
+
+  // el punto al que apunta ahora mismo: el siguiente tramo de la ruta
+  get destinoInmediato() {
+    if (this.ruta && this.rutaIdx < this.ruta.length) return this.ruta[this.rutaIdx];
+    return this.target;
   }
 
   roadFraction(target) {
@@ -141,12 +160,30 @@ export class Pedestrian {
       return;
     }
 
+    const meta = this.destinoInmediato;
+    if (!meta) {
+      this.target = null;
+      this.syncSprite();
+      return;
+    }
+
+    // al llegar a un tramo, se pasa al siguiente
+    if (this.ruta && Math.hypot(meta.x - this.x, meta.y - this.y) < 14) {
+      this.rutaIdx++;
+      if (this.rutaIdx < this.ruta.length) {
+        this.syncSprite();
+        return;
+      }
+      this.ruta = null;
+    }
+
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const dist = Math.hypot(dx, dy);
 
     if (dist < 16) {
       this.target = null;
+      this.ruta = null;
       if (this.state === 'walking' && Math.random() < 0.35) {
         this.state = 'waiting';
         this.stateTimer = 0.8 + Math.random() * 2.2;
@@ -156,15 +193,23 @@ export class Pedestrian {
     }
 
     const speed = this.baseSpeed * (this.state === 'fleeing' ? 2.1 : 1);
-    const stepX = (dx / dist) * speed * dt;
-    const stepY = (dy / dist) * speed * dt;
+    const hx = meta.x - this.x;
+    const hy = meta.y - this.y;
+    const hlen = Math.hypot(hx, hy) || 1;
+    const stepX = (hx / hlen) * speed * dt;
+    const stepY = (hy / hlen) * speed * dt;
 
     const movedX = this.tryMove(stepX, 0);
     const movedY = this.tryMove(0, stepY);
 
     if (!movedX && !movedY) {
       this.stuck += dt;
-      if (this.stuck > 0.5) this.pickTarget(spots);
+      if (this.stuck > 0.3 && this.ruta) {
+        this.trazarRuta();
+        this.stuck = 0;
+      } else if (this.stuck > 0.7) {
+        this.pickTarget(spots);
+      }
     } else {
       this.stuck = 0;
       this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(stepY, stepX), 12 * dt);

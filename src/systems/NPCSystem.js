@@ -2,6 +2,7 @@ import { Pedestrian } from '../entities/Pedestrian.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { GameState } from '../core/GameState.js';
 import { ZONE_OWNER } from '../config/factions.js';
+import { Pathfinder } from '../world/Pathfinder.js';
 
 const GANG_CHANCE = 0.38;
 const HOSTILE_RANGE = 330;
@@ -20,6 +21,7 @@ export class NPCSystem {
     this.scene = scene;
     this.map = map;
     this.people = [];
+    this.pathfinder = new Pathfinder(map);
   }
 
   update(dt, focusX, focusY, vehicles, player = null, onFoot = false) {
@@ -90,7 +92,9 @@ export class NPCSystem {
       if (owner !== aqui && Math.random() < 0.7) continue;
       const faction = owner && Math.random() < GANG_CHANCE ? owner : null;
       const skin = Math.floor(Math.random() * SKINS);
-      this.people.push(new Pedestrian(this.scene, this.map, s.x, s.y, skin, faction));
+      this.people.push(
+        new Pedestrian(this.scene, this.map, s.x, s.y, skin, faction, this.pathfinder)
+      );
     }
   }
 
