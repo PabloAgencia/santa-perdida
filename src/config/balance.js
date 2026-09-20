@@ -24,8 +24,8 @@ export const ECONOMY = {
 };
 
 export const DRIVING = {
-  handbrakeRetention: 0.975,
-  rollingDrag: 95,
+  handbrakeRetention: 0.986,
+  rollingDrag: 68,
   crashMinSpeed: 70,
   crashSpeedLoss: 0.45,
   crashDamagePerSpeed: 0.045,

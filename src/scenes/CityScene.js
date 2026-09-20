@@ -1,7 +1,7 @@
 import { CityMap } from '../world/CityMap.js';
 import { CITY } from '../config/city.js';
 import { TILE, PLAYER, CAMERA, SAVE } from '../config/balance.js';
-import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
+import { VEHICLE_KEYS, VEHICLES, ENGINES } from '../config/vehicles.js';
 import { Player } from '../entities/Player.js';
 import { Vehicle } from '../entities/Vehicle.js';
 import { JobSystem } from '../systems/JobSystem.js';
@@ -151,6 +151,46 @@ export class CityScene extends Phaser.Scene {
           kind < 0.34 ? 0x6b6257 : kind < 0.67 ? shade(b.color, 1.6) : shade(b.color, 0.5);
         block(b.px + ox + 2, b.py + oy + 2, size, size, 0x05060a, -1175, 0.4);
         block(b.px + ox, b.py + oy, size, size, tint, -1170);
+      }
+
+      // ventanas por la fachada, para que se lea como edificio y no como caja
+      if (b.pw >= 96 && b.ph >= 96) {
+        const paso = 24;
+        const luz = shade(b.color, 1.9);
+        const apagada = shade(b.color, 0.45);
+        const fila = (x0, y0, dx, dy, n) => {
+          for (let k = 0; k < n; k++) {
+            const encendida = rnd() < 0.38;
+            block(
+              x0 + dx * k, y0 + dy * k,
+              dx ? 9 : 5, dy ? 9 : 5,
+              encendida ? luz : apagada,
+              -1178, encendida ? 0.85 : 0.6
+            );
+          }
+        };
+        const nx = Math.floor((b.pw - 30) / paso);
+        const ny = Math.floor((b.ph - 30) / paso);
+        const x0 = b.px - (nx - 1) * paso * 0.5;
+        const y0 = b.py - (ny - 1) * paso * 0.5;
+        fila(x0, b.py - b.ph / 2 + 9, paso, 0, nx);
+        fila(x0, b.py + b.ph / 2 - 9, paso, 0, nx);
+        fila(b.px - b.pw / 2 + 9, y0, 0, paso, ny);
+        fila(b.px + b.pw / 2 - 9, y0, 0, paso, ny);
+      }
+
+      // portal, en el lado que da a la calle
+      const lados = [
+        { x: b.px, y: b.py - b.ph / 2 - 20, w: 16, h: 7, ox: 0, oy: -b.ph / 2 + 3 },
+        { x: b.px, y: b.py + b.ph / 2 + 20, w: 16, h: 7, ox: 0, oy: b.ph / 2 - 3 },
+        { x: b.px - b.pw / 2 - 20, y: b.py, w: 7, h: 16, ox: -b.pw / 2 + 3, oy: 0 },
+        { x: b.px + b.pw / 2 + 20, y: b.py, w: 7, h: 16, ox: b.pw / 2 - 3, oy: 0 },
+      ];
+      for (const l of lados) {
+        if (!this.map.isRoadPoint(l.x, l.y)) continue;
+        block(b.px + l.ox, b.py + l.oy, l.w, l.h, 0x15181d, -1176);
+        block(b.px + l.ox, b.py + l.oy, l.w - 4, l.h - 3, 0xc8a465, -1175, 0.65);
+        break;
       }
 
       if (b.isHideout) {
@@ -385,11 +425,15 @@ export class CityScene extends Phaser.Scene {
     this.onJobStage = () => Audio.pickup();
     this.onJobStarted = () => Audio.newJob();
 
-    this.onPedHit = ({ pedestrian, speed }) => {
-      this.npcs.scare(pedestrian.x, pedestrian.y, 300);
-      this.police.report(pedestrian.x, pedestrian.y, 1);
-      Audio.crash(Math.min(0.6, speed / 400));
-      EventBus.emit(EVT.NOTIFY, { text: 'Has atropellado a alguien', tone: 'danger' });
+    this.onPedHit = ({ pedestrian, speed, fatal }) => {
+      this.npcs.scare(pedestrian.x, pedestrian.y, fatal ? 420 : 300);
+      this.police.report(pedestrian.x, pedestrian.y, fatal ? 2 : 1);
+      Audio.crash(Math.min(0.7, speed / 400));
+      this.cameras.main.shake(fatal ? 260 : 150, fatal ? 0.009 : 0.005);
+      EventBus.emit(EVT.NOTIFY, {
+        text: fatal ? 'Te lo has llevado por delante' : 'Has atropellado a alguien',
+        tone: 'danger',
+      });
       if (pedestrian.faction) this.factions.onMemberHurt(pedestrian.faction);
     };
     this.onDead = () => this.respawn('muerto');
@@ -528,12 +572,13 @@ export class CityScene extends Phaser.Scene {
     );
     this.police.update(dt, this.player, this.drivingVehicle);
     this.factions.update(dt, this.player.x, this.player.y);
+    this.resolvePlayerVsVehicles();
     this.checkPlayerHarm(dt);
 
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;
       this.player.setPosition(v.x, v.y);
-      Audio.engine(true, v.speed / v.stats.maxSpeed, up);
+      Audio.engine(true, v.speed / v.stats.maxSpeed, up, ENGINES[v.stats.clase]);
       Audio.skid(Math.max(0, (v.lateral - 45) / 190));
     } else {
       Audio.engine(false, 0, false);
@@ -561,6 +606,39 @@ export class CityScene extends Phaser.Scene {
     if (this.hudTimer >= 90) {
       this.hudTimer = 0;
       this.emitHud();
+    }
+  }
+
+  // a pie no se puede atravesar un coche: te empuja fuera
+  resolvePlayerVsVehicles() {
+    if (this.drivingVehicle) return;
+    const r = this.player.radius;
+
+    for (const v of this.vehicles) {
+      if (Phaser.Math.Distance.Between(v.x, v.y, this.player.x, this.player.y) > v.stats.length) {
+        continue;
+      }
+      for (const c of v.getCircles()) {
+        const dx = this.player.x - c.x;
+        const dy = this.player.y - c.y;
+        const d = Math.hypot(dx, dy);
+        const overlap = c.r + r - d;
+        if (overlap <= 0) continue;
+
+        const nx = d > 0.001 ? dx / d : 1;
+        const ny = d > 0.001 ? dy / d : 0;
+        const px = this.player.x + nx * overlap;
+        const py = this.player.y + ny * overlap;
+
+        // si detras hay pared, salir por el eje que quede libre
+        if (!this.map.isSolidBox(px, py, r, r)) {
+          this.player.setPosition(px, py);
+        } else if (!this.map.isSolidBox(px, this.player.y, r, r)) {
+          this.player.setPosition(px, this.player.y);
+        } else if (!this.map.isSolidBox(this.player.x, py, r, r)) {
+          this.player.setPosition(this.player.x, py);
+        }
+      }
     }
   }
 

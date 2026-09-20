@@ -105,9 +105,10 @@ export class Vehicle {
     }
     vf = Phaser.Math.Clamp(vf, -s.reverseSpeed * power, topSpeed);
 
-    // no se gira parado, y a tope de velocidad el volante pesa mas
-    const grip = Math.min(1, Math.abs(vf) / (s.maxSpeed * 0.28));
-    const heavy = 1 - 0.35 * Math.min(1, Math.abs(vf) / s.maxSpeed);
+    // no se gira parado, y a tope de velocidad el volante pesa un poco mas.
+    // El coche coge el volante enseguida: es lo que hace que se sienta agil.
+    const grip = Math.min(1, Math.abs(vf) / (s.maxSpeed * 0.16));
+    const heavy = 1 - 0.22 * Math.min(1, Math.abs(vf) / s.maxSpeed);
     const dir = vf < 0 ? -1 : 1;
     const steer = s.turnRate * grip * heavy * dir;
 

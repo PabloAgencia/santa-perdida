@@ -9,7 +9,7 @@ class GameAudio {
     this.ctx = null;
     this.started = false;
     this.muted = false;
-    this.volume = 0.5;
+    this.volume = 0.3;
   }
 
   start() {
@@ -66,12 +66,13 @@ class GameAudio {
     this.osc2.type = 'square';
     this.osc2.frequency.value = 25;
 
-    const sub = ctx.createGain();
-    sub.gain.value = 0.5;
-    this.osc2.connect(sub);
+    this.subGain = ctx.createGain();
+    this.subGain.gain.value = 0.5;
+    this.osc2.connect(this.subGain);
+    this.engWave = 'sawtooth';
 
     this.osc1.connect(this.engFilter);
-    sub.connect(this.engFilter);
+    this.subGain.connect(this.engFilter);
     this.engFilter.connect(this.engGain);
     this.engGain.connect(this.master);
 
@@ -99,22 +100,37 @@ class GameAudio {
     src.start();
   }
 
-  engine(on, ratio, throttle) {
+  // perfil = uno de ENGINES. Al ralenti suena muy bajito y va creciendo con
+  // la velocidad, en volumen y en tono a la vez.
+  engine(on, ratio, throttle, perfil = null) {
     if (!this.started) return;
     const t = this.ctx.currentTime;
     const r = clamp(ratio, 0, 1);
-    const level = on ? 0.05 + r * 0.06 + (throttle ? 0.025 : 0) : 0;
-    this.engGain.gain.setTargetAtTime(level, t, 0.08);
-    const base = 46 + r * 155;
-    this.osc1.frequency.setTargetAtTime(base, t, 0.05);
-    this.osc2.frequency.setTargetAtTime(base * 0.5, t, 0.05);
-    this.engFilter.frequency.setTargetAtTime(360 + r * 2300, t, 0.09);
+    const p = perfil || { base: 46, range: 155, wave: 'sawtooth', body: 0.5, bright: 2300, vol: 1 };
+
+    if (this.engWave !== p.wave) {
+      this.engWave = p.wave;
+      this.osc1.type = p.wave;
+    }
+
+    // la curva hace que de parado a medio gas se note mucho mas que arriba
+    const curva = Math.pow(r, 0.72);
+    const level = on ? (0.012 + curva * 0.055 + (throttle ? 0.014 : 0)) * p.vol : 0;
+    this.engGain.gain.setTargetAtTime(level, t, 0.07);
+    this.subGain.gain.setTargetAtTime(p.body, t, 0.12);
+
+    const freq = p.base + curva * p.range;
+    this.osc1.frequency.setTargetAtTime(freq, t, 0.045);
+    this.osc2.frequency.setTargetAtTime(freq * 0.5, t, 0.045);
+    this.engFilter.frequency.setTargetAtTime(
+      260 + curva * p.bright + (throttle ? 320 : 0), t, 0.08
+    );
   }
 
   skid(amount) {
     if (!this.started) return;
     const a = clamp(amount, 0, 1);
-    this.skidGain.gain.setTargetAtTime(a * 0.12, this.ctx.currentTime, 0.05);
+    this.skidGain.gain.setTargetAtTime(a * 0.07, this.ctx.currentTime, 0.05);
     this.skidFilter.frequency.setTargetAtTime(1500 + a * 900, this.ctx.currentTime, 0.08);
   }
 

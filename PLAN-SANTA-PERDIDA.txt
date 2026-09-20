@@ -350,11 +350,34 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
   (de 85 a 14 px) y te bajan la vida de 100 a 73, y en cada barrio aparecen
   los suyos.
 
+  SEXTA TANDA: arreglos pedidos por Pablo despues de jugarlo
+     - FALLO REAL: a pie se atravesaban los coches. Ahora te empujan fuera
+       (`resolvePlayerVsVehicles` en CityScene), y si tienes pared detras
+       sale por el eje que quede libre.
+     - SONIDO mas bajo (volumen general de 0,5 a 0,3, el pico a la mitad) y
+       **un motor distinto por vehiculo**, en `ENGINES` de config/vehicles.js:
+       la moto zumba agudo (96 a 361 Hz), la furgoneta retumba grave (35 a
+       122 Hz), el rapido queda en medio. Volumen y tono suben con la
+       velocidad por una curva, asi que de parado a medio gas se nota mucho.
+     - Los atropellos por encima de 155 px/s MATAN: cadaver que dura mucho
+       mas, charco de sangre que se extiende, y la policia sube dos niveles
+       de golpe en vez de uno.
+     - Conduccion mas de GTA: mas empuje al acelerar (+20-25% en todos),
+       frenos bastante mas fuertes, el volante entra antes al arrancar,
+       menos penalizacion de giro a tope, freno de mano que desliza mas y
+       menos rozamiento (se rueda mas suelto).
+     - Mas variedad: 12 tipos de peaton (antes 4) combinando chaqueta, piel
+       y pelo, con brazos marcados. Personaje con cremallera, cuello y
+       hombros. Edificios con ventanas por las cuatro fachadas (unas
+       encendidas y otras no) y portal en el lado que da a la calle.
+
   LO PRIMERO DE LA PROXIMA SESION:
-     - Que Pablo juegue una partida entera y diga que tal se siente la
-       persecucion: si la policia es blanda, dura o injusta. Los numeros
-       estan al principio de `systems/PoliceSystem.js`.
-     - Que escuche el sonido y diga si canta o molesta (`src/core/Audio.js`).
+     - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
+       cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y
+       yo no lo puedo juzgar: los numeros estan en `config/balance.js`,
+       `config/vehicles.js` (ENGINES) y `core/Audio.js`.
+     - Que diga tambien si la policia es blanda, dura o injusta
+       (`systems/PoliceSystem.js`).
      - Resto de fase 3: las 10 misiones (que ya tienen de quien colgar),
        comprar coches y pisos, y la economia por barrios de Chinatown Wars.
 

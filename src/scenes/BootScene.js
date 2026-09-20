@@ -261,6 +261,15 @@ export class BootScene extends Phaser.Scene {
     g.fillRoundedRect(5, 6, 17, 16, 5);
     g.fillStyle(0xc16a3c, 1);
     g.fillRoundedRect(6, 8, 12, 12, 4);
+    // cremallera y cuello, para que la chaqueta se lea como prenda
+    g.fillStyle(0x7d3d20, 1);
+    g.fillRect(6, 13, 12, 1.6);
+    g.fillStyle(0x8a4526, 1);
+    g.fillRect(15, 8, 3, 12);
+    // hombros
+    g.fillStyle(0x7d3d20, 1);
+    g.fillRect(8, 5, 6, 2.4);
+    g.fillRect(8, 20.6, 6, 2.4);
     g.fillStyle(0x0a0c10, 1);
     g.fillCircle(19, 14, 5.6);
     g.fillStyle(0xd8b48c, 1);
@@ -272,23 +281,35 @@ export class BootScene extends Phaser.Scene {
   }
 
   makePedestrians() {
-    const jackets = [0x4a5a6b, 0x6b5a3d, 0x5d4a5a, 0x3f5a48];
-    const skins = [0xc9a882, 0x8c6a4a, 0xd8b48c, 0xa07b55];
+    const jackets = [
+      0x4a5a6b, 0x6b5a3d, 0x5d4a5a, 0x3f5a48, 0x7a4a3d, 0x39414f,
+      0x6d6a5c, 0x8a7a4a, 0x4f3f3a, 0x5a6b5e, 0x7d6b7a, 0x2f3a45,
+    ];
+    const skins = [0xc9a882, 0x8c6a4a, 0xd8b48c, 0xa07b55, 0x6f5136, 0xe0c19c];
+    const hairs = [0x241c14, 0x3d2a18, 0x6b6257, 0x14100c, 0x8a7a5c, 0x4a2c1e];
 
     jackets.forEach((jacket, i) => {
       const g = this.g();
       const s = 24;
+      const skin = skins[i % skins.length];
+      const hair = hairs[(i * 2 + 1) % hairs.length];
+      const ancho = i % 3 === 0 ? 14 : i % 3 === 1 ? 13 : 12;
+
       g.fillStyle(0x0a0c10, 1);
-      g.fillRoundedRect(4, 5, 15, 15, 5);
+      g.fillRoundedRect(4, 5, ancho + 2, 15, 5);
       g.fillStyle(jacket, 1);
-      g.fillRoundedRect(5, 6, 13, 13, 4);
-      g.fillStyle(shade(jacket, 1.25), 1);
-      g.fillRoundedRect(6, 8, 9, 9, 3);
+      g.fillRoundedRect(5, 6, ancho, 13, 4);
+      g.fillStyle(shade(jacket, 1.28), 1);
+      g.fillRoundedRect(6, 8, ancho - 4, 9, 3);
+      // los brazos marcan la silueta y hacen que se lea el sentido de la marcha
+      g.fillStyle(shade(jacket, 0.72), 1);
+      g.fillRect(8, 5, 4, 2);
+      g.fillRect(8, 18, 4, 2);
       g.fillStyle(0x0a0c10, 1);
       g.fillCircle(16, 12, 4.6);
-      g.fillStyle(skins[i], 1);
+      g.fillStyle(skin, 1);
       g.fillCircle(16, 12, 3.6);
-      g.fillStyle(0x241c14, 1);
+      g.fillStyle(hair, 1);
       g.fillCircle(14.8, 12, 2.9);
       g.generateTexture(`ped-${i}`, s, s);
       g.destroy();

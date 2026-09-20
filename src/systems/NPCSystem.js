@@ -12,7 +12,7 @@ const MAX_PEDS = 20;
 const SPAWN_MIN = 260;
 const SPAWN_MAX = 900;
 const DESPAWN = 1500;
-const SKINS = 4;
+const SKINS = 12;
 const DOWN_LIFETIME = 22;
 
 export class NPCSystem {
@@ -59,7 +59,7 @@ export class NPCSystem {
     for (let i = this.people.length - 1; i >= 0; i--) {
       const p = this.people[i];
       const far = Phaser.Math.Distance.Between(p.x, p.y, fx, fy) > DESPAWN;
-      const gone = p.down && p.downTimer > DOWN_LIFETIME;
+      const gone = p.down && p.downTimer > (p.dead ? DOWN_LIFETIME * 3 : DOWN_LIFETIME);
       if (far || gone) {
         p.destroy();
         this.people.splice(i, 1);
@@ -114,8 +114,9 @@ export class NPCSystem {
         }
 
         if (hit && speed > 70) {
-          p.knockDown();
-          EventBus.emit(EVT.PED_HIT, { pedestrian: p, vehicle: v, speed });
+          const mortal = speed > 155;
+          p.knockDown(mortal);
+          EventBus.emit(EVT.PED_HIT, { pedestrian: p, vehicle: v, speed, fatal: mortal });
         } else if (!hit) {
           p.flee(v.x, v.y, 2.2);
         }

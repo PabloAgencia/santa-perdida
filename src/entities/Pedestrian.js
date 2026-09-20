@@ -24,14 +24,27 @@ export class Pedestrian {
     this.sprite = scene.add.image(x, y, faction ? `gang-${faction}` : `ped-${skin}`);
   }
 
-  knockDown() {
+  knockDown(fatal = false) {
     if (this.down) return;
     this.down = true;
+    this.dead = fatal;
     this.state = 'down';
     this.downTimer = 0;
-    this.sprite.setTint(0x9a5a52);
+    this.hostile = false;
+    this.chaseTarget = null;
+    this.sprite.setTint(fatal ? 0x6e3a34 : 0x9a5a52);
     this.sprite.setRotation(this.angle + Math.PI / 2);
-    this.shadow.setAlpha(0.2);
+    this.shadow.setAlpha(0.15);
+
+    if (fatal) {
+      const charco = this.scene.add.image(this.x, this.y, 'px')
+        .setDisplaySize(26 + Math.random() * 14, 18 + Math.random() * 10)
+        .setTint(0x5e1f1a)
+        .setAlpha(0.72)
+        .setDepth(this.y - 6);
+      this.scene.tweens.add({ targets: charco, scaleX: 1.35, scaleY: 1.35, duration: 2200 });
+      this.blood = charco;
+    }
   }
 
   flee(fromX, fromY, seconds = 2.6) {
@@ -175,5 +188,6 @@ export class Pedestrian {
   destroy() {
     this.sprite.destroy();
     this.shadow.destroy();
+    if (this.blood) this.blood.destroy();
   }
 }
