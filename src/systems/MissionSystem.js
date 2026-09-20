@@ -30,24 +30,65 @@ export class MissionSystem {
 
   // ---------- quien da las misiones ----------
 
+  // Un marcador por mision disponible, repartidos por la ciudad y con su haz
+  // de luz, como los iconos de GTA. Se entra en el y se decide si aceptar.
   crearDadores() {
     this.dadores = [];
+    this.refrescarDadores();
+  }
+
+  refrescarDadores() {
+    for (const d of this.dadores) d.objetos.forEach((o) => o.destroy());
+    this.dadores = [];
+
     for (const key of Object.keys(FACTIONS)) {
-      const punto = this.puntoFijoEnZona(FACTIONS[key].zones[0]);
-      if (!punto) continue;
-
       const f = FACTIONS[key];
-      const aro = this.scene.add.image(punto.x, punto.y, 'ring')
-        .setDisplaySize(58, 58).setTint(f.accent).setDepth(5);
-      this.scene.tweens.add({
-        targets: aro, alpha: { from: 0.45, to: 1 },
-        duration: 1200, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-      });
-      this.scene.add.text(punto.x, punto.y + 34, f.short, {
-        fontFamily: 'Consolas, monospace', fontSize: '12px', color: '#b9b2a0',
-      }).setOrigin(0.5).setAlpha(0.75).setDepth(5);
+      const libres = this.disponiblesDe(key);
+      if (libres.length === 0) continue;
 
-      this.dadores.push({ faccion: key, x: punto.x, y: punto.y, aro });
+      libres.slice(0, 2).forEach((mision, i) => {
+        const zona = f.zones[i % f.zones.length];
+        const punto = this.puntoFijoEnZona(zona, mision.id);
+        if (!punto) return;
+
+        const objetos = [];
+        // haz de luz: varios circulos que se estrechan, mas el resplandor
+        for (let c = 0; c < 5; c++) {
+          objetos.push(
+            this.scene.add.circle(punto.x, punto.y, 30 - c * 5, f.accent, 0.1 + c * 0.03)
+              .setDepth(4 + c)
+          );
+        }
+        const halo = this.scene.add.image(punto.x, punto.y, 'lamp')
+          .setDisplaySize(150, 150)
+          .setTint(f.accent)
+          .setBlendMode(Phaser.BlendModes.ADD)
+          .setAlpha(0.5)
+          .setDepth(3);
+        objetos.push(halo);
+        this.scene.tweens.add({
+          targets: halo, alpha: { from: 0.25, to: 0.6 },
+          duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+        });
+
+        const marca = this.scene.add.image(punto.x, punto.y, 'px')
+          .setDisplaySize(13, 20).setTint(0xf2efe6).setDepth(10);
+        objetos.push(marca);
+        this.scene.tweens.add({
+          targets: marca, y: punto.y - 8,
+          duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+        });
+
+        objetos.push(
+          this.scene.add.text(punto.x, punto.y + 26, f.short, {
+            fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: '#e6e1d4',
+          }).setOrigin(0.5).setAlpha(0.8).setDepth(10)
+        );
+
+        this.dadores.push({
+          faccion: key, mision, x: punto.x, y: punto.y, objetos,
+        });
+      });
     }
   }
 
@@ -55,10 +96,12 @@ export class MissionSystem {
   // aprendertelo). Los objetivos, en cambio, tienen que salir sorteados y
   // lejos de donde estas: antes devolvia siempre el mismo punto y el objetivo
   // caia encima del propio dador, asi que la mision se cumplia sola.
-  puntoFijoEnZona(zona) {
+  puntoFijoEnZona(zona, semilla = '') {
     const spots = this.map.sidewalkSpots.filter((s) => this.map.zoneAt(s.x, s.y) === zona);
     if (spots.length === 0) return null;
-    return spots[Math.floor(spots.length / 2)];
+    let h = 7;
+    for (let i = 0; i < semilla.length; i++) h = (h * 31 + semilla.charCodeAt(i)) >>> 0;
+    return spots[h % spots.length];
   }
 
   puntoEnZona(zona, lejosDe = null, minDist = 420) {
@@ -97,20 +140,12 @@ export class MissionSystem {
     const dador = this.dadorCerca(x, y);
     if (!dador) return false;
 
-    const lista = this.disponiblesDe(dador.faccion);
-    if (lista.length === 0) {
-      EventBus.emit(EVT.NOTIFY, {
-        text: `${FACTIONS[dador.faccion].short}: hoy no hay nada para ti`,
-        tone: 'dim',
-      });
-      return true;
-    }
-
-    this.empezar(lista[0]);
+    this.empezar(dador.mision);
     return true;
   }
 
   empezar(def) {
+    for (const d of this.dadores) d.objetos.forEach((o) => o.setVisible(false));
     this.activa = {
       def,
       paso: 0,
@@ -299,6 +334,7 @@ export class MissionSystem {
       color: '#8fd694',
     });
     EventBus.emit(EVT.MISSION_END, { mision: def, ok: true });
+    this.refrescarDadores();
   }
 
   fallar(motivo) {
@@ -315,6 +351,7 @@ export class MissionSystem {
       color: '#d9584a',
     });
     EventBus.emit(EVT.MISSION_END, { mision: def, ok: false, motivo });
+    this.refrescarDadores();
   }
 
   abortar(motivo) {

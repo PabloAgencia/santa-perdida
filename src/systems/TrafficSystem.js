@@ -73,7 +73,7 @@ export class TrafficSystem {
       this.cars.push({
         vehicle,
         edge,
-        limit: vehicle.stats.maxSpeed * (0.42 + Math.random() * 0.18),
+        limit: vehicle.stats.maxSpeed * (0.52 + Math.random() * 0.2),
       });
     }
   }
@@ -87,9 +87,16 @@ export class TrafficSystem {
       if (!car.edge) return;
     }
 
-    const goal = this.net.exitPoint(car.edge);
-    const blocked =
-      forwardBlocked(v, this.scene.vehicles) || peopleAhead(v, people || []);
+    // Apuntar al final del tramo hace que el coche corte por el centro de la
+    // calle. Se apunta a un punto del carril un poco por delante, asi va
+    // pegado a su lado como un coche de verdad.
+    const goal = this.puntoDelCarril(car, v);
+
+    // Un coche delante SI es para frenar. Un peaton cruzando es para levantar
+    // el pie, no para clavarse: si no, la ciudad entera se atasca en cadena.
+    const cocheDelante = forwardBlocked(v, this.scene.vehicles);
+    const genteDelante = peopleAhead(v, people || []);
+    const limite = genteDelante ? car.limit * 0.3 : car.limit;
 
     // Desatasco: si lleva un rato sin avanzar es que se ha quedado clavado
     // contra algo. Da marcha atras un momento y coge otra salida.
@@ -106,7 +113,23 @@ export class TrafficSystem {
       return;
     }
 
-    v.update(dt, steerTo(v, goal.x, goal.y, car.limit, blocked));
+    v.update(dt, steerTo(v, goal.x, goal.y, limite, cocheDelante));
+  }
+
+  // proyecta el coche sobre su carril y devuelve un punto por delante
+  puntoDelCarril(car, v) {
+    const e = car.edge;
+    const a = this.net.entryPoint(e);
+    const b = this.net.exitPoint(e);
+    const largo = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+
+    let t = ((v.x - a.x) * (b.x - a.x) + (v.y - a.y) * (b.y - a.y)) / (largo * largo);
+    t = Phaser.Math.Clamp(t, 0, 1);
+
+    // cuanto mas rapido va, mas lejos mira: si no, hace eses
+    const vista = Phaser.Math.Clamp(70 + v.speed * 0.55, 70, 230) / largo;
+    const t2 = Math.min(1, t + vista);
+    return { x: a.x + (b.x - a.x) * t2, y: a.y + (b.y - a.y) * t2 };
   }
 
   clear() {

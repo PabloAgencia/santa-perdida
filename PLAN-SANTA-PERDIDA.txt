@@ -498,6 +498,45 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
      - TRAFICO CON DESATASCO: si un coche lleva 2,2 s sin avanzar, da marcha
        atras girando y a los 3,4 s coge otra salida.
 
+  DUODECIMA TANDA: la culpa de los atropellos, temblores y marcadores
+     - FALLO GORDO: estando QUIETO subia tu nivel de busca hasta 3 y te
+       detenian. La causa: los coches del TRAFICO atropellaban peatones y
+       `PED_HIT` no decia quien lo habia hecho, asi que el marron se lo comia
+       siempre el jugador. Ahora el aviso lleva `culpaDelJugador` y solo te
+       penaliza lo que haces tu. Medido: un minuto quieto, nivel de busca 0.
+     - MISMO FALLO DE FAMILIA CON LA PANTALLA: temblaba por choques del
+       trafico al otro lado de la ciudad. Ahora solo tiembla si el golpe es
+       tuyo, con la mitad de intensidad, y el ruido de choque ajeno se oye
+       mas bajo cuanto mas lejos esta. Medido: un minuto quieto, 0 temblores.
+     - NADA FORZADO AL EMPEZAR: se acabo el encargo automatico. Ahora hay
+       MARCADORES DE MISION repartidos por la ciudad, con su haz de luz del
+       color de la banda y su rombo flotando, y entras a decidir si aceptas.
+       Al cumplir o fallar una, los marcadores se recalculan. Los encargos de
+       reparto se piden con J cuando te apetezca.
+     - FAROLAS mucho mas discretas: brazo de 17 px en vez de 34, foco y luz
+       mas pequeños, radio de choque de 5 px en vez de 8, y plantadas 104 px
+       del eje comprobando que NI EL POSTE NI LA PUNTA DEL BRAZO tocan el
+       asfalto. Medido: 310 farolas, 0 sobre calzada.
+     - TRAFICO MAS FLUIDO Y CON CARRIL: ahora se proyecta el coche sobre su
+       carril y se apunta a un punto por delante (mas lejos cuanto mas rapido
+       va), asi no corta por el centro ni hace eses. Y un peaton cruzando ya
+       no es motivo para clavar el freno, solo para levantar el pie: frenar
+       en seco atascaba la ciudad en cadena.
+       De 19 km/h de media a 42, con solo un 17% parados y un 0,8% fuera de
+       la calzada.
+     - PEATONES: en el A* pisar asfalto cuesta seis veces mas, asi que van
+       por la acera y solo cruzan cuando hace falta.
+     - TODO EL TEXTO EN PRICEDOWN y con borde negro proporcional al tamaño.
+       (Ojo: Pricedown es una fuente de titulares; en tamaños pequeños se lee
+       peor que la monoespaciada de antes. El borde compensa bastante, pero
+       si algun texto pequeño cansa, se cambia solo ese.)
+
+  AVISO DE PROCESO: la edicion con expresion regular para meter el borde a
+  todos los textos rompio dos ficheros, porque cortaba en la primera coma y
+  esa coma iba dentro de las comillas del nombre de la fuente. Se detecto
+  pasando `node --check` a todos los ficheros. Conviene hacer esa comprobacion
+  siempre despues de una edicion masiva.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

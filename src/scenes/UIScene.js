@@ -2,7 +2,8 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { GameState } from '../core/GameState.js';
 import { COLORS, TILE } from '../config/balance.js';
 
-const FONT = 'Consolas, "Courier New", monospace';
+// Pablo lo quiere todo en Pricedown, sin excepciones
+const FONT = 'Pricedown, Anton, Impact, sans-serif';
 const TITULO = 'Pricedown, Anton, Impact, sans-serif';
 
 export class UIScene extends Phaser.Scene {
@@ -23,19 +24,19 @@ export class UIScene extends Phaser.Scene {
       .setAlpha(0.45);
 
     this.moneyText = this.add.text(16, 14, '', {
-      fontFamily: TITULO, fontSize: '36px', color: COLORS.money,
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '36px', color: COLORS.money,
     });
 
     this.deliveriesText = this.add.text(18, 50, '', {
-      fontFamily: FONT, fontSize: '14px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     });
 
     this.objectiveText = this.add.text(w / 2, 20, '', {
-      fontFamily: FONT, fontSize: '19px', color: COLORS.objective,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '19px', color: COLORS.objective,
     }).setOrigin(0.5, 0);
 
     this.distanceText = this.add.text(w / 2, 46, '', {
-      fontFamily: FONT, fontSize: '15px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '15px', color: COLORS.dim,
     }).setOrigin(0.5, 0);
 
     this.arrow = this.add.image(0, 0, 'arrow').setVisible(false).setAlpha(0.9);
@@ -52,10 +53,10 @@ export class UIScene extends Phaser.Scene {
       .setTint(0x000000)
       .setAlpha(0.45);
     this.speedText = this.add.text(-16, -58, '', {
-      fontFamily: FONT, fontSize: '26px', color: COLORS.ink,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '26px', color: COLORS.ink,
     }).setOrigin(1, 0);
     this.vehicleName = this.add.text(-16, -28, '', {
-      fontFamily: FONT, fontSize: '13px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(1, 0);
     this.hpBarBg = this.add.image(-16, -14, 'px')
       .setOrigin(1, 1).setDisplaySize(198, 6).setTint(0x3a3f45);
@@ -64,7 +65,7 @@ export class UIScene extends Phaser.Scene {
     this.vehiclePanel.add([panelBg, this.speedText, this.vehicleName, this.hpBarBg, this.hpBar]);
 
     this.helpText = this.add.text(16, h - 22, '', {
-      fontFamily: FONT, fontSize: '14px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0, 1);
     this.helpText.setText(
       'WASD mover  ·  SHIFT correr  ·  E coche  ·  ESPACIO freno de mano  ·  K guardar  ·  M sonido'
@@ -134,7 +135,7 @@ export class UIScene extends Phaser.Scene {
       );
     }
     this.wantedLabel = this.add.text(w - 16 - 66, 36, 'BUSCA', {
-      fontFamily: FONT, fontSize: '12px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
     }).setOrigin(1, 0);
   }
 
@@ -143,10 +144,10 @@ export class UIScene extends Phaser.Scene {
     const velo = this.add.image(0, 0, 'px')
       .setDisplaySize(w, 190).setTint(0x000000).setAlpha(0.72);
     this.bigTitle = this.add.text(0, -26, '', {
-      fontFamily: TITULO, fontSize: '62px', color: '#d9584a',
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 8, fontSize: '62px', color: '#d9584a',
     }).setOrigin(0.5);
     this.bigSub = this.add.text(0, 30, '', {
-      fontFamily: FONT, fontSize: '19px', color: COLORS.ink,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '19px', color: COLORS.ink,
     }).setOrigin(0.5);
     this.bigBox.add([velo, this.bigTitle, this.bigSub]);
   }
@@ -162,7 +163,7 @@ export class UIScene extends Phaser.Scene {
 
   buildTerritory() {
     this.territoryText = this.add.text(this.mapX, this.mapY + this.mapH + 6, '', {
-      fontFamily: FONT, fontSize: '13px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0, 0);
   }
 
@@ -184,7 +185,7 @@ export class UIScene extends Phaser.Scene {
     this.healthBar = this.add.image(16, h - 46, 'px')
       .setOrigin(0, 1).setDisplaySize(210, 8).setTint(0x8fd694);
     this.healthLabel = this.add.text(16, h - 62, 'SALUD', {
-      fontFamily: FONT, fontSize: '12px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
     }).setOrigin(0, 1);
   }
 
@@ -308,7 +309,7 @@ export class UIScene extends Phaser.Scene {
   notify({ text, tone = 'ink' }) {
     const color = COLORS[tone] || COLORS.ink;
     const label = this.add.text(16, 0, text, {
-      fontFamily: FONT, fontSize: '17px', color,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '17px', color,
     }).setAlpha(0);
 
     this.notices.unshift(label);

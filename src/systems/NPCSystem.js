@@ -24,7 +24,7 @@ export class NPCSystem {
     this.pathfinder = new Pathfinder(map);
   }
 
-  update(dt, focusX, focusY, vehicles, player = null, onFoot = false) {
+  update(dt, focusX, focusY, vehicles, player = null, onFoot = false, playerVehicle = null) {
     this.cull(focusX, focusY);
     this.topUp(focusX, focusY);
     this.updateHostility(focusX, focusY, onFoot);
@@ -33,7 +33,7 @@ export class NPCSystem {
       p.update(dt, this.map.sidewalkSpots);
     }
 
-    this.checkVehicles(vehicles);
+    this.checkVehicles(vehicles, playerVehicle);
     if (player && onFoot) this.checkAttacks(player);
   }
 
@@ -98,7 +98,7 @@ export class NPCSystem {
     }
   }
 
-  checkVehicles(vehicles) {
+  checkVehicles(vehicles, playerVehicle = null) {
     for (const v of vehicles) {
       const speed = v.speed;
       if (speed < 45) continue;
@@ -120,7 +120,12 @@ export class NPCSystem {
         if (hit && speed > 70) {
           const mortal = speed > 155;
           p.knockDown(mortal);
-          EventBus.emit(EVT.PED_HIT, { pedestrian: p, vehicle: v, speed, fatal: mortal });
+          // quien lo hizo importa: antes, un coche del trafico atropellaba a
+          // alguien y el marron se lo comia el jugador
+          EventBus.emit(EVT.PED_HIT, {
+            pedestrian: p, vehicle: v, speed, fatal: mortal,
+            culpaDelJugador: v === playerVehicle,
+          });
         } else if (!hit) {
           p.flee(v.x, v.y, 2.2);
         }

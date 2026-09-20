@@ -4,7 +4,8 @@ import { Audio } from '../core/Audio.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER } from '../config/balance.js';
 
-const FONT = 'Consolas, "Courier New", monospace';
+// Pablo lo quiere todo en Pricedown, sin excepciones
+const FONT = 'Pricedown, Anton, Impact, sans-serif';
 const TITULO = 'Pricedown, Anton, Impact, sans-serif';
 
 // Interior del escondite: una habitacion pequeña con un punto de guardado,
@@ -42,7 +43,7 @@ export class HideoutScene extends Phaser.Scene {
       .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.5);
 
     this.add.text(s.x + s.w / 2, s.y + 26, 'TU ESCONDITE', {
-      fontFamily: TITULO, fontSize: '30px', color: '#c8965a',
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px', color: '#c8965a',
     }).setOrigin(0.5);
 
     // punto de guardado
@@ -58,7 +59,7 @@ export class HideoutScene extends Phaser.Scene {
     this.add.image(this.save.x, this.save.y, 'px')
       .setDisplaySize(18, 6).setTint(0x8fd694);
     this.add.text(this.save.x, this.save.y + 46, 'GUARDAR', {
-      fontFamily: FONT, fontSize: '13px', color: COLORS.money,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.money,
     }).setOrigin(0.5);
 
     // puerta de salida
@@ -66,7 +67,7 @@ export class HideoutScene extends Phaser.Scene {
     this.add.image(this.puerta.x, this.puerta.y, 'px')
       .setDisplaySize(72, 12).setTint(0x6b4a2f);
     this.add.text(this.puerta.x, this.puerta.y + 22, 'SALIR', {
-      fontFamily: FONT, fontSize: '13px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
     this.jugador = this.add.image(s.x + s.w / 2, s.y + s.h - 70, 'player-0');
@@ -74,11 +75,11 @@ export class HideoutScene extends Phaser.Scene {
     this.py = this.jugador.y;
 
     this.aviso = this.add.text(w / 2, h - 48, '', {
-      fontFamily: FONT, fontSize: '16px', color: COLORS.ink,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: COLORS.ink,
     }).setOrigin(0.5);
 
     this.add.text(w / 2, h - 24, 'WASD para moverte  ·  E sobre el icono', {
-      fontFamily: FONT, fontSize: '13px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
     this.keys = this.input.keyboard.addKeys({

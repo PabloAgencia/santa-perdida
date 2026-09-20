@@ -89,8 +89,9 @@ export class CityScene extends Phaser.Scene {
       if (v) this.enterVehicle(v);
     }
 
+    // No se empieza con nada encima: la ciudad es tuya y tu decides. Los
+    // encargos se piden con J y las misiones se cogen en sus marcadores.
     if (loaded && GameState.job) this.jobs.restore(GameState.job);
-    if (!this.jobs.active) this.jobs.offerNew({ x: this.player.x, y: this.player.y });
 
     this.drawStreetLights();
     this.drawStreetProps();
@@ -197,7 +198,7 @@ export class CityScene extends Phaser.Scene {
           .setDepth(-1040);
         this.add
           .text(b.px, b.py, 'ESCONDITE', {
-            fontFamily: 'Consolas, monospace',
+            fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2,
             fontSize: '13px',
             color: '#e8c9a0',
           })
@@ -313,7 +314,7 @@ export class CityScene extends Phaser.Scene {
 
       this.add
         .text(L.px, L.py + L.ph / 2 + 22, L.label.toUpperCase(), {
-          fontFamily: 'Consolas, monospace',
+          fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2,
           fontSize: '15px',
           color: '#b9b2a0',
         })
@@ -485,7 +486,7 @@ export class CityScene extends Phaser.Scene {
   drawStreetLights() {
     // las farolas van en la ACERA, al borde de la calzada. La calle mide 5
     // casillas (160 px), asi que el poste se planta algo mas alla del borde.
-    const BORDE = 94;
+    const BORDE = 104;
     const puntos = [];
 
     for (const e of this.net.edges) {
@@ -500,8 +501,13 @@ export class CityScene extends Phaser.Scene {
           const y = cy + e.ry * BORDE * lado;
           if (this.map.isRoadPoint(x, y)) continue;
           if (this.map.isSolidPoint(x, y)) continue;
-          // el brazo apunta hacia el centro de la calle
-          puntos.push({ x, y, haciaCalle: Math.atan2(-e.ry * lado, -e.rx * lado) });
+          // ni el poste ni la punta del brazo pueden quedar sobre la calzada:
+          // ahi es donde estorbaban a los coches
+          const haciaCalle = Math.atan2(-e.ry * lado, -e.rx * lado);
+          const puntaX = x + Math.cos(haciaCalle) * 17;
+          const puntaY = y + Math.sin(haciaCalle) * 17;
+          if (this.map.isRoadPoint(puntaX, puntaY)) continue;
+          puntos.push({ x, y, haciaCalle });
         }
       }
     }
@@ -580,9 +586,20 @@ export class CityScene extends Phaser.Scene {
   setupEvents() {
     this.onBeforeSave = () => this.captureState();
     this.onCrash = ({ vehicle, impact }) => {
-      GameState.bumpStat('crashes', 1);
-      this.cameras.main.shake(180, Math.min(0.012, impact * 0.00004));
-      Audio.crash(impact / 320);
+      // Solo tiembla la pantalla si el golpe es TUYO o te pilla al lado.
+      // Antes temblaba por cualquier choque del trafico al otro lado de la
+      // ciudad, y sonaba igual de fuerte estuviera donde estuviera.
+      const mio = vehicle === this.drivingVehicle;
+      const dist = Phaser.Math.Distance.Between(vehicle.x, vehicle.y, this.player.x, this.player.y);
+      const cerca = Math.max(0, 1 - dist / 700);
+
+      if (mio) {
+        GameState.bumpStat('crashes', 1);
+        this.cameras.main.shake(150, Math.min(0.007, impact * 0.000022));
+        Audio.crash(impact / 360);
+      } else if (cerca > 0) {
+        Audio.crash((impact / 360) * cerca * 0.5);
+      }
 
       if (vehicle === this.drivingVehicle && impact > 210) {
         GameState.damage((impact - 210) * 0.05, 'choque');
@@ -606,11 +623,15 @@ export class CityScene extends Phaser.Scene {
     this.onJobStage = () => Audio.pickup();
     this.onJobStarted = () => Audio.newJob();
 
-    this.onPedHit = ({ pedestrian, speed, fatal }) => {
+    this.onPedHit = ({ pedestrian, speed, fatal, culpaDelJugador }) => {
       this.npcs.scare(pedestrian.x, pedestrian.y, fatal ? 420 : 300);
+
+      // un atropello del trafico asusta a la gente, pero no es asunto tuyo
+      if (!culpaDelJugador) return;
+
       this.police.report(pedestrian.x, pedestrian.y, fatal ? 2 : 1);
       Audio.crash(Math.min(0.7, speed / 400));
-      this.cameras.main.shake(fatal ? 260 : 150, fatal ? 0.009 : 0.005);
+      this.cameras.main.shake(fatal ? 180 : 110, fatal ? 0.005 : 0.003);
       EventBus.emit(EVT.NOTIFY, {
         text: fatal ? 'Te lo has llevado por delante' : 'Has atropellado a alguien',
         tone: 'danger',
@@ -758,7 +779,8 @@ export class CityScene extends Phaser.Scene {
 
     resolveVehicleCollisions(this.vehicles);
     this.npcs.update(
-      dt, this.player.x, this.player.y, this.vehicles, this.player, !this.drivingVehicle
+      dt, this.player.x, this.player.y, this.vehicles, this.player,
+      !this.drivingVehicle, this.drivingVehicle
     );
     this.police.update(dt, this.player, this.drivingVehicle);
     this.factions.update(dt, this.player.x, this.player.y);
@@ -779,11 +801,8 @@ export class CityScene extends Phaser.Scene {
 
     this.jobs.update(dt, this.player.x, this.player.y);
 
-    if (!this.jobs.active) {
-      this.jobCooldown -= dt;
-      if (this.jobCooldown <= 0 || Phaser.Input.Keyboard.JustDown(k.newJob)) {
-        this.jobs.offerNew({ x: this.player.x, y: this.player.y });
-      }
+    if (!this.jobs.active && Phaser.Input.Keyboard.JustDown(k.newJob)) {
+      this.jobs.offerNew({ x: this.player.x, y: this.player.y });
     }
 
     this.updateCamera(dt);
@@ -866,7 +885,7 @@ export class CityScene extends Phaser.Scene {
             v.vy *= 0.72;
             v.hp = Math.max(0, v.hp - 6);
             Audio.crash(0.4);
-            if (v === this.drivingVehicle) this.cameras.main.shake(160, 0.006);
+            if (v === this.drivingVehicle) this.cameras.main.shake(130, 0.0035);
           }
         } else {
           // despacio no la tiras: rebotas
@@ -912,7 +931,7 @@ export class CityScene extends Phaser.Scene {
             this.player.x + Math.cos(a) * 24,
             this.player.y + Math.sin(a) * 24
           );
-          this.cameras.main.shake(140, 0.008);
+          this.cameras.main.shake(120, 0.004);
           Audio.crash(0.45);
           GameState.damage(v.speed * 0.14, 'atropello');
           return;

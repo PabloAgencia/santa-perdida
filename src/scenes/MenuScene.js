@@ -3,7 +3,8 @@ import { GameState } from '../core/GameState.js';
 import { Audio } from '../core/Audio.js';
 import { COLORS } from '../config/balance.js';
 
-const FONT = 'Consolas, "Courier New", monospace';
+// Pablo lo quiere todo en Pricedown, sin excepciones
+const FONT = 'Pricedown, Anton, Impact, sans-serif';
 const TITULO = 'Pricedown, Anton, Impact, sans-serif';
 
 export class MenuScene extends Phaser.Scene {
@@ -34,11 +35,11 @@ export class MenuScene extends Phaser.Scene {
     }
 
     const titulo = this.add.text(w / 2, h * 0.3, 'S A N T A   P E R D I D A', {
-      fontFamily: TITULO, fontSize: '76px', color: '#e8b54a',
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 10, fontSize: '76px', color: '#e8b54a',
     }).setOrigin(0.5).setAlpha(0);
 
     this.add.text(w / 2, h * 0.3 + 52, 'aqui nadie pregunta de donde vienes', {
-      fontFamily: FONT, fontSize: '16px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: COLORS.dim,
     }).setOrigin(0.5);
 
     this.tweens.add({ targets: titulo, alpha: 1, duration: 1100, ease: 'Sine.out' });
@@ -57,7 +58,7 @@ export class MenuScene extends Phaser.Scene {
     this.items = this.opciones.map((op, i) => {
       const activo = !op.requiereSave || this.haySave;
       return this.add.text(w / 2, h * 0.56 + i * 44, op.label, {
-        fontFamily: TITULO, fontSize: '30px',
+        fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px',
         color: activo ? COLORS.ink : '#4a463e',
       }).setOrigin(0.5).setInteractive({ useHandCursor: activo })
         .on('pointerover', () => { if (activo) { this.indice = i; this.pintar(); } })
@@ -65,11 +66,11 @@ export class MenuScene extends Phaser.Scene {
     });
 
     this.cursor = this.add.text(0, 0, '>', {
-      fontFamily: FONT, fontSize: '24px', color: '#e8b54a',
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '24px', color: '#e8b54a',
     }).setOrigin(0.5);
 
     this.ayuda = this.add.text(w / 2, h - 34, 'Flechas o raton para elegir  ·  ENTER para entrar', {
-      fontFamily: FONT, fontSize: '14px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0.5);
 
     this.pintar();
@@ -164,7 +165,7 @@ export class MenuScene extends Phaser.Scene {
     const fondo = this.add.image(0, 0, 'px')
       .setDisplaySize(560, 260).setTint(0x0d1014).setAlpha(0.95);
     const cuerpo = this.add.text(0, 0, texto, {
-      fontFamily: FONT, fontSize: '16px', color: COLORS.ink, align: 'left', lineSpacing: 8,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: COLORS.ink, align: 'left', lineSpacing: 8,
     }).setOrigin(0.5);
     this.panel.add([fondo, cuerpo]);
   }

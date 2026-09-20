@@ -69,7 +69,10 @@ export class Pathfinder {
         const nk = idx(nx, ny);
         if (cerrados.has(nk)) continue;
 
-        const g = actual.g + coste;
+        // pisar asfalto sale caro: la gente va por la acera y solo cruza
+        // cuando no queda otra, en vez de caminar por mitad de la calzada
+        const asfalto = this.map.isRoadPoint((nx + 0.5) * TILE, (ny + 0.5) * TILE);
+        const g = actual.g + coste * (asfalto ? 6 : 1);
         if (mejor.has(nk) && mejor.get(nk) <= g) continue;
         mejor.set(nk, g);
         abiertos.push({ x: nx, y: ny, g, f: g + heur(nx, ny), padre: actual });

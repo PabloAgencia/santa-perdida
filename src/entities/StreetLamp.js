@@ -1,4 +1,4 @@
-const RADIO = 8;
+const RADIO = 5;
 
 // Farola con cuerpo: base en la acera, brazo sobre la calzada y foco al final.
 // Se puede tirar con el coche, y si cae se apaga.
@@ -13,37 +13,37 @@ export class StreetLamp {
 
     const cos = Math.cos(angleHaciaCalle);
     const sin = Math.sin(angleHaciaCalle);
-    const brazo = 34;
+    const brazo = 17;
     this.headX = x + cos * brazo;
     this.headY = y + sin * brazo;
 
     this.light = scene.add.image(this.headX, this.headY, 'lamp')
-      .setDisplaySize(170, 170)
+      .setDisplaySize(118, 118)
       .setBlendMode(Phaser.BlendModes.ADD)
-      .setAlpha(0.42)
+      .setAlpha(0.34)
       .setDepth(-900);
 
     this.sombra = scene.add.image(x + 3, y + 4, 'px')
-      .setDisplaySize(brazo + 16, 9)
+      .setDisplaySize(brazo + 9, 5)
       .setTint(0x05060a).setAlpha(0.4)
       .setRotation(angleHaciaCalle)
       .setOrigin(0.2, 0.5)
       .setDepth(-880);
 
     this.arm = scene.add.image(x, y, 'px')
-      .setDisplaySize(brazo, 5)
+      .setDisplaySize(brazo, 3)
       .setTint(0x2a2e35)
       .setRotation(angleHaciaCalle)
       .setOrigin(0, 0.5)
       .setDepth(-870);
 
     this.base = scene.add.image(x, y, 'px')
-      .setDisplaySize(11, 11)
+      .setDisplaySize(7, 7)
       .setTint(0x1b1f25)
       .setDepth(-869);
 
     this.head = scene.add.image(this.headX, this.headY, 'px')
-      .setDisplaySize(13, 8)
+      .setDisplaySize(8, 5)
       .setTint(0xf2dfa8)
       .setRotation(angleHaciaCalle)
       .setDepth(-868);
@@ -63,8 +63,8 @@ export class StreetLamp {
     });
     this.scene.tweens.add({
       targets: this.head,
-      x: this.x + Math.cos(caida) * 34,
-      y: this.y + Math.sin(caida) * 34,
+      x: this.x + Math.cos(caida) * 17,
+      y: this.y + Math.sin(caida) * 17,
       duration: 380,
       ease: 'Bounce.out',
     });
