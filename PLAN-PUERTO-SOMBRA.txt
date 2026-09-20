@@ -220,7 +220,21 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
   - Escrito este plan.
   - Fase 1 practicamente terminada en una sesion.
 
-  COMO JUGAR:
+  DONDE ESTA PUBLICADO (20-sep-2026):
+     Enlace bueno:  https://pabloagencia.github.io/puerto-sombra/
+     Repo:          https://github.com/PabloAgencia/puerto-sombra (publico)
+     Para actualizarlo: git push. Nada mas. GitHub Pages lo republica solo.
+
+     POR QUE GITHUB PAGES Y NO CLOUDFLARE: se probo Cloudflare Pages
+     (puerto-sombra.pages.dev) y quedo desplegado y funcionando, pero desde
+     la red de Pablo da timeout por el bloqueo de IPs de Cloudflare (el
+     mismo que tumbo las webs de Creskio). GitHub Pages sirve desde IPs
+     185.199.x y aguanta 24/7, igual que lumiere.creskio.com.
+     El repo se hizo publico porque GitHub Pages gratis solo sirve repos
+     publicos. No hay nada sensible dentro: es codigo de navegador, sin
+     claves ni backend.
+
+  COMO JUGAR EN LOCAL:
      1. Abrir una terminal en E:\Escritorio\GTA PRUEBA
      2. node serve.js
      3. Abrir http://localhost:5174
