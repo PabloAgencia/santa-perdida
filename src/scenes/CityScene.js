@@ -466,10 +466,18 @@ export class CityScene extends Phaser.Scene {
       });
       if (pedestrian.faction) this.factions.onMemberHurt(pedestrian.faction);
     };
+    this.onHideoutExit = () => {
+      // se sale a la puerta, y se comprueba que el sitio este libre
+      if (this.hideoutDoor) this.player.setPosition(this.hideoutDoor.x, this.hideoutDoor.y);
+      this.player.setVisible(true);
+      this.hurtCooldown = 1.5;
+      this.cameras.main.fadeIn(420, 0, 0, 0);
+    };
     this.onDead = () => this.respawn('muerto');
     this.onBusted = () => this.respawn('busted');
 
     EventBus.on(EVT.PED_HIT, this.onPedHit);
+    EventBus.on(EVT.HIDEOUT_EXIT, this.onHideoutExit);
     EventBus.on(EVT.PLAYER_DEAD, this.onDead);
     EventBus.on(EVT.PLAYER_BUSTED, this.onBusted);
 
@@ -486,6 +494,7 @@ export class CityScene extends Phaser.Scene {
       EventBus.off(EVT.JOB_STAGE, this.onJobStage);
       EventBus.off(EVT.JOB_STARTED, this.onJobStarted);
       EventBus.off(EVT.PED_HIT, this.onPedHit);
+      EventBus.off(EVT.HIDEOUT_EXIT, this.onHideoutExit);
       EventBus.off(EVT.PLAYER_DEAD, this.onDead);
       EventBus.off(EVT.PLAYER_BUSTED, this.onBusted);
     });
@@ -804,7 +813,33 @@ export class CityScene extends Phaser.Scene {
   drawHideoutMarker() {
     const h = this.map.hideout;
     if (!h) return;
-    this.hideoutDoor = { x: h.px, y: h.py + h.ph / 2 + 26 };
+
+    // La puerta se pone en el lado que da a la calle y en sitio LIBRE. Antes
+    // se plantaba 26 px por debajo a ciegas y caia dentro del edificio de al
+    // lado: al salir del escondite aparecias encajado en una pared.
+    const candidatos = [];
+    for (const dist of [24, 34, 46, 60]) {
+      candidatos.push(
+        { x: h.px, y: h.py + h.ph / 2 + dist },
+        { x: h.px, y: h.py - h.ph / 2 - dist },
+        { x: h.px + h.pw / 2 + dist, y: h.py },
+        { x: h.px - h.pw / 2 - dist, y: h.py }
+      );
+    }
+
+    let mejor = null;
+    for (const c of candidatos) {
+      if (this.map.isSolidBox(c.x, c.y, 14, 14)) continue;
+      // mejor aun si mira a la calle
+      if (this.map.isRoadPoint(c.x, c.y)) continue;
+      mejor = c;
+      break;
+    }
+    if (!mejor) {
+      mejor = candidatos.find((c) => !this.map.isSolidBox(c.x, c.y, 14, 14)) || candidatos[0];
+    }
+
+    this.hideoutDoor = mejor;
 
     const aro = this.add.image(this.hideoutDoor.x, this.hideoutDoor.y, 'ring')
       .setDisplaySize(64, 64).setTint(0xe8b54a).setDepth(6);

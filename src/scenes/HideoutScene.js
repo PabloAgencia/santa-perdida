@@ -86,6 +86,7 @@ export class HideoutScene extends Phaser.Scene {
       upA: 'UP', downA: 'DOWN', leftA: 'LEFT', rightA: 'RIGHT', usar: 'E',
     });
 
+    this.confirmacion = 0;
     this.cameras.main.fadeIn(420, 0, 0, 0);
     GameState.heal(100);
   }
@@ -129,15 +130,25 @@ export class HideoutScene extends Phaser.Scene {
     const enGuardar = Phaser.Math.Distance.Between(this.px, this.py, this.save.x, this.save.y) < 42;
     const enPuerta = Phaser.Math.Distance.Between(this.px, this.py, this.puerta.x, this.puerta.y) < 46;
 
-    this.aviso.setText(
-      enGuardar ? 'E para guardar la partida' : enPuerta ? 'E para salir a la calle' : ''
-    );
+    // el mensaje de confirmacion aguanta unos segundos; antes lo pisaba el
+    // texto de ayuda en el fotograma siguiente y no se llegaba a ver
+    if (this.confirmacion > 0) {
+      this.confirmacion -= dt;
+    } else {
+      this.aviso.setColor('#e6e1d4');
+      this.aviso.setText(
+        enGuardar ? 'E para guardar la partida' : enPuerta ? 'E para salir a la calle' : ''
+      );
+    }
 
     if (Phaser.Input.Keyboard.JustDown(k.usar)) {
       if (enGuardar) {
-        SaveSystem.save();
+        const ok = SaveSystem.save();
         Audio.notes([523.25, 659.25, 783.99], 0.09);
-        this.aviso.setText('Partida guardada');
+        this.aviso.setColor(ok ? '#8fd694' : '#d9584a');
+        this.aviso.setText(ok ? 'PARTIDA GUARDADA' : 'No se ha podido guardar');
+        this.confirmacion = 2.5;
+        this.destello();
         EventBus.emit(EVT.NOTIFY, { text: 'Partida guardada en el escondite', tone: 'money' });
       } else if (enPuerta) {
         this.salir();
@@ -145,14 +156,30 @@ export class HideoutScene extends Phaser.Scene {
     }
   }
 
+  destello() {
+    this.cameras.main.flash(260, 60, 90, 70);
+    this.tweens.add({
+      targets: this.discoAro,
+      scale: { from: 1.5, to: 1 },
+      duration: 420,
+      ease: 'Back.out',
+    });
+  }
+
   salir() {
+    if (this.saliendo) return;
+    this.saliendo = true;
+
     this.cameras.main.fadeOut(380, 0, 0, 0);
     this.time.delayedCall(400, () => {
-      this.scene.stop();
-      this.scene.resume('CityScene');
+      // primero se devuelve la ciudad y al final se apaga esta escena:
+      // al reves, las ordenes salen de una escena ya parada
       this.scene.setVisible(true, 'CityScene');
+      this.scene.resume('CityScene');
       this.scene.setVisible(true, 'UIScene');
       this.scene.resume('UIScene');
+      EventBus.emit(EVT.HIDEOUT_EXIT, {});
+      this.scene.stop();
     });
   }
 }

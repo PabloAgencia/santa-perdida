@@ -27,6 +27,7 @@ export const EVT = {
   HUD_TICK: 'hud:tick',
   NOTIFY: 'ui:notify',
   BIG_MESSAGE: 'ui:big',
+  HIDEOUT_EXIT: 'hideout:exit',
 
   BEFORE_SAVE: 'save:before',
   AFTER_LOAD: 'save:after-load',

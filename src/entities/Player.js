@@ -56,6 +56,16 @@ export class Player {
     if (dx === 0 && dy === 0) return;
     const nx = this.x + dx;
     const ny = this.y + dy;
+
+    // Red de seguridad: si por lo que sea acabas DENTRO de un muro, se te deja
+    // salir. Sin esto, al prohibir todo movimiento hacia zona solida te
+    // quedabas bloqueado para siempre.
+    if (this.map.isSolidBox(this.x, this.y, this.radius, this.radius)) {
+      this.x = nx;
+      this.y = ny;
+      return;
+    }
+
     if (!this.map.isSolidBox(nx, ny, this.radius, this.radius)) {
       this.x = nx;
       this.y = ny;
