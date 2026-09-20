@@ -24,6 +24,7 @@ export class BootScene extends Phaser.Scene {
     this.makeVehicles();
     this.makePlayer();
     this.makePedestrians();
+    this.makeOfficer();
     this.makeGangs();
     this.makeProps();
     this.scene.start('MenuScene');
@@ -314,6 +315,27 @@ export class BootScene extends Phaser.Scene {
       g.generateTexture(`ped-${i}`, s, s);
       g.destroy();
     });
+  }
+
+  makeOfficer() {
+    const g = this.g();
+    g.fillStyle(0x0a0c10, 1);
+    g.fillRoundedRect(4, 5, 16, 16, 5);
+    g.fillStyle(0x2b3a52, 1);
+    g.fillRoundedRect(5, 6, 14, 14, 4);
+    g.fillStyle(0x3b4e6b, 1);
+    g.fillRoundedRect(6, 8, 10, 10, 3);
+    // chaleco reflectante
+    g.fillStyle(0xd8d3c4, 1);
+    g.fillRect(8, 6, 3, 14);
+    g.fillStyle(0x0a0c10, 1);
+    g.fillCircle(17, 13, 4.8);
+    g.fillStyle(0xc9a882, 1);
+    g.fillCircle(17, 13, 3.8);
+    g.fillStyle(0x1b2436, 1);
+    g.fillCircle(15.6, 13, 3.2);
+    g.generateTexture('officer', 26, 26);
+    g.destroy();
   }
 
   makeGangs() {

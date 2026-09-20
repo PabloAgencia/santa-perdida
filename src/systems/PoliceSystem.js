@@ -2,6 +2,7 @@ import { Vehicle } from '../entities/Vehicle.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { steerTo, forwardBlocked } from './driving.js';
+import { Officer } from '../entities/Officer.js';
 
 export const ESTADO = {
   PATRULLA: 'patrulla',
@@ -22,6 +23,7 @@ const DESPAWN = 2400;
 const SIN_VER_PARA_BAJAR = 9;
 const DETENCION_DIST = 52;
 const TIEMPO_PARA_DETENER = 1.8;
+const BAJARSE_DIST = 210;
 
 export class PoliceSystem {
   constructor(scene, map, network) {
@@ -67,7 +69,8 @@ export class PoliceSystem {
         algunoVe = true;
         this.lastKnown = { x: player.x, y: player.y };
       }
-      this.runUnit(u, dt, player, ve);
+      this.runUnit(u, dt, player, ve, playerVehicle);
+      this.updateOfficer(u, dt, player, playerVehicle, ve);
       this.updateSiren(u, dt);
     }
 
@@ -144,6 +147,7 @@ export class PoliceSystem {
         vehicle, siren, sirenTimer: 0,
         state: ESTADO.BLOQUEO,
         lastSeen: null, timer: 40, edge: null,
+        officer: null, flanco: 0,
         roadblock: true,
       });
     }
@@ -174,7 +178,35 @@ export class PoliceSystem {
 
   // ---------- maquina de estados ----------
 
-  runUnit(u, dt, player, ve) {
+  // si vas a pie y la patrulla ya te tiene cerca, el agente se baja a por ti
+  updateOfficer(u, dt, player, playerVehicle, ve) {
+    const v = u.vehicle;
+
+    if (u.officer) {
+      const dist = u.officer.update(dt, player.x, player.y);
+      // si te subes a un coche o escapas lejos, vuelve al suyo
+      if (playerVehicle || dist > 520 || GameState.wanted === 0) {
+        u.officer.destroy();
+        u.officer = null;
+      }
+      return;
+    }
+
+    if (playerVehicle || u.roadblock) return;
+    if (u.state !== ESTADO.PERSIGUIENDO || !ve) return;
+    if (v.speed > 55) return;
+
+    const dist = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
+    if (dist > BAJARSE_DIST || dist < 30) return;
+
+    const spot = v.findExitSpot();
+    u.officer = new Officer(this.scene, this.map, spot.x, spot.y);
+    v.vx = 0;
+    v.vy = 0;
+    EventBus.emit(EVT.NOTIFY, { text: 'Se han bajado del coche', tone: 'danger' });
+  }
+
+  runUnit(u, dt, player, ve, playerVehicle) {
     const v = u.vehicle;
     u.timer -= dt;
 
@@ -243,7 +275,14 @@ export class PoliceSystem {
         break;
     }
 
-    this.driveUnit(u, dt, player);
+    if (u.officer) {
+      // con el agente fuera, el coche se queda parado
+      u.vehicle.vx = 0;
+      u.vehicle.vy = 0;
+      u.vehicle.syncSprite();
+      return;
+    }
+    this.driveUnit(u, dt, player, playerVehicle);
   }
 
   startChase(u, player) {
@@ -255,7 +294,7 @@ export class PoliceSystem {
     u.timer = 3;
   }
 
-  driveUnit(u, dt, player) {
+  driveUnit(u, dt, player, playerVehicle) {
     const v = u.vehicle;
     let goal = null;
     let limit = v.stats.maxSpeed * 0.5;
@@ -263,6 +302,23 @@ export class PoliceSystem {
     if (u.state === ESTADO.PERSIGUIENDO) {
       goal = u.lastSeen || { x: player.x, y: player.y };
       limit = v.stats.maxSpeed * 0.95;
+
+      // no van todos al mismo punto: cada unidad ataca por un lado y, si
+      // huyes en coche, apuntan a donde VAS a estar, no a donde estas
+      const dist = Phaser.Math.Distance.Between(v.x, v.y, goal.x, goal.y);
+      if (playerVehicle && dist > 220) {
+        goal = {
+          x: goal.x + playerVehicle.vx * 0.55,
+          y: goal.y + playerVehicle.vy * 0.55,
+        };
+      } else if (dist > 90) {
+        const lado = u.flanco * (Math.PI * 2) / 3;
+        const radio = 70;
+        goal = {
+          x: goal.x + Math.cos(lado) * radio,
+          y: goal.y + Math.sin(lado) * radio,
+        };
+      }
     } else if (u.state === ESTADO.INVESTIGANDO || u.state === ESTADO.BUSCANDO) {
       goal = u.lastSeen;
       limit = v.stats.maxSpeed * (u.state === ESTADO.INVESTIGANDO ? 0.85 : 0.6);
@@ -308,6 +364,14 @@ export class PoliceSystem {
 
     let encima = false;
     for (const u of this.units) {
+      // el agente a pie detiene mas de cerca que el coche
+      if (u.officer) {
+        if (Phaser.Math.Distance.Between(u.officer.x, u.officer.y, player.x, player.y) < 34) {
+          encima = true;
+          break;
+        }
+        continue;
+      }
       if (u.state !== ESTADO.PERSIGUIENDO) continue;
       const v = u.vehicle;
       if (v.speed > 90) continue;
@@ -363,6 +427,7 @@ export class PoliceSystem {
     const list = this.scene.vehicles;
     const at = list.indexOf(u.vehicle);
     if (at >= 0) list.splice(at, 1);
+    if (u.officer) u.officer.destroy();
     u.siren.destroy();
     u.vehicle.destroy();
     this.units.splice(i, 1);
@@ -398,6 +463,8 @@ export class PoliceSystem {
         lastSeen: GameState.wanted > 0 && this.lastKnown ? { ...this.lastKnown } : null,
         timer: 14,
         edge,
+        officer: null,
+        flanco: this.units.length % 3,
       });
     }
   }
