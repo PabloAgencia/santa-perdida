@@ -49,6 +49,7 @@ export class CityScene extends Phaser.Scene {
     this.hudTimer = 0;
     this.jobCooldown = 0;
     this.camAhead = new Phaser.Math.Vector2(0, 0);
+    this.respawning = false;
 
     this.drawGround();
     this.drawBuildings();

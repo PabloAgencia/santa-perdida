@@ -86,7 +86,11 @@ export class HideoutScene extends Phaser.Scene {
       upA: 'UP', downA: 'DOWN', leftA: 'LEFT', rightA: 'RIGHT', usar: 'E',
     });
 
+    // OJO: Phaser reutiliza la misma instancia de escena al volver a entrar,
+    // asi que todo lo que no se reinicie aqui se arrastra de la vez anterior.
+    // El cerrojo `saliendo` se quedaba puesto y la segunda salida no iba.
     this.confirmacion = 0;
+    this.saliendo = false;
     this.cameras.main.fadeIn(420, 0, 0, 0);
     GameState.heal(100);
   }

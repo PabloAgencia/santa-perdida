@@ -15,6 +15,8 @@ export class MenuScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
     this.haySave = SaveSystem.hasSave();
+    // la instancia se reutiliza: el panel de la vez anterior ya no existe
+    this.panel = null;
 
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x07080a);
