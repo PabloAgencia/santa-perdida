@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Santa Perdida</title>
 <style>
+  /* Empotrada en el proyecto: el juego tiene que funcionar sin internet */
+  @font-face {
+    font-family: 'Anton';
+    src: url('fonts/anton.woff2') format('woff2');
+    font-weight: 400;
+    font-display: block;
+  }
   :root { color-scheme: dark; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
@@ -24,8 +31,9 @@
     z-index: 10;
   }
   #boot h1 {
-    font-size: clamp(28px, 6vw, 54px);
-    letter-spacing: .3em;
+    font-family: Anton, Impact, sans-serif;
+    font-size: clamp(34px, 8vw, 78px);
+    letter-spacing: .16em;
     font-weight: 400;
     color: #e8b54a;
   }

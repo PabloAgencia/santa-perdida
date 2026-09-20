@@ -26,7 +26,7 @@ export class BootScene extends Phaser.Scene {
     this.makePedestrians();
     this.makeGangs();
     this.makeProps();
-    this.scene.start('CityScene');
+    this.scene.start('MenuScene');
   }
 
   g() {
@@ -359,6 +359,33 @@ export class BootScene extends Phaser.Scene {
     c.fillRect(8, 0, 2, 18);
     c.generateTexture('crate', 18, 18);
     c.destroy();
+
+    // haz de luz: un cono degradado que se pega al morro del coche
+    const beam = this.make.graphics({ x: 0, y: 0, add: false });
+    const pasos = 26;
+    for (let i = 0; i < pasos; i++) {
+      const t = i / pasos;
+      const ancho = 14 + t * 104;
+      const alpha = 0.5 * (1 - t) * (1 - t);
+      beam.fillStyle(0xffdc92, alpha);
+      beam.fillRect(128 - ancho / 2, t * 190, ancho, 190 / pasos + 1);
+    }
+    beam.generateTexture('beam', 256, 200);
+    beam.destroy();
+
+    // farola: charco de luz. Muchos pasos y muy poca opacidad en cada uno,
+    // si no se ven los anillos y parece niebla en vez de luz.
+    const lamp = this.g();
+    const capas = 48;
+    for (let i = capas; i >= 1; i--) {
+      const t = i / capas;
+      lamp.fillStyle(0xffe6a8, 0.014 * (1 - t) * (1 - t) * 3.2);
+      lamp.fillCircle(64, 64, t * 62);
+    }
+    lamp.fillStyle(0xfff3d0, 0.1);
+    lamp.fillCircle(64, 64, 5);
+    lamp.generateTexture('lamp', 128, 128);
+    lamp.destroy();
 
     // destello de la sirena
     const l = this.g();

@@ -6,7 +6,7 @@ import { Player } from '../entities/Player.js';
 import { Vehicle } from '../entities/Vehicle.js';
 import { JobSystem } from '../systems/JobSystem.js';
 import { resolveVehicleCollisions } from '../systems/VehicleCollisions.js';
-import { RoadNetwork } from '../world/RoadNetwork.js';
+import { RoadNetwork, LANE_OFFSET } from '../world/RoadNetwork.js';
 import { TrafficSystem } from '../systems/TrafficSystem.js';
 import { NPCSystem } from '../systems/NPCSystem.js';
 import { PoliceSystem } from '../systems/PoliceSystem.js';
@@ -88,6 +88,7 @@ export class CityScene extends Phaser.Scene {
     if (loaded && GameState.job) this.jobs.restore(GameState.job);
     if (!this.jobs.active) this.jobs.offerNew({ x: this.player.x, y: this.player.y });
 
+    this.drawStreetLights();
     this.setupCamera();
     this.setupInput();
     this.setupEvents();
@@ -328,6 +329,43 @@ export class CityScene extends Phaser.Scene {
     }
   }
 
+  drawStreetLights() {
+    // las farolas van en la ACERA, al borde de la calzada. La calle mide 5
+    // casillas (160 px), asi que el poste se planta algo mas alla del borde.
+    const BORDE = 94;
+    const puntos = [];
+
+    for (const e of this.net.edges) {
+      if (e.from > e.to) continue;
+      for (const t of [0.22, 0.5, 0.78]) {
+        const lane = this.net.pointAlong(e, t);
+        // pointAlong da el punto del CARRIL; hay que volver al eje de la calle
+        const cx = lane.x - e.rx * LANE_OFFSET;
+        const cy = lane.y - e.ry * LANE_OFFSET;
+        for (const lado of [-1, 1]) {
+          const x = cx + e.rx * BORDE * lado;
+          const y = cy + e.ry * BORDE * lado;
+          if (this.map.isRoadPoint(x, y)) continue;
+          if (this.map.isSolidPoint(x, y)) continue;
+          puntos.push({ x, y });
+        }
+      }
+    }
+
+    for (const p of puntos) {
+      this.add.image(p.x, p.y, 'lamp')
+        .setDisplaySize(160, 160)
+        .setBlendMode(Phaser.BlendModes.ADD)
+        .setAlpha(0.4)
+        .setDepth(-900);
+      // el poste, para que la luz venga de algo y no del aire
+      this.add.image(p.x, p.y, 'px')
+        .setDisplaySize(5, 5)
+        .setTint(0x15181d)
+        .setDepth(-895);
+    }
+  }
+
   findStartSpot() {
     const h = this.map.hideout;
     if (!h) return { x: this.map.pixelWidth / 2, y: this.map.pixelHeight / 2 };
@@ -521,7 +559,7 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
       if (this.drivingVehicle) this.exitVehicle();
-      else {
+      else if (!this.restInHideout()) {
         const v = this.nearestVehicle();
         if (v) this.enterVehicle(v);
       }
@@ -669,33 +707,61 @@ export class CityScene extends Phaser.Scene {
   }
 
   respawn(reason) {
-    const fee = Math.min(GameState.money, reason === 'busted' ? 150 : 100);
-    if (fee > 0) GameState.spendMoney(fee, reason);
+    if (this.respawning) return;
+    this.respawning = true;
 
-    GameState.setWanted(0);
-    GameState.heal(100);
-    this.police.clearAll();
+    // se llevan una parte, nunca todo: quedarte a cero no deja jugar
+    const fee = Math.min(300, Math.round(GameState.money * 0.25));
+    const busted = reason === 'busted';
 
-    if (this.drivingVehicle) {
-      this.drivingVehicle.occupied = false;
-      this.drivingVehicle = null;
-      this.cameras.main.setFollowOffset(0, 0);
-    }
-    this.player.setVisible(true);
-
-    const spot = this.findStartSpot();
-    this.player.setPosition(spot.x, spot.y);
-    this.cameras.main.flash(600, 0, 0, 0);
     Audio.engine(false, 0, false);
     Audio.skid(0);
+    this.cameras.main.fadeOut(420, 0, 0, 0);
 
-    EventBus.emit(EVT.NOTIFY, {
-      text:
-        reason === 'busted'
-          ? `Detenido. Fianza ${fee} €. Sales limpio.`
-          : `Hospital. Te cobran ${fee} €.`,
-      tone: 'danger',
+    EventBus.emit(EVT.BIG_MESSAGE, {
+      title: busted ? 'TE HAN DETENIDO' : 'ESTAS MUERTO',
+      subtitle: busted
+        ? `Sales limpio de comisaria. Fianza: ${fee} €`
+        : `Despiertas en el hospital. Te cobran ${fee} €`,
     });
+
+    this.time.delayedCall(1500, () => {
+      if (fee > 0) GameState.spendMoney(fee, reason);
+      GameState.setWanted(0);
+      GameState.heal(100);
+      this.police.clearAll();
+
+      if (this.drivingVehicle) {
+        this.drivingVehicle.occupied = false;
+        this.drivingVehicle = null;
+        this.cameras.main.setFollowOffset(0, 0);
+      }
+      this.player.setVisible(true);
+
+      const spot = this.findStartSpot();
+      this.player.setPosition(spot.x, spot.y);
+      this.hurtCooldown = 2;
+      this.cameras.main.fadeIn(600, 0, 0, 0);
+      this.respawning = false;
+    });
+  }
+
+  // el escondite cura, guarda y te quita el marron de encima
+  restInHideout() {
+    const h = this.map.hideout;
+    if (!h) return false;
+    if (Phaser.Math.Distance.Between(this.player.x, this.player.y, h.px, h.py) > 130) return false;
+    if (GameState.wanted > 0) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
+      return true;
+    }
+
+    GameState.heal(100);
+    SaveSystem.save();
+    this.cameras.main.flash(320, 20, 24, 30);
+    Audio.notes([392, 523.25, 659.25], 0.11);
+    EventBus.emit(EVT.NOTIFY, { text: 'Descansas en el escondite. Partida guardada', tone: 'money' });
+    return true;
   }
 
   updateCamera(dt) {

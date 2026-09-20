@@ -9,7 +9,7 @@ class GameAudio {
     this.ctx = null;
     this.started = false;
     this.muted = false;
-    this.volume = 0.3;
+    this.volume = 0.13;
   }
 
   start() {
@@ -115,7 +115,7 @@ class GameAudio {
 
     // la curva hace que de parado a medio gas se note mucho mas que arriba
     const curva = Math.pow(r, 0.72);
-    const level = on ? (0.012 + curva * 0.055 + (throttle ? 0.014 : 0)) * p.vol : 0;
+    const level = on ? (0.01 + curva * 0.03 + (throttle ? 0.008 : 0)) * p.vol : 0;
     this.engGain.gain.setTargetAtTime(level, t, 0.07);
     this.subGain.gain.setTargetAtTime(p.body, t, 0.12);
 

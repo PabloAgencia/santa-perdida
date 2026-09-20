@@ -7,13 +7,16 @@ export const GLASS = 0x1d2128;
 
 // Cada motor suena distinto. base = tono al ralenti, range = cuanto sube con
 // la velocidad, body = cuerpo grave, bright = cuanto abre el filtro al correr.
+// Ondas triangulares: la sierra a tono alto zumbaba como una mosca.
+// Los tonos se mantienen graves a proposito; el motor se nota por el cuerpo,
+// no por agudos.
 export const ENGINES = {
-  barato:     { base: 46, range: 118, wave: 'sawtooth', body: 0.55, bright: 1700, vol: 0.85 },
-  rapido:     { base: 58, range: 205, wave: 'sawtooth', body: 0.35, bright: 3100, vol: 1.0 },
-  resistente: { base: 40, range: 128, wave: 'square',   body: 0.7,  bright: 1500, vol: 0.95 },
-  moto:       { base: 96, range: 265, wave: 'sawtooth', body: 0.18, bright: 3600, vol: 0.8 },
-  furgoneta:  { base: 34, range: 88,  wave: 'square',   body: 0.85, bright: 1150, vol: 0.9 },
-  policia:    { base: 54, range: 190, wave: 'sawtooth', body: 0.45, bright: 2700, vol: 0.95 },
+  barato:     { base: 40, range: 62,  wave: 'triangle', body: 0.6,  bright: 620, vol: 0.85 },
+  rapido:     { base: 48, range: 92,  wave: 'triangle', body: 0.45, bright: 950, vol: 1.0 },
+  resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 0.95 },
+  moto:       { base: 58, range: 118, wave: 'triangle', body: 0.3,  bright: 1150, vol: 0.75 },
+  furgoneta:  { base: 28, range: 44,  wave: 'triangle', body: 0.9,  bright: 430, vol: 0.9 },
+  policia:    { base: 46, range: 86,  wave: 'triangle', body: 0.5,  bright: 880, vol: 0.9 },
 };
 
 export const VEHICLES = {

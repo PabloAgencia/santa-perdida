@@ -27,6 +27,14 @@ export class Vehicle {
     this.shadow = scene.add.image(x + 3, y + 4, 'shadow')
       .setDisplaySize(this.stats.length * 1.05, this.stats.width * 1.15)
       .setAlpha(0.4);
+
+    // los faros van por delante del morro y giran con el coche
+    this.beam = scene.add.image(x, y, 'beam')
+      .setOrigin(0.5, 0)
+      .setDisplaySize(this.stats.width * 5.5, this.stats.length * 4.2)
+      .setBlendMode(Phaser.BlendModes.ADD)
+      .setAlpha(0.85);
+
     this.sprite = scene.add.image(x, y, `veh-${type}-${this.color}`);
 
     this.buildProbes();
@@ -168,6 +176,14 @@ export class Vehicle {
   }
 
   syncSprite() {
+    const nose = this.stats.length * 0.42;
+    this.beam.setPosition(
+      this.x + Math.cos(this.angle) * nose,
+      this.y + Math.sin(this.angle) * nose
+    );
+    this.beam.setRotation(this.angle - Math.PI / 2);
+    this.beam.setDepth(this.y - 4);
+
     this.sprite.setPosition(this.x, this.y);
     this.sprite.setRotation(this.angle);
     this.sprite.setDepth(this.y);
@@ -230,5 +246,6 @@ export class Vehicle {
   destroy() {
     this.sprite.destroy();
     this.shadow.destroy();
+    this.beam.destroy();
   }
 }

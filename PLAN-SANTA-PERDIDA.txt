@@ -371,6 +371,39 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
        hombros. Edificios con ventanas por las cuatro fachadas (unas
        encendidas y otras no) y portal en el lado que da a la calle.
 
+  SEPTIMA TANDA: coherencia, menu y luces
+     - LO DEL ESCONDITE NO ERA UN FALLO: te estaban DETENIENDO. Al bajar del
+       coche con la policia encima te arrestaban en el mismo fotograma, sin
+       mas aviso que una linea pequeña que se desvanecia. Arreglado en tres
+       frentes: ahora hay que tenerte encima 1,8 s (con aviso "¡Alto!" para
+       que puedas correr), sale un CARTEL GRANDE en pantalla con fundido, y
+       la fianza es el 25% del dinero con tope de 300 € en vez de llevarse
+       todo lo que tengas. Lo mismo al morir.
+     - SONIDO otra vez mas bajo: volumen general de 0,3 a 0,13 y los tonos
+       mucho mas graves. El zumbido de mosca era la onda de sierra a tono
+       alto; ahora son ondas triangulares y ningun motor pasa de 180 Hz.
+     - MENU DE INICIO (`scenes/MenuScene.js`) al estilo GTA: perfil de ciudad
+       con ventanas encendidas dibujado por codigo, titulo, y las opciones
+       NUEVA PARTIDA / CONTINUAR / CONTROLES. CONTINUAR sale apagado si no
+       hay partida guardada.
+     - HACES DE LUZ: faros en todos los vehiculos, que giran con el coche, y
+       farolas por las calles. Costo dos pasadas: la primera version parecia
+       niebla en anillos en vez de luz.
+     - EL ESCONDITE YA SIRVE: con la E al lado te curas del todo y guarda la
+       partida. Con la policia detras no te deja entrar.
+     - FALLO QUE VIO PABLO: las farolas estaban EN MITAD DE LA CARRETERA,
+       porque las puse en los nodos de la red de carriles. Ahora se calcula
+       el eje real de la calle y se plantan en las dos aceras, con su poste.
+       Comprobado: 310 farolas, 309 sobre acera, 0 en asfalto, 0 dentro de
+       edificios.
+     - FUENTE tipo GTA: la de los juegos se llama **Pricedown**, y no es de
+       Rockstar sino del tipografo Ray Larabie, y es gratuita; el problema es
+       que solo esta en webs de fuentes. De momento va **Anton** (Google
+       Fonts, libre), empotrada en `fonts/anton.woff2` para que funcione sin
+       internet, en el titulo, el menu, el dinero y los carteles grandes.
+       Si Pablo baja Pricedown de un sitio de fiar, se cambia en un minuto:
+       solo hay que sustituir el fichero y la constante TITULO.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

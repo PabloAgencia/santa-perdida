@@ -3,6 +3,7 @@ import { GameState } from '../core/GameState.js';
 import { COLORS, TILE } from '../config/balance.js';
 
 const FONT = 'Consolas, "Courier New", monospace';
+const TITULO = 'Anton, Impact, sans-serif';
 
 export class UIScene extends Phaser.Scene {
   constructor() {
@@ -22,7 +23,7 @@ export class UIScene extends Phaser.Scene {
       .setAlpha(0.45);
 
     this.moneyText = this.add.text(16, 14, '', {
-      fontFamily: FONT, fontSize: '30px', color: COLORS.money,
+      fontFamily: TITULO, fontSize: '36px', color: COLORS.money,
     });
 
     this.deliveriesText = this.add.text(18, 50, '', {
@@ -75,17 +76,22 @@ export class UIScene extends Phaser.Scene {
     this.setMoney(GameState.money);
     this.deliveriesText.setText(`Entregas: ${GameState.stats.deliveries}`);
 
+    this.buildBigMessage(w, h);
+
     this.onHud = (d) => this.updateHud(d);
     this.onMoney = (d) => this.setMoney(d.money);
     this.onNotify = (n) => this.notify(n);
+    this.onBig = (m) => this.showBigMessage(m);
     EventBus.on(EVT.HUD_TICK, this.onHud);
     EventBus.on(EVT.MONEY_CHANGED, this.onMoney);
     EventBus.on(EVT.NOTIFY, this.onNotify);
+    EventBus.on(EVT.BIG_MESSAGE, this.onBig);
 
     this.events.once('shutdown', () => {
       EventBus.off(EVT.HUD_TICK, this.onHud);
       EventBus.off(EVT.MONEY_CHANGED, this.onMoney);
       EventBus.off(EVT.NOTIFY, this.onNotify);
+      EventBus.off(EVT.BIG_MESSAGE, this.onBig);
     });
   }
 
@@ -130,6 +136,28 @@ export class UIScene extends Phaser.Scene {
     this.wantedLabel = this.add.text(w - 16 - 66, 36, 'BUSCA', {
       fontFamily: FONT, fontSize: '12px', color: COLORS.dim,
     }).setOrigin(1, 0);
+  }
+
+  buildBigMessage(w, h) {
+    this.bigBox = this.add.container(w / 2, h / 2).setAlpha(0).setDepth(500);
+    const velo = this.add.image(0, 0, 'px')
+      .setDisplaySize(w, 190).setTint(0x000000).setAlpha(0.72);
+    this.bigTitle = this.add.text(0, -26, '', {
+      fontFamily: TITULO, fontSize: '62px', color: '#d9584a',
+    }).setOrigin(0.5);
+    this.bigSub = this.add.text(0, 30, '', {
+      fontFamily: FONT, fontSize: '19px', color: COLORS.ink,
+    }).setOrigin(0.5);
+    this.bigBox.add([velo, this.bigTitle, this.bigSub]);
+  }
+
+  showBigMessage({ title, subtitle, color = '#d9584a' }) {
+    this.bigTitle.setText(title.split('').join(' ')).setColor(color);
+    this.bigSub.setText(subtitle || '');
+    this.tweens.killTweensOf(this.bigBox);
+    this.bigBox.setAlpha(0).setScale(1.12);
+    this.tweens.add({ targets: this.bigBox, alpha: 1, scale: 1, duration: 320, ease: 'Back.out' });
+    this.tweens.add({ targets: this.bigBox, alpha: 0, delay: 2600, duration: 700 });
   }
 
   buildTerritory() {

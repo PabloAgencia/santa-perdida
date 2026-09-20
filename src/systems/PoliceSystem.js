@@ -21,6 +21,7 @@ const SPAWN_MAX = 1500;
 const DESPAWN = 2400;
 const SIN_VER_PARA_BAJAR = 9;
 const DETENCION_DIST = 52;
+const TIEMPO_PARA_DETENER = 1.8;
 
 export class PoliceSystem {
   constructor(scene, map, network) {
@@ -87,7 +88,7 @@ export class PoliceSystem {
       this.spawnRoadblock(player, playerVehicle);
     }
 
-    this.checkArrest(player, playerVehicle);
+    this.checkArrest(player, playerVehicle, dt);
   }
 
   // a nivel 3 te cortan la calle por delante
@@ -296,18 +297,43 @@ export class PoliceSystem {
 
   // ---------- detencion ----------
 
-  checkArrest(player, playerVehicle) {
-    if (GameState.wanted === 0 || playerVehicle || this.bustCooldown > 0) return;
+  // No se detiene al instante: hay que tenerte encima un rato, y avisa antes.
+  // Antes te arrestaban en el fotograma en que bajabas del coche.
+  checkArrest(player, playerVehicle, dt) {
+    if (GameState.wanted === 0 || playerVehicle || this.bustCooldown > 0) {
+      this.cerco = 0;
+      this.avisado = false;
+      return;
+    }
 
+    let encima = false;
     for (const u of this.units) {
       if (u.state !== ESTADO.PERSIGUIENDO) continue;
       const v = u.vehicle;
       if (v.speed > 90) continue;
       if (Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y) < DETENCION_DIST) {
-        this.bustCooldown = 6;
-        EventBus.emit(EVT.PLAYER_BUSTED, {});
-        return;
+        encima = true;
+        break;
       }
+    }
+
+    if (!encima) {
+      this.cerco = 0;
+      this.avisado = false;
+      return;
+    }
+
+    if (!this.avisado) {
+      this.avisado = true;
+      EventBus.emit(EVT.NOTIFY, { text: '¡Alto! Te tienen rodeado, corre', tone: 'danger' });
+    }
+
+    this.cerco = (this.cerco || 0) + dt;
+    if (this.cerco >= TIEMPO_PARA_DETENER) {
+      this.cerco = 0;
+      this.avisado = false;
+      this.bustCooldown = 8;
+      EventBus.emit(EVT.PLAYER_BUSTED, {});
     }
   }
 
