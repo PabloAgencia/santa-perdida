@@ -240,20 +240,39 @@ export class UIScene extends Phaser.Scene {
   }
 
   updateHud(d) {
-    this.objectiveText.setText(d.objective);
     this.deliveriesText.setText(`Entregas: ${d.deliveries}`);
 
-    if (d.target) {
-      const tiles = Math.round(
-        Phaser.Math.Distance.Between(d.player.x, d.player.y, d.target.x, d.target.y) / TILE
-      );
-      const time = d.remaining !== null ? `  ·  ${Math.ceil(d.remaining)} s para la prima` : '';
-      this.distanceText.setText(`${tiles} m${time}`);
+    // una mision manda sobre el encargo de reparto
+    const m = d.mission;
+    const destino = m ? m.objetivo : d.target;
+
+    if (m) {
+      this.objectiveText.setColor('#e8b54a');
+      this.objectiveText.setText(`${m.nombre}   ${m.pasoActual}/${m.pasos}`);
+      const partes = [m.texto];
+      if (destino) {
+        partes.push(`${Math.round(
+          Phaser.Math.Distance.Between(d.player.x, d.player.y, destino.x, destino.y) / TILE
+        )} m`);
+      }
+      if (m.restante !== null) partes.push(`${Math.ceil(m.restante)} s`);
+      this.distanceText.setText(partes.join('  ·  '));
     } else {
-      this.distanceText.setText('');
+      this.objectiveText.setColor(COLORS.objective);
+      this.objectiveText.setText(d.objective);
+      if (destino) {
+        const tiles = Math.round(
+          Phaser.Math.Distance.Between(d.player.x, d.player.y, destino.x, destino.y) / TILE
+        );
+        const time = d.remaining !== null ? `  ·  ${Math.ceil(d.remaining)} s para la prima` : '';
+        this.distanceText.setText(`${tiles} m${time}`);
+      } else {
+        this.distanceText.setText('');
+      }
     }
 
-    this.updateArrow(d.target);
+    d = Object.assign({}, d, { target: destino });
+    this.updateArrow(destino);
     this.updateMinimap(d);
     this.updateWanted(d.wanted || 0);
     this.updateHealth(d.health ?? 100);

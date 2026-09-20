@@ -5,6 +5,9 @@ export const EVT = {
   MONEY_REJECTED: 'money:rejected',
   STATS_CHANGED: 'stats:changed',
 
+  MISSION_START: 'mission:start',
+  MISSION_END: 'mission:end',
+
   JOB_OFFERED: 'job:offered',
   JOB_STARTED: 'job:started',
   JOB_STAGE: 'job:stage',

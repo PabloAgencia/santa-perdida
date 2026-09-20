@@ -419,6 +419,39 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
        sofa, un icono verde de GUARDAR al que te acercas, y una puerta para
        SALIR. Entrar cura del todo. Con la policia detras no te deja pasar.
 
+  NOVENA TANDA: policia con oficio y misiones estructuradas
+     - AGENTES A PIE (`entities/Officer.js`): si vas andando y la patrulla te
+       tiene cerca, se BAJA del coche y te persigue corriendo. Detiene de mas
+       cerca que el coche. Si te subes a un vehiculo o le sacas 520 px, se
+       vuelve al suyo.
+     - Las unidades ya no van en fila: cada una ataca por un FLANCO distinto
+       (se reparten 120 grados), y si huyes en coche apuntan a donde VAS a
+       estar, no a donde estas.
+     - MISIONES ESTRUCTURADAS. Dos ficheros:
+         config/missions.js   las 10 misiones, escritas como DATOS
+         systems/MissionSystem.js  el motor, que no sabe de ninguna en concreto
+       Una mision es una lista de PASOS, y cada paso es de un tipo que el
+       motor sabe ejecutar: ir, recoger, entregar, conducir (obliga a ir en
+       coche), perder (quitarte la policia), aguantar (sobrevivir X s),
+       romper (destrozar un coche) y seguir (no perder de vista a otro).
+       Cada paso admite limite de tiempo y barrio. Añadir una mision nueva es
+       escribir una entrada en la tabla, sin tocar codigo.
+     - QUIEN LAS DA: un marcador fijo por banda, en su territorio, con su
+       color. Te acercas, pulsas E y te dan la siguiente que te corresponda.
+     - PROGRESION: cada mision pide un minimo de reputacion con esa banda, y
+       cumplirla te la sube. Asi se encadenan solas: la primera de Los
+       Amarres paga 180 € y da +8, y eso abre la segunda, que pedia +5.
+     - Fallar (tiempo agotado, perder al objetivo, morir o que te detengan)
+       cuesta -4 de reputacion con esa banda.
+
+  DOS FALLOS PROPIOS ENCONTRADOS AL PROBARLO:
+     1. El punto de cada barrio se elegia SIEMPRE igual, asi que el objetivo
+        caia justo encima del que te daba la mision y se cumplia sola. Ahora
+        el dador tiene sitio fijo (para aprendertelo) y los objetivos se
+        sortean lejos de donde estas.
+     2. En el paso de "aguantar", agotar el tiempo contaba como FRACASO
+        cuando es justo lo contrario.
+
   LO PRIMERO DE LA PROXIMA SESION:
      - Que Pablo diga si la conduccion ya se parece a lo que tenia en la
        cabeza, y si el sonido esta a buen volumen. Son cuestion de gusto y

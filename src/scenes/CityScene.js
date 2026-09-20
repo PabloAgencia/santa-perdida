@@ -12,6 +12,7 @@ import { NPCSystem } from '../systems/NPCSystem.js';
 import { PoliceSystem } from '../systems/PoliceSystem.js';
 import { StreetLamp } from '../entities/StreetLamp.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
+import { MissionSystem } from '../systems/MissionSystem.js';
 import { T } from '../config/city.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
 import { GameState } from '../core/GameState.js';
@@ -64,6 +65,7 @@ export class CityScene extends Phaser.Scene {
     this.npcs = new NPCSystem(this, this.map);
     this.police = new PoliceSystem(this, this.map, this.net);
     this.factions = new FactionSystem(this, this.map);
+    this.missions = new MissionSystem(this, this.map, this.net);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
 
@@ -561,7 +563,7 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
       if (this.drivingVehicle) this.exitVehicle();
-      else if (!this.enterHideout()) {
+      else if (!this.missions.intentarEmpezar(this.player.x, this.player.y) && !this.enterHideout()) {
         const v = this.nearestVehicle();
         if (v) this.enterVehicle(v);
       }
@@ -612,6 +614,7 @@ export class CityScene extends Phaser.Scene {
     );
     this.police.update(dt, this.player, this.drivingVehicle);
     this.factions.update(dt, this.player.x, this.player.y);
+    this.missions.update(dt, this.player, this.drivingVehicle);
     this.resolvePlayerVsVehicles();
     this.updateLamps();
     this.checkPlayerHarm(dt);
@@ -773,6 +776,7 @@ export class CityScene extends Phaser.Scene {
   respawn(reason) {
     if (this.respawning) return;
     this.respawning = true;
+    this.missions.abortar(reason === 'busted' ? 'Te han detenido' : 'Has muerto');
 
     // se llevan una parte, nunca todo: quedarte a cero no deja jugar
     const fee = Math.min(300, Math.round(GameState.money * 0.25));
@@ -914,6 +918,7 @@ export class CityScene extends Phaser.Scene {
       health: GameState.health,
       chasing: this.police.chasing,
       territory: this.factions.currentInfo(),
+      mission: this.missions.estado(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
     });
   }
