@@ -1,0 +1,33 @@
+export const EventBus = new Phaser.Events.EventEmitter();
+
+export const EVT = {
+  MONEY_CHANGED: 'money:changed',
+  MONEY_REJECTED: 'money:rejected',
+  STATS_CHANGED: 'stats:changed',
+
+  JOB_OFFERED: 'job:offered',
+  JOB_STARTED: 'job:started',
+  JOB_STAGE: 'job:stage',
+  JOB_DONE: 'job:done',
+  JOB_FAILED: 'job:failed',
+
+  VEHICLE_ENTERED: 'vehicle:entered',
+  VEHICLE_EXITED: 'vehicle:exited',
+  VEHICLE_CRASHED: 'vehicle:crashed',
+
+  PED_HIT: 'ped:hit',
+  FACTION_CHANGED: 'faction:changed',
+  TERRITORY_ENTERED: 'faction:territory',
+  WANTED_CHANGED: 'wanted:changed',
+  PLAYER_HURT: 'player:hurt',
+  PLAYER_BUSTED: 'player:busted',
+  PLAYER_DEAD: 'player:dead',
+  PLAYER_RESPAWN: 'player:respawn',
+
+  HUD_TICK: 'hud:tick',
+  NOTIFY: 'ui:notify',
+
+  BEFORE_SAVE: 'save:before',
+  AFTER_LOAD: 'save:after-load',
+  SAVED: 'save:done',
+};

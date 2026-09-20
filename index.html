@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Puerto Sombra</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #07080a;
+    overflow: hidden;
+    font-family: Consolas, "Courier New", monospace;
+    color: #e6e1d4;
+  }
+  #game { width: 100%; height: 100%; display: grid; place-items: center; }
+  canvas { display: block; touch-action: none; }
+  #boot {
+    position: fixed; inset: 0;
+    display: grid; place-content: center; justify-items: center; gap: 14px;
+    background: #07080a;
+    transition: opacity .5s ease;
+    z-index: 10;
+  }
+  #boot h1 {
+    font-size: clamp(28px, 6vw, 54px);
+    letter-spacing: .3em;
+    font-weight: 400;
+    color: #e8b54a;
+  }
+  #boot p { color: #6f6a5f; font-size: 14px; letter-spacing: .1em; }
+  #boot.gone { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+  <div id="game"></div>
+
+  <div id="boot">
+    <h1>PUERTO SOMBRA</h1>
+    <p>cargando la ciudad...</p>
+  </div>
+
+  <script src="vendor/phaser.min.js"></script>
+  <script type="module" src="src/main.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('boot').classList.add('gone'), 600);
+    });
+  </script>
+</body>
+</html>

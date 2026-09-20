@@ -1,0 +1,349 @@
+================================================================================
+PUERTO SOMBRA - PLAN COMPLETO DEL PROYECTO
+================================================================================
+Carpeta:  E:\Escritorio\GTA PRUEBA
+Motor:    Phaser 3 (web, sin paso de compilacion)
+Creado:   20-sep-2026
+Ritmo:    ratos libres (domingos y huecos). Se avanza por fases, cada fase deja
+          el juego jugable de punta a punta.
+
+Que es: sandbox de accion en vista cenital, ciudad costera ficticia llamada
+Puerto Sombra. El jugador es un delincuente de poca monta que llega sin dinero
+y construye su red criminal. Todo el contenido es original.
+
+El bucle que tiene que funcionar antes que nada:
+   EXPLORAR -> VER OPORTUNIDAD -> ACTUAR -> COBRAR -> ARRIESGAR -> ESCAPAR -> SUBIR
+
+
+================================================================================
+1. DECISIONES TECNICAS YA TOMADAS
+================================================================================
+
+1.1  MOTOR: Phaser 3
+     Por que: es web, igual que BitFall, asi que se publica igual (git push a
+     GitHub -> Cloudflare Pages) y se empaqueta igual con Capacitor para Play
+     Store. Pero ya trae hechas las fisicas, las colisiones, el mapa por
+     casillas y la camara, que es casi la mitad del trabajo que no se ve.
+
+1.2  SIN PASO DE COMPILACION (nada de Vite ni webpack)
+     Phaser vive dentro del proyecto en vendor/phaser.min.js y el codigo propio
+     usa modulos ES nativos del navegador.
+     Por que: mismo flujo de publicacion que BitFall, cero dependencias que
+     mantener, y funciona sin internet (necesario para la app de Android).
+
+1.3  FUENTE UNICA DE VERDAD: el modulo GameState
+     El dinero, la reputacion, las misiones, las propiedades y las relaciones
+     con facciones viven SOLO ahi. Ningun otro sistema guarda su propia copia.
+     Para cambiar algo se llama a un metodo de GameState, nunca se toca el dato
+     por fuera. Cada cambio avisa por el EventBus.
+     Por que: es el fallo que mata estos proyectos: el dinero acaba existiendo
+     en cuatro sitios y dejan de cuadrar.
+
+1.4  COMUNICACION ENTRE SISTEMAS: EventBus (publicar/escuchar)
+     Los sistemas no se llaman entre ellos directamente. Emiten avisos y quien
+     le interese escucha. La interfaz escucha cambios, no pregunta en bucle.
+
+1.5  DOS ESCENAS A LA VEZ
+     CityScene (el mundo, con camara que sigue al jugador) y UIScene (el HUD,
+     fija en pantalla). Asi el HUD no se mueve ni se escala con la camara.
+
+1.6  EL MAPA SE GENERA DESDE DATOS, no desde un fichero de editor externo
+     La ciudad esta descrita en un fichero de configuracion propio. Se puede
+     cambiar un barrio editando datos, sin abrir Tiled ni ningun editor.
+
+1.7  RENDIMIENTO DESDE EL DIA UNO
+     Solo se actualizan los NPCs y coches cercanos a la camara. Las entidades
+     se reutilizan en vez de crearse y destruirse todo el rato.
+
+1.8  GUARDADO
+     localStorage, con numero de version del formato. Se guarda leyendo solo
+     desde GameState, nunca desde objetos de Phaser.
+
+
+================================================================================
+2. ESTRUCTURA DE CARPETAS
+================================================================================
+
+   index.html                 arranque
+   vendor/phaser.min.js       el motor, guardado en local
+   src/
+     main.js                  configuracion y arranque del juego
+     core/
+       EventBus.js            avisos entre sistemas
+       GameState.js           FUENTE UNICA DE VERDAD
+       SaveSystem.js          guardar y cargar
+     scenes/
+       BootScene.js           carga y generacion de graficos
+       CityScene.js           el mundo
+       UIScene.js             HUD y menus
+     entities/
+       Player.js              el personaje a pie
+       Vehicle.js             coches y motos
+       NPC.js                 peatones, conductores, policias
+     systems/
+       JobSystem.js           el reparto repetible (el suelo economico)
+       VehicleSystem.js       conduccion, entrar/salir, daño
+       TrafficSystem.js       coches de NPC circulando
+       NPCSystem.js           peatones y sus reacciones
+       PoliceSystem.js        nivel de busqueda 0-3 y persecucion
+       MissionSystem.js       misiones
+       EconomySystem.js       compras, ventas, precios
+       FactionSystem.js       las 3 bandas y sus relaciones
+       EventSystem.js         sucesos aleatorios por la ciudad
+     world/
+       CityMap.js             construye la ciudad desde los datos
+     config/
+       city.js                barrios, calles, edificios
+       vehicles.js            estadisticas de cada vehiculo
+       missions.js            las misiones
+       factions.js            las bandas
+       balance.js             precios, recompensas, numeros de ajuste
+
+
+================================================================================
+3. LAS 4 FASES
+================================================================================
+
+--------------------------------------------------------------------------------
+FASE 1 - EL BUCLE BASICO           [ CASI HECHA ]
+--------------------------------------------------------------------------------
+Objetivo: que moverse y conducir sea divertido. Si esto no engancha, lo demas
+da igual. No se toca ninguna mision ni faccion todavia.
+
+   [x] Proyecto montado y arrancando en el navegador
+   [x] Ciudad pequeña con calles, aceras, edificios y colisiones
+   [x] Jugador a pie: andar, correr, camara que le sigue
+   [x] Vehiculos: entrar, salir, conducir con buen tacto (inercia y derrape)
+   [x] Choques contra edificios (comprobado: se para en el borde y pierde vida)
+   [x] Choques entre coches (comprobado: al embestir, el otro sale empujado)
+   [x] Dinero funcionando de verdad, desde GameState
+   [x] Un trabajo de reparto repetible: recoger paquete -> llevarlo -> cobrar
+   [x] HUD: dinero, objetivo, distancia, velocidad, daño y avisos
+   [x] Guardado y carga (comprobado recargando la pagina)
+
+Cuando esta fase acaba, ya se puede jugar un rato seguido.
+
+--------------------------------------------------------------------------------
+FASE 2 - RIESGO Y CIUDAD VIVA          [ HECHA, 20-sep-2026 ]
+--------------------------------------------------------------------------------
+Objetivo: que la ciudad reaccione y que exista peligro.
+
+   [x] Peatones andando, esperando y reaccionando
+   [x] Trafico: coches de NPC circulando, parando y esquivando
+   [x] Reaccion a atropellos (huyen en desbandada y dan el aviso)
+   [x] Policia con niveles 0 a 3
+   [x] Estados de la policia: patrulla, investigando, persiguiendo, buscando,
+       perdido, volviendo (mas bloqueo)
+   [x] Nivel 3 con refuerzos (6 unidades) y cortes de calle
+   [x] Salud, morir y reaparecer (con coste en dinero)
+   [x] Minimapa
+
+Pieza clave: `world/RoadNetwork.js`, una red de 32 cruces y 104 carriles sacada
+de la propia definicion de calles. Se circula por la derecha. El trafico y la
+policia NO calculan rutas: siguen su carril y al llegar a un cruce eligen
+salida. Es barato y se comporta bien.
+
+--------------------------------------------------------------------------------
+REFERENCIAS DE DISENO (dichas por Pablo el 20-sep)
+--------------------------------------------------------------------------------
+Se toman MECANICAS Y ESTRUCTURA, nunca nombres, arte, historias ni misiones:
+todo el contenido sigue siendo original.
+
+  San Andreas (la principal)
+     - Territorios de banda pintados en el mapa. YA HECHO.
+     - El respeto como estadistica real que abre y cierra puertas.
+     - Pisos francos que compras y garajes que te guardan el coche.
+
+  Vice City Stories
+     - El imperio: comprar negocios que dan ingresos y que los rivales
+       atacan. Encaja con "construir tu propia red criminal" del encargo.
+
+  Chinatown Wars (la mas parecida, porque es cenital como la nuestra)
+     - Economia por barrios con precios que suben y bajan. Es lo mejor que
+       tiene para nosotros y cuadra con tener barrios bien diferenciados.
+     - Bajar el nivel de busca cargandote patrullas, no solo huyendo.
+
+--------------------------------------------------------------------------------
+FASE 3 - CONTENIDO
+--------------------------------------------------------------------------------
+Objetivo: que haya razones para seguir jugando.
+
+   [ ] 10 misiones de tipos distintos (entrega, persecucion, robo, rescate,
+       transporte, sabotaje, huida, negociacion, infiltracion, contrarreloj)
+   [ ] Cada mision usa sistemas reales del juego, nada de cartel de
+       "MISION COMPLETADA" sin gameplay detras
+   [ ] 3 facciones originales con territorio, estetica, jefes y misiones
+   [ ] Relaciones con facciones que suben y bajan segun lo que hagas
+   [ ] Economia completa: comprar y reparar vehiculos, comprar propiedades,
+       comida, equipo
+   [ ] Guardado completo del mundo (posicion, coche, propiedades, progreso)
+   [ ] Menus: pausa, mapa, misiones, estadisticas, inventario, ajustes
+
+--------------------------------------------------------------------------------
+FASE 4 - VIDA PROPIA Y PULIDO
+--------------------------------------------------------------------------------
+Objetivo: que parezca un juego indie de verdad, no una demo.
+
+   [ ] Sucesos aleatorios por la ciudad (accidentes, peleas, coche abandonado,
+       oportunidad temporal, objeto valioso)
+   [ ] Progresion: reputacion, desbloqueos, contactos
+   [ ] Primeros 5 minutos guiados sin tutorial pesado: que el jugador ande,
+       conduzca, gane dinero, acabe una mision, se lleve un susto con la
+       policia y vea que hay progresion
+   [ ] Sonido y musica
+   [ ] Pulido visual coherente
+   [ ] Repaso de rendimiento
+   [ ] Empaquetado con Capacitor si se quiere llevar a Android
+
+
+================================================================================
+4. NORMAS DE TRABAJO EN ESTE PROYECTO
+================================================================================
+
+  - Cada fase termina con el juego jugable de punta a punta, no a medias.
+  - Nada se da por hecho sin abrirlo en el navegador y probarlo de verdad.
+  - Los errores se arreglan en la causa, no con un parche encima.
+  - Antes de tocar logica, leer el fichero entero.
+  - Los numeros de ajuste (precios, velocidades, recompensas) viven todos en
+    config/balance.js, nunca repartidos por el codigo.
+  - No meter sistemas nuevos hasta que los de la fase actual funcionen bien.
+
+
+================================================================================
+5. REGISTRO DE SESIONES
+================================================================================
+
+20-sep-2026 (domingo)
+  - Decidido motor (Phaser 3.90) y forma de publicar (sin compilacion, como
+    BitFall). Existe Phaser 4, pero es una reescritura reciente: se usa la 3.90
+    a proposito, que es la estable y la documentada.
+  - Escrito este plan.
+  - Fase 1 practicamente terminada en una sesion.
+
+  COMO JUGAR:
+     1. Abrir una terminal en E:\Escritorio\GTA PRUEBA
+     2. node serve.js
+     3. Abrir http://localhost:5174
+     Teclas: WASD mover, SHIFT correr, E entrar/salir del coche,
+             ESPACIO freno de mano, K guardar, J pedir encargo,
+             M encender/apagar el sonido.
+
+  QUE HAY YA:
+     - Ciudad de 124 x 104 casillas (unos 4000 x 3300 pixeles) con ronda
+       exterior, cinco avenidas, manzanas por barrios, puerto y mar.
+       70 edificios, generados siempre iguales (semilla fija), asi que la
+       ciudad se puede aprender.
+     - 5 vehiculos distintos, 18 repartidos por las calles.
+     - Conduccion con inercia, derrape y freno de mano. Camara que mira
+       hacia donde vas cuando corres.
+     - Reparto repetible con prima por llegar a tiempo.
+     - Guardado automatico cada 15 segundos.
+
+  COMPROBADO DE VERDAD (no dado por hecho):
+     - Acelerar, frenar y marcha atras dan numeros coherentes.
+     - Chocar de frente contra un edificio: el coche se para en el borde
+       exacto, no lo atraviesa y pierde vida.
+     - Ciclo completo del reparto: recoger, entregar, cobrar, sumar entrega.
+     - Entrar y salir del coche con E.
+     - Guardar, recargar la pagina y recuperar dinero, entregas y posicion.
+
+  SEGUNDA TANDA DEL MISMO DIA (a peticion de Pablo):
+     - Choques entre coches, con empujon y daño a los dos. El coche parado
+       sale despedido calle abajo si le embistes fuerte.
+     - Cada modelo tiene 5 colores de carroceria, asi que dos coches del
+       mismo tipo ya no salen identicos. El color se guarda en la partida.
+     - Silueta propia por tipo: el rapido tiene morro en punta y aleron,
+       el resistente lleva defensa delantera, la furgoneta es un cajon con
+       cabina corta, el barato es redondeado.
+     - Edificios: sombra propia, luz siempre desde arriba a la izquierda
+       (toda la ciudad comparte el mismo sol) y trastos de azotea distintos
+       en cada uno. Siguen saliendo iguales cada partida (semilla fija).
+     - Arreglada la generacion de manzanas: antes cada manzana tenia una
+       sola fila de edificios y media manzana vacia, y todas se parecian.
+       Ahora se reparte la manzana entera en filas y columnas con callejones,
+       patios interiores y algun edificio grande. De 70 a 81 edificios, pero
+       sobre todo mucho mas variados.
+
+  TERCERA TANDA DEL MISMO DIA: sonido y puntos de referencia
+     - SONIDO, todo sintetizado en el navegador, ni un fichero de audio
+       (`src/core/Audio.js`): motor que sube de tono con la velocidad,
+       derrape al frenar de mano, golpe al chocar (grave + chapa), y avisos
+       al recoger, al entregar y al salir encargo nuevo. Tecla M lo apaga.
+       El navegador no deja sonar nada hasta que tocas una tecla o haces
+       clic, asi que el sonido arranca solo con el primer toque.
+     - CUATRO PUNTOS DE REFERENCIA para poder orientarse, definidos como
+       datos en `config/city.js` igual que el resto de la ciudad:
+         Plaza del Farol   centro, fuente con monumento y bancos
+         Torre Sombra      centro, el edificio mas alto, con luz roja
+         El Faro           punta del muelle, con resplandor
+         Grua del Puerto   explanada del puerto, brazo amarillo
+       Cada uno lleva su nombre escrito en el suelo. Los edificios que
+       pisaban su sitio se quitan solos.
+
+  CUARTA TANDA DEL MISMO DIA: la fase 2 entera
+     - Red de carriles (`world/RoadNetwork.js`): 32 cruces, 104 carriles,
+       circulacion por la derecha, sin callejones sin salida.
+     - Trafico (`systems/TrafficSystem.js`): hasta 14 coches alrededor del
+       jugador, aparecen y desaparecen segun te mueves. Frenan si tienen
+       algo delante y respetan a los peatones. Si te subes a uno, deja de
+       ser trafico y pasa a ser tuyo.
+     - Peatones (`systems/NPCSystem.js` + `entities/Pedestrian.js`): hasta
+       20, andan por la acera, se paran a ratos, huyen si les viene un coche
+       encima y caen si les atropellas. No cruzan media ciudad en diagonal:
+       se descartan los destinos cuyo camino va casi todo por asfalto.
+     - Policia (`systems/PoliceSystem.js`) con nivel de busca 0 a 3 y siete
+       estados. A nivel 0 hay una patrulla de fondo; 2, 4 y 6 unidades segun
+       subes. A nivel 3 ademas te cortan la calle por delante.
+     - Salud, atropellos al ir a pie, muerte (100 € de hospital) y detencion
+       (150 € de fianza). Reapareces en el escondite, limpio.
+     - Minimapa con toda la ciudad, tu posicion, el encargo y las patrullas.
+
+  DOS FALLOS REALES ENCONTRADOS Y ARREGLADOS AQUI:
+     1. Las patrullas nuevas aparecian sabiendo donde estabas exactamente,
+        aunque no te hubieran visto nunca: era imposible escapar. Ahora la
+        policia guarda la ultima posicion CONOCIDA, que solo se actualiza
+        cuando alguien te ve de verdad o alguien da el aviso.
+     2. Los coches del corte de calle se ponian a dar marcha atras solos:
+        frenar con el coche ya parado activa la marcha atras.
+
+  COMPROBADO DE VERDAD:
+     - Los 14 coches de trafico circulan por la calzada, a 46 km/h de media.
+     - Atropellar sube el nivel de busca y las patrullas pasan a investigar.
+     - Con linea de vision pasan a perseguir; si huyes y la rompes, bajan a
+       buscar, luego a perdido, y el nivel de busca cae solo.
+     - Muerte y detencion cobran lo suyo y te devuelven al escondite.
+     - El corte de calle aparece a nivel 3 delante de ti y se retira al bajar.
+
+  QUINTA TANDA: las tres facciones y sus territorios (empieza la fase 3)
+     - Tres bandas originales en `config/factions.js`:
+         Los Amarres              puerto e industrial, contrabando
+         Cuadrilla del Rompiente  el barrio alto, calle
+         Casa Verdial             centro y comercial, proteccion
+       El barrio residencial es neutral: es donde vives tu.
+     - Cada casilla del mapa sabe de que barrio es (`zoneGrid` en CityMap),
+       asi que se sabe en territorio de quien estas en todo momento.
+     - Reputacion de -100 a +100 con cada banda, guardada en la partida.
+       Por debajo de -25 te tienen ganas.
+     - Miembros de banda por la calle con el color y el panuelo de los suyos.
+       En cada barrio mandan los suyos. Si les tienes de enemigos y vas a
+       pie, se te acercan y te pegan.
+     - Atropellar a uno te hunde con esa banda (-14) y te sube un poco con
+       las rivales (+5): no se puede quedar bien con todos.
+     - Territorios pintados en el minimapa, como el mapa de bandas del SA,
+       y debajo el nombre de la banda de la zona con tu reputacion.
+
+  COMPROBADO: territorio detectado al entrar, miembros hostiles que persiguen
+  (de 85 a 14 px) y te bajan la vida de 100 a 73, y en cada barrio aparecen
+  los suyos.
+
+  LO PRIMERO DE LA PROXIMA SESION:
+     - Que Pablo juegue una partida entera y diga que tal se siente la
+       persecucion: si la policia es blanda, dura o injusta. Los numeros
+       estan al principio de `systems/PoliceSystem.js`.
+     - Que escuche el sonido y diga si canta o molesta (`src/core/Audio.js`).
+     - Resto de fase 3: las 10 misiones (que ya tienen de quien colgar),
+       comprar coches y pisos, y la economia por barrios de Chinatown Wars.
+
+  ARMAS: decidido dejarlas para despues de la fase 2. Un arma sin policia
+  ni peatones que reaccionen no tiene consecuencia; en cuanto exista la
+  policia, el arma cobra sentido sola.
