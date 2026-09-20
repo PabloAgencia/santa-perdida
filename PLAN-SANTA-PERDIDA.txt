@@ -1,5 +1,5 @@
 ================================================================================
-PUERTO SOMBRA - PLAN COMPLETO DEL PROYECTO
+SANTA PERDIDA - PLAN COMPLETO DEL PROYECTO
 ================================================================================
 Carpeta:  E:\Escritorio\GTA PRUEBA
 Motor:    Phaser 3 (web, sin paso de compilacion)
@@ -8,7 +8,7 @@ Ritmo:    ratos libres (domingos y huecos). Se avanza por fases, cada fase deja
           el juego jugable de punta a punta.
 
 Que es: sandbox de accion en vista cenital, ciudad costera ficticia llamada
-Puerto Sombra. El jugador es un delincuente de poca monta que llega sin dinero
+Santa Perdida. El jugador es un delincuente de poca monta que llega sin dinero
 y construye su red criminal. Todo el contenido es original.
 
 El bucle que tiene que funcionar antes que nada:
@@ -221,12 +221,12 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
   - Fase 1 practicamente terminada en una sesion.
 
   DONDE ESTA PUBLICADO (20-sep-2026):
-     Enlace bueno:  https://pabloagencia.github.io/puerto-sombra/
-     Repo:          https://github.com/PabloAgencia/puerto-sombra (publico)
+     Enlace bueno:  https://pabloagencia.github.io/santa-perdida/
+     Repo:          https://github.com/PabloAgencia/santa-perdida (publico)
      Para actualizarlo: git push. Nada mas. GitHub Pages lo republica solo.
 
      POR QUE GITHUB PAGES Y NO CLOUDFLARE: se probo Cloudflare Pages
-     (puerto-sombra.pages.dev) y quedo desplegado y funcionando, pero desde
+     (santa-perdida.pages.dev) y quedo desplegado y funcionando, pero desde
      la red de Pablo da timeout por el bloqueo de IPs de Cloudflare (el
      mismo que tumbo las webs de Creskio). GitHub Pages sirve desde IPs
      185.199.x y aguanta 24/7, igual que lumiere.creskio.com.

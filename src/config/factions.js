@@ -1,4 +1,4 @@
-// Tres bandas originales de Puerto Sombra. Cada una manda en unos barrios.
+// Tres bandas originales de Santa Perdida. Cada una manda en unos barrios.
 // La reputacion va de -100 (te quieren muerto) a +100 (eres de los suyos).
 
 export const FACTIONS = {

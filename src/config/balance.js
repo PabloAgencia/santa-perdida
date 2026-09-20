@@ -33,7 +33,7 @@ export const DRIVING = {
 };
 
 export const SAVE = {
-  key: 'puerto-sombra-save',
+  key: 'santa-perdida-save',
   version: 1,
   autosaveMs: 15000,
 };

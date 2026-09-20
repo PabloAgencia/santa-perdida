@@ -20,4 +20,4 @@ const game = new Phaser.Game({
   scene: [BootScene, CityScene, UIScene],
 });
 
-window.PuertoSombra = { game };
+window.SantaPerdida = { game };

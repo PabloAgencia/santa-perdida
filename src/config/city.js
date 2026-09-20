@@ -1,4 +1,4 @@
-// Puerto Sombra descrita como datos. CityMap.js convierte esto en la rejilla.
+// Santa Perdida descrita como datos. CityMap.js convierte esto en la rejilla.
 // Todas las coordenadas van en casillas, no en pixeles.
 
 export const T = {
