@@ -1,0 +1,42 @@
+AQUI VAN LAS IMAGENES TAL CUAL SALEN DE GEMINI
+================================================================================
+
+  sprites/originales/coches/       los coches vistos desde arriba
+  sprites/originales/edificios/    los tejados / edificios
+
+No hace falta recortarlas ni tocarlas: de eso se encarga
+`node herramientas/preparar-sprites.js`, que recorta, quita el borde,
+ajusta el tamaño que espera el juego y saca las variantes de color.
+
+COMO LLAMARLAS
+  Coches, con el nombre del vehiculo del juego:
+    chinchorro.png    el cacharro viejo
+    velagt.png        el deportivo
+    bastion.png       el sedan grande
+    avispa.png        la moto
+    carguero.png      la furgoneta
+    patrulla.png      el coche de policia
+    furgon.png        el furgon de asalto
+
+  Edificios, con el nombre del barrio:
+    centro.png  residencial.png  comercial.png
+    industrial.png  conflictivo.png  puerto.png
+
+  Si le pusiste otro nombre, da igual: el script dice cual no reconoce y se
+  renombra en un segundo.
+
+QUE HACER CUANDO LAS DEJES AQUI
+================================================================================
+  python herramientas/preparar-sprites.py
+
+Y recargar el juego. Eso es todo: el script escribe en sprites/listos/ con los
+nombres que el juego busca, y el juego usa la imagen si esta y el dibujo por
+codigo si no.
+
+SOBRE LA MARCA DEL PLAYGROUND
+  Al preparar el sprite se recorta el coche y se tira todo lo que queda suelto
+  fuera de el, que es donde cae esa marquita. La marca invisible que Google
+  mete en el propio color (SynthID) NO se toca: sigue dentro, y esta bien que
+  siga, porque la imagen la hizo una IA y eso no lo escondemos.
+  Si alguna marca cae ENCIMA del coche, avisame y lo vemos: eso ya no se puede
+  quitar limpiamente y conviene volver a generar la imagen.

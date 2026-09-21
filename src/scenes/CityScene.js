@@ -265,14 +265,24 @@ export class CityScene extends Phaser.Scene {
         );
       }
 
-      block(b.px, b.py, b.pw, b.ph, b.color, -1200);
+      // EL TEJADO. Si hay imagen preparada para el barrio, se usa esa (una
+      // sola imagen por edificio, que eso si lo aguanta la ciudad grande);
+      // si no, el rectangulo de color de siempre.
+      const claveTecho = `techo-${b.zone}`;
+      if (this.textures.exists(claveTecho)) {
+        this.add.image(b.px, b.py, claveTecho)
+          .setDisplaySize(b.pw, b.ph).setDepth(-1200);
+        b.conFoto = true;
+      } else {
+        block(b.px, b.py, b.pw, b.ph, b.color, -1200);
+      }
 
       block(b.px, b.py - b.ph / 2 + 2, b.pw - 4, 4, shade(b.color, 1.45), -1190);
       block(b.px - b.pw / 2 + 2, b.py, 4, b.ph - 4, shade(b.color, 1.3), -1190);
       block(b.px, b.py + b.ph / 2 - 2, b.pw - 4, 4, shade(b.color, 0.62), -1190);
       block(b.px + b.pw / 2 - 2, b.py, 4, b.ph - 4, shade(b.color, 0.7), -1190);
 
-      if (b.pw > 64 && b.ph > 64) {
+      if (!b.conFoto && b.pw > 64 && b.ph > 64) {
         const inset = 16 + Math.round(rnd() * 14);
         block(
           b.px, b.py, b.pw - inset, b.ph - inset,
@@ -280,10 +290,12 @@ export class CityScene extends Phaser.Scene {
         );
       }
 
-      this.decorarPorBarrio(b, block, rnd);
+      // los adornos pintados a mano solo si el tejado no trae foto: encima
+      // de una imagen de verdad quedan como parches
+      if (!b.conFoto) this.decorarPorBarrio(b, block, rnd);
 
       // ventanas por la fachada, para que se lea como edificio y no como caja
-      if (b.pw >= 96 && b.ph >= 96) {
+      if (!b.conFoto && b.pw >= 96 && b.ph >= 96) {
         const paso = 24;
         const luz = shade(b.color, 1.9);
         const apagada = shade(b.color, 0.45);

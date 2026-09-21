@@ -20,6 +20,21 @@ export class BootScene extends Phaser.Scene {
     super({ key: 'BootScene' });
   }
 
+  // Si hay imagenes preparadas en sprites/listos, se cargan y mandan sobre
+  // el dibujo por codigo. La lista evita pedir ficheros que no existen.
+  preload() {
+    this.load.on('loaderror', () => { /* sin sprites: se dibuja por codigo */ });
+    this.load.json('sprites-lista', 'sprites/listos/lista.json');
+    this.load.once('filecomplete-json-sprites-lista', () => {
+      const lista = this.cache.json.get('sprites-lista') || [];
+      for (const nombre of lista) {
+        const clave = nombre.replace(/\.png$/i, '');
+        this.load.image(clave, `sprites/listos/${nombre}`);
+      }
+      this.load.start();
+    });
+  }
+
   create() {
     this.makePixel();
     this.makeTileset();
@@ -122,6 +137,8 @@ export class BootScene extends Phaser.Scene {
   makeVehicles() {
     for (const [key, v] of Object.entries(VEHICLES)) {
       v.palette.forEach((bodyColor, i) => {
+        // si la imagen preparada ya esta cargada, esa manda
+        if (this.textures.exists(`veh-${key}-${i}`)) return;
         const g = this.g();
         this.drawVehicle(g, v, bodyColor);
         g.generateTexture(`veh-${key}-${i}`, v.length, v.width);
