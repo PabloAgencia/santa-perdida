@@ -149,7 +149,7 @@ export class HideoutScene extends Phaser.Scene {
       this.aviso.setColor('#e6e1d4');
       this.aviso.setText(
         enGuardar ? 'E para guardar la partida'
-          : enCama ? (GameState.health >= 100 ? 'Estas entero' : 'E para dormir y curarte')
+          : enCama ? (GameState.health >= GameState.vidaMaxima ? 'Estas entero' : 'E para dormir y curarte')
             : enPuerta ? 'E para salir a la calle' : ''
       );
     }
@@ -164,12 +164,12 @@ export class HideoutScene extends Phaser.Scene {
         this.destello();
         EventBus.emit(EVT.NOTIFY, { text: 'Partida guardada en el escondite', tone: 'money' });
       } else if (enCama) {
-        if (GameState.health >= 100) {
+        if (GameState.health >= GameState.vidaMaxima) {
           this.aviso.setColor('#8a8578');
           this.aviso.setText('No te hace falta dormir');
           this.confirmacion = 1.6;
         } else {
-          GameState.heal(100);
+          GameState.heal(GameState.vidaMaxima);
           Audio.notes([392, 330, 262], 0.16, 'triangle', 0.1);
           this.cameras.main.flash(420, 20, 24, 30);
           this.aviso.setColor('#8fd694');

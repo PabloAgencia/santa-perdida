@@ -137,7 +137,9 @@ export class Vehicle {
     const grip = Math.min(1, Math.abs(vf) / (s.maxSpeed * 0.1));
     const heavy = 1 - 0.22 * Math.min(1, Math.abs(vf) / s.maxSpeed);
     const dir = vf < 0 ? -1 : 1;
-    const steer = s.turnRate * grip * heavy * dir;
+    // cuanto mejor conduce el que va al volante, mejor toma las curvas
+    const pericia = input.pericia || 0;
+    const steer = s.turnRate * (1 + pericia * 0.1) * grip * heavy * dir;
 
     let newAngle = this.angle;
     if (input.left) newAngle -= steer * dt;
@@ -146,7 +148,9 @@ export class Vehicle {
       this.angle = newAngle;
     }
 
-    const retention = input.handbrake ? DRIVING.handbrakeRetention : s.lateralRetention;
+    // menos retencion lateral = mas agarre y menos derrape
+    const agarre = s.lateralRetention * (1 - pericia * 0.07);
+    const retention = input.handbrake ? DRIVING.handbrakeRetention : agarre;
     vr *= Math.pow(retention, dt * 60);
     this.lateral = Math.abs(vr);
     if (input.handbrake && vf > 0) vf = Math.max(0, vf - s.brake * 0.55 * dt);

@@ -14,6 +14,8 @@ import { PoliceSystem } from '../systems/PoliceSystem.js';
 import { StreetLamp } from '../entities/StreetLamp.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
+import { PickupSystem } from '../systems/PickupSystem.js';
+import { ENTRENAR } from '../config/balance.js';
 import { T } from '../config/city.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
 import { GameState } from '../core/GameState.js';
@@ -70,6 +72,7 @@ export class CityScene extends Phaser.Scene {
     this.police = new PoliceSystem(this, this.map, this.net);
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
+    this.pickups = new PickupSystem(this, this.map);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
 
@@ -823,7 +826,11 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
       if (this.drivingVehicle) this.exitVehicle();
-      else if (!this.missions.intentarEmpezar(this.player.x, this.player.y) && !this.enterHideout()) {
+      else if (
+        !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
+        !this.enterHideout() &&
+        !this.usarMaquinaCerca()
+      ) {
         const v = this.nearestVehicle();
         if (v) this.enterVehicle(v);
       }
@@ -854,8 +861,12 @@ export class CityScene extends Phaser.Scene {
         left,
         right,
         handbrake: k.handbrake.isDown,
+        // cuanto mejor conduces, mejor agarra el coche
+        pericia: GameState.atributo('volante') / 100,
       });
-      GameState.bumpStat('metersDriven', (this.drivingVehicle.speed * dt) / 10);
+      const metros = (this.drivingVehicle.speed * dt) / 10;
+      GameState.bumpStat('metersDriven', metros);
+      GameState.subirAtributo('volante', metros * ENTRENAR.volantePorMetro);
     } else {
       this.player.update(dt, { left, right, up, down, run: k.run.isDown });
     }
@@ -891,6 +902,7 @@ export class CityScene extends Phaser.Scene {
     this.resolvePlayerVsVehicles();
     this.updateLamps();
     this.checkPlayerHarm(dt);
+    this.pickups.update(dt, this.player, !!this.drivingVehicle);
 
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;
@@ -1068,7 +1080,7 @@ export class CityScene extends Phaser.Scene {
     this.time.delayedCall(1500, () => {
       if (fee > 0) GameState.spendMoney(fee, reason);
       GameState.setWanted(0);
-      GameState.heal(100);
+      GameState.heal(GameState.vidaMaxima);
       this.police.clearAll();
 
       if (this.drivingVehicle) {
@@ -1129,6 +1141,14 @@ export class CityScene extends Phaser.Scene {
     });
     this.add.image(this.hideoutDoor.x, this.hideoutDoor.y, 'px')
       .setDisplaySize(16, 20).setTint(0xe8b54a).setAlpha(0.8).setDepth(6);
+  }
+
+  // la maquina de refrescos de la acera: E al lado y a beber
+  usarMaquinaCerca() {
+    if (!this.pickups.cercaDeMaquina) return false;
+    const engorda = this.pickups.usarMaquina();
+    if (engorda) this.player.actualizarCuerpo();
+    return true;
   }
 
   // menu de pausa: la ciudad se congela y se abre por encima
@@ -1208,6 +1228,9 @@ export class CityScene extends Phaser.Scene {
       deliveries: GameState.stats.deliveries,
       wanted: GameState.wanted,
       health: GameState.health,
+      healthMax: GameState.vidaMaxima,
+      aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
+      maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
       chasing: this.police.chasing,
       territory: this.factions.currentInfo(),
       mission: this.missions.estado(),

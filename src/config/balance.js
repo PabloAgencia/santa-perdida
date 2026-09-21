@@ -5,6 +5,30 @@ export const PLAYER = {
   runSpeed: 200,
   radius: 9,
   enterRange: 58,
+
+  // ---- correr cansa ----
+  // Segundos de carrera seguida: con el aguante a cero das para poco, con el
+  // aguante al maximo cruzas un barrio. Es lo que hace que entrenar se note.
+  alientoBase: 2.6,
+  alientoPorAguante: 6,
+  alientoRecuperaAndando: 0.9,   // por segundo andando o parado
+  alientoRecuperaQuieto: 1.6,
+
+  // ---- lo que hace el cuerpo ----
+  // gordo: mas lento y te cansas antes. Cachas: algo mas lento que un flaco
+  // pero pegas mas y aguantas mas vida.
+  penalizacionPorGrasa: 0.25,    // hasta un 25% mas lento con la grasa a tope
+  penalizacionPorMusculo: 0.06,
+};
+
+// Cuanto sube cada cosa con el uso. Numeros pequeños a proposito: esto tiene
+// que notarse a las horas de juego, no en dos minutos.
+export const ENTRENAR = {
+  grasaPorSegundoCorriendo: -0.06,
+  aguantePorSegundoCorriendo: 0.12,
+  volantePorMetro: 0.0009,
+  musculoPorGolpe: 0.08,
+  punteriaPorAcierto: 0.05,
 };
 
 export const CAMERA = {

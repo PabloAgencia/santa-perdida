@@ -96,6 +96,15 @@ Tres numeros de `personArt.js` hacen todo el trabajo:
       · comer bien   30 €,  +60 vida, +2 grasa
       · atracarse    45 €, +100 vida, +3 grasa   (y te mueves peor un rato)
 
+  CORAZONES POR EL MAPA (como los de Vice City Stories) — pedido por Pablo
+    Iconos de salud escondidos por la ciudad: callejones, detras de los
+    edificios, en la explanada del puerto, junto a los hitos. Se cogen al
+    pasar por encima, dan vida y REAPARECEN pasado un rato.
+    Es la cura clasica de los GTA de esta epoca: gratis, pero hay que
+    saberse donde estan, y eso hace que te aprendas la ciudad.
+    Que no todo sea pagar: maquinas y puestos cuestan dinero, los corazones
+    son para cuando vas sin blanca y con la policia detras.
+
   HAMBRE (opcional y suave)
     En San Andreas hay que comer al menos cada 72 horas de juego o pasas
     hambre. Aqui, con un dia de juego corto, lo suave seria: si no comes en

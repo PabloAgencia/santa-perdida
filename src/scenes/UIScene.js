@@ -189,6 +189,18 @@ export class UIScene extends Phaser.Scene {
     this.healthLabel = this.add.text(16, h - 62, 'SALUD', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
     }).setOrigin(0, 1);
+
+    // el aliento: solo sale cuando no esta lleno, para no ensuciar la pantalla
+    this.stamBg = this.add.image(16, h - 36, 'px')
+      .setOrigin(0, 1).setDisplaySize(210, 4).setTint(0x3a3f45).setVisible(false);
+    this.stamBar = this.add.image(16, h - 36, 'px')
+      .setOrigin(0, 1).setDisplaySize(210, 4).setTint(0x6f9ad9).setVisible(false);
+
+    // aviso de "E para..." pegado al marcador
+    this.accionTexto = this.add.text(16, h - 78, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '15px',
+      color: COLORS.objective,
+    }).setOrigin(0, 1);
   }
 
   toMinimap(x, y) {
@@ -247,10 +259,20 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
-  updateHealth(health) {
-    const ratio = Phaser.Math.Clamp(health / 100, 0, 1);
+  // la vida maxima sube con el musculo, asi que la barra se mide contra ella
+  updateHealth(health, maximo = 100) {
+    const ratio = Phaser.Math.Clamp(health / (maximo || 100), 0, 1);
     this.healthBar.setDisplaySize(Math.max(0, 210 * ratio), 8);
     this.healthBar.setTint(ratio > 0.5 ? 0x8fd694 : ratio > 0.22 ? 0xe8b54a : 0xd9584a);
+  }
+
+  updateAliento(ratio) {
+    const lleno = ratio >= 0.999;
+    this.stamBg.setVisible(!lleno);
+    this.stamBar.setVisible(!lleno);
+    if (lleno) return;
+    this.stamBar.setDisplaySize(Math.max(0, 210 * Phaser.Math.Clamp(ratio, 0, 1)), 4);
+    this.stamBar.setTint(ratio > 0.25 ? 0x6f9ad9 : 0xd9584a);
   }
 
   setMoney(money) {
@@ -293,7 +315,9 @@ export class UIScene extends Phaser.Scene {
     this.updateArrow(destino);
     this.updateMinimap(d);
     this.updateWanted(d.wanted || 0);
-    this.updateHealth(d.health ?? 100);
+    this.updateHealth(d.health ?? 100, d.healthMax ?? 100);
+    this.updateAliento(d.aliento ?? 1);
+    this.accionTexto.setText(d.maquinaCerca ? 'E para comprar algo de comer' : '');
     this.updateTerritory(d.territory);
 
     this.vehiclePanel.setVisible(d.driving);

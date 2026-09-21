@@ -754,6 +754,58 @@ DECIMOCUARTA TANDA (21-sep-2026, noche): lo que Pablo vio jugando
      PENDIENTE: no hay forma de recuperar la contrasena si se olvida.
 
 ================================================================================
+DECIMOQUINTA TANDA (21-sep-2026, madrugada): el personaje empieza a existir
+================================================================================
+
+  CURARSE POR LA CALLE (antes solo se podia en el escondite)
+     - 26 CORAZONES escondidos en callejones y rincones, repartidos para que
+       no haya dos juntos. Se cogen al pasar por encima, dan 25 de vida y
+       vuelven a salir a los 95 segundos. Son gratis: premian conocerse la
+       ciudad. Como los de Vice City Stories, que es lo que pidio Pablo.
+     - 34 MAQUINAS DE REFRESCOS pegadas a las fachadas (se busca acera con
+       pared al lado, para que no queden plantadas en medio). E al lado y
+       compras: refresco 3 EUR y +10 de vida, o bocadillo 7 EUR y +25. Te
+       vende lo que te hace falta segun lo tocado que estes.
+       Cuestan dinero y ENGORDAN: el corazon es gratis pero hay que buscarlo.
+
+  SEIS ESTADISTICAS QUE HACEN ALGO
+     grasa · musculo · aguante · volante · punteria · como te miran.
+     Viven en `GameState.atributos`, se guardan en la partida y viajan a la
+     nube. Suben SOLAS con lo que haces, nada de puntos que repartir:
+       · correr quema grasa y sube aguante
+       · conducir sube el volante
+       · comer engorda
+     Y cada una cambia algo de verdad:
+       · el musculo sube la VIDA MAXIMA (de 100 a 150; toda la interfaz mide
+         contra ese maximo, ya no contra 100 fijo)
+       · la grasa te frena hasta un 25%
+       · el aguante alarga la carrera
+       · el volante da agarre y curva al coche que llevas (`pericia` viaja
+         en el input del vehiculo; los coches de la IA no lo usan)
+
+  CORRER YA CANSA
+     Barra azul debajo de la salud, que solo sale cuando no esta llena. Con
+     el aguante de inicio das para 4,4 segundos de carrera; entrenando, mas.
+     OJO al detalle: al quedarte sin fuelle hay que recuperar un tercio antes
+     de volver a correr. Sin eso se corre a tirones ridiculos, porque en
+     cuanto entra una gota de aliento se vuelve a gastar.
+
+  EL CUERPO SE VE
+     Gordo, flaco o cachas cambiando `ancho` en `world/personArt.js`:
+       ancho = 11 + grasa/100*5 + musculo/100*3   (de 11 a 19)
+     Se redibuja SOLO al cambiar de decena, no cada fotograma: son cuatro
+     texturas nuevas. Medido: de flaco (11) a gordo y cachas (17,1) se nota
+     a simple vista.
+     El aspecto salio de BootScene a `config/aspecto.js`, que es tambien
+     donde ira la ropa: son los mismos cuatro colores.
+
+  PANTALLA "COMO ESTAS" en la pausa, con las seis barras y, al lado de cada
+     una, PARA QUE SIRVE. Un numero sin explicacion no le dice nada a nadie.
+
+  MEDIDO: 254 fps con todo en marcha y 5.580 objetos en la escena (126 mas
+  que antes). Consola limpia.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -849,18 +901,21 @@ ARTE
 --------------------------------------------------------------------------------
 EL PERSONAJE  (pedido por Pablo el 21-sep) -> detalle en SISTEMA-PERSONAJE.txt
 --------------------------------------------------------------------------------
- 19. COMIDA: maquinas de refrescos por la calle (+vida, +algo de grasa) y
-     puestos de comida con racion a elegir. Hoy la unica forma de curarse es
-     cruzar media ciudad hasta el escondite.
- 20. ESTADISTICAS que suben con lo que haces y que HACEN algo: grasa,
-     musculo, aguante, pulso al volante, punteria y atractivo.
- 21. EL FISICO SE VE: gordo, flaco o cachas cambiando `ancho` y `largo` en
-     `world/personArt.js`. OJO, correccion a lo que se dijo antes: aqui esto
-     es BARATO, porque el personaje es dibujo parametrico, no un modelo 3D.
+ 19. [HECHO 21-sep] COMIDA: corazones por los callejones y maquinas de
+     refrescos en las aceras. QUEDA: puestos de comida con racion a elegir
+     y el hambre suave (perder aguante si no comes en todo un dia).
+ 20. [HECHO 21-sep] ESTADISTICAS: las seis, subiendo solas y con efecto
+     real. QUEDA: la punteria no hace nada hasta que existan las armas, y
+     "como te miran" aun no cambia precios ni encargos.
+ 21. [HECHO 21-sep] EL FISICO SE VE: gordo, flaco o cachas cambiando el
+     ancho del tronco. Confirmado que era barato: el personaje es dibujo
+     parametrico, no un modelo 3D.
  22. GIMNASIO con tres maquinas (pesas, cinta, saco), minijuegos cortos y
      tope diario para que la progresion no se haga en una tarde.
  23. ROPA en el armario del piso: cambia los colores del sprite, sube el
      atractivo y el respeto con unas bandas y lo baja con otras.
+     (La base ya esta: `config/aspecto.js` tiene el catalogo y el jugador
+      sabe cambiarse con `ponerRopa()`. Falta el armario y mas conjuntos.)
  24. GARAJE SEGUN EL TAMAÑO DE LA CASA: cuchitril 1 coche, piso 2, casa del
      centro 4, nave del puerto 6 (y ahi se entregan los coches encargados).
      Se guardan con su color, su tuneo y su estado.

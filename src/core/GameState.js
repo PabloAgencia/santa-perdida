@@ -29,7 +29,47 @@ class GameStateClass {
       earned: 0,
       spent: 0,
     };
+    // Lo que el personaje ES, no lo que ha hecho. Van de 0 a 100 y cada una
+    // cambia algo que se nota al jugar: no hay numeros de adorno.
+    this.atributos = {
+      grasa: 25,      // comer sube, correr baja. Mucha: lento pero aguantas
+      musculo: 20,    // pegar y el gimnasio. Mas daño y mas vida maxima
+      aguante: 30,    // cuanto puedes correr seguido
+      volante: 15,    // conduciendo. El coche agarra mejor
+      punteria: 0,    // disparando (cuando existan las armas)
+      atractivo: 20,  // ropa, fisico y el coche que llevas
+    };
     this.flags = {};
+  }
+
+  // ---------- atributos ----------
+
+  // el musculo da vida de mas: de 100 a 150 puntos
+  get vidaMaxima() {
+    return Math.round(100 + (this.atributos.musculo / 100) * 50);
+  }
+
+  atributo(clave) {
+    return this.atributos[clave] ?? 0;
+  }
+
+  // Devuelve true si ha cambiado de decena, que es cuando hay que rehacer el
+  // dibujo del personaje. Regenerar texturas en cada fotograma seria absurdo.
+  subirAtributo(clave, cantidad) {
+    if (!(clave in this.atributos) || cantidad === 0) return false;
+    const antes = this.atributos[clave];
+    const ahora = Phaser.Math.Clamp(antes + cantidad, 0, 100);
+    if (ahora === antes) return false;
+    this.atributos[clave] = ahora;
+
+    if (clave === 'musculo' && this.health > this.vidaMaxima) {
+      this.health = this.vidaMaxima;
+    }
+    const saltoDeTramo = Math.floor(antes / 10) !== Math.floor(ahora / 10);
+    if (saltoDeTramo) {
+      EventBus.emit(EVT.STATS_CHANGED, { atributo: clave, valor: ahora });
+    }
+    return saltoDeTramo;
   }
 
   addMoney(amount, reason = '') {
@@ -66,9 +106,12 @@ class GameStateClass {
     return this.health;
   }
 
+  // devuelve lo que se ha curado de verdad, para poder avisar de "ya estas entero"
   heal(amount) {
-    this.health = Math.min(100, this.health + amount);
+    const antes = this.health;
+    this.health = Math.min(this.vidaMaxima, this.health + amount);
     EventBus.emit(EVT.PLAYER_HURT, { health: this.health, amount: 0, cause: 'cura' });
+    return Math.round(this.health - antes);
   }
 
   setWanted(level) {
@@ -135,6 +178,7 @@ class GameStateClass {
       vehicles: this.vehicles,
       job: this.job,
       stats: this.stats,
+      atributos: this.atributos,
       flags: this.flags,
       savedAt: Date.now(),
     };
@@ -152,6 +196,8 @@ class GameStateClass {
     this.vehicles = data.vehicles ?? [];
     this.job = data.job ?? null;
     this.stats = Object.assign(this.stats, data.stats ?? {});
+    // partidas viejas no traen atributos: se quedan con los de inicio
+    this.atributos = Object.assign(this.atributos, data.atributos ?? {});
     this.flags = data.flags ?? {};
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;

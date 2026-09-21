@@ -4,6 +4,7 @@ import { VEHICLES, GLASS } from '../config/vehicles.js';
 import { shade } from '../core/color.js';
 import { FACTIONS } from '../config/factions.js';
 import { makeWalkFrames } from '../world/personArt.js';
+import { ROPA, LIENZO, CUERPO, anchoDelCuerpo } from '../config/aspecto.js';
 
 // Todo el arte se dibuja por codigo. Asi no hay ficheros sueltos que se
 // desparejen y toda la ciudad comparte la misma direccion artistica.
@@ -253,15 +254,19 @@ export class BootScene extends Phaser.Scene {
     g.fillRect(w * 0.02, h * 0.66, w * 0.025, h * 0.14);
   }
 
+  // El cuerpo del jugador cambia durante la partida (engorda, se pone cachas),
+  // asi que su aspecto vive en config/aspecto.js y Player lo redibuja cuando
+  // hace falta. Esto es solo el de arranque.
   makePlayer() {
+    const ropa = ROPA.calle;
     makeWalkFrames(this, 'player', {
-      chaqueta: 0xa8552f,
-      piel: 0xd8b48c,
-      pelo: 0x2b2118,
-      detalle: 0x7d3d20,
-      ancho: 15,
-      largo: 16,
-    }, 32);
+      chaqueta: ropa.chaqueta,
+      piel: ropa.piel,
+      pelo: ropa.pelo,
+      detalle: ropa.detalle,
+      ancho: anchoDelCuerpo(25, 20),
+      largo: CUERPO.largo,
+    }, LIENZO);
   }
 
   makePedestrians() {
@@ -366,6 +371,33 @@ export class BootScene extends Phaser.Scene {
       z.generateTexture(nombre, TILE, TILE);
       z.destroy();
     }
+
+    // corazon de salud, de los que se cogen por la calle
+    const cor = this.g();
+    const dibujarCorazon = (g, cx, cy, r, color, alpha) => {
+      g.fillStyle(color, alpha);
+      g.fillCircle(cx - r * 0.45, cy - r * 0.25, r * 0.55);
+      g.fillCircle(cx + r * 0.45, cy - r * 0.25, r * 0.55);
+      g.fillTriangle(cx - r, cy, cx + r, cy, cx, cy + r * 1.05);
+    };
+    dibujarCorazon(cor, 14, 12, 10, 0x6e1512, 1);      // borde oscuro
+    dibujarCorazon(cor, 14, 12, 8.4, 0xd9384a, 1);     // cuerpo
+    dibujarCorazon(cor, 13, 11, 4.2, 0xf27a86, 0.85);  // brillo
+    cor.generateTexture('corazon', 28, 28);
+    cor.destroy();
+
+    // maquina de refrescos: alta, con su cristal y su luz
+    const maq = this.g();
+    maq.fillStyle(0x1b1f25, 1);
+    maq.fillRoundedRect(0, 0, 14, 20, 2);
+    maq.fillStyle(0x2f6b7a, 1);
+    maq.fillRect(2, 3, 10, 12);
+    maq.fillStyle(0x8fd0e0, 0.75);
+    maq.fillRect(3, 4, 4, 10);
+    maq.fillStyle(0xe8b54a, 1);
+    maq.fillRect(3, 16, 8, 2);
+    maq.generateTexture('maquina', 14, 20);
+    maq.destroy();
 
     // destello de la sirena
     const l = this.g();

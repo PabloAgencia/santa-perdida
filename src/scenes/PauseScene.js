@@ -33,6 +33,7 @@ export class PauseScene extends Phaser.Scene {
       { label: `GUARDAR EN LA ${SaveSystem.ranura}`, accion: () => this.guardar() },
       { label: 'CAMBIAR DE PARTIDA', accion: () => this.aLasRanuras() },
       { label: 'EMPEZAR DE CERO AQUI', accion: () => this.nueva() },
+      { label: 'COMO ESTAS', accion: () => this.verAtributos() },
       { label: 'CONTROLES', accion: () => this.controles() },
       { label: 'VOLVER AL MENU', accion: () => this.alMenu() },
     ];
@@ -131,6 +132,65 @@ export class PauseScene extends Phaser.Scene {
     this.scene.stop('CityScene');
     this.scene.stop();
     this.scene.start('CityScene');
+  }
+
+  // Como esta el personaje ahora mismo. Cada barra dice ademas PARA QUE sirve:
+  // un numero sin explicacion no le dice nada a nadie.
+  verAtributos() {
+    if (this.panel) {
+      this.panel.destroy();
+      this.panel = null;
+      return;
+    }
+    const w = this.scale.width;
+    const h = this.scale.height;
+    const a = GameState.atributos;
+
+    const filas = [
+      ['GRASA', a.grasa, 'comes mucho: mas lento, pero aguantas'],
+      ['MUSCULO', a.musculo, `pegas mas fuerte · vida maxima ${GameState.vidaMaxima}`],
+      ['AGUANTE', a.aguante, 'cuanto corres seguido'],
+      ['VOLANTE', a.volante, 'el coche agarra mejor en las curvas'],
+      ['PUNTERIA', a.punteria, 'cuando haya armas'],
+      ['COMO TE MIRAN', a.atractivo, 'precios y encargos mejores'],
+    ];
+
+    this.panel = this.add.container(w / 2, h / 2);
+    const fondo = this.add.image(0, 0, 'px')
+      .setDisplaySize(600, 360).setTint(0x0d1014).setAlpha(0.98);
+    this.panel.add(fondo);
+
+    this.panel.add(this.add.text(0, -150, 'COMO ESTAS', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 5,
+      fontSize: '30px', color: '#e8b54a',
+    }).setOrigin(0.5));
+
+    filas.forEach(([nombre, valor, para], i) => {
+      const y = -95 + i * 46;
+      this.panel.add(this.add.text(-260, y - 12, nombre, {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
+        fontSize: '16px', color: COLORS.ink,
+      }));
+      this.panel.add(this.add.text(-260, y + 8, para, {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
+        fontSize: '12px', color: COLORS.dim,
+      }));
+      this.panel.add(this.add.image(60, y, 'px')
+        .setOrigin(0, 0.5).setDisplaySize(180, 9).setTint(0x2a2f38));
+      this.panel.add(this.add.image(60, y, 'px')
+        .setOrigin(0, 0.5)
+        .setDisplaySize(Math.max(2, 180 * (valor / 100)), 9)
+        .setTint(valor > 66 ? 0x8fd694 : valor > 33 ? 0xe8b54a : 0x8a8578));
+      this.panel.add(this.add.text(252, y, String(Math.round(valor)), {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
+        fontSize: '15px', color: COLORS.dim,
+      }).setOrigin(0, 0.5));
+    });
+
+    this.panel.add(this.add.text(0, 148, 'Todo esto sube solo con lo que haces', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
+      fontSize: '13px', color: COLORS.dim,
+    }).setOrigin(0.5));
   }
 
   controles() {
