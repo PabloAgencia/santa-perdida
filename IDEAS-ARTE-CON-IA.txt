@@ -1,0 +1,112 @@
+================================================================================
+SANTA PERDIDA — DONDE AYUDARIA GENERAR ARTE CON IA (Google AI Studio)
+                                                           21-sep-2026
+================================================================================
+
+AVISO PREVIO, PORQUE IMPORTA
+  Hoy TODO el arte del juego se dibuja por codigo (`scenes/BootScene.js`):
+  coches, personas, farolas, suelo. Eso se hizo a proposito y tiene dos
+  ventajas que no conviene tirar a la basura:
+    · toda la ciudad comparte la misma direccion artistica sola;
+    · no hay ficheros sueltos que se desparejen, ni descargas, ni peso.
+  Meter imagenes generadas cambia eso. Asi que la pregunta no es "¿puede la
+  IA dibujar esto?" (puede), sino "¿donde suma sin romper la coherencia?".
+
+  Lo ordeno de MAS seguro a MAS arriesgado.
+
+
+================================================================================
+VERDE — suma mucho y no puede romper nada
+================================================================================
+
+1. RETRATOS DE LOS CONTACTOS DE BANDA
+   Cuando hablas con el contacto de los Amarres, que salga su cara en un
+   recuadro mientras te cuenta el encargo. Es una imagen dentro de una caja
+   de dialogo: no convive con el mundo, asi que no puede desentonar.
+   Pide: tres bandas x 2-3 caras = 6-9 retratos, mismo encuadre, misma luz,
+   paleta de la banda (verde-azulado, naranja, morado).
+   GANANCIA: enorme. Es lo que convierte "un marcador" en "un personaje".
+
+2. PANTALLA DE TITULO / PORTADA
+   Ahora el menu es un perfil de ciudad hecho con rectangulos. Una
+   ilustracion de fondo de Santa Perdida de noche, con el faro y la torre,
+   le daria aspecto de juego de verdad. Una sola imagen.
+
+3. ICONOS: armas, negocios, tipos de mision, medallas, mercancias.
+   Pequeños, planos, de un solo color. La IA los saca en un momento y
+   quedan mejor que un cuadrado de color.
+
+4. CARTELES Y LOGOS DE LOS NEGOCIOS
+   El taller, el bar, la tienda de la esquina, la casa de empeños. Texturas
+   pequeñas (64x32) que se pegan en la fachada. Ojo: pedir que sean planos y
+   con pocos colores, si no cantan al lado del resto.
+
+5. PANTALLA DE MAPA GRANDE: el fondo de pergamino/plano de la ciudad, con
+   el mar y los barrios. Se dibuja encima lo que ya calculas.
+
+
+================================================================================
+AMBAR — puede salir muy bien, pero hay que probar con cuidado
+================================================================================
+
+6. TEXTURAS DE SUELO (asfalto, acera, hierba, arena, madera del muelle)
+   Son casillas de 32x32 que se repiten. La IA puede darles grano y manchas
+   que ahora son cuatro puntos sueltos. RIESGO: que no casen al repetirse.
+   Hay que pedirlas "sin costuras" y revisarlas puestas en el juego, no
+   sueltas.
+
+7. DETALLES DE CALLE: contenedores, bancos, arboles, papeleras, conos,
+   maquinas expendedoras. Son props pequeños que ahora son rectangulos.
+   Aqui la IA sube el nivel visual sin tocar nada importante.
+   RIESGO: que cada uno tenga su propio estilo. Pedirlos TODOS de una vez,
+   en una sola lamina, para que salgan hermanos.
+
+8. TEJADOS DE LOS EDIFICIOS
+   Ahora cada barrio tiene su tejado por codigo (dos aguas, toldos,
+   climatizadores, contenedores). Unas pocas laminas de tejado por barrio
+   darian muchisimo. RIESGO: hay que respetar el tamaño exacto de cada
+   edificio, que es variable; mejor hacerlas "por trozos" que se repiten.
+
+
+================================================================================
+ROJO — solo con una prueba seria antes
+================================================================================
+
+9. COCHES VISTOS DESDE ARRIBA
+   Es donde mas se notaria el salto... y donde mas facil es fracasar. Un
+   coche cenital tiene que cumplir tres cosas a la vez: perspectiva
+   exactamente vertical (nada de tres cuartos), el morro mirando a la
+   derecha, y la misma escala que los demas. Las IA tienden a colar
+   perspectiva y sombras raras.
+   COMO PROBARLO BIEN: pedir UNA lamina con los cinco coches juntos, misma
+   escala y misma luz, sobre fondo transparente. Si los cinco salen
+   coherentes, adelante. Si no, no insistir: los actuales cumplen.
+
+10. PERSONAJES DESDE ARRIBA (jugador, peatones, bandas, policia)
+    Mismo problema, agravado: ademas necesitan CUATRO FOTOGRAMAS de andar
+    que encajen entre si. Tu sistema actual ya los genera y anima bien.
+    Aqui yo no tocaria salvo que el resultado sea claramente mejor.
+
+11. EL PERSONAJE EN GRANDE para la pantalla de ropa/personalizacion: eso si,
+    y es verde en realidad, porque es una ilustracion aparte del mundo.
+
+
+================================================================================
+COMO PEDIRLAS PARA QUE SALGAN UTILES
+================================================================================
+  · Fondo transparente siempre (PNG), salvo portadas.
+  · Decir el tamaño final en pixeles y que se vea bien a ese tamaño, no una
+    obra de arte de 2000 px reducida a 40.
+  · Paleta cerrada: darle los colores que ya usa el juego (los tienes en
+    `config/city.js` y `config/vehicles.js`).
+  · Pedir LAS COSAS DE UNA FAMILIA EN UNA SOLA IMAGEN (todos los props
+    juntos, todos los coches juntos). Es la unica forma de que salgan
+    hermanos entre si.
+  · Vista cenital pura, luz desde arriba a la izquierda (es la que usa todo
+    el juego ahora mismo).
+  · Nada de marcas, logos reales ni coches reconocibles: el encargo pide
+    contenido original.
+
+ORDEN QUE PROPONGO
+  1) Retratos de los contactos   2) Iconos   3) Props de calle en una lamina
+  4) Portada del menu            5) Prueba controlada de los cinco coches

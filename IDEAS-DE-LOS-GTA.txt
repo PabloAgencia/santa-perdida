@@ -1,0 +1,297 @@
+================================================================================
+SANTA PERDIDA — QUE COPIAR (Y QUE NO) DE SAN ANDREAS, VICE CITY STORIES
+Y CHINATOWN WARS                                          21-sep-2026
+================================================================================
+
+COMO SE USA ESTA LISTA
+  Se copian MECANICAS, nunca nombres, historias, personajes, misiones concretas
+  ni arte. Todo lo de aqui esta reescrito para Santa Perdida y con nombres
+  propios nuevos. Cada idea dice lo que engancha con lo que YA tienes.
+
+  Coste:  [B] barato, una tarde     [M] medio, un dia o dos
+          [C] caro, varios dias
+
+  Lo que ya hay montado y sirve de base: GameState, tres bandas con su
+  reputacion, seis barrios, misiones por contactos, repartos con J, policia
+  con niveles de busca, escondite, tres ranuras de partida, cuentas en la nube.
+
+
+================================================================================
+1. DINERO QUE ENTRA SOLO: NEGOCIOS  (de Vice City Stories)
+================================================================================
+En VCS el jugador se queda locales, elige a que se dedican, dan dinero cada
+dia y las bandas rivales los atacan. Es LA pieza que le falta a Santa Perdida:
+ahora mismo ganas dinero y no hay donde meterlo.
+
+1.1 [M] COMPRAR LOCALES. Cada barrio con 3-5 locales en venta, con precio
+    segun la zona (el centro caro, Los Rompientes barato). Se entra en el
+    marcador y se compra. Encaja con `GameState.money` y el sistema de
+    marcadores que ya existe para los contactos.
+
+1.2 [M] ELEGIR A QUE SE DEDICA cada local: cuatro oficios con su cara y su
+    cruz. Por ejemplo: taller (poco dinero, pero te arregla el coche gratis),
+    almacen (guarda genero para revender), local de cobros (renta fija) y
+    tapadera (baja el nivel de busca mas rapido en ese barrio). Nada de
+    nombres de GTA: son negocios de la ciudad.
+
+1.3 [B] RENTA CADA CIERTO TIEMPO. Un sobre de dinero que se acumula en el
+    local y hay que ir a recogerlo. Si tardas, se llena y deja de producir:
+    obliga a dar vueltas por la ciudad en vez de dejar el juego solo.
+
+1.4 [M] QUE TE LOS ATAQUEN. Cada local con su "salud". Las bandas con las que
+    estas mal mandan gente y si no llegas a tiempo lo pierdes. Aviso en el
+    minimapa y unos minutos para llegar. Esto le da uso de verdad a la
+    reputacion de bandas que ya tienes.
+
+1.5 [M] MEJORAR EL LOCAL en tres niveles: mas renta, mas aguante, mas
+    tiempo hasta que se llena el sobre.
+
+1.6 [B] UN NEGOCIO QUE DA ENCARGOS PROPIOS. El taller te pide llevar coches;
+    el almacen, mercancia. Reaprovecha entero el JobSystem que ya existe.
+
+
+================================================================================
+2. COMPRAR Y GUARDAR: PISOS Y GARAJES  (de San Andreas)
+================================================================================
+2.1 [M] PISOS FRANCOS que se compran. Ahora tienes uno; que haya cuatro o
+    cinco por la ciudad, cada uno en un barrio, con su cama para curarte y su
+    punto de guardado. El de la zona conflictiva, barato; el del centro, caro.
+
+2.2 [M] GARAJE EN CADA PISO. Aparcas un coche dentro y sigue ahi al volver.
+    Ya guardas los coches del jugador en la partida, asi que es marcar cuales
+    estan "en garaje" y respawnearlos junto al piso.
+
+2.3 [B] REAPARECER EN EL PISO MAS CERCANO al morir o al que te detengan, en
+    vez de siempre en el mismo. Cambio pequeño en `respawn()`.
+
+2.4 [C] INTERIORES DISTINTOS para cada piso, aunque sean cuatro muebles
+    cambiados de sitio. Ya tienes HideoutScene, es multiplicarla por datos.
+
+
+================================================================================
+3. COCHES: ROBAR, ARREGLAR, TUNEAR  (de Chinatown Wars y San Andreas)
+================================================================================
+3.1 [B] ROBAR CUESTA ALGO. En Chinatown Wars un coche viejo se abre con un
+    destornillador y uno nuevo hay que puentearlo. Aqui: los cacharros se
+    abren al momento, los buenos piden aguantar E unos segundos con una barra
+    que se llena, y si va alguien dentro, ya sabes, sale y monta el numero
+    (esto ultimo ya esta hecho).
+
+3.2 [M] ALARMAS. Los coches caros pitan al abrirlos y llaman a la policia si
+    no te vas rapido. Da un motivo para robar el coche discreto.
+
+3.3 [M] TALLER DE PINTURA. Entras con el coche, pagas, sale pintado de otro
+    color, con la chapa arreglada y SIN policia detras (si no te estan
+    viendo). Es la valvula de escape clasica de los GTA y encaja con el
+    `PoliceSystem` que ya tienes.
+
+3.4 [M] TUNEO DE VERDAD: color, llantas, un aleron, cristales tintados,
+    motor y frenos. Lo visual es facil porque tu arte es por codigo: pintar
+    el sprite es cambiar numeros. Lo mecanico toca `config/vehicles.js`.
+
+3.5 [B] MATRICULA Y ESTADO. Un coche robado hace poco "canta" mas: si pasas
+    al lado de una patrulla con un coche recien robado, hay riesgo de que te
+    miren. Con el taller de pintura se quita.
+
+3.6 [M] MAS TIPOS DE COCHE: taxi, coche de basura, ambulancia, furgon
+    blindado, deportivo raro que solo sale de noche en el puerto.
+
+3.7 [B] COMBUSTIBLE, solo si te apetece: gasolineras y aguja. Es divisivo,
+    algunos lo odian. Lo dejaria para el final o fuera.
+
+
+================================================================================
+4. LA POLICIA  (de Chinatown Wars)
+================================================================================
+4.1 [M] BAJAR LA BUSCA CARGANDOTE PATRULLAS. En Chinatown Wars cada estrella
+    se quita destrozando un coche de policia (embistiendolo, no a tiros). Es
+    lo mejor que tiene ese juego y ya lo tenias apuntado como referencia.
+    Encaja con `VEHICLE_CRASHED` y con las unidades del PoliceSystem.
+
+4.2 [B] CONTROLES DE CARRETERA que ya existen a nivel 3: darles mas
+    presencia, con conos y las patrullas cruzadas.
+
+4.3 [M] HELICOPTERO a nivel 3-4: un foco que te sigue y que la policia de
+    tierra "ve" a traves de el. Un circulo de luz en el suelo basta.
+
+4.4 [B] QUE LA BUSCA SE NOTE EN LA CIUDAD: menos peatones por la calle, el
+    trafico se aparta, las sirenas suenan mas cerca.
+
+4.5 [M] DENUNCIAS: si haces algo gordo delante de gente, uno saca el movil y
+    a los segundos sube la busca. Si le quitas de en medio antes, no. Da
+    tension y usa los peatones que ya tienes.
+
+
+================================================================================
+5. BARRIOS Y BANDAS  (de San Andreas)
+================================================================================
+5.1 [C] GUERRA POR EL TERRITORIO. Entras en un barrio rival, montas follon y
+    empiezan a venir oleadas; si aguantas, el barrio pasa a ser tuyo y da
+    dinero. Es la mecanica estrella de San Andreas y aqui pega mucho porque
+    ya tienes zonas pintadas en el minimapa.
+
+5.2 [M] RESPETO QUE SE VE. Tu reputacion con cada banda ya existe; que se
+    note: en su barrio te saludan, te dejan entrar en sitios, te bajan el
+    precio en sus negocios. Y al contrario si te odian.
+
+5.3 [M] LLEVAR GENTE DETRAS. Con respeto alto, uno o dos de la banda te
+    siguen y pelean contigo. Reaprovecha el peaton hostil que ya sabe
+    perseguir y pegar, cambiandole el bando.
+
+5.4 [B] PINTADAS. Tapar la pintada de otra banda en su barrio te sube respeto
+    con los tuyos y te lo baja con ellos. Barato: ya dibujas pintadas en las
+    fachadas del barrio conflictivo.
+
+5.5 [M] QUE LAS BANDAS SE PELEEN ENTRE ELLAS sin ti, en las fronteras entre
+    barrios. La ciudad parece viva aunque estes mirando.
+
+
+================================================================================
+6. COMPRAR Y VENDER POR BARRIOS  (de Chinatown Wars)
+================================================================================
+En Chinatown Wars compras genero barato en un barrio y lo vendes caro en
+otro, con precios que cambian solos y avisos en el movil. Es un juego dentro
+del juego y engancha muchisimo.
+
+6.1 [M] MERCADO POR BARRIOS. Cuatro o cinco mercancias (piezas de coche,
+    tabaco, aparatos, material de obra) con precio distinto en cada barrio y
+    que se mueve cada pocos minutos.
+
+6.2 [B] EL MOVIL/LIBRETA con la tabla de precios: donde esta barato y donde
+    caro. Es una pantalla de texto, nada mas.
+
+6.3 [B] CHIVATAZOS: "hoy pagan el doble por X en el puerto". Un aviso y
+    corriendo para alla.
+
+6.4 [M] LIMITE DE LO QUE PUEDES CARGAR, y mas sitio si tienes almacen (enlaza
+    con el bloque 1). Asi los negocios y el mercado se necesitan entre ellos.
+
+6.5 [M] RIESGO: llevar mucha mercancia y que te pare la policia = la pierdes.
+    Da sentido a ir con cuidado y a tener un coche discreto.
+
+
+================================================================================
+7. EL PERSONAJE  (de San Andreas)
+================================================================================
+7.1 [M] ESTADISTICAS QUE SUBEN SOLAS con lo que haces: conducir mejora el
+    pulso al volante, correr sube el aguante, pelear sube el daño. En San
+    Andreas esto es lo que hace que empieces torpe y acabes siendo una
+    maquina, y se nota en cada partida.
+
+7.2 [B] AGUANTE: la carrera con SHIFT se agota y se recupera; sube con el uso.
+
+7.3 [M] ROPA. Cambiarte en el armario del piso y que cambie el sprite. Tu
+    personaje se dibuja por codigo con colores, asi que es cambiar la paleta:
+    baratisimo para lo que aporta. Y la ropa influye en el respeto, como alla.
+
+7.4 [B] COMER para curarte: puestos de comida por la calle, gastas poco
+    dinero y recuperas salud. Mejor que la cama del piso para emergencias.
+
+7.5 [C] GIMNASIO Y FISICO (musculo/grasa). Bonito pero es mucho arte y mucho
+    balanceo para lo que da en un juego cenital. Yo lo dejaria fuera.
+
+7.6 [M] APARIENCIA QUE ABRE PUERTAS: con pinta de una banda, sus barrios te
+    tratan mejor y los rivales peor.
+
+
+================================================================================
+8. TRABAJOS SUELTOS  (de toda la serie)
+================================================================================
+Son la mejor relacion entre lo que cuestan y lo que dan: reaprovechan coches
+que ya existen y llenan el mundo.
+
+8.1 [B] TAXI: recoges a alguien, lo llevas, cobras por distancia y por rapidez.
+    El JobSystem ya hace casi esto.
+8.2 [M] AMBULANCIA: recoger heridos contrarreloj (y ya tienes peatones
+    tumbados por la calle). Sube la salud maxima al completar rondas.
+8.3 [M] JUSTICIERO: en un coche patrulla, perseguir a los coches temerarios
+    que ya existen en el trafico. Y de paso te limpia la busca, como alla.
+8.4 [B] BOMBERO o grua, si algun dia hay incendios o coches destrozados.
+8.5 [M] CARRERAS callejeras: puntos de control por la ciudad, apuestas y un
+    coche rapido. Barato de montar con la red de calles que ya tienes.
+8.6 [M] REPARTOS A CONTRARRELOJ mas duros que los de ahora, con paquetes
+    fragiles que se rompen si chocas.
+
+
+================================================================================
+9. COSAS ESCONDIDAS Y COLECCIONABLES
+================================================================================
+9.1 [B] PAQUETES ESCONDIDOS por la ciudad (en Chinatown Wars son camaras que
+    hay que romper): 50 o 100, y cada 10 te dan algo: dinero, un coche en el
+    garaje, un descuento.
+9.2 [B] SALTOS: rampas por la ciudad, camara lenta al volar y una lista de
+    los que llevas.
+9.3 [M] SITIOS UNICOS: el faro, la grua del puerto, la torre. Subir o llegar
+    a sitios raros da recompensa.
+9.4 [B] ESTADISTICAS DE PARTIDA: kilometros, coches robados, dinero ganado,
+    la carrera mas larga. Ya guardas varias en `GameState.stats`.
+
+
+================================================================================
+10. LA CIUDAD, MAS VIVA
+================================================================================
+10.1 [M] DIA Y NOCHE. De noche: farolas encendidas (ya las tienes), menos
+     gente, mas policia, negocios cerrados. De dia todo lo contrario. Es de
+     las cosas que mas cambian la sensacion por lo poco que cuesta.
+10.2 [M] LLUVIA: charcos, menos agarre, la gente corre a resguardarse.
+10.3 [B] HORARIOS: los contactos de las bandas solo estan a ciertas horas,
+     los negocios cierran de madrugada.
+10.4 [M] RADIO EN EL COCHE: tres o cuatro emisoras sintetizadas con lo que ya
+     tienes en `core/Audio.js`, con cuñas de la propia ciudad. Nada de
+     musica de nadie: generada.
+10.5 [B] PEATONES CON MAS VIDA: parejas que hablan, alguien corriendo,
+     alguien fumando en un portal. Son estados nuevos del peaton.
+10.6 [M] TRAFICO SEGUN LA ZONA Y LA HORA: furgonetas en el puerto, coches
+     buenos en el centro, atascos a las ocho.
+10.7 [B] CLAXON. Suena tonto, pero da muchisima vida.
+
+
+================================================================================
+11. MISIONES: COMO ESTRUCTURARLAS
+================================================================================
+11.1 [M] RAMAS POR BANDA. Ya tienes tres bandas y misiones colgando de cada
+     una. Que trabajar para una te cierre puertas con otra de verdad, no solo
+     en el numero de reputacion.
+11.2 [M] MISIONES QUE NO SEAN "VE AQUI Y VUELVE": seguir a alguien sin que te
+     vea, esperar en un sitio a que pase algo, sacar a alguien de un sitio
+     con la policia detras, una entrega que sale mal a mitad.
+11.3 [B] REINTENTAR AL INSTANTE al fallar, sin volver a cruzar la ciudad. Es
+     lo que mas se agradece de los GTA modernos.
+11.4 [M] AVISOS POR EL MOVIL antes de una mision, para dar contexto sin
+     cinematicas.
+11.5 [C] UNA HISTORIA CON PRINCIPIO Y FINAL: tres actos, uno por banda, y un
+     final donde eliges. Es lo que convierte "una ciudad por la que conduces"
+     en un juego que se termina.
+
+
+================================================================================
+12. CALIDAD DE VIDA (lo que no se ve pero se nota)
+================================================================================
+12.1 [B] MAPA GRANDE a pantalla completa con leyenda, no solo el minimapa.
+12.2 [B] PUNTO DE DESTINO: marcas un sitio en el mapa y sale la flecha.
+12.3 [B] CAMARA QUE SE ALEJA con la velocidad (ya tienes algo, subirlo).
+12.4 [B] TECLAS RECONFIGURABLES y mando.
+12.5 [B] AJUSTES: volumen aparte para motor, golpes y sirenas.
+12.6 [M] AUTOGUARDADO AL ENTRAR EN UNA MISION, para no perder media hora.
+
+
+================================================================================
+POR DONDE EMPEZARIA YO
+================================================================================
+Ordenado por lo que mas cambia el juego y menos cuesta:
+
+  1. Comprar coches y pisos (2.1 y 2.2)   — ya hay precios puestos y el
+     dinero no sirve para nada. Es lo que falta de la fase 3.
+  2. Negocios que dan renta (1.1 a 1.4)   — la pieza de Vice City Stories.
+     Convierte el juego en algo que quieres seguir jugando.
+  3. Mercado por barrios (6.1 a 6.3)      — la pieza de Chinatown Wars.
+     Mucho enganche por poco codigo.
+  4. Bajar la busca cargandote patrullas (4.1) y taller de pintura (3.3).
+  5. Dia y noche (10.1) — lo que mas cambia la sensacion por lo que cuesta.
+  6. Taxi y justiciero (8.1 y 8.3) — dos trabajos que se hacen en una tarde.
+  7. Robar coches con su gracia (3.1) y alarmas (3.2).
+  8. Guerra por el territorio (5.1) — la gorda de San Andreas, para cuando
+     todo lo demas este.
+
+  Lo que dejaria para el final o fuera: gimnasio y fisico (7.5), combustible
+  (3.7) e interiores propios para cada piso (2.4).

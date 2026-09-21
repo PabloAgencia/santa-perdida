@@ -754,17 +754,117 @@ DECIMOCUARTA TANDA (21-sep-2026, noche): lo que Pablo vio jugando
      PENDIENTE: no hay forma de recuperar la contrasena si se olvida.
 
 ================================================================================
-PENDIENTE — LO SIGUIENTE QUE HAY QUE HACER  (apuntado el 21-sep-2026)
+PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
-1. VERLO CON LOS OJOS. Todo lo de arriba esta medido, pero la comprobacion
-   visual en el navegador se quedo a medias porque Chrome se cerro. Hay que
-   abrir el juego y mirar: semaforos, pasos de cebra, altura de los edificios,
-   la plaza y las farolas.
-2. AJUSTAR A GUSTO lo que es de gusto: aceleracion y frenada
-   (`config/vehicles.js`), volumen de la sirena (`core/Audio.js`, siren()) y
-   duracion del verde (`systems/TrafficLights.js`, VERDE y AMBAR).
-3. RESTO DE LA FASE 3: comprar coches y pisos, y la economia por barrios de
-   Chinatown Wars. Las 10 misiones ya se pueden jugar enteras.
-4. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba (escondite,
-   muerte, entrar y salir del coche). El seguro sigue puesto.
-5. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.
+
+LOS TRES CUADERNOS DE IDEAS (en esta misma carpeta)
+  · IDEAS-DE-LOS-GTA.txt ............ 66 ideas de San Andreas, Vice City
+    Stories y Chinatown Wars, cada una con su coste [B]/[M]/[C].
+  · IDEAS-DE-LOS-GTA-2-LO-GORDO.txt . las 11 piezas que sostienen el juego,
+    explicadas por dentro y con el fichero de aqui donde toca cada una.
+  · IDEAS-ARTE-CON-IA.txt ........... donde ayudaria generar arte con Google
+    AI Studio y donde NO conviene tocarlo.
+  Todo lo de esos tres cuadernos esta pendiente. Esta lista es el resumen.
+
+
+--------------------------------------------------------------------------------
+LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
+--------------------------------------------------------------------------------
+  1. COMPRAR COCHES Y PISOS. Los precios ya estan puestos en
+     `config/vehicles.js` (1.800 a 8.500) y no sirven para nada. Con garaje
+     en cada piso, y reaparecer en el piso mas cercano.
+  2. LOCALES QUE DAN RENTA, con sus propias misiones por tipo, y que las
+     bandas con las que estas mal te los ataquen. Es la pieza de Vice City
+     Stories y lo que le da uso de verdad a la reputacion.
+  3. LA LISTA DE COCHES ENCARGADOS en la grua del puerto (import/export).
+     El puerto y la grua ya estan dibujados; pagan segun el estado del coche.
+  4. PANTALLA DE PROGRESO con porcentaje, tipo "100%": misiones, locales,
+     coches, encargos, medallas. Es lo que da rumbo cuando acaba la historia.
+
+--------------------------------------------------------------------------------
+EL SALTO GRANDE
+--------------------------------------------------------------------------------
+  5. ARMAS Y PELEA, con FIJACION AUTOMATICA al enemigo mas cercano y una
+     tecla para cambiar de objetivo (el metodo de Chinatown Wars, el unico
+     que funciona en cenital). Es el agujero mas grande del juego: sin armas,
+     el respeto, el territorio y la policia no significan nada.
+  6. TIENDA DE ARMAS Y CHALECO, con precios encajados en la economia de aqui
+     (bate 120, pistola 900, escopeta 2.400, subfusil 5.000, chaleco 700).
+  7. TALLER DE PINTURA (el "pay'n'spray" de toda la vida): entras con el
+     coche, pagas, sale de otro color, con la chapa arreglada y SIN policia
+     detras si no te estan viendo. -> PEDIDO EXPRESAMENTE POR PABLO.
+  8. QUITARSE LA BUSCA CARGANDOSE PATRULLAS: cada estrella se quita
+     destrozando un coche de policia embistiendolo.
+  9. GUERRA POR EL TERRITORIO de las bandas, con oleadas.
+ 10. QUE CADA TRABAJO DEJE UNA MEJORA PERMANENTE (ambulancia = mas vida,
+     justiciero = la policia tarda mas en fichar tu coche, taxi = atajos...).
+     Es lo que hace que la gente juegue lo secundario.
+
+--------------------------------------------------------------------------------
+LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
+--------------------------------------------------------------------------------
+ 11. AMPLIAR EL MAPA. Ahora son 124 x 104 casillas (unos 4.000 x 3.300 px) con
+     seis barrios. Hay que hacerlo "bastante mas grande", con mas cosas
+     sacadas de los otros GTA.
+
+     QUE AÑADIR (ideas): aeropuerto pequeño o aerodromo · playa con paseo
+     maritimo · un monte o mirador con carretera de curvas · casino o sala
+     de juegos · mercado cubierto · poligono industrial de verdad · estadio ·
+     hospital y comisaria como edificios de uso · carcel · dos o tres puentes
+     que separen zonas (y que sirvan para abrir la ciudad poco a poco) ·
+     una isla pequeña · tuneles · aparcamiento de varias plantas.
+
+     QUE VIGILAR AL AMPLIAR (esto es lo importante):
+       · `config/city.js` es donde vive el tamaño y las calles: casi todo se
+         toca ahi, que para eso se hizo por datos.
+       · El minimapa es una textura de 1 px por casilla: crece sola, pero
+         hay que revisar la escala en pantalla (`UIScene.buildMinimap`).
+       · El A* de los peatones esta limitado a 1.100 casillas exploradas; con
+         un mapa mayor hay que revisar ese tope y el presupuesto de 3
+         busquedas por fotograma.
+       · Ahora hay ~5.400 objetos en la escena y va a 260 fps: hay margen,
+         pero con el doble de ciudad conviene medir otra vez (farolas, props
+         y pasos de cebra son los que mas suman).
+       · Cuantas mas calles, mas cruces: repasar que los semaforos y la
+         prioridad siguen funcionando con trafico denso.
+       · Al crecer, la ciudad DEBE abrirse por zonas (ver punto 14), o se
+         hace enorme y vacia.
+
+--------------------------------------------------------------------------------
+LA CIUDAD MAS VIVA
+--------------------------------------------------------------------------------
+ 12. DIA Y NOCHE, y que dormir en el escondite adelante 6 horas del reloj.
+ 13. ENCUENTROS POR LA CALLE: gente con un icono que te da encargos cortos.
+     Reaprovecha entero el sistema de contactos que ya funciona.
+ 14. LA CIUDAD SE ABRE POR ZONAS conforme avanzas (si entras donde no debes,
+     busca alta, como en San Andreas).
+ 15. MERCADO POR BARRIOS con precios que se mueven y una libreta para verlos.
+ 16. DESAFIOS CRONOMETRADOS con medalla de bronce, plata y oro.
+ 17. TRABAJOS: taxi, ambulancia, justiciero, carreras.
+ 18. ROBAR COCHES CON SU GRACIA (barra de puenteo) y ALARMAS en los caros.
+
+--------------------------------------------------------------------------------
+ARTE
+--------------------------------------------------------------------------------
+ 19. PROBAR GOOGLE AI STUDIO para lo que suma sin romper la coherencia, por
+     este orden: retratos de los contactos de banda, iconos, props de calle
+     en una sola lamina, portada del menu, y una prueba controlada de los
+     cinco coches. Detalle en IDEAS-ARTE-CON-IA.txt.
+     OJO: hoy todo el arte se dibuja por codigo a proposito; meter imagenes
+     cambia esa decision, asi que se empieza por lo que vive fuera del mundo
+     (retratos, portada, iconos).
+
+--------------------------------------------------------------------------------
+COLGANDO DE OTRA COSA
+--------------------------------------------------------------------------------
+ 20. CORREO DE RECUPERAR CONTRASEÑA: el codigo esta hecho y probado en los
+     dos juegos y Supabase ya apunta a Resend, pero el dominio
+     juegos.creskio.com estaba "pending" de verificar en Resend. En cuanto
+     se ponga en verde, probar de punta a punta. (21-sep, 22:40)
+ 21. AJUSTAR A GUSTO: aceleracion y frenada (`config/vehicles.js`), verde de
+     los semaforos (`systems/TrafficLights.js`), volumen de la sirena
+     (`core/Audio.js`) y cuanto se ven los pasos de cebra
+     (`CityScene.drawCrosswalks`, ahora 0,42 de alfa).
+ 22. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.
+ 23. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba. El seguro
+     sigue puesto.

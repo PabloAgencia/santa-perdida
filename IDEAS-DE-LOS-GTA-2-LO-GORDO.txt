@@ -1,0 +1,274 @@
+================================================================================
+SANTA PERDIDA — LO GORDO DE LOS GTA, A FONDO           21-sep-2026 (noche)
+Segunda pasada: no ideas sueltas, sino las piezas que sostienen el juego,
+con como funcionan por dentro y como se montan aqui.
+================================================================================
+
+La primera lista (IDEAS-DE-LOS-GTA.txt) eran 66 ideas. Esta es la otra mitad:
+menos cosas, pero las que de verdad cambian el juego, con los numeros reales
+de como lo hicieron ellos y con el fichero tuyo donde toca cada una.
+
+
+================================================================================
+1. ARMAS Y PELEA — EL AGUJERO MAS GRANDE QUE TIENES
+================================================================================
+Es lo unico de un GTA que Santa Perdida no tiene en absoluto. Tu propio plan
+lo dejo aparcado "hasta que exista la policia". La policia ya existe.
+
+  COMO LO HACEN EN CENITAL (Chinatown Wars, que es tu mismo angulo)
+  - NO se apunta con el raton: hay FIJACION AUTOMATICA al enemigo mas cercano
+    en la direccion en la que miras, y una tecla para cambiar de objetivo.
+    Alrededor del enemigo fijado sale un circulo que es su vida.
+  - Puedes andar de lado mientras disparas, pero la punteria empeora si te
+    mueves y mejora si te paras. A bocajarro casi nunca fallas.
+  - Las armas de cerca (bate, cuchillo) no necesitan punteria: tocar y ya.
+
+  COMO SE MONTA AQUI
+  - `entities/Player.js`: una tecla de disparo y otra de cambiar objetivo.
+  - Sistema nuevo `systems/CombatSystem.js`: coge el peaton/policia mas
+    cercano dentro de un cono por delante, le pone el aro de vida, aplica
+    daño con retardo segun el arma. Ya tienes peatones que saben ser
+    hostiles, perseguir y pegar (`NPCSystem.checkAttacks`), asi que la mitad
+    del trabajo esta hecho: falta el otro sentido.
+  - `config/weapons.js` nuevo: puño, bate, pistola, escopeta, subfusil, con
+    daño, alcance, cadencia, municion y precio.
+  - Las balas no hace falta que sean objetos: linea recta, comprobar
+    impacto y un fogonazo. Barato y en cenital se lee perfecto.
+
+  LO QUE GANA EL JUEGO
+  Ahora mismo tus tres bandas solo te pueden dar de hostias y tu solo puedes
+  huir o atropellarlas. Con armas, el respeto, el territorio y la policia
+  pasan a significar algo. Es la pieza que desbloquea media lista.
+
+  COSTE: dos o tres tardes lo basico (puño, bate, pistola). Mucho valor.
+
+
+================================================================================
+2. QUE CADA ACTIVIDAD DE UNA MEJORA PERMANENTE
+================================================================================
+Esto es lo mas infravalorado de San Andreas y lo que hace que la gente haga
+las misiones secundarias: no pagan solo dinero, te MEJORAN PARA SIEMPRE.
+
+  LOS NUMEROS REALES DE SAN ANDREAS
+  - Ambulancia, 12 niveles seguidos     -> +50% de vida maxima
+  - Bombero, completarlo                -> inmune al fuego
+  - Justiciero, nivel 12                -> +150 de armadura
+  - Taxi, 50 carreras                   -> los taxis ganan nitro y salto
+  - Robar casas, 10.000 en botin        -> correr sin cansarte nunca
+  En Chinatown Wars: 10 incendios apagados -> a prueba de fuego.
+
+  COMO SE MONTA AQUI
+  - `core/GameState.js`: un objeto `mejoras` con lo que llevas desbloqueado.
+  - Cada trabajo (taxi, ambulancia, justiciero) cuenta sus niveles y al
+    llegar al tope enciende una mejora.
+  - Ejemplos para Santa Perdida: ambulancia -> mas vida; justiciero -> la
+    policia tarda mas en fichar tu coche; taxi -> los taxis van mas rapido y
+    conoces atajos (una linea en el mapa); repartos -> cargas mas mercancia.
+
+  LO QUE GANA EL JUEGO
+  Le da sentido a todo lo secundario. Sin esto, hacer de taxista es perder
+  el tiempo; con esto, es prepararte.
+
+  COSTE: barato una vez que existan los trabajos. Es un contador y un if.
+
+
+================================================================================
+3. LA LISTA DE COCHES ENCARGADOS (import/export)
+================================================================================
+En San Andreas hay una grua en el muelle con una lista de coches pedidos:
+los traes, los cargas en el barco y cobras. Son 30 coches repartidos en tres
+listas, y al terminar una lista puedes COMPRAR esos coches cuando quieras.
+
+  POR QUE ENCAJA AQUI COMO UN GUANTE
+  Ya tienes puerto, muelles y una grua dibujada como hito del mapa. Ya tienes
+  coches con modelo, color y estado. Solo falta el papel pegado a la pared.
+
+  COMO SE MONTA
+  - Marcador en la grua del puerto con la lista de lo que piden hoy: tres o
+    cuatro modelos y, opcional, el color.
+  - Pagan segun el estado: si lo traes abollado, menos. Eso le da uso al
+    sistema de daño y al taller de pintura.
+  - Al completar una lista, ese modelo aparece en el garaje del piso.
+  - Contrario: la lista de encargos que TU haces ("consigueme un deportivo
+    rojo"), y te lo traen a cambio de dinero.
+
+  LO QUE GANA EL JUEGO
+  Un motivo para mirar los coches de la calle en vez de coger el primero.
+  Y da una razon para conducir con cuidado, que es justo lo que le falta a
+  un juego de coches donde chocar no tiene consecuencias.
+
+  COSTE: medio. Y reaprovecha casi todo lo que ya existe.
+
+
+================================================================================
+4. GENTE POR LA CALLE QUE TE DA TRABAJO (encuentros)
+================================================================================
+En Chinatown Wars hay personas por el mapa marcadas con un iconito; te
+acercas y te cuentan un problema: perseguir a uno, llevarles a un sitio,
+recuperar algo robado. Son pequeñas, no se pierden, y hacen que la ciudad
+parezca llena de historias.
+
+  COMO SE MONTA AQUI
+  - Reaprovechas ENTERO el sistema de contactos de banda que ya hiciste hoy:
+    un peaton parado con un icono encima, te acercas, E, y te da un encargo
+    corto de una sola pieza (ir, traer, perseguir, esperar).
+  - Que salgan y desaparezcan solos segun por donde andes, y que no se
+    repitan hasta que pase un rato.
+
+  LO QUE GANA
+  Contenido casi gratis por cada tipo de encargo que escribas, porque los
+  pasos ya los sabe ejecutar tu MissionSystem (ir, recoger, entregar,
+  conducir, perder a la policia, aguantar, romper, seguir).
+
+  COSTE: bajo. Es la mejor relacion esfuerzo/resultado de toda la lista.
+
+
+================================================================================
+5. DESAFIOS CRONOMETRADOS (los "rampages")
+================================================================================
+Dos minutos, un arma, un objetivo, municion infinita. En Chinatown Wars hay
+30, puntuan, y dan medalla de bronce, plata u oro, con multiplicador si
+encadenas. Es un juego arcade metido dentro del mundo abierto.
+
+  ADAPTADO A TU JUEGO (y sin tener que ser una matanza)
+  - "Destroza 8 coches de esa banda en 2 minutos"
+  - "Tira 15 farolas sin que te pillen" (ya se pueden tirar)
+  - "Atropella 20 conos / revienta 10 puestos"
+  - "Aguanta 90 segundos con la policia encima sin que te detengan"
+  Con medalla segun lo que saques, y la medalla cuenta para el total.
+
+  COSTE: bajo. Un contador, un reloj y una lista de puntos en el mapa.
+
+
+================================================================================
+6. LOS NEGOCIOS TIENEN SUS PROPIAS MISIONES (Vice City Stories)
+================================================================================
+En la primera lista puse "negocios que dan renta". Lo que no conte es lo
+mejor: cada tipo de negocio trae SU PROPIO tipo de mision, y hacerlas sube la
+reputacion del negocio y con ella la renta diaria. Son 15 trabajos por
+negocio para llegar al maximo.
+
+  LOS CUATRO TIPOS QUE USAN Y COMO SE TRADUCEN
+  - Cobros: corres a defender comercios tuyos a los que estan apretando.
+  - Recuperar vehiculos: te dicen donde hay un coche que no han pagado, lo
+    persigues y lo devuelves al deposito.
+  - Contrabando: recoger paquetes que sueltan desde una lancha o un camion,
+    contrarreloj y con la policia rondando.
+  - Golpes: dos tipos, el furgon de dinero (embestirlo hasta que suelte la
+    carga) y el mensajero con el maletin (perseguir a pie o en coche).
+
+  POR QUE IMPORTA
+  Convierte "comprar un local" en algo que se juega, no en un boton que da
+  dinero pasivo. Y cada tipo de negocio se siente distinto.
+
+  COSTE: medio por tipo. Empieza por uno solo (cobros) y ve ampliando.
+
+
+================================================================================
+7. LA CIUDAD SE ABRE POCO A POCO
+================================================================================
+En San Andreas no puedes salir de tu zona al principio: si lo intentas te
+cae un nivel de busca altisimo y la policia te caza. Los puentes "se estan
+arreglando" y se abren al avanzar la historia.
+
+  POR QUE ES ULTRA RELEVANTE PARA TI
+  Tu ciudad se recorre entera desde el minuto uno y eso hace que no haya
+  sensacion de progreso ni de descubrimiento. Con tres zonas que se abran
+  (norte residencial -> centro y comercial -> puerto e industrial), cada
+  tramo de historia da algo nuevo que ver.
+
+  COMO SE MONTA SIN ROMPER NADA
+  - Un campo en `GameState.flags` con las zonas abiertas.
+  - Si entras en una zona cerrada: aviso ("ahi no pintas nada todavia") y
+    nivel de busca alto mientras sigas dentro. Nada de muros invisibles.
+  - Las zonas se abren al cumplir ciertas misiones, y se avisa por el movil.
+
+  COSTE: bajo. Lo caro es decidir el orden, no programarlo.
+
+
+================================================================================
+8. GUARDAR AVANZA EL TIEMPO
+================================================================================
+Detalle pequeño y listisimo: en los GTA, dormir para guardar adelanta 6 horas
+del reloj. Sirve para saltar de la noche al dia si una mision lo pide.
+
+  AQUI: al dormir en la cama del escondite, +6 horas. Con esto, el ciclo de
+  dia y noche deja de ser decorado y pasa a ser una herramienta: hay
+  encargos que solo salen de noche y negocios que solo abren de dia.
+
+  COSTE: minimo, una vez exista el reloj.
+
+
+================================================================================
+9. LA TIENDA DE ARMAS Y EL DINERO
+================================================================================
+En los GTA las armas cuestan lo suyo a proposito (en Vice City, entre 2.000 y
+6.000) para que el dinero tenga adonde ir antes de tener negocios.
+
+  PARA TU ECONOMIA (hoy: empiezas con 35 €, un reparto paga 40-90, una
+  mision 180-600, un coche vale 1.800-8.500)
+  - Bate 120 · pistola 900 · escopeta 2.400 · subfusil 5.000, mas municion.
+  - Chaleco 700, se gasta al recibir golpes.
+  - Tienda en el barrio conflictivo (barata, ilegal) y otra en el comercial
+    (cara pero sin que te miren raro).
+  Asi el dinero tiene tres destinos por orden: armas -> coche -> local.
+
+  COSTE: bajo si ya existe el combate.
+
+
+================================================================================
+10. UNA LISTA DE OBJETIVOS QUE DE RUMBO (el "100%")
+================================================================================
+Todos los GTA tienen una pantalla de progreso que junta todo: misiones,
+secundarias, coleccionables, desafios. Es lo que hace que la gente siga
+jugando cuando la historia ya se acabo.
+
+  AQUI: pantalla de progreso en la pausa, con porcentaje y lista: misiones
+  de cada banda, locales comprados, coches en el garaje, encargos de la
+  grua, medallas de desafios, paquetes escondidos, trabajos al maximo.
+
+  COSTE: bajo, y multiplica el valor de todo lo demas.
+
+
+================================================================================
+11. COSAS DE CENITAL QUE NO SE VEN PERO SE NOTAN
+================================================================================
+- FIJACION AL APUNTAR: en cenital no hay ratón que valga; la fijación
+  automatica del punto 1 no es una comodidad, es LA forma de hacerlo.
+- QUE SE VEA LO QUE VIENE: en cenital ves poco por delante. La camara que se
+  adelanta segun la velocidad (ya la tienes) y el minimapa son la mitad del
+  juego. Un mapa grande a pantalla completa es obligatorio.
+- LEER LA CIUDAD DE UN VISTAZO: cada barrio con su color de suelo y su tipo
+  de edificio (ya lo tienes) es lo que evita perderse sin mirar el mapa.
+- SONIDO PARA SABER LO QUE NO VES: la sirena que sube de volumen cuando se
+  acercan (ya la pusiste hoy) hace mas que cualquier icono.
+
+
+================================================================================
+PLAN EN TRES FASES, JUNTANDO LAS DOS LISTAS
+================================================================================
+
+FASE A — "el dinero sirve para algo" (lo siguiente a hacer)
+  1. Comprar coches y pisos, con garaje.
+  2. Locales que se compran y dan renta.
+  3. La lista de coches encargados en la grua del puerto.
+  4. Pantalla de progreso con porcentaje.
+
+FASE B — "la ciudad se defiende" (el salto grande)
+  5. Armas y pelea con fijacion automatica.
+  6. Tienda de armas y chaleco.
+  7. Quitarse la busca cargandose patrullas + taller de pintura.
+  8. Guerra por el territorio de las bandas.
+
+FASE C — "la ciudad esta viva"
+  9. Dia y noche, y guardar avanza 6 horas.
+  10. Encuentros por la calle que dan encargos.
+  11. Trabajos con recompensa permanente (taxi, ambulancia, justiciero).
+  12. Desafios cronometrados con medalla.
+  13. Mercado por barrios con precios que se mueven.
+  14. La ciudad se abre por zonas conforme avanzas.
+
+Si hubiera que quedarse con TRES cosas de todo el documento:
+  · armas con fijacion automatica,
+  · locales que dan renta y se defienden,
+  · que cada actividad deje una mejora permanente.
