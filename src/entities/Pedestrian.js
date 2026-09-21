@@ -43,20 +43,40 @@ export class Pedestrian {
   // Un golpe o un tiro. Devuelve 'muerto', 'tocado' o null si ya estaba en
   // el suelo. Al que sobrevive le da por huir, o por venir a por ti si es de
   // una banda que ya te tenia ganas.
-  recibirDano(cantidad, desdeX, desdeY, deLaBanda = false) {
+  recibirDano(cantidad, desdeX, desdeY, deCerca = false) {
     if (this.down) return null;
     this.vida -= cantidad;
     this.marcarGolpe();
+
+    // Un golpe de cerca aturde y empuja. Es lo que hace que puedas GANAR
+    // una pelea: si sigues pegando, el otro no llega a devolvertela.
+    if (deCerca) {
+      this.attackCooldown = Math.max(this.attackCooldown || 0, 0.6);
+      const ang = Math.atan2(this.y - desdeY, this.x - desdeX);
+      const nx = this.x + Math.cos(ang) * 7;
+      const ny = this.y + Math.sin(ang) * 7;
+      if (!this.map.isSolidBox(nx, ny, this.radius, this.radius)) {
+        this.x = nx;
+        this.y = ny;
+      }
+    }
 
     if (this.vida <= 0) {
       this.knockDown(true);
       return 'muerto';
     }
     if (!this.hostile) {
-      if (deLaBanda && this.faction) {
+      // De cada diez que reciben un golpe, siete salen corriendo y tres se
+      // revuelven. Que TODOS huyeran quitaba tension, y que todos se
+      // encararan convertia cualquier tonteria en una pelea de barrio.
+      // Los de banda se revuelven mas: es su calle.
+      const seRevuelve = Math.random() < (this.faction ? 0.55 : 0.3);
+      if (seRevuelve) {
         this.rencor = true;
         this.hostile = true;
         this.chaseTarget = { x: desdeX, y: desdeY };
+        // el que se encara viene con ganas, pero tarda en soltar el primero
+        this.attackCooldown = 0.8;
       } else {
         this.flee(desdeX, desdeY, 4);
       }

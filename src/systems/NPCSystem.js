@@ -7,7 +7,8 @@ import { Pathfinder } from '../world/Pathfinder.js';
 const GANG_CHANCE = 0.38;
 const HOSTILE_RANGE = 330;
 const ATTACK_RANGE = 22;
-const ATTACK_DAMAGE = 9;
+const ATTACK_DAMAGE = 7;
+const ESPERA_ENTRE_GOLPES = 0.62;   // entre TODOS los que te rodean
 
 // Uno de cada cuatro de banda lleva pistola. Dispara peor que la policia y
 // con menos alcance: la calle no es un cuerpo de seguridad.
@@ -82,6 +83,7 @@ export class NPCSystem {
   }
 
   checkAttacks(player, dt) {
+    this.turnoGolpe = Math.max(0, (this.turnoGolpe || 0) - dt);
     for (const p of this.people) {
       if (!p.hostile || p.down) continue;
 
@@ -105,7 +107,12 @@ export class NPCSystem {
       p.plantado = false;
       if (p.attackCooldown > 0) continue;
       if (Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y) > ATTACK_RANGE) continue;
-      p.attackCooldown = 1.2;
+      // Por muchos que te rodeen, solo entra un golpe cada poco: si pegan
+      // los cuatro a la vez no hay pelea que ganar, y en los GTA de toda la
+      // vida el corro espera su turno.
+      if (this.turnoGolpe > 0) continue;
+      this.turnoGolpe = ESPERA_ENTRE_GOLPES;
+      p.attackCooldown = 1.35;
       GameState.damage(ATTACK_DAMAGE, 'paliza');
       EventBus.emit(EVT.NOTIFY, { text: 'Te estan dando', tone: 'danger' });
     }

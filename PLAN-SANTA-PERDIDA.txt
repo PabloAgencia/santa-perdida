@@ -902,6 +902,64 @@ Con eso, tener pistola no era una ventaja, era el juego entero.
   el chaleco parando los tiros y bajando en el HUD, el agente disparando a dos
   estrellas y NO a una, y el pandillero armado plantado a 120 px.
 
+DECIMOCTAVA TANDA (22-sep-2026): dos por coche, furgon de asalto, marcador
+como el de San Andreas, la pelea y la ciudad al doble
+================================================================================
+Todo esto lo pidio Pablo despues de jugar.
+
+  DOS AGENTES POR COCHE, Y SOLO DOS. Cada patrulla tiene ahora una DOTACION:
+     al bajarse se descuenta la plaza, y si al agente se lo cargan esa plaza
+     no vuelve. Antes el coche podia parir agentes sin fin (se guardaba uno
+     solo, y al morir se creaba otro), y acababas rodeado por diez salidos
+     del mismo sitio. Si vuelven al coche, la plaza queda libre otra vez.
+
+  FURGON DE ASALTO con la busca al maximo, como en San Andreas: aparece a
+     900-1.600 px, va a por ti sin buscarte (si ha salido es porque ya saben
+     donde estas), frena a 240 px y suelta CUATRO agentes de asalto de golpe.
+     Son otra clase de agente: mas vida (170), mejor punteria (7 grados),
+     mas daño (11), mas alcance (340) y se plantan mas lejos (175 px).
+     Uno cada 30 s y como mucho dos a la vez. El furgon es lento a proposito:
+     tiene que dar tiempo a verlo venir y decidir si aguantas o te largas.
+
+  ARREGLADO DE PASO: `esPolicia` no existia en ninguna entidad, asi que
+     cargarse a un agente contaba como cargarse a un civil (dos estrellas en
+     vez de tres) y ademas no soltaba su arma. Ahora si.
+
+  EL MARCADOR, COMO EL DE SAN ANDREAS. Todo a la derecha y en este orden:
+     el arma que llevas en la mano (con su municion), el dinero, las
+     estrellas de busca, el chaleco y la salud. El mapa baja a la esquina de
+     abajo a la izquierda, que es donde esta en ese juego. Las barras se
+     vacian hacia la derecha y llevan su icono fuera, a la izquierda.
+     Iconos nuevos dibujados a mano: puño, bate, pistola, escopeta, corazon,
+     escudo y estrella de cinco puntas. En el mapa, tu eres una FLECHA que
+     apunta a donde vas, el destino un rombo y la policia puntos azules.
+
+  LA PELEA, QUE AHORA SE PUEDE GANAR
+     - Al recibir un golpe de cerca, el otro se ATURDE (0,6 s) y sale
+       EMPUJADO. Es lo que permite ganar: si sigues pegando, no te la
+       devuelven.
+     - Por muchos que te rodeen, solo entra un golpe cada 0,62 s ENTRE TODOS.
+       Si pegan los cuatro a la vez no hay pelea que ganar; en los GTA el
+       corro espera su turno.
+     - De cada diez que reciben un golpe, siete salen corriendo y tres se
+       revuelven (los de banda, algo mas: es su calle).
+     - Los puños pegan mas fuerte y mas rapido (11 de daño cada 0,34 s) y el
+       pandillero aguanta menos (70 en vez de 85).
+     MEDIDO peleando de verdad, empezando con 120 de vida:
+       contra 1 ... gana en 1,8 s sin un rasguño
+       contra 2 ... gana en 4,1 s con 97 de vida
+       contra 3 ... gana en 6,2 s con 59 de vida
+       contra 4 ... cae, tras tumbar a tres. Contra cuatro hay que correr.
+
+  LA CIUDAD, AL DOBLE. De 124x104 a 173x146 casillas (de 3.968x3.328 px a
+     5.536x4.672). Siete calles horizontales y ocho verticales, seis filas
+     por siete columnas de manzanas, 177 edificios en vez de 72 y 188
+     semaforos. Ahora caben los nueve corazones (antes solo entraban cinco),
+     26 maquinas y cuatro armerias.
+     Se cambia entero desde `config/city.js`: para agrandarla mas, basta con
+     añadir calles y su fila o columna en blockZones.
+     MEDIDO: 165 fps con 12.000 objetos en pantalla, 33 coches y 20 peatones.
+     Queda margen de sobra para hacerla mas grande todavia.
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

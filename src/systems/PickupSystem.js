@@ -18,7 +18,7 @@ import { ARMAS } from '../config/weapons.js';
 // la ciudad, no una fuente de salud.
 const CORAZONES = 9;
 const SEPARACION_CORAZONES = 1100;
-const MAQUINAS = 20;
+const MAQUINAS = 26;
 const SEPARACION_MAQUINAS = 520;
 
 const VIDA_CORAZON = 25;

@@ -43,7 +43,9 @@ export class CombatSystem {
       if (!p.down && !p.enCoche) lista.push({ ente: p, tipo: 'persona' });
     }
     for (const u of this.scene.police.units) {
-      if (u.officer && !u.officer.down) lista.push({ ente: u.officer, tipo: 'policia' });
+      for (const o of u.officers) {
+        if (!o.down) lista.push({ ente: o, tipo: 'policia' });
+      }
     }
     return lista;
   }

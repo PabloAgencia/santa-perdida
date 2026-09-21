@@ -17,17 +17,15 @@ export class UIScene extends Phaser.Scene {
     this.cityCam = this.scene.get('CityScene').cameras.main;
     this.notices = [];
 
-    this.add.image(0, 0, 'px')
-      .setOrigin(0, 0)
-      .setDisplaySize(250, 74)
-      .setTint(0x000000)
-      .setAlpha(0.45);
+    // TODO EL MARCADOR VA ARRIBA A LA DERECHA, como en San Andreas: primero
+    // lo que llevas en la mano, debajo el dinero, debajo la busca y abajo
+    // del todo las barras. El mapa se baja a la esquina de abajo, que es
+    // donde esta en ese juego y donde menos estorba.
+    this.moneyText = this.add.text(w - 16, 56, '', {
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 5, fontSize: '34px', color: COLORS.money,
+    }).setOrigin(1, 0);
 
-    this.moneyText = this.add.text(16, 14, '', {
-      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '36px', color: COLORS.money,
-    });
-
-    this.deliveriesText = this.add.text(18, 50, '', {
+    this.deliveriesText = this.add.text(16, 16, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     });
 
@@ -64,9 +62,9 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(1, 1).setDisplaySize(198, 6).setTint(0x8fd694);
     this.vehiclePanel.add([panelBg, this.speedText, this.vehicleName, this.hpBarBg, this.hpBar]);
 
-    this.helpText = this.add.text(16, h - 22, '', {
+    this.helpText = this.add.text(w - 16, h - 20, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
-    }).setOrigin(0, 1);
+    }).setOrigin(1, 1);
     this.helpText.setText(
       'WASD mover · SHIFT correr · E coche · F pegar · Q cambiar objetivo · TAB arma · J encargo · ESPACIO freno · K guardar'
     );
@@ -103,8 +101,8 @@ export class UIScene extends Phaser.Scene {
     const scale = 1.6;
     this.mapW = city.map.w * scale;
     this.mapH = city.map.h * scale;
-    this.mapX = w - 16 - this.mapW;
-    this.mapY = 62;
+    this.mapX = 16;
+    this.mapY = this.scale.height - 20 - this.mapH;
 
     this.add.image(this.mapX - 3, this.mapY - 3, 'px')
       .setOrigin(0, 0)
@@ -124,28 +122,27 @@ export class UIScene extends Phaser.Scene {
       this.add.image(p.x, p.y, 'px').setDisplaySize(5, 5).setTint(0x7fd08a).setAlpha(0.95);
     }
 
+    // El destino es un rombo, la policia puntos azules y tu una flecha que
+    // mira hacia donde vas: cuatro cuadrados iguales no decian nada.
     this.mapTarget = this.add.image(0, 0, 'px')
-      .setDisplaySize(6, 6).setTint(0xe8b54a).setVisible(false);
+      .setDisplaySize(7, 7).setTint(0xe8b54a).setRotation(Math.PI / 4).setVisible(false);
     this.mapPolice = [];
-    // donde te esperan los contactos que dan encargos
     this.mapContactos = [];
-    this.mapPlayer = this.add.image(0, 0, 'px')
-      .setDisplaySize(6, 6).setTint(0xf2efe6);
+    this.mapPlayer = this.add.image(0, 0, 'arrow')
+      .setDisplaySize(11, 11).setTint(0xf2efe6);
   }
 
   buildWanted(w) {
     this.wantedPips = [];
     for (let i = 0; i < 3; i++) {
       this.wantedPips.push(
-        this.add.image(w - 16 - i * 20, 34, 'px')
+        this.add.image(w - 16 - i * 22, 98, 'estrella')
           .setOrigin(1, 0)
-          .setDisplaySize(15, 15)
+          .setDisplaySize(19, 19)
           .setTint(0x3a3f45)
       );
     }
-    this.wantedLabel = this.add.text(w - 16 - 66, 36, 'BUSCA', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
-    }).setOrigin(1, 0);
+    this.wantedLabel = null;
   }
 
   buildBigMessage(w, h) {
@@ -171,7 +168,7 @@ export class UIScene extends Phaser.Scene {
   }
 
   buildTerritory() {
-    this.territoryText = this.add.text(this.mapX, this.mapY + this.mapH + 6, '', {
+    this.territoryText = this.add.text(this.mapX, this.mapY - 18, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0, 0);
   }
@@ -188,42 +185,55 @@ export class UIScene extends Phaser.Scene {
     );
   }
 
+  // Las barras y el arma, arriba a la derecha y con el mismo orden que en
+  // San Andreas: arma arriba del todo, dinero, busca, chaleco y salud.
   buildHealth(h) {
-    this.add.image(16, h - 46, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 8).setTint(0x3a3f45);
-    this.healthBar = this.add.image(16, h - 46, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 8).setTint(0x8fd694);
-    // el chaleco, justo encima de la salud: solo aparece si llevas puesto,
-    // y se ve bajar antes que la vida, que es la gracia de llevarlo
-    this.armorBg = this.add.image(16, h - 58, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 6).setTint(0x3a3f45).setVisible(false);
-    this.armorBar = this.add.image(16, h - 58, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 6).setTint(0xbfc6d0).setVisible(false);
+    const w = this.scale.width;
+    const der = w - 16;
+    const ANCHO = 150;
+    const yChaleco = 126;
+    const ySalud = 146;
 
-    this.healthLabel = this.add.text(16, h - 70, 'SALUD', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
-    }).setOrigin(0, 1);
+    // el arma que llevas, con su munición al lado
+    this.armaIcono = this.add.image(der - 4, 8, 'icono-puno')
+      .setOrigin(1, 0).setDisplaySize(40, 40).setVisible(false);
+    this.armaTexto = this.add.text(der - 50, 16, '', {
+      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4,
+      fontSize: '25px', color: COLORS.ink,
+    }).setOrigin(1, 0);
+
+    // El icono va FUERA de la barra, a su izquierda, y el relleno se vacia
+    // hacia la derecha: es como se lee en San Andreas.
+    const izq = der - ANCHO;
+    this.healthAncho = ANCHO - 4;
+
+    this.armorIcono = this.add.image(izq - 14, yChaleco + 8, 'hud-escudo')
+      .setOrigin(0.5, 0.5).setDisplaySize(20, 20).setVisible(false);
+    this.armorBg = this.add.image(der, yChaleco, 'px')
+      .setOrigin(1, 0).setDisplaySize(ANCHO, 16).setTint(0x05060a).setAlpha(0.62).setVisible(false);
+    this.armorBar = this.add.image(izq + 2, yChaleco + 2, 'px')
+      .setOrigin(0, 0).setDisplaySize(ANCHO - 4, 12).setTint(0xdfe4ea).setVisible(false);
+
+    this.healthIcono = this.add.image(izq - 14, ySalud + 8, 'hud-corazon')
+      .setOrigin(0.5, 0.5).setDisplaySize(21, 21);
+    this.add.image(der, ySalud, 'px')
+      .setOrigin(1, 0).setDisplaySize(ANCHO, 16).setTint(0x05060a).setAlpha(0.62);
+    this.healthBar = this.add.image(izq + 2, ySalud + 2, 'px')
+      .setOrigin(0, 0).setDisplaySize(ANCHO - 4, 12).setTint(0xd9384a);
+    this.healthLabel = null;
 
     // el aliento: solo sale cuando no esta lleno, para no ensuciar la pantalla
-    this.stamBg = this.add.image(16, h - 36, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 4).setTint(0x3a3f45).setVisible(false);
-    this.stamBar = this.add.image(16, h - 36, 'px')
-      .setOrigin(0, 1).setDisplaySize(210, 4).setTint(0x6f9ad9).setVisible(false);
+    this.stamBg = this.add.image(der, ySalud + 20, 'px')
+      .setOrigin(1, 0).setDisplaySize(ANCHO, 7).setTint(0x05060a).setAlpha(0.62).setVisible(false);
+    this.stamBar = this.add.image(izq + 2, ySalud + 21, 'px')
+      .setOrigin(0, 0).setDisplaySize(ANCHO - 4, 5).setTint(0x6f9ad9).setVisible(false);
 
-    // Lo que llevas en la mano, abajo a la derecha. Ocupa el mismo sitio que
-    // el panel del coche, pero nunca salen a la vez: o vas a pie, o conduces.
-    this.armaTexto = this.add.text(this.scale.width - 16, h - 24, '', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
-      fontSize: '19px', color: COLORS.ink,
-    }).setOrigin(1, 1);
-
-    // aviso de "E para..." pegado al marcador
-    this.accionTexto = this.add.text(16, h - 78, '', {
+    // aviso de "E para...", encima del mapa de la esquina
+    this.accionTexto = this.add.text(16, h - 26, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '15px',
       color: COLORS.objective,
     }).setOrigin(0, 1);
   }
-
   toMinimap(x, y) {
     return {
       x: this.mapX + (x / this.world.w) * this.mapW,
@@ -233,7 +243,7 @@ export class UIScene extends Phaser.Scene {
 
   updateMinimap(d) {
     const p = this.toMinimap(d.player.x, d.player.y);
-    this.mapPlayer.setPosition(p.x, p.y);
+    this.mapPlayer.setPosition(p.x, p.y).setRotation((d.player.angle || 0) + Math.PI / 2);
 
     if (d.target) {
       const t = this.toMinimap(d.target.x, d.target.y);
@@ -260,7 +270,7 @@ export class UIScene extends Phaser.Scene {
     const police = d.police || [];
     while (this.mapPolice.length < police.length) {
       this.mapPolice.push(
-        this.add.image(0, 0, 'px').setDisplaySize(5, 5).setTint(0xe8524a)
+        this.add.image(0, 0, 'px').setDisplaySize(6, 6).setTint(0x5aa8e8)
       );
     }
     this.mapPolice.forEach((dot, i) => {
@@ -275,24 +285,31 @@ export class UIScene extends Phaser.Scene {
 
   updateWanted(level) {
     this.wantedPips.forEach((pip, i) => {
-      pip.setTint(i < level ? 0xe8524a : 0x3a3f45);
-      pip.setAlpha(i < level ? 1 : 0.55);
+      const puesta = i < level;
+      pip.setTint(puesta ? 0xf2d06b : 0x2a2f36);
+      pip.setAlpha(puesta ? 1 : 0.45);
     });
   }
 
   // la vida maxima sube con el musculo, asi que la barra se mide contra ella
   updateHealth(health, maximo = 100) {
     const ratio = Phaser.Math.Clamp(health / (maximo || 100), 0, 1);
-    this.healthBar.setDisplaySize(Math.max(0, 210 * ratio), 8);
-    this.healthBar.setTint(ratio > 0.5 ? 0x8fd694 : ratio > 0.22 ? 0xe8b54a : 0xd9584a);
+    this.healthBar.setDisplaySize(Math.max(0, this.healthAncho * ratio), 12);
+    // en San Andreas la salud siempre es del mismo color; solo parpadea
+    // cuando estas a punto de caer, que es cuando hay que enterarse
+    this.healthBar.setTint(ratio > 0.22 ? 0xd9384a : 0xff6b5a);
+    this.healthIcono.setAlpha(ratio > 0.22 ? 1 : 0.35 + Math.abs(Math.sin(this.time.now / 160)) * 0.65);
   }
 
   updateBlindaje(valor) {
     const puesto = valor > 0;
     this.armorBg.setVisible(puesto);
     this.armorBar.setVisible(puesto);
+    this.armorIcono.setVisible(puesto);
     if (!puesto) return;
-    this.armorBar.setDisplaySize(Math.max(0, 210 * Phaser.Math.Clamp(valor / 100, 0, 1)), 6);
+    this.armorBar.setDisplaySize(
+      Math.max(0, this.healthAncho * Phaser.Math.Clamp(valor / 100, 0, 1)), 12
+    );
   }
 
   updateAliento(ratio) {
@@ -300,7 +317,7 @@ export class UIScene extends Phaser.Scene {
     this.stamBg.setVisible(!lleno);
     this.stamBar.setVisible(!lleno);
     if (lleno) return;
-    this.stamBar.setDisplaySize(Math.max(0, 210 * Phaser.Math.Clamp(ratio, 0, 1)), 4);
+    this.stamBar.setDisplaySize(Math.max(0, this.healthAncho * Phaser.Math.Clamp(ratio, 0, 1)), 4);
     this.stamBar.setTint(ratio > 0.25 ? 0x6f9ad9 : 0xd9584a);
   }
 
@@ -352,10 +369,12 @@ export class UIScene extends Phaser.Scene {
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );
     if (d.arma) {
-      const balas = d.arma.balas === null ? '' : `  ${d.arma.balas}`;
-      this.armaTexto.setText(`${d.arma.nombre.toUpperCase()}${balas}`);
+      this.armaIcono.setTexture(`icono-${d.arma.clave}`).setVisible(true);
+      // los puños y el bate no gastan nada, asi que no se pone numero
+      this.armaTexto.setText(d.arma.balas === null ? '' : `${d.arma.balas}`);
       this.armaTexto.setColor(d.arma.balas === 0 ? COLORS.danger : COLORS.ink);
     } else {
+      this.armaIcono.setVisible(false);
       this.armaTexto.setText('');
     }
     this.updateTerritory(d.territory);
@@ -414,10 +433,11 @@ export class UIScene extends Phaser.Scene {
 
   // Los avisos van MUY por encima del marcador de salud y de la linea de
   // ayuda: antes se pintaban a 56 px del borde y se pisaban unos a otros.
+  // Los avisos van arriba a la izquierda, que es lo unico que queda libre:
+  // el mapa ocupa la esquina de abajo y el marcador toda la derecha.
   layoutNotices() {
-    const baseY = this.scale.height - 118;
     this.notices.forEach((label, i) => {
-      label.setPosition(16, baseY - i * 24);
+      label.setPosition(16, 44 + i * 24);
     });
   }
 }

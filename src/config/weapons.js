@@ -14,8 +14,8 @@ export const ARMAS = {
     nombre: 'Los puños',
     cuerpo: true,
     alcance: 26,
-    dano: 8,
-    cadencia: 0.42,
+    dano: 11,
+    cadencia: 0.34,
     dispersion: 0,
     precio: 0,
     municionMax: 0,
@@ -25,7 +25,7 @@ export const ARMAS = {
     nombre: 'Bate',
     cuerpo: true,
     alcance: 34,
-    dano: 22,
+    dano: 26,
     cadencia: 0.55,
     dispersion: 0,
     precio: 120,
@@ -68,7 +68,7 @@ export const ORDEN_ARMAS = ['puno', 'bate', 'pistola', 'escopeta'];
 // Cuanto aguanta cada uno antes de caer. El jugador tiene su propia vida.
 export const VIDA = {
   peaton: 60,
-  pandillero: 85,
+  pandillero: 70,
   policia: 110,
 };
 

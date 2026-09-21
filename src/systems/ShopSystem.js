@@ -1,13 +1,13 @@
 import { TILE } from '../config/balance.js';
 
-// La armeria. Tres locales repartidos por la ciudad, con su puerta a la calle
+// La armeria. Cuatro locales repartidos por la ciudad, con su puerta a la calle
 // y su marcador, como el escondite. Conseguir un hierro matando a alguien esta
 // bien para el apuro, pero si no hay donde comprar, el dinero no sirve de nada
 // y las balas se acaban.
 //
 // Aqui solo esta el sitio: lo que se vende y a que precio va en ShopScene.
 
-const TIENDAS = 3;
+const TIENDAS = 4;   // la ciudad crecio al doble, una mas
 const SEPARACION = 1400;
 const ALCANCE = 62;
 

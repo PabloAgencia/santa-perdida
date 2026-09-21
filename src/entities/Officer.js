@@ -17,33 +17,64 @@ const TIRO = {
   seQuedanA: 140,      // si estan a menos, no se acercan mas: paran y disparan
 };
 
+// Dos clases de agente. El de asalto solo baja del furgon con la busca al
+// maximo: aguanta mas, dispara mejor y aguanta la distancia sin arrimarse.
+const CLASES = {
+  patrulla: {
+    textura: 'officer', vida: VIDA.policia, velocidad: 112,
+    tiro: TIRO,
+  },
+  asalto: {
+    textura: 'swat', vida: VIDA.policia + 60, velocidad: 104,
+    tiro: {
+      desdeBusca: 1,     // si ha salido el furgon, ya da igual la busca
+      alcance: 340,
+      dano: 11,
+      cadencia: 1.15,
+      dispersion: 7,
+      masSiCorres: 5,
+      seQuedanA: 175,
+    },
+  },
+};
+
 // Agente a pie. Sale del coche cuando vas andando y te persigue para
 // detenerte; si te subes a un coche, vuelve corriendo al suyo.
 export class Officer {
-  constructor(scene, map, x, y) {
+  constructor(scene, map, x, y, clase = 'patrulla') {
     this.scene = scene;
     this.map = map;
     this.x = x;
     this.y = y;
     this.angle = 0;
     this.radius = RADIO;
-    this.speed = 112 + Math.random() * 22;
+    this.clase = clase;
+    const c = CLASES[clase] || CLASES.patrulla;
+    this.tiro = c.tiro;
+    this.textura = c.textura;
+    this.speed = c.velocidad + Math.random() * 22;
     this.stuck = 0;
-    this.vida = VIDA.policia;
+    this.vida = c.vida;
     this.down = false;
+    // Sin estas dos marcas, cargarse a un agente contaba como cargarse a un
+    // civil (dos estrellas en vez de tres) y no soltaba su arma.
+    this.esPolicia = true;
+    this.armado = true;
     this.recarga = 1.3;   // margen para reaccionar al verles bajar del coche
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.32).setAlpha(0.45);
     this.paso = 0;
     this.fase = 0;
-    this.sprite = scene.add.image(x, y, 'officer-0');
+    this.sprite = scene.add.image(x, y, `${this.textura}-0`);
   }
 
   // Los agentes aguantan mas que un peaton, y cuando caen se quedan en el
   // suelo: quien se lo cargue, que sepa lo que ha hecho.
-  recibirDano(cantidad) {
+  recibirDano(cantidad, desdeX, desdeY, deCerca = false) {
     if (this.down) return null;
     this.vida -= cantidad;
+    // un golpe de cerca tambien les retrasa el siguiente disparo
+    if (deCerca) this.recarga = Math.max(this.recarga, 0.7);
     this.sprite.setTint(0xff8a7a);
     if (this.scene && this.scene.time) {
       this.scene.time.delayedCall(110, () => {
@@ -63,6 +94,7 @@ export class Officer {
   // sin pared en medio. Devuelve true si ademas debe quedarse quieto.
   intentarDisparar(dt, objetivo, dist) {
     this.recarga -= dt;
+    const TIRO = this.tiro;
     if (GameState.wanted < TIRO.desdeBusca) return false;
     if (dist > TIRO.alcance) return false;
 
@@ -115,7 +147,7 @@ export class Officer {
     const fase = Math.floor(this.paso) % FASES;
     if (fase !== this.fase) {
       this.fase = fase;
-      this.sprite.setTexture(`officer-${fase}`);
+      this.sprite.setTexture(`${this.textura}-${fase}`);
     }
     this.sync();
     return dist;

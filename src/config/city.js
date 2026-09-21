@@ -16,33 +16,39 @@ export const T = {
 export const SOLID_TILES = new Set([T.WATER]);
 
 export const CITY = {
-  width: 124,
-  height: 104,
+  // La ciudad crecio al doble el 22-sep: de 124x104 a 173x146 casillas
+  // (5.536 x 4.672 px). Todo lo demas sale de aqui, asi que para hacerla mas
+  // grande basta con anadir calles y su fila o columna en blockZones.
+  width: 173,
+  height: 146,
   seed: 20260920,
 
-  seaTop: 97,
-  portTop: 78,
+  seaTop: 137,
+  portTop: 118,
 
   roadsH: [
     { y: 4, h: 5 },
     { y: 22, h: 5 },
     { y: 40, h: 5 },
-    { y: 56, h: 5 },
-    { y: 72, h: 5 },
+    { y: 58, h: 5 },
+    { y: 76, h: 5 },
+    { y: 94, h: 5 },
+    { y: 112, h: 5 },
   ],
   roadsV: [
     { x: 4, w: 5 },
     { x: 26, w: 5 },
     { x: 50, w: 5 },
     { x: 74, w: 5 },
-    { x: 96, w: 5 },
-    { x: 114, w: 5 },
+    { x: 98, w: 5 },
+    { x: 122, w: 5 },
+    { x: 146, w: 5 },
+    { x: 164, w: 5 },
   ],
 
   // calle del puerto y sus dos bajadas desde la ronda sur
-  portRoad: { y: 86, h: 5, x0: 10, x1: 112 },
-  portLinks: [{ x: 26, w: 5 }, { x: 74, w: 5 }],
-
+  portRoad: { y: 126, h: 5, x0: 10, x1: 161 },
+  portLinks: [{ x: 50, w: 5 }, { x: 122, w: 5 }],
   zones: {
     residencial: {
       label: 'Residencial',
@@ -79,20 +85,20 @@ export const CITY = {
   // que zona ocupa cada manzana: [fila][columna]
   // filas de arriba a abajo, columnas de izquierda a derecha
   blockZones: [
-    ['residencial', 'residencial', 'centro', 'conflictivo', 'conflictivo'],
-    ['residencial', 'centro', 'centro', 'centro', 'conflictivo'],
-    ['comercial', 'comercial', 'centro', 'centro', 'industrial'],
-    ['comercial', 'comercial', 'comercial', 'industrial', 'industrial'],
+    ['residencial', 'residencial', 'residencial', 'centro', 'centro', 'conflictivo', 'conflictivo'],
+    ['residencial', 'residencial', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'centro', 'centro', 'centro', 'conflictivo', 'industrial'],
+    ['comercial', 'comercial', 'comercial', 'centro', 'comercial', 'industrial', 'industrial'],
+    ['comercial', 'residencial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial'],
+    ['industrial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial'],
   ],
-
   hideout: { blockRow: 0, blockCol: 0, label: 'Tu escondite' },
 
   // sitios reconocibles para poder orientarse: sin esto todas las manzanas
   // se parecen y no hay forma de saber donde estas
   landmarks: [
-    { type: 'plaza', label: 'Plaza del Farol', x: 57, y: 46, w: 15, h: 9 },
-    { type: 'torre', label: 'Torre Sombra', x: 60, y: 29, w: 11, h: 9 },
-    { type: 'faro', label: 'El Faro', x: 103, y: 91, w: 6, h: 6 },
-    { type: 'grua', label: 'Grua del Puerto', x: 28, y: 91, w: 16, h: 4 },
-  ],
-};
+    { type: 'plaza', label: 'Plaza del Farol', x: 80, y: 64, w: 15, h: 9 },
+    { type: 'torre', label: 'Torre Sombra', x: 82, y: 46, w: 11, h: 9 },
+    { type: 'faro', label: 'El Faro', x: 150, y: 131, w: 6, h: 6 },
+    { type: 'grua', label: 'Grua del Puerto', x: 40, y: 131, w: 16, h: 4 },
+  ],};

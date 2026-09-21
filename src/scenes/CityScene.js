@@ -1268,7 +1268,11 @@ export class CityScene extends Phaser.Scene {
       vehicleName: this.drivingVehicle ? this.drivingVehicle.stats.name : '',
       hp: this.drivingVehicle ? this.drivingVehicle.hp / this.drivingVehicle.stats.maxHp : 1,
       target: this.jobs.target,
-      player: { x: this.player.x, y: this.player.y },
+      // el angulo es para la flecha del mapa: si vas en coche, manda el coche
+      player: {
+        x: this.player.x, y: this.player.y,
+        angle: this.drivingVehicle ? this.drivingVehicle.angle : this.player.angle,
+      },
       deliveries: GameState.stats.deliveries,
       wanted: GameState.wanted,
       health: GameState.health,
@@ -1278,6 +1282,7 @@ export class CityScene extends Phaser.Scene {
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
       arma: this.drivingVehicle ? null : {
+        clave: GameState.armaActual,
         nombre: ARMAS[GameState.armaActual].nombre,
         balas: GameState.municion(),
       },

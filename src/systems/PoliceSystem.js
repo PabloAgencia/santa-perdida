@@ -30,6 +30,13 @@ const DETENCION_DIST = 48;
 const TIEMPO_PARA_DETENER = 3.6;
 const BAJARSE_DIST = 180;
 
+// El furgon de asalto: solo con la busca al maximo, y trae cuatro dentro.
+// Se le ve venir (es lento) y despliega al llegar, como en San Andreas.
+const FURGON_CADA = 30;
+const FURGON_MAX = 2;
+const SWAT_POR_FURGON = 4;
+const FURGON_DESPLIEGA_A = 240;
+
 export class PoliceSystem {
   constructor(scene, map, network) {
     this.scene = scene;
@@ -101,7 +108,7 @@ export class PoliceSystem {
         this.lastKnown = { x: player.x, y: player.y };
       }
       this.runUnit(u, dt, player, ve, playerVehicle);
-      this.updateOfficer(u, dt, player, playerVehicle, ve);
+      this.updateOfficers(u, dt, player, playerVehicle, ve);
       this.updateSiren(u, dt);
     }
 
@@ -120,6 +127,12 @@ export class PoliceSystem {
     if (GameState.wanted >= 3 && this.roadblockTimer <= 0) {
       this.roadblockTimer = 22;
       this.spawnRoadblock(player, playerVehicle);
+    }
+
+    this.furgonTimer = (this.furgonTimer || 0) - dt;
+    if (GameState.wanted >= 3 && this.furgonTimer <= 0) {
+      this.furgonTimer = FURGON_CADA;
+      this.spawnFurgon(player);
     }
 
     this.checkArrest(player, playerVehicle, dt);
@@ -179,12 +192,54 @@ export class PoliceSystem {
         vehicle, siren, sirenTimer: 0,
         state: ESTADO.BLOQUEO,
         lastSeen: null, timer: 40, edge: null,
-        officer: null, flanco: 0,
+        officers: [], plazas: 2, flanco: 0,
         roadblock: true,
       });
     }
 
     EventBus.emit(EVT.NOTIFY, { text: 'Control policial delante', tone: 'danger' });
+  }
+
+  // El furgon aparece lejos y de frente, no a tu espalda: la gracia es
+  // verlo llegar y decidir si aguantas o te largas.
+  spawnFurgon(player) {
+    if (this.units.filter((u) => u.furgon).length >= FURGON_MAX) return;
+
+    let mejor = null;
+    let mejorDist = Infinity;
+    for (let i = 0; i < 60; i++) {
+      const edge = this.net.randomEdge();
+      const p = this.net.pointAlong(edge, 0.2 + Math.random() * 0.6);
+      const d = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);
+      if (d < 900 || d > 1600) continue;
+      if (this.map.isSolidBox(p.x, p.y, 40, 40)) continue;
+      if (d < mejorDist) {
+        mejorDist = d;
+        mejor = { p, edge };
+      }
+    }
+    if (!mejor) return;
+
+    const { p, edge } = mejor;
+    const vehicle = new Vehicle(this.scene, this.map, 'furgon', p.x, p.y, edge.angle, { color: 0 });
+    vehicle.ai = true;
+    vehicle.police = true;
+    vehicle.encendido = true;
+    this.scene.vehicles.push(vehicle);
+
+    const siren = this.scene.add.image(p.x, p.y, 'siren').setVisible(false).setDepth(9999);
+    this.units.push({
+      vehicle, siren, sirenTimer: 0,
+      state: ESTADO.PERSIGUIENDO,
+      lastSeen: { x: player.x, y: player.y },
+      timer: 60, edge,
+      officers: [], plazas: SWAT_POR_FURGON,
+      clase: 'asalto',
+      furgon: true,
+      flanco: 0,
+    });
+
+    EventBus.emit(EVT.NOTIFY, { text: 'Viene un furgon de asalto', tone: 'danger' });
   }
 
   // ---------- vista ----------
@@ -211,15 +266,34 @@ export class PoliceSystem {
   // ---------- maquina de estados ----------
 
   // si vas a pie y la patrulla ya te tiene cerca, el agente se baja a por ti
-  updateOfficer(u, dt, player, playerVehicle, ve) {
+  // En un coche patrulla caben DOS, y cuando se bajan ese coche ya no da
+  // mas gente: antes podia parir agentes sin fin, uno detras de otro, y
+  // acababas rodeado por diez salidos del mismo sitio.
+  updateOfficers(u, dt, player, playerVehicle, ve) {
     const v = u.vehicle;
 
-    if (u.officer) {
-      const dist = u.officer.update(dt, player.x, player.y);
-      // si te subes a un coche o escapas lejos, vuelve al suyo
+    for (let i = u.officers.length - 1; i >= 0; i--) {
+      const o = u.officers[i];
+      const dist = o.update(dt, player.x, player.y);
+      if (o.down) continue;   // el que cae se queda tirado en la calle
+
+      // si te subes a un coche o escapas lejos, vuelve al suyo y su plaza
+      // queda libre otra vez
       if (playerVehicle || dist > 520 || GameState.wanted === 0) {
-        u.officer.destroy();
-        u.officer = null;
+        o.destroy();
+        u.officers.splice(i, 1);
+        u.plazas++;
+      }
+    }
+
+    if (u.plazas <= 0) return;
+
+    // El furgon no espera a nada: llega, frena y suelta a los cuatro. Da
+    // igual que vayas en coche, que es justo cuando hace falta.
+    if (u.furgon) {
+      const d = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
+      if (d < FURGON_DESPLIEGA_A && v.speed < 120) {
+        this.bajarDelCoche(u, SWAT_POR_FURGON, 'Furgon de asalto: se despliegan');
       }
       return;
     }
@@ -239,17 +313,44 @@ export class PoliceSystem {
     if (dist < 30) return;
     if (dist > BAJARSE_DIST && !noTeAlcanza) return;
 
-    const spot = v.findExitSpot();
-    u.officer = new Officer(this.scene, this.map, spot.x, spot.y);
+    this.bajarDelCoche(u, u.plazas, 'Se han bajado del coche');
+  }
+
+  // Bajan de golpe los que queden dentro, cada uno por su lado del coche.
+  bajarDelCoche(u, cuantos, aviso) {
+    const v = u.vehicle;
+    const n = Math.min(cuantos, u.plazas);
+    for (let i = 0; i < n; i++) {
+      const spot = v.findExitSpot();
+      // cada uno sale por su lado, pero si ese lado es pared salen por la
+      // puerta sin mas: si no, acababan de pie encima de un edificio
+      const lado = i % 2 === 0 ? 1 : -1;
+      const sep = 14 * lado * Math.floor(i / 2 + 1);
+      let px = spot.x + Math.cos(v.angle + Math.PI / 2) * sep;
+      let py = spot.y + Math.sin(v.angle + Math.PI / 2) * sep;
+      if (this.map.isSolidBox(px, py, 12, 12)) {
+        px = spot.x;
+        py = spot.y;
+      }
+      const o = new Officer(this.scene, this.map, px, py, u.clase || 'patrulla');
+      u.officers.push(o);
+      u.plazas--;
+    }
     u.quieto = 0;
     v.vx = 0;
     v.vy = 0;
-    EventBus.emit(EVT.NOTIFY, { text: 'Se han bajado del coche', tone: 'danger' });
+    if (aviso) EventBus.emit(EVT.NOTIFY, { text: aviso, tone: 'danger' });
   }
-
   runUnit(u, dt, player, ve, playerVehicle) {
     const v = u.vehicle;
     u.timer -= dt;
+
+    // El furgon no busca ni duda: si ha salido es porque ya saben donde
+    // estas, y va a por ti hasta llegar. Es lo que cambia en alerta maxima.
+    if (u.furgon && u.officers.length === 0) {
+      u.state = ESTADO.PERSIGUIENDO;
+      u.lastSeen = { x: player.x, y: player.y };
+    }
 
     switch (u.state) {
       case ESTADO.PATRULLA:
@@ -316,8 +417,8 @@ export class PoliceSystem {
         break;
     }
 
-    if (u.officer) {
-      // con el agente fuera, el coche se queda parado
+    if (u.officers.length > 0) {
+      // con gente fuera, el coche se queda parado
       u.vehicle.vx = 0;
       u.vehicle.vy = 0;
       u.vehicle.syncSprite();
@@ -406,8 +507,11 @@ export class PoliceSystem {
     let encima = false;
     for (const u of this.units) {
       // el agente a pie detiene mas de cerca que el coche
-      if (u.officer) {
-        if (Phaser.Math.Distance.Between(u.officer.x, u.officer.y, player.x, player.y) < 34) {
+      if (u.officers.length > 0) {
+        const alguno = u.officers.some(
+          (o) => !o.down && Phaser.Math.Distance.Between(o.x, o.y, player.x, player.y) < 34
+        );
+        if (alguno) {
           encima = true;
           break;
         }
@@ -454,10 +558,15 @@ export class PoliceSystem {
       const u = this.units[i];
       const lejos =
         Phaser.Math.Distance.Between(u.vehicle.x, u.vehicle.y, player.x, player.y) > DESPAWN;
-      const caducado = u.roadblock && (u.timer <= 0 || GameState.wanted < 3);
+      // el furgon se va cuando baja la busca, pero no mientras sus hombres
+      // sigan fuera: desaparecerles el coche debajo queda fatal
+      const sinGenteFuera = u.officers.every((o) => o.down);
+      const caducado =
+        (u.roadblock && (u.timer <= 0 || GameState.wanted < 3)) ||
+        (u.furgon && GameState.wanted < 3 && sinGenteFuera);
       const sobra =
-        !u.roadblock &&
-        this.units.filter((x) => !x.roadblock).length > max &&
+        !u.roadblock && !u.furgon &&
+        this.units.filter((x) => !x.roadblock && !x.furgon).length > max &&
         u.state !== ESTADO.PERSIGUIENDO;
 
       // OJO: si el jugador se ha subido a la patrulla NO se puede destruir el
@@ -473,7 +582,7 @@ export class PoliceSystem {
   // el jugador se queda el coche: se deshace la unidad pero el vehiculo vive
   soltarUnidad(i) {
     const u = this.units[i];
-    if (u.officer) u.officer.destroy();
+    for (const o of u.officers) o.destroy();
     u.siren.destroy();
     u.vehicle.ai = false;
     u.vehicle.police = false;
@@ -487,7 +596,7 @@ export class PoliceSystem {
     const list = this.scene.vehicles;
     const at = list.indexOf(u.vehicle);
     if (at >= 0) list.splice(at, 1);
-    if (u.officer) u.officer.destroy();
+    for (const o of u.officers) o.destroy();
     u.siren.destroy();
     u.vehicle.destroy();
     this.units.splice(i, 1);
@@ -495,7 +604,8 @@ export class PoliceSystem {
 
   topUp(player) {
     let attempts = 0;
-    while (this.units.length < this.wantedUnits() && attempts < 50) {
+    const normales = () => this.units.filter((u) => !u.roadblock && !u.furgon).length;
+    while (normales() < this.wantedUnits() && attempts < 50) {
       attempts++;
       const edge = this.net.randomEdge();
       const p = this.net.pointAlong(edge, 0.2 + Math.random() * 0.6);
@@ -524,7 +634,8 @@ export class PoliceSystem {
         lastSeen: GameState.wanted > 0 && this.lastKnown ? { ...this.lastKnown } : null,
         timer: 14,
         edge,
-        officer: null,
+        officers: [],
+        plazas: 2,          // en el coche caben dos, y solo dos
         flanco: this.units.length % 3,
       });
     }

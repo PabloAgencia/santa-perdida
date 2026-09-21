@@ -75,6 +75,18 @@ export const VEHICLES = {
     maxHp: 140, price: 0,
     palette: [0xd8d5cc, 0x2a2f3a],
   },
+  // El furgon de asalto: solo sale con la busca al maximo y trae cuatro
+  // dentro. Lento y pesado a proposito, para que se le pueda ver venir.
+  furgon: {
+    name: 'Furgon de asalto',
+    clase: 'furgoneta',
+    police: true,
+    length: 66, width: 28,
+    maxSpeed: 290, accel: 120, brake: 320, reverseSpeed: 85,
+    turnRate: 1.6, lateralRetention: 0.9,
+    maxHp: 300, price: 0,
+    palette: [0x23262b, 0x2f3a45],
+  },
 };
 
 // el coche patrulla no sale como trafico ni aparcado: lo saca la policia
