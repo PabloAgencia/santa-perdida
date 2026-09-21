@@ -35,12 +35,33 @@ export class Player {
 
   // Redibuja el personaje con el cuerpo que tiene ahora. Solo hace trabajo de
   // verdad al cambiar de tramo o de ropa: son cuatro texturas nuevas.
+  // Si hay imagenes preparadas, se usa la del cuerpo que toca: normal, gordo
+  // o fuerte. Es lo unico que hace falta mirar, porque comer engorda y pelear
+  // pone fuerte, y el personaje tiene que verse asi.
+  cuerpoDeImagen(grasa, musculo) {
+    // Las fotos van con clave propia ('player-foto'), porque 'player' es la
+    // que dibuja el juego y siempre existe: sin distinguirlas, el cuerpo se
+    // quedaba congelado y ya no engordabas ni te ponias fuerte.
+    const hay = (c) => this.scene.textures.exists(`${c}-0`);
+    if (grasa >= 60 && hay('player-gordo')) return 'player-gordo';
+    if (musculo >= 60 && hay('player-fuerte')) return 'player-fuerte';
+    return hay('player-foto') ? 'player-foto' : null;
+  }
+
   actualizarCuerpo(forzar = false) {
     const grasa = GameState.atributo('grasa');
     const musculo = GameState.atributo('musculo');
     const tramo = `${tramoDelCuerpo(grasa, musculo)}-${this.ropa}`;
     if (!forzar && tramo === this.tramoCuerpo) return;
     this.tramoCuerpo = tramo;
+
+    const conFoto = this.cuerpoDeImagen(grasa, musculo);
+    if (conFoto) {
+      this.texturaBase = conFoto;
+      if (this.sprite) this.sprite.setTexture(`${conFoto}-${this.fase}`);
+      return;
+    }
+    this.texturaBase = 'player';
 
     const ropa = ROPA[this.ropa] || ROPA.calle;
     for (let f = 0; f < FASES; f++) {
@@ -130,7 +151,7 @@ export class Player {
       const fase = Math.floor(this.paso) % FASES;
       if (fase !== this.fase) {
         this.fase = fase;
-        this.sprite.setTexture(`player-${fase}`);
+        this.sprite.setTexture(`${this.texturaBase || 'player'}-${fase}`);
       }
     } else if (this.fase !== 0) {
       this.fase = 0;

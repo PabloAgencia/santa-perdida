@@ -73,6 +73,25 @@ def leer_vehiculos():
     return vehiculos
 
 
+def quitar_magenta(img):
+    """Si el fondo es el magenta plano que pido en los prompts, fuera.
+
+    Es lo mas comodo: ese color no sale en ningun sitio del juego, asi que se
+    quita de un tiron y sin tocar el dibujo. Devuelve None si no era magenta,
+    para que se siga con el metodo del damero.
+    """
+    img = img.convert('RGBA')
+    rgb = np.array(img)[:, :, :3].astype(float)
+    magenta = np.array([255.0, 0.0, 255.0])
+    cerca = np.sqrt(((rgb - magenta) ** 2).sum(axis=2)) < 120
+    if cerca.mean() < 0.12:
+        return None
+
+    a = np.array(img)
+    a[:, :, 3][cerca] = 0
+    return Image.fromarray(a, 'RGBA')
+
+
 def quitar_fondo(img):
     """Se queda con el vehiculo y tira el fondo.
 
@@ -86,6 +105,10 @@ def quitar_fondo(img):
     entre el primero y el ultimo. Las ventanas y el capo negro quedan dentro
     del relleno, y el damero, fuera.
     """
+    limpia = quitar_magenta(img)
+    if limpia is not None:
+        return limpia
+
     img = img.convert('RGBA')
     a = np.array(img).astype(np.int16)
     al, an = a.shape[:2]
@@ -269,6 +292,77 @@ def preparar_edificios(hechos):
         print(f'  {fichero}: tejado de {clave} a 128x128 px')
 
 
+# Como se llama cada personaje en el juego. El jugador tiene tres cuerpos
+# porque engorda comiendo y se pone fuerte peleando, y eso se ve.
+PERSONAJES = {
+    'jugador-normal': 'player-foto',
+    'jugador-gordo': 'player-gordo',
+    'jugador-fuerte': 'player-fuerte',
+    'policia': 'officer',
+    'swat': 'swat',
+    'banda-roja': 'gang-rompiente',
+    'banda-verde': 'gang-verdial',
+    'banda-morada': 'gang-amarres',
+    'peaton-1': 'ped-0',
+    'peaton-2': 'ped-1',
+}
+
+LADO_PERSONAJE = 32
+
+
+def preparar_personajes(hechos):
+    """Cada persona sale en cuatro fotogramas: el juego los va pasando al
+
+    andar. Como la imagen es una sola, los pasos se hacen moviendola un pixel
+    arriba y abajo; desde arriba no se ven las piernas, asi que con ese
+    balanceo basta para que parezca que camina.
+    """
+    carpeta = os.path.join(ORIGEN, 'personajes')
+    if not os.path.isdir(carpeta):
+        return
+    for fichero in sorted(os.listdir(carpeta)):
+        if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            continue
+        clave = os.path.splitext(fichero)[0].lower().strip()
+        if clave not in PERSONAJES:
+            print(f'  ! "{fichero}" no cuadra con ningun personaje '
+                  f'({", ".join(sorted(PERSONAJES))})')
+            continue
+
+        img = Image.open(os.path.join(carpeta, fichero))
+        img = mancha_principal(quitar_fondo(img))
+        img = enderezar(recortar(img))
+        img = encajar(img, LADO_PERSONAJE, LADO_PERSONAJE)
+
+        base = PERSONAJES[clave]
+        for fase, subir in enumerate((0, -1, 0, 1)):
+            lienzo = Image.new('RGBA', (LADO_PERSONAJE, LADO_PERSONAJE), (0, 0, 0, 0))
+            lienzo.paste(img, (0, subir))
+            nombre = f'{base}-{fase}.png'
+            lienzo.save(os.path.join(DESTINO, nombre))
+            hechos.append(nombre)
+        print(f'  {fichero}: {base}, 4 fotogramas de {LADO_PERSONAJE}x{LADO_PERSONAJE} px')
+
+
+def preparar_iconos(hechos):
+    """Los iconos van tal cual, solo recortados y a 40x40 (los del mapa, 20)."""
+    carpeta = os.path.join(ORIGEN, 'iconos')
+    if not os.path.isdir(carpeta):
+        return
+    for fichero in sorted(os.listdir(carpeta)):
+        if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            continue
+        clave = os.path.splitext(fichero)[0].lower().strip()
+        img = mancha_principal(quitar_fondo(Image.open(os.path.join(carpeta, fichero))))
+        img = recortar(img)
+        lado = 20 if clave.startswith('marca-') else 40
+        img = encajar(img, lado, lado)
+        nombre = f'{clave}.png'
+        img.save(os.path.join(DESTINO, nombre))
+        hechos.append(nombre)
+        print(f'  {fichero}: {clave} a {lado}x{lado} px')
+
+
 def main():
     os.makedirs(DESTINO, exist_ok=True)
     vehiculos = leer_vehiculos()
@@ -278,6 +372,10 @@ def main():
     preparar_coches(vehiculos, hechos)
     print('Edificios:')
     preparar_edificios(hechos)
+    print('Personajes:')
+    preparar_personajes(hechos)
+    print('Iconos:')
+    preparar_iconos(hechos)
 
     with open(os.path.join(DESTINO, 'lista.json'), 'w', encoding='utf-8') as f:
         json.dump(sorted(hechos), f)

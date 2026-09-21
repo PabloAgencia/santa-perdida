@@ -276,7 +276,7 @@ export class BootScene extends Phaser.Scene {
   // hace falta. Esto es solo el de arranque.
   makePlayer() {
     const ropa = ROPA.calle;
-    makeWalkFrames(this, 'player', {
+    this.dibujar('player', {
       chaqueta: ropa.chaqueta,
       piel: ropa.piel,
       pelo: ropa.pelo,
@@ -448,7 +448,7 @@ export class BootScene extends Phaser.Scene {
     const hairs = [0x241c14, 0x3d2a18, 0x6b6257, 0x14100c, 0x8a7a5c, 0x4a2c1e];
 
     jackets.forEach((chaqueta, i) => {
-      makeWalkFrames(this, `ped-${i}`, {
+      this.dibujar(`ped-${i}`, {
         chaqueta,
         piel: skins[i % skins.length],
         pelo: hairs[(i * 2 + 1) % hairs.length],
@@ -458,8 +458,14 @@ export class BootScene extends Phaser.Scene {
     });
   }
 
+  // Si ya hay una imagen cargada con esa clave, se respeta y no se dibuja.
+  dibujar(base, opciones) {
+    if (this.textures.exists(`${base}-0`)) return;
+    makeWalkFrames(this, base, opciones);
+  }
+
   makeOfficer() {
-    makeWalkFrames(this, 'officer', {
+    this.dibujar('officer', {
       chaqueta: 0x2b3a52,
       piel: 0xc9a882,
       pelo: 0x1b2436,
@@ -469,7 +475,7 @@ export class BootScene extends Phaser.Scene {
     });
 
     // el de asalto: todo negro, casco en vez de pelo y mas ancho por el peto
-    makeWalkFrames(this, 'swat', {
+    this.dibujar('swat', {
       chaqueta: 0x23262b,
       piel: 0x9b7a58,
       pelo: 0x14161a,
@@ -481,7 +487,7 @@ export class BootScene extends Phaser.Scene {
 
   makeGangs() {
     for (const f of Object.values(FACTIONS)) {
-      makeWalkFrames(this, `gang-${f.key}`, {
+      this.dibujar(`gang-${f.key}`, {
         chaqueta: f.color,
         piel: 0xb08560,
         pelo: 0x1e1812,

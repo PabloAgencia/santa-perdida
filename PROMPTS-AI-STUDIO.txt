@@ -1,122 +1,312 @@
-PROMPTS PARA GENERAR ARTE DEL JUEGO                          (22-sep-2026)
+PROMPTS PARA GENERAR EL ARTE DEL JUEGO                       (22-sep-2026)
 ================================================================================
 
-Para pegar tal cual en Google AI Studio (o en cualquier generador de imagen).
-Cada bloque dice DONDE va lo que salga y COMO tiene que quedar el fichero.
+Cada bloque es un prompt COMPLETO: se copia entero, se pega y ya. No hay que
+añadir nada ni acordarse de ninguna regla, porque van dentro del propio texto.
 
-LO QUE PASO AL INTENTARLO YO
-  Entre con tu sesion en aistudio.google.com: estabas dentro, pero el modelo
-  de imagen (Nano Banana) sale bloqueado con "Upgrade to unlock" y pide plan
-  de pago o clave de API. Tienes DOS claves creadas en el panel; con una de
-  ellas yo puedo generar todo esto desde aqui en un minuto y dejarlo montado.
-  Pegamela cuando quieras y lo hago.
+DONDE SE DEJA CADA COSA
+  personajes -> sprites\originales\personajes\
+  iconos     -> sprites\originales\iconos\
+  (los coches y los tejados ya estan hechos)
 
-REGLAS QUE VALEN PARA TODOS LOS PROMPTS
-  · Vista CENITAL pura (desde arriba del todo), sin perspectiva.
-  · Fondo TRANSPARENTE (o de un verde/magenta plano que se pueda recortar).
-  · Sin sombras pegadas al suelo: las pone el juego.
-  · Paleta oscura y apagada, de noche urbana. Nada de colores chillones.
-  · Sin texto, sin marcas de agua, sin bordes.
+El nombre del fichero es el que pone encima de cada prompt. Si sale torcido o
+raro, se repite el mismo prompt: cada tirada sale distinta.
 
 
-================================================================================
-1. COCHES VISTOS DESDE ARRIBA   (lo que mas se nota)
-================================================================================
-Van a: src/scenes/BootScene.js, sustituyendo los coches dibujados a mano.
-Formato: PNG con transparencia, 128 x 64 px, el morro mirando a la DERECHA.
+################################################################################
+#  PERSONAJES
+################################################################################
 
-PROMPT (repetir cambiando el modelo):
-  Top-down view of a car, seen perfectly from directly above, 90 degree
-  overhead angle, centered, front of the car pointing right. Pixel art style,
-  clean hard edges, 128x64 pixels, dark muted night-time palette, no shadow
-  under the car, transparent background, no text, no watermark.
-  The car is: <MODELO>
-
-  <MODELO> para cada uno de los seis:
-   · a battered 1980s small hatchback, faded olive green paint, dented doors
-   · a low sharp sports coupe, dark red paint, black racing stripe
-   · a heavy square 1970s sedan, navy blue, chrome bumpers
-   · a small motorcycle with a rider seen from above, yellow and black
-   · a long delivery van, dirty white panels, no windows on the sides
-   · a police patrol car, white and dark blue, light bar on the roof
-   · a black armored police van, barred windows, roof lights   (el furgon SWAT)
+De TU personaje hacen falta tres versiones, porque el juego te engorda si
+comes y te pone fuerte si peleas, y el cuerpo se ve. Del resto, una sola.
 
 
-================================================================================
-2. TEJADOS DE EDIFICIO   (la ciudad entera se ve desde arriba)
-================================================================================
-Van a: capa de dibujo de los edificios en CityScene.
-Formato: PNG 256 x 256 px, que se pueda repetir en mosaico sin costura.
-
-PROMPT:
-  Seamless tileable top-down texture of a city building rooftop seen from
-  directly above, 256x256 pixels, pixel art, dark muted palette, night time.
-  Flat roof with <DETALLE>. No perspective, no shadows, no text.
-
-  <DETALLE> para cada barrio:
-   · air conditioning units, vents and a water tank        (centro)
-   · red clay roof tiles and a small chimney               (residencial)
-   · corrugated metal panels, rust stains, a skylight      (industrial)
-   · a rooftop terrace with plants and a parasol           (comercial)
-   · cracked asphalt, graffiti, a broken antenna           (barrio conflictivo)
-   · wooden planks, crates and fishing nets                (puerto)
+--------------------------------------------------------------------------------
+  jugador-normal.png
+--------------------------------------------------------------------------------
+Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of his head, his shoulders and the tips of his shoes are visible.
+NO face, NO perspective, NO tilt. He is standing still, facing RIGHT, arms
+slightly away from the body. Average build, dark green bomber jacket, dark
+blue jeans, short dark brown hair. Pixel art, chunky readable pixels, dark
+muted night-time palette, strong dark outline around the silhouette so it
+reads at a small size. Plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border, the figure centered and filling most of the
+image.
 
 
-================================================================================
-3. ICONOS DEL MARCADOR   (ya los dibuje a mano, esto seria mejorarlos)
-================================================================================
-Van a: BootScene.makeIconosDeHud().
-Formato: PNG 64 x 64 px, transparente, silueta clara que se lea en pequeño.
-
-PROMPT:
-  Simple flat game HUD icon, 64x64 pixels, centered, thick dark outline,
-  readable at 20 pixels, transparent background, no text, muted colors.
-  The icon is: <COSA>
-
-  <COSA>:
-   · a clenched fist seen from the side
-   · a wooden baseball bat, diagonal
-   · a handgun pointing right
-   · a double-barrel shotgun pointing right
-   · a red heart
-   · a grey bulletproof vest shield
-   · a five pointed star
-   · a green shop sign with a gun on it       (el punto de la armeria)
-   · a house with a key                        (el escondite)
+--------------------------------------------------------------------------------
+  jugador-gordo.png
+--------------------------------------------------------------------------------
+Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of his head, his shoulders and the tips of his shoes are visible.
+NO face, NO perspective, NO tilt. He is standing still, facing RIGHT, arms
+pushed out by a wide belly. He is clearly FAT: much wider than tall from
+above, round shoulders, the jacket tight on him. Same man as before: dark
+green bomber jacket, dark blue jeans, short dark brown hair. Pixel art, chunky
+readable pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
 
 
-================================================================================
-4. PERSONAJES   (solo si los coches y los tejados salen bien)
-================================================================================
-Van a: src/world/personArt.js. OJO: el cuerpo del personaje cambia con la
-grasa y el musculo, asi que hacen falta TRES versiones del jugador (delgado,
-normal, fuerte) o el sistema de cuerpo deja de funcionar.
-Formato: PNG 32 x 32, transparente, mirando a la derecha.
-
-PROMPT:
-  Top-down view of a person seen from directly above, 32x32 pixels, pixel
-  art, only head and shoulders visible from above, facing right, dark muted
-  palette, transparent background, no shadow, no text.
-  The person is: <QUIEN>
-
-  <QUIEN>:
-   · a man in a dark jacket and jeans, short brown hair        (jugador)
-   · a police officer in a blue uniform with a cap             (policia)
-   · a SWAT officer in black tactical gear and helmet          (asalto)
-   · a gang member in a red hoodie                             (banda 1)
-   · a gang member in a green tracksuit                        (banda 2)
-   · a gang member in a purple jacket                          (banda 3)
+--------------------------------------------------------------------------------
+  jugador-fuerte.png
+--------------------------------------------------------------------------------
+Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of his head, his shoulders and the tips of his shoes are visible.
+NO face, NO perspective, NO tilt. He is standing still, facing RIGHT. He is
+clearly MUSCULAR: very broad shoulders, thick arms held away from the body,
+narrow waist. Same man as before: dark green bomber jacket, dark blue jeans,
+short dark brown hair. Pixel art, chunky readable pixels, dark muted
+night-time palette, strong dark outline around the silhouette so it reads at a
+small size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
 
 
-================================================================================
-QUE HAGO YO CUANDO LLEGUEN LAS IMAGENES
-================================================================================
-  1. Recortar y ajustar al tamaño exacto que espera el juego.
-  2. Meterlas en `sprites/` y cargarlas en BootScene.
-  3. Dejar el dibujo a mano como respaldo: si una imagen falta, el juego
-     sigue funcionando igual que ahora.
-  4. Probar en el navegador que no se rompe el orden de profundidad ni las
-     colisiones (los sprites nuevos pueden traer margenes distintos).
+--------------------------------------------------------------------------------
+  policia.png
+--------------------------------------------------------------------------------
+Top-down sprite of a police officer seen from DIRECTLY ABOVE at a perfect 90
+degree overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of the cap, the shoulders and the tips of the boots are
+visible. NO face, NO perspective, NO tilt. Standing still, facing RIGHT, arms
+slightly away from the body. Dark navy blue uniform with a light grey shirt
+collar, black duty belt, police cap seen from above. Pixel art, chunky
+readable pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
 
-  Empezaria por los COCHES: son lo que mas se mira y lo que menos riesgo
-  tiene, porque no dependen del sistema de cuerpo ni de las animaciones.
+
+--------------------------------------------------------------------------------
+  swat.png
+--------------------------------------------------------------------------------
+Top-down sprite of a SWAT officer seen from DIRECTLY ABOVE at a perfect 90
+degree overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of the helmet, the bulky shoulders and the tips of the
+boots are visible. NO face, NO perspective, NO tilt. Standing still, facing
+RIGHT, holding a rifle across the chest. All black tactical gear, heavy vest
+that makes the shoulders wide and square, black helmet seen from above with a
+small grey stripe. Pixel art, chunky readable pixels, dark muted night-time
+palette, strong dark outline around the silhouette so it reads at a small
+size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  banda-roja.png
+--------------------------------------------------------------------------------
+Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
+90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+trainers are visible. NO face, NO perspective, NO tilt. Standing still, facing
+RIGHT, arms loose. Dark red hooded sweatshirt with the hood down, black
+trousers, black cap seen from above. Pixel art, chunky readable pixels, dark
+muted night-time palette, strong dark outline around the silhouette so it
+reads at a small size. Plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border, the figure centered and filling most of the
+image.
+
+
+--------------------------------------------------------------------------------
+  banda-verde.png
+--------------------------------------------------------------------------------
+Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
+90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+trainers are visible. NO face, NO perspective, NO tilt. Standing still, facing
+RIGHT, arms loose. Dark green tracksuit jacket with a white stripe on each
+sleeve, dark trousers, short black hair. Pixel art, chunky readable pixels,
+dark muted night-time palette, strong dark outline around the silhouette so it
+reads at a small size. Plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border, the figure centered and filling most of the
+image.
+
+
+--------------------------------------------------------------------------------
+  banda-morada.png
+--------------------------------------------------------------------------------
+Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
+90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+boots are visible. NO face, NO perspective, NO tilt. Standing still, facing
+RIGHT, arms loose. Dark purple leather jacket, black trousers, long dark hair
+seen from above. Pixel art, chunky readable pixels, dark muted night-time
+palette, strong dark outline around the silhouette so it reads at a small
+size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-1.png
+--------------------------------------------------------------------------------
+Top-down sprite of an ordinary man walking down the street, seen from DIRECTLY
+ABOVE at a perfect 90 degree overhead angle, like a security camera on the
+ceiling looking straight down. Only the top of the head, the shoulders and the
+tips of the shoes are visible. NO face, NO perspective, NO tilt. Standing
+still, facing RIGHT, arms loose. Brown work jacket, grey trousers, balding
+head seen from above. Pixel art, chunky readable pixels, dark muted
+night-time palette, strong dark outline around the silhouette so it reads at a
+small size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-2.png
+--------------------------------------------------------------------------------
+Top-down sprite of an ordinary woman walking down the street, seen from
+DIRECTLY ABOVE at a perfect 90 degree overhead angle, like a security camera
+on the ceiling looking straight down. Only the top of the head, the shoulders
+and the tips of the shoes are visible. NO face, NO perspective, NO tilt.
+Standing still, facing RIGHT, one arm holding a small bag. Dark teal coat,
+black trousers, dark hair tied back seen from above. Pixel art, chunky
+readable pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+
+################################################################################
+#  ICONOS
+################################################################################
+
+Estos son los del marcador y los del mapa. Van pequeños en pantalla, asi que
+lo que importa es que la silueta se entienda de un vistazo.
+
+
+--------------------------------------------------------------------------------
+  icono-pistola.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a handgun pointing RIGHT, drawn from the side as a clean
+silhouette. Simple shapes, thick dark outline, two or three flat colours only
+(grey steel body, dark grip), no gradients, no shading detail, no 3D. It has
+to be readable when shown at 20 pixels wide. Centered, filling almost the
+whole image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  icono-escopeta.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a double-barrel shotgun pointing RIGHT, drawn from the
+side as a clean silhouette, with a wooden stock. Simple shapes, thick dark
+outline, two or three flat colours only (grey barrels, brown stock), no
+gradients, no shading detail, no 3D. It has to be readable when shown at 20
+pixels wide. Centered, filling almost the whole image, plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  icono-rifle.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of an assault rifle pointing RIGHT, drawn from the side as
+a clean silhouette, with a curved magazine under it. Simple shapes, thick dark
+outline, two or three flat colours only (dark grey body, black grip), no
+gradients, no shading detail, no 3D. It has to be readable when shown at 20
+pixels wide. Centered, filling almost the whole image, plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  icono-sniper.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a sniper rifle pointing RIGHT, drawn from the side as a
+clean silhouette, with a long barrel and a telescopic scope on top. Simple
+shapes, thick dark outline, two or three flat colours only (dark grey body,
+black scope), no gradients, no shading detail, no 3D. It has to be readable
+when shown at 20 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+
+--------------------------------------------------------------------------------
+  icono-bate.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a wooden baseball bat placed DIAGONALLY, from the bottom
+left to the top right, drawn as a clean silhouette. Simple shapes, thick dark
+outline, two flat colours only (light wood, darker wood grip), no gradients,
+no shading detail, no 3D. It has to be readable when shown at 20 pixels wide.
+Centered, filling almost the whole image, plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  icono-puno.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a clenched fist seen from the side, knuckles pointing
+RIGHT, drawn as a clean silhouette. Simple shapes, thick dark outline, two
+flat colours only (skin tone and a darker skin tone for the knuckles), no
+gradients, no shading detail, no 3D. It has to be readable when shown at 20
+pixels wide. Centered, filling almost the whole image, plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  hud-corazon.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a red heart, the classic video game health symbol, drawn
+as a clean silhouette. Simple shapes, thick dark outline, two flat colours
+only (bright red and a darker red), no gradients, no shading detail, no 3D. It
+has to be readable when shown at 20 pixels wide. Centered, filling almost the
+whole image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  hud-escudo.png
+--------------------------------------------------------------------------------
+Flat game HUD icon of a grey body armour shield, the classic video game armour
+symbol, drawn as a clean silhouette. Simple shapes, thick dark outline, two
+flat colours only (light grey and a darker grey), no gradients, no shading
+detail, no 3D. It has to be readable when shown at 20 pixels wide. Centered,
+filling almost the whole image, plain flat magenta background (#FF00FF), no
+shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-armeria.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a gun shop: a green rounded square badge with a small
+white handgun silhouette inside it, seen straight on. Simple shapes, thick
+dark outline, flat colours, no gradients, no shading detail, no 3D. It has to
+be readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-casa.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a safe house: an orange rounded square badge with a
+small white house silhouette inside it, seen straight on. Simple shapes, thick
+dark outline, flat colours, no gradients, no shading detail, no 3D. It has to
+be readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-trabajo.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a job contact: a yellow rounded square badge with a
+small white exclamation mark inside it, seen straight on. Simple shapes, thick
+dark outline, flat colours, no gradients, no shading detail, no 3D. It has to
+be readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+################################################################################
+#  POR QUE EL FONDO MAGENTA
+################################################################################
+
+Porque el damero que pinta el Playground se confunde con los grises del propio
+dibujo (los cristales de un coche son del mismo negro que un cuadro del
+damero) y recortarlo cuesta. Un magenta plano no aparece en ningun sitio del
+juego, asi que se quita de un tiron y sin tocar el dibujo.
+
+Si aun asi sale con damero, no pasa nada: el preparador tambien sabe quitarlo.
