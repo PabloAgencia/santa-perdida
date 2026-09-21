@@ -25,14 +25,36 @@ import re
 import sys
 import colorsys
 
+import numpy as np
 from PIL import Image
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ORIGEN = os.path.join(RAIZ, 'sprites', 'originales')
 DESTINO = os.path.join(RAIZ, 'sprites', 'listos')
 
-# margen que se recorta antes de nada, por si la marca toca el borde
+# margen que se recorta en los tejados, donde la marca cae dentro del dibujo
 MARGEN = 0.04
+
+# Como llamo Pablo a cada imagen -> como se llama en el juego. Si generas mas,
+# basta con añadir la linea aqui.
+# Las que Gemini saco mirando al otro lado. El juego las quiere con el morro
+# a la derecha, asi que estas se voltean.
+VOLTEAR = {'avispa'}
+
+# Los que llevan librea no se tiñen: un coche de policia pintado de verde deja
+# de ser un coche de policia.
+SIN_TENIR = {'patrulla', 'furgon'}
+
+ALIAS = {
+    'coche 1970s': 'bastion',
+    'coche 1980s': 'chinchorro',
+    'coche policia': 'patrulla',
+    'deportivo': 'velagt',
+    'furgon swat': 'furgon',
+    'furgoneta': 'carguero',
+    'moto': 'avispa',
+    'barrio conflictivo': 'conflictivo',
+}
 
 
 def leer_vehiculos():
@@ -52,63 +74,94 @@ def leer_vehiculos():
 
 
 def quitar_fondo(img):
-    """Fondo transparente: si venia de color plano, se mira en las esquinas."""
+    """Se queda con el vehiculo y tira el fondo.
+
+    El fondo que pinta Gemini es un damero con degradados y ruido, asi que
+    perseguir sus colores uno a uno no lleva a ningun sitio: a la primera de
+    cambio se come las ventanas del coche, que son del mismo negro.
+
+    Lo que si es seguro: UN COCHE VISTO DESDE ARRIBA ES CONVEXO. Asi que se
+    marcan los pixeles que NO pueden ser fondo (los que se apartan de los dos
+    tonos del damero), y despues, fila a fila, se rellena todo lo que queda
+    entre el primero y el ultimo. Las ventanas y el capo negro quedan dentro
+    del relleno, y el damero, fuera.
+    """
     img = img.convert('RGBA')
-    pix = img.load()
-    an, al = img.size
+    a = np.array(img).astype(np.int16)
+    al, an = a.shape[:2]
+    rgb = a[:, :, :3].astype(float)
 
-    esquinas = [pix[0, 0], pix[an - 1, 0], pix[0, al - 1], pix[an - 1, al - 1]]
-    opacas = [c for c in esquinas if c[3] > 200]
-    if not opacas:
-        return img
+    # los dos tonos del fondo, medidos en el marco
+    grueso = max(10, min(al, an) // 10)
+    marco = np.concatenate([
+        rgb[:grueso].reshape(-1, 3), rgb[-grueso:].reshape(-1, 3),
+        rgb[:, :grueso].reshape(-1, 3), rgb[:, -grueso:].reshape(-1, 3),
+    ])
+    luz = marco.mean(axis=1)
+    corte = (luz.min() + luz.max()) / 2
+    tonos = [marco[luz <= corte], marco[luz > corte]]
+    tonos = [np.median(t, axis=0) for t in tonos if len(t) > 50]
 
-    # color de fondo = el que mas se repite en las esquinas
-    fondo = max(set(opacas), key=opacas.count)
-    umbral = 42
-    for y in range(al):
-        for x in range(an):
-            r, g, b, a = pix[x, y]
-            if a < 30:
+    lejos = np.ones((al, an), dtype=bool)
+    for t in tonos:
+        lejos &= np.sqrt(((rgb - t) ** 2).sum(axis=2)) > 62
+
+    # fuera el ruido suelto: un pixel solo no es un coche
+    vecinos = np.zeros((al, an), dtype=np.int16)
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            if dx == 0 and dy == 0:
                 continue
-            if abs(r - fondo[0]) + abs(g - fondo[1]) + abs(b - fondo[2]) < umbral:
-                pix[x, y] = (r, g, b, 0)
-    return img
+            vecinos += np.roll(np.roll(lejos, dy, axis=0), dx, axis=1).astype(np.int16)
+    seguro = lejos & (vecinos >= 4)
+
+    # relleno por filas y por columnas: la interseccion deja la silueta limpia
+    relleno = np.zeros((al, an), dtype=bool)
+    for y in range(al):
+        xs = np.flatnonzero(seguro[y])
+        if len(xs) >= 6:
+            relleno[y, xs[0]:xs[-1] + 1] = True
+    porColumnas = np.zeros((al, an), dtype=bool)
+    for x in range(an):
+        ys = np.flatnonzero(seguro[:, x])
+        if len(ys) >= 4:
+            porColumnas[ys[0]:ys[-1] + 1, x] = True
+
+    dentro = relleno & porColumnas
+    a[:, :, 3][~dentro] = 0
+    return Image.fromarray(a.astype(np.uint8), 'RGBA')
 
 
 def mancha_principal(img):
-    """Se queda con el grupo de pixeles mas grande y borra el resto."""
-    an, al = img.size
-    pix = img.load()
-    visto = [[False] * an for _ in range(al)]
-    mejor = []
+    """Se queda con lo que esta pegado al centro, que es el vehiculo.
 
-    for y0 in range(al):
-        for x0 in range(an):
-            if visto[y0][x0] or pix[x0, y0][3] < 40:
-                continue
-            grupo = []
-            pila = [(x0, y0)]
-            visto[y0][x0] = True
-            while pila:
-                x, y = pila.pop()
-                grupo.append((x, y))
-                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    nx, ny = x + dx, y + dy
-                    if 0 <= nx < an and 0 <= ny < al and not visto[ny][nx] \
-                            and pix[nx, ny][3] >= 40:
-                        visto[ny][nx] = True
-                        pila.append((nx, ny))
-            if len(grupo) > len(mejor):
-                mejor = grupo
+    Lo que quede suelto por las esquinas se va, y ahi es justo donde cae la
+    marquita que pega el Playground de Gemini.
+    """
+    a = np.array(img)
+    opaco = a[:, :, 3] >= 40
+    al, an = opaco.shape
 
-    if not mejor:
+    semilla = np.zeros_like(opaco)
+    semilla[al // 2 - al // 8: al // 2 + al // 8,
+            an // 2 - an // 8: an // 2 + an // 8] = True
+    bueno = semilla & opaco
+    if not bueno.any():
         return img
-    dentro = set(mejor)
-    for y in range(al):
-        for x in range(an):
-            if pix[x, y][3] >= 40 and (x, y) not in dentro:
-                pix[x, y] = (0, 0, 0, 0)
-    return img
+
+    while True:
+        crecido = bueno.copy()
+        crecido[1:, :] |= bueno[:-1, :]
+        crecido[:-1, :] |= bueno[1:, :]
+        crecido[:, 1:] |= bueno[:, :-1]
+        crecido[:, :-1] |= bueno[:, 1:]
+        crecido &= opaco
+        if crecido.sum() == bueno.sum():
+            break
+        bueno = crecido
+
+    a[:, :, 3][~bueno] = 0
+    return Image.fromarray(a, 'RGBA')
 
 
 def recortar(img):
@@ -120,6 +173,16 @@ def enderezar(img):
     """El juego dibuja los coches mirando a la derecha."""
     an, al = img.size
     return img.rotate(-90, expand=True) if al > an else img
+
+
+def encajar(img, largo, ancho):
+    """Ajusta al tamaño del vehiculo SIN deformarlo, y lo centra."""
+    escala = min(largo / img.width, ancho / img.height)
+    nuevo = img.resize((max(1, round(img.width * escala)),
+                        max(1, round(img.height * escala))), Image.LANCZOS)
+    lienzo = Image.new('RGBA', (largo, ancho), (0, 0, 0, 0))
+    lienzo.paste(nuevo, ((largo - nuevo.width) // 2, (ancho - nuevo.height) // 2))
+    return lienzo
 
 
 def tenir(img, color_destino):
@@ -154,6 +217,7 @@ def preparar_coches(vehiculos, hechos):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             continue
         clave = os.path.splitext(fichero)[0].lower().strip()
+        clave = ALIAS.get(clave, clave)
         if clave not in vehiculos:
             print(f'  ! "{fichero}" no cuadra con ningun coche '
                   f'({", ".join(sorted(vehiculos))})')
@@ -161,16 +225,16 @@ def preparar_coches(vehiculos, hechos):
 
         v = vehiculos[clave]
         img = Image.open(os.path.join(carpeta, fichero))
-        an, al = img.size
-        img = img.crop((int(an * MARGEN), int(al * MARGEN),
-                        int(an * (1 - MARGEN)), int(al * (1 - MARGEN))))
         img = mancha_principal(quitar_fondo(img))
         img = enderezar(recortar(img))
-        img = img.resize((v['largo'], v['ancho']), Image.NEAREST)
+        if clave in VOLTEAR:
+            img = img.transpose(Image.FLIP_LEFT_RIGHT)
+        img = encajar(img, v['largo'], v['ancho'])
 
         for i, color in enumerate(v['paleta']):
             nombre = f'veh-{clave}-{i}.png'
-            tenir(img, color).save(os.path.join(DESTINO, nombre))
+            salida = img if clave in SIN_TENIR else tenir(img, color)
+            salida.save(os.path.join(DESTINO, nombre))
             hechos.append(nombre)
         print(f'  {fichero}: {len(v["paleta"])} colores de {v["largo"]}x{v["ancho"]} px')
 
@@ -185,6 +249,7 @@ def preparar_edificios(hechos):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             continue
         clave = os.path.splitext(fichero)[0].lower().strip()
+        clave = ALIAS.get(clave, clave)
         if clave not in BARRIOS:
             print(f'  ! "{fichero}" no cuadra con ningun barrio '
                   f'({", ".join(BARRIOS)})')

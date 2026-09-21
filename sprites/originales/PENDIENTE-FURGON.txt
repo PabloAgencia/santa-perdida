@@ -1,0 +1,15 @@
+EL FURGON SWAT HAY QUE VOLVER A GENERARLO
+================================================================================
+La imagen que hay (furgon swat.png) esta en PERFIL / tres cuartos, no vista
+desde arriba, asi que en el juego no vale: se veria el lateral del furgon
+circulando por la calle. Mientras tanto, el furgon se sigue dibujando por
+codigo, que si esta en cenital.
+
+PROMPT PARA REPETIRLA (insistiendo en el angulo):
+  Top-down view of a black armored police van, seen from DIRECTLY ABOVE at a
+  perfect 90 degree overhead angle, like a map or a blueprint. Only the roof
+  and the tops of the wheels are visible, NO side of the vehicle, NO
+  perspective. Front of the van pointing right. Pixel art, dark muted palette,
+  roof light bar, transparent background, no shadow, no text.
+
+Al tenerla, se deja aqui como "furgon swat.png" y se vuelve a preparar.
