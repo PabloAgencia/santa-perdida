@@ -28,19 +28,47 @@ export function steerTo(vehicle, tx, ty, speedLimit, blocked) {
   if (diff < -0.05) input.left = true;
   else if (diff > 0.05) input.right = true;
 
+  // FRENAR ANTES DE LA CURVA, que es lo que hace un conductor y lo que hacen
+  // los coches de los GTA: cuanto mas cerrado es el giro que tienes delante,
+  // menos vas. Sin esto entraban en el cruce a tope, se pasaban de largo y
+  // acababan subidos a la acera o contra un edificio.
+  const cerrado = Math.min(1, Math.abs(diff) / 1.2);
+  const limiteEnCurva = speedLimit * (1 - 0.72 * cerrado);
+
   if (blocked) {
     input.brake = vf > 12;
   } else if (Math.abs(diff) > 1.4) {
     // giro muy cerrado: mejor ir al paso que dar marcha atras
     if (vf < 55) input.throttle = true;
     else input.brake = true;
-  } else if (vf < speedLimit) {
+  } else if (vf < limiteEnCurva) {
     input.throttle = true;
+  } else if (vf > limiteEnCurva * 1.25) {
+    // se llega con demasiada velocidad: se toca el freno de verdad
+    input.brake = true;
   }
 
   return input;
 }
 
+// ¿Hay pared delante? Se mira por el morro y por las dos esquinas delanteras,
+// porque un coche entra en diagonal en los cruces y el punto central solo no
+// veia la esquina del edificio hasta que ya la tenia encima.
+export function paredDelante(vehicle, map, extra = 0) {
+  const alcance = 30 + vehicle.speed * 0.45 + extra;
+  const cos = Math.cos(vehicle.angle);
+  const sin = Math.sin(vehicle.angle);
+  const medio = vehicle.stats.width * 0.45;
+
+  for (const lado of [0, medio, -medio]) {
+    const ox = vehicle.x - sin * lado;
+    const oy = vehicle.y + cos * lado;
+    for (let d = 18; d <= alcance; d += 14) {
+      if (map.isSolidPoint(ox + cos * d, oy + sin * d)) return true;
+    }
+  }
+  return false;
+}
 export function forwardBlocked(vehicle, vehicles, extraRange = 0) {
   const range = 46 + vehicle.speed * 0.55 + extraRange;
   const fx = Math.cos(vehicle.angle);

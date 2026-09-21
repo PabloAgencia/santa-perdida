@@ -960,6 +960,94 @@ Todo esto lo pidio Pablo despues de jugar.
      añadir calles y su fila o columna en blockZones.
      MEDIDO: 165 fps con 12.000 objetos en pantalla, 33 coches y 20 peatones.
      Queda margen de sobra para hacerla mas grande todavia.
+DECIMONOVENA TANDA (22-sep-2026): la conduccion, el mapa y la ciudad al
+triple
+================================================================================
+Todo pedido por Pablo despues de jugar.
+
+  LA CONDUCCION, QUE ERA LO MAS GORDO
+     El fallo de raiz: cada coche miraba a un punto DENTRO DE SU PROPIA
+     CALLE. Al llegar al cruce apuntaba al final de la recta, tenia que girar
+     90 grados de golpe, cortaba la esquina y acababa subido a la acera o
+     empotrado contra el edificio.
+     Ahora el punto de mira CONTINUA POR LA CALLE SIGUIENTE: cuando la vista
+     se sale del tramo actual, lo que sobra se proyecta sobre el siguiente,
+     que ya estaba elegido de antes. El coche empieza a girar antes de llegar
+     y traza la curva entera, como en los GTA.
+     Ademas:
+     - FRENAN ANTES DE LA CURVA: cuanto mas cerrado es el giro que tienen
+       delante, menos velocidad llevan (hasta un 72% menos).
+     - VEN LAS PAREDES: se mira por el morro y por las dos esquinas
+       delanteras. Si hay muro, frenan, aunque no haya ningun coche.
+     - LOS COCHES VAN POR LA CALLE: si uno acaba en un callejon o una acera,
+       se le da margen para volver al carril y, si sigue fuera 3,5 s y nadie
+       mira, se retira.
+     - El trafico de fondo va mas tranquilo (42-58% de su maxima, antes
+       52-72%): asi el jugador siempre puede adelantar, que es lo que da
+       sensacion de ir rapido.
+     MEDIDO: 0% de coches fuera de la calzada y CERO golpes de chapa en 15
+     segundos con 14 coches. Antes se veian empotrarse contra los edificios.
+
+  CADA COCHE, DISTINTO DE VERDAD. Antes todos se parecian. Ahora el
+     Chinchorro corre poco pero gira bien, el Vela GT vuela (475) y se va de
+     atras, el Bastion es un tanque lento de reflejos, la Avispa sale
+     disparada y es de papel, y el Carguero no hay quien lo pare.
+
+  EL COCHE SE NOTA TOCADO, PROGRESIVAMENTE. Antes iba perfecto hasta cero y
+     de golpe se arrastraba al 35%: por eso en la mision de embestir un coche
+     acababas conduciendo un carro y sin poder ni dar marcha atras. Ahora la
+     potencia baja con la chapa (100% a 78%) y el destrozado se queda al 62%.
+     La marcha atras entra antes y con mas brio.
+
+  EL MAPA
+     - MINIMAPA CON ZOOM que te sigue, en la esquina de abajo a la izquierda,
+       recortado con mascara. Antes era la ciudad entera encogida y no se
+       distinguia una calle de otra.
+     - MAPA COMPLETO CON LA TECLA M (`scenes/MapaScene.js`), con el escondite,
+       las armerias, los contactos y donde estas, cada uno con su nombre.
+     - Mas contraste en la textura: las calles ahora se ven claras.
+
+  TEXTOS LEGIBLES: la chuleta de teclas va en dos lineas, a 17 px, en claro y
+     con banda oscura detras (antes gris a 14 px sobre el asfalto). El
+     contador de entregas y el objetivo, tambien mas grandes.
+
+  MENOS CRIMEN: de banda uno de cada cuatro (antes casi cuatro de cada diez),
+     radio de hostilidad 250 en vez de 330, uno de cada siete armado (antes
+     uno de cada cuatro) y uno de cada seis conductores se encara al robarle
+     el coche (antes uno de cada cuatro).
+
+  LA ARMERIA ES UN LOCAL, no un menu: se entra, hay mostrador, armas colgadas
+     en la pared, un dependiente que habla (saluda, comenta la compra, te
+     manda a paseo si no te llega) y tu personaje al otro lado.
+
+  DOS CHALECOS ESCONDIDOS, uno al norte y otro al sur, en callejon y SIN
+     marca ni luz ni punto en el mapa: o te los aprendes, o no existen. Dan
+     60 de blindaje y vuelven a los 300 s. Los corazones tambien han perdido
+     el foco rojo que se veia desde la otra punta de la calle.
+
+  EL MOTOR SUENA A MOTOR. Antes eran dos osciladores subiendo de tono en
+     linea recta: un zumbido de mosca. Ahora hay tres armonicos, aire de
+     escape (ruido por paso banda que se abre con las vueltas) y sobre todo
+     CINCO MARCHAS: las vueltas suben, cambia, caen de golpe y vuelven a
+     subir, con un corte de gas en cada cambio. Ese diente de sierra es lo
+     que se oye como 'de menos a mas'.
+     NOTA: no se usan sonidos sacados de los GTA. Son de Rockstar y el juego
+     esta publicado en dos webs abiertas; una reclamacion tumbaria la web.
+
+  LA CIUDAD, AL TRIPLE DE LA ORIGINAL: 221 x 182 casillas (7.072 x 5.824 px),
+     nueve columnas por ocho filas de manzanas, 313 edificios.
+
+  Y PARA QUE ESO FUERA POSIBLE, EL DIBUJO: cada edificio eran una docena de
+     sprites (sombra, paredes, tejado, ventanas, portal), o sea casi cuatro
+     mil objetos para cosas que no se mueven nunca. Ahora todo eso se pinta
+     en DOCE capas de dibujo agrupadas por profundidad.
+     MEDIDO: de 20.380 objetos y 60 fps a 7.759 objetos y 97 fps, con la
+     ciudad tres veces la original y el mismo aspecto exacto.
+
+  CLOUDFLARE YA SE ACTUALIZA SOLO: el proyecto de Pages estaba como 'subida
+     directa' y no se podia conectar a Git; hubo que borrarlo y volver a
+     crearlo por API con `source: github`, como FinLearn. Cada push a main
+     lo despliega. El workflow de Actions se ha retirado por innecesario.
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

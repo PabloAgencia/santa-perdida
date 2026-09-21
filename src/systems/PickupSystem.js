@@ -23,7 +23,9 @@ const SEPARACION_MAQUINAS = 520;
 
 const VIDA_CORAZON = 25;
 const REAPARECE = 150;          // segundos que tarda en volver un corazon
-const ALCANCE_CORAZON = 22;     // se coge al pasarle por encima
+const ALCANCE_CORAZON = 22;
+const CHALECO_ESCONDIDO = 60;   // no llena el chaleco: para eso esta la tienda
+const REAPARECE_CHALECO = 300;     // se coge al pasarle por encima
 const ALCANCE_MAQUINA = 40;     // a esta hay que acercarse y pulsar E
 
 export const CONSUMICIONES = [
@@ -40,7 +42,9 @@ export class PickupSystem {
     this.sueltos = [];
     this.cercaDeMaquina = null;
 
+    this.chalecos = [];
     this.sembrarCorazones();
+    this.esconderChalecos();
     this.plantarMaquinas();
   }
 
@@ -78,9 +82,11 @@ export class PickupSystem {
     // aceras normales y acababan a la vista desde la calle
 
     for (const p of elegidos) {
+      // SIN foco ni marca: antes tenian un halo rojo que se veia desde la
+      // otra punta de la calle, y encontrarlos no tenia ningun merito.
       const brillo = this.scene.add.image(p.x, p.y, 'lamp')
-        .setDisplaySize(70, 70).setTint(0xd9384a)
-        .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.32).setDepth(3);
+        .setDisplaySize(34, 34).setTint(0xd9384a)
+        .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.1).setDepth(3);
       const icono = this.scene.add.image(p.x, p.y, 'corazon').setDepth(p.y + 2);
       this.scene.tweens.add({
         targets: icono, y: p.y - 5, scale: { from: 0.92, to: 1.08 },
@@ -88,6 +94,42 @@ export class PickupSystem {
       });
       this.corazones.push({ x: p.x, y: p.y, icono, brillo, espera: 0 });
     }
+  }
+
+  // DOS CHALECOS ESCONDIDOS, y siempre en el mismo sitio: uno al norte y
+  // otro al sur de la ciudad, en un callejon. No salen en el mapa ni tienen
+  // luz: o te los aprendes, o no existen. Es la unica forma de llevar
+  // blindaje sin pagarlo en la armeria.
+  esconderChalecos() {
+    const sitios = this.puntosDeCallejon();
+    if (sitios.length === 0) return;
+
+    const alto = this.map.pixelHeight;
+    const norte = sitios.filter((p) => p.y < alto * 0.45);
+    const sur = sitios.filter((p) => p.y > alto * 0.55);
+    const medio = (lista) => (lista.length ? lista[Math.floor(lista.length / 2)] : null);
+
+    for (const p of [medio(norte), medio(sur)]) {
+      if (!p) continue;
+      const icono = this.scene.add.image(p.x, p.y, 'hud-escudo')
+        .setDisplaySize(20, 20).setDepth(p.y + 2);
+      this.scene.tweens.add({
+        targets: icono, y: p.y - 4, duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+      });
+      this.chalecos.push({ x: p.x, y: p.y, icono, espera: 0 });
+    }
+  }
+
+  cogerChaleco(c) {
+    if (GameState.blindaje >= 100) return;
+    const antes = GameState.blindaje;
+    GameState.darBlindaje(CHALECO_ESCONDIDO);
+    c.espera = REAPARECE_CHALECO;
+    c.icono.setVisible(false);
+    Audio.pickup();
+    EventBus.emit(EVT.NOTIFY, {
+      text: `Chaleco: +${Math.round(GameState.blindaje - antes)}`, tone: 'objective',
+    });
   }
 
   // Las maquinas van pegadas a la fachada, en la acera. Se busca una acera
@@ -172,6 +214,17 @@ export class PickupSystem {
       this.cogerCorazon(c);
     }
 
+    for (const c of this.chalecos) {
+      if (c.espera > 0) {
+        c.espera -= dt;
+        if (c.espera <= 0) c.icono.setVisible(true);
+        continue;
+      }
+      if (enCoche) continue;
+      if (Phaser.Math.Distance.Between(c.x, c.y, player.x, player.y) > ALCANCE_CORAZON) continue;
+      this.cogerChaleco(c);
+    }
+
     this.cercaDeMaquina = null;
     if (enCoche) return;
     for (const m of this.maquinas) {
@@ -228,6 +281,8 @@ export class PickupSystem {
     for (const c of this.corazones) { c.icono.destroy(); c.brillo.destroy(); }
     for (const m of this.maquinas) { m.icono.destroy(); m.luz.destroy(); }
     for (const s of this.sueltos) { s.icono.destroy(); s.brillo.destroy(); }
+    for (const c of this.chalecos) c.icono.destroy();
+    this.chalecos = [];
     this.sueltos = [];
     this.corazones = [];
     this.maquinas = [];

@@ -16,15 +16,16 @@ export const T = {
 export const SOLID_TILES = new Set([T.WATER]);
 
 export const CITY = {
-  // La ciudad crecio al doble el 22-sep: de 124x104 a 173x146 casillas
-  // (5.536 x 4.672 px). Todo lo demas sale de aqui, asi que para hacerla mas
-  // grande basta con anadir calles y su fila o columna en blockZones.
-  width: 173,
-  height: 146,
+  // La ciudad ha crecido dos veces: 124x104 al principio, 173x146 y ahora
+  // 221x182 casillas (7.072 x 5.824 px), mas de tres veces la original.
+  // Todo sale de aqui: para agrandarla otra vez basta con añadir calles y su
+  // fila o columna en blockZones.
+  width: 221,
+  height: 182,
   seed: 20260920,
 
-  seaTop: 137,
-  portTop: 118,
+  seaTop: 173,
+  portTop: 154,
 
   roadsH: [
     { y: 4, h: 5 },
@@ -34,6 +35,8 @@ export const CITY = {
     { y: 76, h: 5 },
     { y: 94, h: 5 },
     { y: 112, h: 5 },
+    { y: 130, h: 5 },
+    { y: 148, h: 5 },
   ],
   roadsV: [
     { x: 4, w: 5 },
@@ -43,12 +46,14 @@ export const CITY = {
     { x: 98, w: 5 },
     { x: 122, w: 5 },
     { x: 146, w: 5 },
-    { x: 164, w: 5 },
+    { x: 170, w: 5 },
+    { x: 194, w: 5 },
+    { x: 212, w: 5 },
   ],
 
   // calle del puerto y sus dos bajadas desde la ronda sur
-  portRoad: { y: 126, h: 5, x0: 10, x1: 161 },
-  portLinks: [{ x: 50, w: 5 }, { x: 122, w: 5 }],
+  portRoad: { y: 162, h: 5, x0: 10, x1: 209 },
+  portLinks: [{ x: 74, w: 5 }, { x: 170, w: 5 }],
   zones: {
     residencial: {
       label: 'Residencial',
@@ -85,20 +90,22 @@ export const CITY = {
   // que zona ocupa cada manzana: [fila][columna]
   // filas de arriba a abajo, columnas de izquierda a derecha
   blockZones: [
-    ['residencial', 'residencial', 'residencial', 'centro', 'centro', 'conflictivo', 'conflictivo'],
-    ['residencial', 'residencial', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo'],
-    ['comercial', 'comercial', 'centro', 'centro', 'centro', 'conflictivo', 'industrial'],
-    ['comercial', 'comercial', 'comercial', 'centro', 'comercial', 'industrial', 'industrial'],
-    ['comercial', 'residencial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial'],
-    ['industrial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['residencial', 'residencial', 'residencial', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['residencial', 'residencial', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['residencial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'industrial'],
+    ['comercial', 'comercial', 'comercial', 'centro', 'centro', 'comercial', 'conflictivo', 'industrial', 'industrial'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial'],
+    ['comercial', 'residencial', 'residencial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial', 'conflictivo'],
+    ['residencial', 'residencial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial', 'conflictivo', 'conflictivo'],
+    ['industrial', 'industrial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial'],
   ],
   hideout: { blockRow: 0, blockCol: 0, label: 'Tu escondite' },
 
   // sitios reconocibles para poder orientarse: sin esto todas las manzanas
   // se parecen y no hay forma de saber donde estas
   landmarks: [
-    { type: 'plaza', label: 'Plaza del Farol', x: 80, y: 64, w: 15, h: 9 },
-    { type: 'torre', label: 'Torre Sombra', x: 82, y: 46, w: 11, h: 9 },
-    { type: 'faro', label: 'El Faro', x: 150, y: 131, w: 6, h: 6 },
-    { type: 'grua', label: 'Grua del Puerto', x: 40, y: 131, w: 16, h: 4 },
+    { type: 'plaza', label: 'Plaza del Farol', x: 104, y: 82, w: 15, h: 9 },
+    { type: 'torre', label: 'Torre Sombra', x: 106, y: 64, w: 11, h: 9 },
+    { type: 'faro', label: 'El Faro', x: 196, y: 167, w: 6, h: 6 },
+    { type: 'grua', label: 'Grua del Puerto', x: 56, y: 167, w: 16, h: 4 },
   ],};

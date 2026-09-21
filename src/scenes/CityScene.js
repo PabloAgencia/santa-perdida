@@ -144,16 +144,29 @@ export class CityScene extends Phaser.Scene {
     }
   }
 
+  // TODA la ciudad se pinta en un puñado de capas de dibujo, no en miles de
+  // sprites. Cada edificio son una docena de rectangulos (sombra, paredes,
+  // tejado, ventanas, portal...) y con 313 edificios eso eran casi cuatro mil
+  // objetos en la escena, solo para cosas que NO se mueven nunca. Agrupados
+  // por profundidad son doce objetos y se dibujan de una pasada.
   drawBuildings() {
+    const capas = new Map();
+    const capa = (depth) => {
+      let g = capas.get(depth);
+      if (!g) {
+        g = this.add.graphics().setDepth(depth);
+        capas.set(depth, g);
+      }
+      return g;
+    };
+    const block = (x, y, w, h, tint, depth, alpha = 1) => {
+      const g = capa(depth);
+      g.fillStyle(tint, alpha);
+      g.fillRect(x - w / 2, y - h / 2, w, h);
+    };
+
     for (const b of this.map.buildings) {
       const rnd = buildingRng(b.tx, b.ty);
-      const block = (x, y, w, h, tint, depth, alpha = 1) =>
-        this.add
-          .image(x, y, 'px')
-          .setDisplaySize(w, h)
-          .setTint(tint)
-          .setAlpha(alpha)
-          .setDepth(depth);
 
       // ALTURA: se ven las paredes del lado sur y del este, como si la camara
       // mirase desde arriba pero un poco desde el noroeste. Sin esto los
@@ -275,11 +288,13 @@ export class CityScene extends Phaser.Scene {
         const i = (ty * w + tx) * 4;
         const tile = this.map.getTile(tx, ty);
         let c;
-        if (this.map.roadMask[this.map.idx(tx, ty)] === 1) c = [64, 68, 76];
-        else if (tile === T.WATER) c = [20, 46, 60];
-        else if (this.map.isSolidTile(tx, ty)) c = [104, 99, 90];
-        else if (tile === T.SIDEWALK) c = [48, 51, 57];
-        else c = [32, 37, 40];
+        // Con mas contraste que antes: en un mapa pequeño lo unico que
+        // importa es distinguir de un vistazo por donde se puede conducir.
+        if (this.map.roadMask[this.map.idx(tx, ty)] === 1) c = [126, 132, 142];
+        else if (tile === T.WATER) c = [26, 58, 78];
+        else if (this.map.isSolidTile(tx, ty)) c = [58, 54, 50];
+        else if (tile === T.SIDEWALK) c = [86, 90, 98];
+        else c = [40, 45, 48];
 
         // Territorio de banda teñido encima, como el mapa de zonas del SA,
         // pero SOLO sobre las manzanas: tiñendo tambien el asfalto no habia
@@ -289,7 +304,7 @@ export class CityScene extends Phaser.Scene {
         const owner = esCalle ? null : zone ? ZONE_OWNER[zone] : null;
         if (owner) {
           const col = FACTIONS[owner].color;
-          const mix = 0.42;
+          const mix = 0.34;
           c = [
             c[0] * (1 - mix) + ((col >> 16) & 255) * mix,
             c[1] * (1 - mix) + ((col >> 8) & 255) * mix,
@@ -655,10 +670,10 @@ export class CityScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D',
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
-      mute: 'M', pausa: 'ESC',
+      mapa: 'M', mute: 'N', pausa: 'ESC',
       atacar: 'F', objetivo: 'Q', arma: 'TAB',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,SHIFT,ESC,F,Q,TAB');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,SHIFT,ESC,F,Q,TAB');
 
     // el raton tambien pega: el boton izquierdo es lo que sale solo
     this.input.on('pointerdown', (p) => {
@@ -865,6 +880,11 @@ export class CityScene extends Phaser.Scene {
       if (Phaser.Input.Keyboard.JustDown(k.atacar)) this.atacarAhora();
       if (Phaser.Input.Keyboard.JustDown(k.objetivo)) this.combat.siguienteObjetivo(this.player);
       if (Phaser.Input.Keyboard.JustDown(k.arma)) this.combat.cambiarArma(1);
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(k.mapa)) {
+      this.abrirMapa();
+      return;
     }
 
     if (Phaser.Input.Keyboard.JustDown(k.mute)) {
@@ -1193,6 +1213,14 @@ export class CityScene extends Phaser.Scene {
     const engorda = this.pickups.usarMaquina();
     if (engorda) this.player.actualizarCuerpo();
     return true;
+  }
+
+  // el mapa entero: se congela la ciudad y se abre encima, como la pausa
+  abrirMapa() {
+    this.captureState();
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('MapaScene');
   }
 
   // menu de pausa: la ciudad se congela y se abre por encima

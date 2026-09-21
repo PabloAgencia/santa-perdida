@@ -110,7 +110,11 @@ export class Vehicle {
     let vf = this.vx * cos + this.vy * sin;
     let vr = -this.vx * sin + this.vy * cos;
 
-    const power = this.wrecked ? 0.35 : 1;
+    // El coche se va notando tocado segun pierde chapa, en vez de ir
+    // perfecto hasta cero y de golpe arrastrarse al 35%: en una mision de
+    // embestir acababas conduciendo un carro y sin poder ni dar marcha atras.
+    const salud = Phaser.Math.Clamp(this.hp / s.maxHp, 0, 1);
+    const power = this.wrecked ? 0.62 : 0.78 + 0.22 * salud;
     const topSpeed = s.maxSpeed * power;
 
     this.frenando = !!input.brake && vf > 1;
@@ -123,7 +127,8 @@ export class Vehicle {
       vf += s.accel * power * (0.18 + 0.82 * Math.pow(falta, 0.7)) * dt;
     } else if (input.brake) {
       if (vf > 1) vf = Math.max(0, vf - s.brake * dt);
-      else vf = Math.max(-s.reverseSpeed * power, vf - s.accel * 0.7 * dt);
+      // el freno, con el coche ya casi parado, mete la marcha atras
+      else vf = Math.max(-s.reverseSpeed * (0.8 + 0.2 * salud), vf - s.accel * 0.9 * dt);
     } else {
       const drag = DRIVING.rollingDrag * dt;
       vf = vf > 0 ? Math.max(0, vf - drag) : Math.min(0, vf + drag);

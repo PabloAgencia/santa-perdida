@@ -10,8 +10,30 @@ const FONT = 'Pricedown, Anton, Impact, sans-serif';
 // cambia mas la pelea: con 100 de blindaje aguantas el doble.
 export const BLINDAJE = { precio: 400, cantidad: 100 };
 
-// Mostrador de la armeria. Se abre al pulsar E en la puerta y la ciudad se
-// queda congelada detras, igual que la pausa.
+// Lo que dice el de la tienda. No es un menu con voz: es un tio detras de un
+// mostrador, y por eso habla antes de que compres, no despues.
+const SALUDOS = [
+  'Buenas. Mira lo que quieras, pero no toques.',
+  'Vaya pintas traes. ¿Que necesitas?',
+  'Si buscas problemas, aqui los vendemos.',
+  'Llegas tarde, iba a cerrar. Dime.',
+];
+const COMPRAS = [
+  'Buena eleccion. No me hagas salir en las noticias.',
+  'Toma. Y no la uses aqui dentro.',
+  'Marchando. Tu sabras lo que haces.',
+  'Eso se paga y no se devuelve.',
+];
+const SIN_DINERO = [
+  'Con esa cartera no sales de aqui con nada.',
+  'Vuelve cuando tengas el dinero.',
+  'Aqui no se fia, chaval.',
+];
+const LLENO = ['Ya llevas de sobra de eso.', 'No te cabe mas. Mira otra cosa.'];
+const DESPEDIDA = 'Cierra al salir.';
+
+// La armeria por dentro. Se entra desde la calle con E y la ciudad se queda
+// congelada detras, como el escondite.
 export class ShopScene extends Phaser.Scene {
   constructor() {
     super({ key: 'ShopScene', active: false });
@@ -20,20 +42,10 @@ export class ShopScene extends Phaser.Scene {
   create() {
     const w = this.scale.width;
     const h = this.scale.height;
+    this.sala = { x: w / 2 - 330, y: h / 2 - 210, w: 660, h: 420 };
 
-    this.add.image(0, 0, 'px').setOrigin(0, 0)
-      .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.74);
-    this.add.image(w / 2, h / 2, 'px')
-      .setDisplaySize(520, 400).setTint(0x0d1014).setAlpha(0.96);
-
-    this.add.text(w / 2, h / 2 - 168, 'ARMERIA', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 6,
-      fontSize: '44px', color: '#7fd08a',
-    }).setOrigin(0.5);
-
-    this.dinero = this.add.text(w / 2, h / 2 - 134, '', {
-      fontFamily: FONT, fontSize: '18px', color: COLORS.dim,
-    }).setOrigin(0.5);
+    this.add.image(0, 0, 'px').setOrigin(0, 0).setDisplaySize(w, h).setTint(0x05060a);
+    this.pintarLocal();
 
     this.indice = 0;
     this.items = [];
@@ -44,10 +56,7 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '22px', color: '#7fd08a',
     }).setOrigin(0.5);
 
-    this.add.text(w / 2, h / 2 + 172, 'ENTER para comprar  ·  ESC para salir', {
-      fontFamily: FONT, fontSize: '14px', color: COLORS.dim,
-    }).setOrigin(0.5);
-
+    this.decir(Phaser.Utils.Array.GetRandom(SALUDOS));
     this.pintar();
 
     this.teclas = this.input.keyboard.addKeys({
@@ -56,6 +65,75 @@ export class ShopScene extends Phaser.Scene {
     });
     this.input.keyboard.addCapture('UP,DOWN,W,S,ENTER,SPACE,ESC,E');
   }
+
+  // ---------- el local ----------
+
+  pintarLocal() {
+    const s = this.sala;
+    const caja = (x, y, an, al, color, alpha = 1) =>
+      this.add.image(x, y, 'px').setOrigin(0, 0)
+        .setDisplaySize(an, al).setTint(color).setAlpha(alpha);
+
+    caja(s.x - 6, s.y - 6, s.w + 12, s.h + 12, 0x14161a);
+    caja(s.x, s.y, s.w, s.h, 0x2b2f36);
+    // suelo de baldosa, mas claro por delante del mostrador
+    caja(s.x, s.y + 210, s.w, s.h - 210, 0x353a42);
+    for (let i = 0; i < 12; i++) {
+      caja(s.x + i * 56, s.y + 210, 1, s.h - 210, 0x2a2e35, 0.7);
+    }
+
+    this.add.text(s.x + s.w / 2, s.y + 20, 'ARMERIA EL CERROJO', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 5,
+      fontSize: '34px', color: '#7fd08a',
+    }).setOrigin(0.5, 0);
+
+    // la pared del fondo, con las armas colgadas
+    caja(s.x + 26, s.y + 66, s.w - 52, 120, 0x20242a);
+    const percha = ['icono-escopeta', 'icono-pistola', 'icono-bate', 'icono-pistola', 'icono-escopeta'];
+    percha.forEach((clave, i) => {
+      this.add.image(s.x + 86 + i * 122, s.y + 126, clave)
+        .setDisplaySize(72, 72).setAlpha(0.92);
+    });
+
+    // el mostrador
+    caja(s.x + 40, s.y + 214, s.w - 80, 26, 0x4a3a2a);
+    caja(s.x + 40, s.y + 214, s.w - 80, 5, 0x6b563c);
+
+    // el dependiente, detras del mostrador
+    this.tendero = this.add.image(s.x + 118, s.y + 190, 'ped-5-0')
+      .setDisplaySize(42, 42).setRotation(Math.PI / 2);
+    this.tweens.add({
+      targets: this.tendero, y: s.y + 188,
+      duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+    });
+
+    // y tu, de este lado
+    this.add.image(s.x + 118, s.y + 276, 'player-0')
+      .setDisplaySize(42, 42).setRotation(-Math.PI / 2);
+
+    // el bocadillo de lo que dice
+    this.globoFondo = this.add.image(s.x + 150, s.y + 160, 'px')
+      .setOrigin(0, 0).setDisplaySize(380, 44).setTint(0x05060a).setAlpha(0.72);
+    this.globo = this.add.text(s.x + 162, s.y + 172, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
+      fontSize: '17px', color: '#e8e2d2', wordWrap: { width: 356 },
+    }).setOrigin(0, 0.5);
+
+    this.dinero = this.add.text(s.x + s.w - 30, s.y + 244, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
+      fontSize: '22px', color: COLORS.money,
+    }).setOrigin(1, 0);
+
+    this.add.text(s.x + s.w / 2, s.y + s.h + 14, 'ENTER para comprar  ·  ESC para salir', {
+      fontFamily: FONT, fontSize: '15px', color: COLORS.dim,
+    }).setOrigin(0.5, 0);
+  }
+
+  decir(texto) {
+    this.globo.setText(texto);
+  }
+
+  // ---------- el genero ----------
 
   // El catalogo se arma con lo que ya tienes: si llevas la pistola, lo que se
   // te ofrece son balas, no otra pistola.
@@ -90,33 +168,38 @@ export class ShopScene extends Phaser.Scene {
   }
 
   montarLista() {
-    const w = this.scale.width;
-    const h = this.scale.height;
-    for (const it of this.items) { it.texto.destroy(); it.coste.destroy(); }
+    const s = this.sala;
+    for (const it of this.items) {
+      it.texto.destroy();
+      it.coste.destroy();
+      if (it.detalle) it.detalle.destroy();
+    }
     this.items = [];
 
     this.lista = this.catalogo();
     this.lista.forEach((op, i) => {
-      const y = h / 2 - 92 + i * 44;
-      const texto = this.add.text(w / 2 - 210, y, op.nombre, {
+      const y = s.y + 272 + i * 33;
+      const texto = this.add.text(s.x + 210, y, op.nombre, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
-        fontSize: '24px', color: COLORS.ink,
+        fontSize: '22px', color: COLORS.ink,
       }).setOrigin(0, 0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', () => { this.indice = i; this.pintar(); })
         .on('pointerdown', () => this.elegir());
 
-      const coste = this.add.text(w / 2 + 210, y, op.salir ? '' : `${op.precio} €`, {
-        fontFamily: FONT, fontSize: '20px', color: COLORS.dim,
+      const coste = this.add.text(s.x + s.w - 30, y, op.salir ? '' : `${op.precio} €`, {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
+        fontSize: '19px', color: COLORS.dim,
       }).setOrigin(1, 0.5);
 
+      let detalle = null;
       if (op.detalle) {
-        this.add.text(w / 2 - 210, y + 15, op.detalle, {
+        detalle = this.add.text(s.x + 212, y + 14, op.detalle, {
           fontFamily: FONT, fontSize: '12px', color: COLORS.dim,
-        }).setOrigin(0, 0.5).setAlpha(0.8);
+        }).setOrigin(0, 0.5).setAlpha(0.85);
       }
-      this.items.push({ texto, coste });
+      this.items.push({ texto, coste, detalle });
     });
-    this.indice = Math.min(this.indice, this.items.length - 1);
+    this.indice = Phaser.Math.Clamp(this.indice, 0, this.items.length - 1);
   }
 
   pintar() {
@@ -129,7 +212,7 @@ export class ShopScene extends Phaser.Scene {
       it.coste.setColor(puede ? COLORS.dim : '#8a5050');
     });
     const sel = this.items[this.indice];
-    this.cursor.setPosition(sel.texto.x - 22, sel.texto.y);
+    this.cursor.setPosition(sel.texto.x - 20, sel.texto.y);
   }
 
   elegir() {
@@ -137,21 +220,23 @@ export class ShopScene extends Phaser.Scene {
     if (op.salir) return this.salir();
 
     if (op.lleno) {
-      EventBus.emit(EVT.NOTIFY, { text: 'No te cabe mas', tone: 'dim' });
+      this.decir(Phaser.Utils.Array.GetRandom(LLENO));
       return;
     }
     if (!GameState.spendMoney(op.precio, 'armeria')) {
-      EventBus.emit(EVT.NOTIFY, { text: 'No te llega', tone: 'danger' });
+      this.decir(Phaser.Utils.Array.GetRandom(SIN_DINERO));
       return;
     }
     op.comprar();
     Audio.pickup();
+    this.decir(Phaser.Utils.Array.GetRandom(COMPRAS));
     EventBus.emit(EVT.NOTIFY, { text: `${op.nombre} · ${op.precio} €`, tone: 'money' });
     this.montarLista();
     this.pintar();
   }
 
   salir() {
+    this.decir(DESPEDIDA);
     this.scene.stop();
     this.scene.resume('UIScene');
     this.scene.resume('CityScene');

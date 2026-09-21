@@ -25,16 +25,17 @@ export class UIScene extends Phaser.Scene {
       fontFamily: TITULO, stroke: '#05060a', strokeThickness: 5, fontSize: '34px', color: COLORS.money,
     }).setOrigin(1, 0);
 
-    this.deliveriesText = this.add.text(16, 16, '', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
+    this.deliveriesText = this.add.text(16, 14, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
+      fontSize: '18px', color: '#c9c3b4',
     });
 
     this.objectiveText = this.add.text(w / 2, 20, '', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '19px', color: COLORS.objective,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 5, fontSize: '23px', color: COLORS.objective,
     }).setOrigin(0.5, 0);
 
     this.distanceText = this.add.text(w / 2, 46, '', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '15px', color: COLORS.dim,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 4, fontSize: '17px', color: '#c9c3b4',
     }).setOrigin(0.5, 0);
 
     this.arrow = this.add.image(0, 0, 'arrow').setVisible(false).setAlpha(0.9);
@@ -62,14 +63,21 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(1, 1).setDisplaySize(198, 6).setTint(0x8fd694);
     this.vehiclePanel.add([panelBg, this.speedText, this.vehicleName, this.hpBarBg, this.hpBar]);
 
-    this.helpText = this.add.text(w - 16, h - 20, '', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
+    // La chuleta de teclas: antes era gris oscuro a 14 px sobre el asfalto y
+    // no habia quien la leyera. Ahora va en dos lineas, mas grande, en claro
+    // y con una banda oscura detras.
+    this.helpBg = this.add.image(w - 10, h - 10, 'px')
+      .setOrigin(1, 1).setDisplaySize(470, 52).setTint(0x05060a).setAlpha(0.55);
+    this.helpText = this.add.text(w - 20, h - 18, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
+      fontSize: '17px', color: '#ddd8ca', align: 'right', lineSpacing: 3,
     }).setOrigin(1, 1);
-    this.helpText.setText(
-      'WASD mover · SHIFT correr · E coche · F pegar · Q cambiar objetivo · TAB arma · J encargo · ESPACIO freno · K guardar'
-    );
+    this.helpText.setText([
+      'WASD mover · SHIFT correr · E entrar · F pegar · Q objetivo',
+      'TAB arma · M mapa · J encargo · ESPACIO freno · K guardar',
+    ]);
     this.tweens.add({
-      targets: this.helpText, alpha: 0.35, delay: 14000, duration: 2500,
+      targets: [this.helpText, this.helpBg], alpha: 0.4, delay: 16000, duration: 2500,
     });
 
     this.setMoney(GameState.money);
@@ -94,44 +102,64 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
+  // EL MINIMAPA. Antes era la ciudad entera encogida en una esquina: con el
+  // mapa al doble no se distinguia una calle de otra. Ahora es un recuadro
+  // con zoom que te sigue, como el de los GTA, y el mapa entero se abre con M.
   buildMinimap(w) {
     const city = this.scene.get('CityScene');
     this.world = { w: city.map.pixelWidth, h: city.map.pixelHeight };
+    this.mapaTam = 176;
+    this.mapaZoom = 4.4;                       // pixeles de mapa por casilla
+    this.mapaAncho = city.map.w * this.mapaZoom;
+    this.mapaAlto = city.map.h * this.mapaZoom;
 
-    const scale = 1.6;
-    this.mapW = city.map.w * scale;
-    this.mapH = city.map.h * scale;
+    const h = this.scale.height;
     this.mapX = 16;
-    this.mapY = this.scale.height - 20 - this.mapH;
+    this.mapY = h - 16 - this.mapaTam;
 
     this.add.image(this.mapX - 3, this.mapY - 3, 'px')
-      .setOrigin(0, 0)
-      .setDisplaySize(this.mapW + 6, this.mapH + 6)
-      .setTint(0x000000)
-      .setAlpha(0.55);
+      .setOrigin(0, 0).setDisplaySize(this.mapaTam + 6, this.mapaTam + 6)
+      .setTint(0x05060a).setAlpha(0.8);
 
-    this.add.image(this.mapX, this.mapY, 'minimap')
-      .setOrigin(0, 0)
-      .setDisplaySize(this.mapW, this.mapH)
-      .setAlpha(0.9);
+    // el contenido va en un contenedor que se desplaza, recortado por la
+    // mascara del recuadro
+    this.mapaMundo = this.add.container(this.mapX, this.mapY);
+    this.mapaImg = this.add.image(0, 0, 'minimap')
+      .setOrigin(0, 0).setDisplaySize(this.mapaAncho, this.mapaAlto).setAlpha(0.95);
+    this.mapaMundo.add(this.mapaImg);
 
-    // las armerias son sitios fijos: se marcan una vez y ahi se quedan, para
-    // que se pueda ir a por balas sin recorrer la ciudad a ciegas
-    for (const t of city.shops ? city.shops.tiendas : []) {
-      const p = this.toMinimap(t.x, t.y);
-      this.add.image(p.x, p.y, 'px').setDisplaySize(5, 5).setTint(0x7fd08a).setAlpha(0.95);
-    }
+    const recorte = this.make.graphics({ add: false });
+    recorte.fillStyle(0xffffff);
+    recorte.fillRect(this.mapX, this.mapY, this.mapaTam, this.mapaTam);
+    this.mapaMundo.setMask(recorte.createGeometryMask());
 
-    // El destino es un rombo, la policia puntos azules y tu una flecha que
-    // mira hacia donde vas: cuatro cuadrados iguales no decian nada.
     this.mapTarget = this.add.image(0, 0, 'px')
-      .setDisplaySize(7, 7).setTint(0xe8b54a).setRotation(Math.PI / 4).setVisible(false);
+      .setDisplaySize(9, 9).setTint(0xe8b54a).setRotation(Math.PI / 4).setVisible(false);
     this.mapPolice = [];
     this.mapContactos = [];
     this.mapPlayer = this.add.image(0, 0, 'arrow')
-      .setDisplaySize(11, 11).setTint(0xf2efe6);
-  }
+      .setDisplaySize(13, 13).setTint(0xf2efe6);
+    this.mapaMundo.add([this.mapTarget, this.mapPlayer]);
 
+    // las armerias son sitios fijos: se marcan una vez y ahi se quedan
+    for (const t of city.shops ? city.shops.tiendas : []) {
+      const q = this.toMinimap(t.x, t.y);
+      this.mapaMundo.add(
+        this.add.image(q.x, q.y, 'px').setDisplaySize(7, 7).setTint(0x7fd08a)
+      );
+    }
+    if (city.hideoutDoor) {
+      const q = this.toMinimap(city.hideoutDoor.x, city.hideoutDoor.y);
+      this.mapaMundo.add(
+        this.add.image(q.x, q.y, 'px').setDisplaySize(8, 8).setTint(0xe8b54a).setAlpha(0.9)
+      );
+    }
+
+    this.add.text(this.mapX + this.mapaTam - 2, this.mapY - 17, 'M mapa', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
+      fontSize: '13px', color: COLORS.dim,
+    }).setOrigin(1, 0);
+  }
   buildWanted(w) {
     this.wantedPips = [];
     for (let i = 0; i < 3; i++) {
@@ -168,7 +196,7 @@ export class UIScene extends Phaser.Scene {
   }
 
   buildTerritory() {
-    this.territoryText = this.add.text(this.mapX, this.mapY - 18, '', {
+    this.territoryText = this.add.text(this.mapX, this.mapY - 17, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0, 0);
   }
@@ -234,15 +262,24 @@ export class UIScene extends Phaser.Scene {
       color: COLORS.objective,
     }).setOrigin(0, 1);
   }
+  // coordenadas dentro del contenedor del mapa, no de la pantalla
   toMinimap(x, y) {
     return {
-      x: this.mapX + (x / this.world.w) * this.mapW,
-      y: this.mapY + (y / this.world.h) * this.mapH,
+      x: (x / this.world.w) * this.mapaAncho,
+      y: (y / this.world.h) * this.mapaAlto,
     };
   }
 
   updateMinimap(d) {
     const p = this.toMinimap(d.player.x, d.player.y);
+
+    // el mapa se desplaza para llevarte en el centro, y se frena en los
+    // bordes para no enseñar el vacio de fuera de la ciudad
+    const medio = this.mapaTam / 2;
+    const ox = Phaser.Math.Clamp(medio - p.x, this.mapaTam - this.mapaAncho, 0);
+    const oy = Phaser.Math.Clamp(medio - p.y, this.mapaTam - this.mapaAlto, 0);
+    this.mapaMundo.setPosition(this.mapX + ox, this.mapY + oy);
+
     this.mapPlayer.setPosition(p.x, p.y).setRotation((d.player.angle || 0) + Math.PI / 2);
 
     if (d.target) {
@@ -254,14 +291,14 @@ export class UIScene extends Phaser.Scene {
 
     const contactos = d.contactos || [];
     while (this.mapContactos.length < contactos.length) {
-      this.mapContactos.push(
-        this.add.image(0, 0, 'px').setDisplaySize(7, 7).setTint(0xffffff)
-      );
+      const punto = this.add.image(0, 0, 'px').setDisplaySize(8, 8).setTint(0xffffff);
+      this.mapContactos.push(punto);
+      this.mapaMundo.add(punto);
     }
     this.mapContactos.forEach((punto, i) => {
       if (i < contactos.length) {
-        const c = this.toMinimap(contactos[i].x, contactos[i].y);
-        punto.setPosition(c.x, c.y).setTint(contactos[i].color).setVisible(true);
+        const q = this.toMinimap(contactos[i].x, contactos[i].y);
+        punto.setPosition(q.x, q.y).setTint(contactos[i].color).setVisible(true);
       } else {
         punto.setVisible(false);
       }
@@ -269,9 +306,9 @@ export class UIScene extends Phaser.Scene {
 
     const police = d.police || [];
     while (this.mapPolice.length < police.length) {
-      this.mapPolice.push(
-        this.add.image(0, 0, 'px').setDisplaySize(6, 6).setTint(0x5aa8e8)
-      );
+      const dot = this.add.image(0, 0, 'px').setDisplaySize(7, 7).setTint(0x5aa8e8);
+      this.mapPolice.push(dot);
+      this.mapaMundo.add(dot);
     }
     this.mapPolice.forEach((dot, i) => {
       if (i < police.length) {
@@ -282,7 +319,6 @@ export class UIScene extends Phaser.Scene {
       }
     });
   }
-
   updateWanted(level) {
     this.wantedPips.forEach((pip, i) => {
       const puesta = i < level;
@@ -409,7 +445,7 @@ export class UIScene extends Phaser.Scene {
   notify({ text, tone = 'ink' }) {
     const color = COLORS[tone] || COLORS.ink;
     const label = this.add.text(16, 0, text, {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '17px', color,
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 4, fontSize: '18px', color,
     }).setAlpha(0);
 
     this.notices.unshift(label);

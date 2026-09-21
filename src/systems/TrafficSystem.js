@@ -1,6 +1,6 @@
 import { Vehicle } from '../entities/Vehicle.js';
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
-import { steerTo, forwardBlocked, peopleAhead } from './driving.js';
+import { steerTo, forwardBlocked, peopleAhead, paredDelante } from './driving.js';
 import { LINEA_PARADA } from './TrafficLights.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 
@@ -97,7 +97,12 @@ export class TrafficSystem {
         intentos: 0,
         // cada coche lleva a alguien dentro: se ve al volante y sale si se lo roban
         conductor: this.scene.npcs ? this.scene.npcs.crearConductor(vehicle) : null,
-        limit: vehicle.stats.maxSpeed * (temerario ? 0.78 : 0.52 + Math.random() * 0.2),
+        siguiente: this.net.nextEdge(edge),
+        fuera: 0,
+        // El trafico de fondo va tranquilo: no es una carrera, y a esa
+        // velocidad el jugador siempre puede adelantar, que es lo que da
+        // sensacion de ir rapido.
+        limit: vehicle.stats.maxSpeed * (temerario ? 0.7 : 0.42 + Math.random() * 0.16),
       });
     }
   }
@@ -108,10 +113,15 @@ export class TrafficSystem {
     const v = car.vehicle;
     if (car.conductor) car.conductor.sentarEn(v);
 
+    if (!car.siguiente) car.siguiente = this.net.nextEdge(car.edge);
+
     const target = this.net.exitPoint(car.edge);
     if (Phaser.Math.Distance.Between(v.x, v.y, target.x, target.y) < ARRIVE) {
-      car.edge = this.net.nextEdge(car.edge);
+      // la siguiente ya estaba decidida desde lejos: es lo que permite
+      // apuntar a ella y trazar la curva en vez de girar de golpe
+      car.edge = car.siguiente || this.net.nextEdge(car.edge);
       if (!car.edge) return;
+      car.siguiente = this.net.nextEdge(car.edge);
       car.intentos = 0;
     }
 
@@ -128,6 +138,7 @@ export class TrafficSystem {
       });
       if (car.maniobra <= 0) {
         car.edge = this.net.nextEdge(car.edge) || this.net.randomEdge();
+        car.siguiente = this.net.nextEdge(car.edge);
         car.atasco = 0;
         car.intentos++;
         // si lleva tres intentos y nadie le esta mirando, se recicla
@@ -140,6 +151,15 @@ export class TrafficSystem {
     }
 
     const goal = this.puntoDelCarril(car, v);
+
+    // LOS COCHES VAN POR LA CALLE. Si uno acaba en un callejon o en una
+    // acera (por un empujon o por una mala trazada), se le da un margen para
+    // volver al carril; si sigue fuera, se retira cuando nadie mira.
+    car.fuera = this.map.isRoadPoint(v.x, v.y) ? 0 : car.fuera + dt;
+    if (car.fuera > 3.5 && Phaser.Math.Distance.Between(v.x, v.y, fx, fy) > 700) {
+      this.removeCar(indice);
+      return;
+    }
 
     // --- prioridad en el cruce ---
     // El semaforo solo manda cuando hay alguien mas disputando el cruce. Si la
@@ -157,6 +177,8 @@ export class TrafficSystem {
     }
 
     const cocheDelante = forwardBlocked(v, this.scene.vehicles);
+    // y si lo que hay delante es una pared, se frena aunque no haya nadie
+    const muro = paredDelante(v, this.map);
 
     // Un peaton cruzando es para levantar el pie, no para clavarse: frenar en
     // seco atascaba la ciudad en cadena. El temerario ni eso.
@@ -181,7 +203,8 @@ export class TrafficSystem {
       return;
     }
 
-    v.update(dt, steerTo(v, goal.x, goal.y, limite, cocheDelante || esperando));
+    if (car.fuera > 0.4) limite = Math.min(limite, v.stats.maxSpeed * 0.25);
+    v.update(dt, steerTo(v, goal.x, goal.y, muro ? limite * 0.3 : limite, cocheDelante || esperando || muro));
   }
 
   // ¿hay otro coche entrando en el mismo cruce por otra calle?
@@ -212,6 +235,14 @@ export class TrafficSystem {
   }
 
   // proyecta el coche sobre su carril y devuelve un punto por delante
+  // EL PUNTO DE MIRA, que es lo que de verdad decide como conduce un coche.
+  //
+  // Antes miraba solo dentro de SU calle: al llegar al cruce apuntaba al
+  // final de la recta y tenia que girar 90 grados de golpe, asi que cortaba
+  // la esquina y se subia a la acera o se empotraba contra el edificio.
+  // Ahora, cuando la vista se sale de la calle actual, lo que sobra se
+  // proyecta sobre la SIGUIENTE: el coche empieza a girar antes de llegar y
+  // traza la curva entera, que es lo que hacen los coches de los GTA.
   puntoDelCarril(car, v) {
     const e = car.edge;
     const a = this.net.entryPoint(e);
@@ -222,11 +253,23 @@ export class TrafficSystem {
     t = Phaser.Math.Clamp(t, 0, 1);
 
     // cuanto mas rapido va, mas lejos mira: si no, hace eses
-    const vista = Phaser.Math.Clamp(70 + v.speed * 0.55, 70, 230) / largo;
-    const t2 = Math.min(1, t + vista);
-    return { x: a.x + (b.x - a.x) * t2, y: a.y + (b.y - a.y) * t2 };
-  }
+    const vista = Phaser.Math.Clamp(80 + v.speed * 0.6, 80, 260);
+    const sobra = (t + vista / largo) - 1;
 
+    if (sobra <= 0) {
+      const t2 = t + vista / largo;
+      return { x: a.x + (b.x - a.x) * t2, y: a.y + (b.y - a.y) * t2 };
+    }
+
+    const sig = car.siguiente;
+    if (!sig) return { x: b.x, y: b.y };
+
+    const c = this.net.entryPoint(sig);
+    const d = this.net.exitPoint(sig);
+    const largo2 = Math.hypot(d.x - c.x, d.y - c.y) || 1;
+    const t3 = Math.min(1, (sobra * largo) / largo2);
+    return { x: c.x + (d.x - c.x) * t3, y: c.y + (d.y - c.y) * t3 };
+  }
   // el jugador le roba el coche a alguien: el conductor se baja
   soltarConductor(vehicle, player) {
     const car = this.cars.find((c) => c.vehicle === vehicle);

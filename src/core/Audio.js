@@ -49,6 +49,11 @@ class GameAudio {
     return buf;
   }
 
+  // EL MOTOR. Antes era un zumbido de dos osciladores que subia de tono en
+  // linea recta con la velocidad: sonaba a mosca, no a coche. Un motor de
+  // verdad tiene VARIOS armonicos de la frecuencia de encendido, aire
+  // (ruido filtrado) y, sobre todo, MARCHAS: las vueltas suben, cambia y
+  // caen de golpe. Eso es lo que se oye como "de menos a mas".
   _buildEngine() {
     const ctx = this.ctx;
     this.engGain = ctx.createGain();
@@ -57,8 +62,9 @@ class GameAudio {
     this.engFilter = ctx.createBiquadFilter();
     this.engFilter.type = 'lowpass';
     this.engFilter.frequency.value = 420;
-    this.engFilter.Q.value = 3;
+    this.engFilter.Q.value = 1.4;
 
+    // tres armonicos: el cuerpo, el timbre y el zumbido de arriba
     this.osc1 = ctx.createOscillator();
     this.osc1.type = 'sawtooth';
     this.osc1.frequency.value = 50;
@@ -67,20 +73,48 @@ class GameAudio {
     this.osc2.type = 'square';
     this.osc2.frequency.value = 25;
 
+    this.osc3 = ctx.createOscillator();
+    this.osc3.type = 'sawtooth';
+    this.osc3.frequency.value = 150;
+
     this.subGain = ctx.createGain();
     this.subGain.gain.value = 0.5;
     this.osc2.connect(this.subGain);
+
+    this.armGain = ctx.createGain();
+    this.armGain.gain.value = 0.12;
+    this.osc3.connect(this.armGain);
     this.engWave = 'sawtooth';
+
+    // el aire del escape: ruido pasado por un paso banda que se abre con las
+    // vueltas. Es lo que quita la sensacion de sintetizador barato.
+    const aire = ctx.createBufferSource();
+    aire.buffer = this.noise;
+    aire.loop = true;
+    this.aireFiltro = ctx.createBiquadFilter();
+    this.aireFiltro.type = 'bandpass';
+    this.aireFiltro.frequency.value = 500;
+    this.aireFiltro.Q.value = 0.9;
+    this.aireGain = ctx.createGain();
+    this.aireGain.gain.value = 0;
+    aire.connect(this.aireFiltro);
+    this.aireFiltro.connect(this.aireGain);
+    this.aireGain.connect(this.engGain);
+    aire.start();
 
     this.osc1.connect(this.engFilter);
     this.subGain.connect(this.engFilter);
+    this.armGain.connect(this.engFilter);
     this.engFilter.connect(this.engGain);
     this.engGain.connect(this.master);
 
     this.osc1.start();
     this.osc2.start();
-  }
+    this.osc3.start();
 
+    this.marcha = 0;
+    this.vueltas = 0;
+  }
   _buildSkid() {
     const ctx = this.ctx;
     const src = ctx.createBufferSource();
@@ -135,6 +169,19 @@ class GameAudio {
 
   // perfil = uno de ENGINES. Al ralenti suena muy bajito y va creciendo con
   // la velocidad, en volumen y en tono a la vez.
+  // Cinco marchas. Dentro de cada una las vueltas van de 0,25 a 1 y al saltar
+  // a la siguiente caen de golpe: ese diente de sierra es el sonido de un
+  // coche acelerando, y sin el todo suena igual a 20 que a 120.
+  _vueltasDe(r) {
+    const MARCHAS = 5;
+    const tramo = 1 / MARCHAS;
+    const marcha = Math.min(MARCHAS - 1, Math.floor(r / tramo));
+    const dentro = (r - marcha * tramo) / tramo;
+    // las marchas largas de arriba estiran menos que las cortas de abajo
+    const alto = 0.34 + 0.66 * Math.pow(dentro, 0.8);
+    return { marcha, vueltas: marcha === 0 ? 0.2 + dentro * 0.8 : alto };
+  }
+
   engine(on, ratio, throttle, perfil = null) {
     if (!this.started) return;
     const t = this.ctx.currentTime;
@@ -146,20 +193,32 @@ class GameAudio {
       this.osc1.type = p.wave;
     }
 
-    // la curva hace que de parado a medio gas se note mucho mas que arriba
-    const curva = Math.pow(r, 0.72);
-    const level = on ? (0.01 + curva * 0.03 + (throttle ? 0.008 : 0)) * p.vol : 0;
-    this.engGain.gain.setTargetAtTime(level, t, 0.07);
+    const caja = this._vueltasDe(r);
+    const cambio = caja.marcha !== this.marcha;
+    this.marcha = caja.marcha;
+    const rpm = caja.vueltas;
+
+    // al cambiar de marcha se levanta el pie un instante: el motor se apaga
+    // un poco y vuelve. Es un detalle pequeño que se nota mucho.
+    const corte = cambio ? 0.55 : 1;
+    const level = on ? (0.011 + rpm * 0.031 + (throttle ? 0.008 : 0)) * p.vol * corte : 0;
+    this.engGain.gain.setTargetAtTime(level, t, cambio ? 0.02 : 0.07);
     this.subGain.gain.setTargetAtTime(p.body, t, 0.12);
+    this.armGain.gain.setTargetAtTime(0.05 + rpm * 0.16, t, 0.09);
 
-    const freq = p.base + curva * p.range;
-    this.osc1.frequency.setTargetAtTime(freq, t, 0.045);
-    this.osc2.frequency.setTargetAtTime(freq * 0.5, t, 0.045);
+    const freq = p.base + rpm * p.range;
+    const suavizado = cambio ? 0.02 : 0.05;
+    this.osc1.frequency.setTargetAtTime(freq, t, suavizado);
+    this.osc2.frequency.setTargetAtTime(freq * 0.5, t, suavizado);
+    this.osc3.frequency.setTargetAtTime(freq * 3, t, suavizado);
+
     this.engFilter.frequency.setTargetAtTime(
-      260 + curva * p.bright + (throttle ? 320 : 0), t, 0.08
+      300 + rpm * p.bright + (throttle ? 340 : 0), t, 0.08
     );
+    // el aire solo se oye de verdad cuando el coche va lanzado
+    this.aireGain.gain.setTargetAtTime(on ? 0.05 + r * 0.5 : 0, t, 0.12);
+    this.aireFiltro.frequency.setTargetAtTime(340 + r * 1900, t, 0.1);
   }
-
   skid(amount) {
     if (!this.started) return;
     const a = clamp(amount, 0, 1);

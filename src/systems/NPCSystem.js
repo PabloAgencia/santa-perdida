@@ -4,8 +4,10 @@ import { GameState } from '../core/GameState.js';
 import { ZONE_OWNER } from '../config/factions.js';
 import { Pathfinder } from '../world/Pathfinder.js';
 
-const GANG_CHANCE = 0.38;
-const HOSTILE_RANGE = 330;
+// La calle no es una guerra. Con casi cuatro de cada diez de banda y un
+// radio de 330 px, ibas de bronca en bronca sin buscarla.
+const GANG_CHANCE = 0.24;
+const HOSTILE_RANGE = 250;
 const ATTACK_RANGE = 22;
 const ATTACK_DAMAGE = 7;
 const ESPERA_ENTRE_GOLPES = 0.62;   // entre TODOS los que te rodean
@@ -28,8 +30,8 @@ const DESPAWN = 1500;
 const SKINS = 12;
 const DOWN_LIFETIME = 22;
 
-// de cada cuatro conductores a los que les robas el coche, uno se encara
-const CONDUCTOR_BRAVO = 0.25;
+// uno de cada seis conductores a los que les robas el coche se encara
+const CONDUCTOR_BRAVO = 0.16;
 
 export class NPCSystem {
   constructor(scene, map) {
