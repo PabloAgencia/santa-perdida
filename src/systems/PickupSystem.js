@@ -3,6 +3,7 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
 import { TILE } from '../config/balance.js';
 import { T } from '../config/city.js';
+import { ARMAS } from '../config/weapons.js';
 
 // Curarse por la calle, que hasta ahora solo se podia en el escondite.
 //
@@ -31,6 +32,7 @@ export class PickupSystem {
     this.map = map;
     this.corazones = [];
     this.maquinas = [];
+    this.sueltos = [];
     this.cercaDeMaquina = null;
 
     this.sembrarCorazones();
@@ -112,9 +114,51 @@ export class PickupSystem {
     }
   }
 
+  // ---------- armas en el suelo ----------
+
+  // Al que cae se le queda el hierro en la acera. Es la forma de conseguir
+  // tu primera pistola sin pasar por una tienda, y la que usan todos los GTA.
+  soltarArma(x, y, clave, balas) {
+    const icono = this.scene.add.image(x, y, 'arma-suelo').setDepth(y + 1);
+    const brillo = this.scene.add.image(x, y, 'lamp')
+      .setDisplaySize(56, 56).setTint(0xe8b54a)
+      .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.3).setDepth(3);
+    this.scene.tweens.add({
+      targets: [icono], scale: { from: 0.9, to: 1.1 },
+      duration: 700, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+    });
+    this.sueltos.push({ x, y, clave, balas, icono, brillo, vida: 40 });
+  }
+
+  recogerArmas(dt, player, enCoche) {
+    for (let i = this.sueltos.length - 1; i >= 0; i--) {
+      const s = this.sueltos[i];
+      s.vida -= dt;
+      if (s.vida <= 0) {
+        s.icono.destroy();
+        s.brillo.destroy();
+        this.sueltos.splice(i, 1);
+        continue;
+      }
+      if (enCoche) continue;
+      if (Phaser.Math.Distance.Between(s.x, s.y, player.x, player.y) > 26) continue;
+
+      GameState.darArma(s.clave, s.balas);
+      GameState.armaActual = s.clave;
+      Audio.pickup();
+      EventBus.emit(EVT.NOTIFY, {
+        text: `${ARMAS[s.clave].nombre} · ${s.balas} balas`, tone: 'objective',
+      });
+      s.icono.destroy();
+      s.brillo.destroy();
+      this.sueltos.splice(i, 1);
+    }
+  }
+
   // ---------- bucle ----------
 
   update(dt, player, enCoche) {
+    this.recogerArmas(dt, player, enCoche);
     for (const c of this.corazones) {
       if (c.espera > 0) {
         c.espera -= dt;
@@ -184,7 +228,10 @@ export class PickupSystem {
   clear() {
     for (const c of this.corazones) { c.icono.destroy(); c.brillo.destroy(); }
     for (const m of this.maquinas) { m.icono.destroy(); m.luz.destroy(); }
+    for (const s of this.sueltos) { s.icono.destroy(); s.brillo.destroy(); }
+    this.sueltos = [];
     this.corazones = [];
     this.maquinas = [];
+    this.sueltos = [];
   }
 }

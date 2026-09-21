@@ -399,6 +399,16 @@ export class BootScene extends Phaser.Scene {
     maq.generateTexture('maquina', 14, 20);
     maq.destroy();
 
+    // arma tirada en el suelo
+    const arm = this.g();
+    arm.fillStyle(0x1b1f25, 1);
+    arm.fillRect(1, 5, 14, 4);
+    arm.fillRect(3, 8, 4, 5);
+    arm.fillStyle(0x4a4f57, 1);
+    arm.fillRect(2, 6, 11, 2);
+    arm.generateTexture('arma-suelo', 16, 14);
+    arm.destroy();
+
     // destello de la sirena
     const l = this.g();
     l.fillStyle(0xffffff, 0.9);

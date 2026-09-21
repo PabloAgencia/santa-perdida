@@ -1,4 +1,5 @@
 import { FASES } from '../world/personArt.js';
+import { VIDA } from '../config/weapons.js';
 
 const RADIO = 9;
 
@@ -14,6 +15,8 @@ export class Officer {
     this.radius = RADIO;
     this.speed = 112 + Math.random() * 22;
     this.stuck = 0;
+    this.vida = VIDA.policia;
+    this.down = false;
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.32).setAlpha(0.45);
     this.paso = 0;
@@ -21,7 +24,28 @@ export class Officer {
     this.sprite = scene.add.image(x, y, 'officer-0');
   }
 
+  // Los agentes aguantan mas que un peaton, y cuando caen se quedan en el
+  // suelo: quien se lo cargue, que sepa lo que ha hecho.
+  recibirDano(cantidad) {
+    if (this.down) return null;
+    this.vida -= cantidad;
+    this.sprite.setTint(0xff8a7a);
+    if (this.scene && this.scene.time) {
+      this.scene.time.delayedCall(110, () => {
+        if (!this.down && this.sprite && this.sprite.active) this.sprite.clearTint();
+      });
+    }
+    if (this.vida > 0) return 'tocado';
+
+    this.down = true;
+    this.sprite.setTint(0x6e3a34);
+    this.sprite.setRotation(this.angle + Math.PI / 2);
+    this.shadow.setAlpha(0.15);
+    return 'muerto';
+  }
+
   update(dt, tx, ty) {
+    if (this.down) return Infinity;
     const dx = tx - this.x;
     const dy = ty - this.y;
     const dist = Math.hypot(dx, dy);

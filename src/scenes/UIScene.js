@@ -68,7 +68,7 @@ export class UIScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0, 1);
     this.helpText.setText(
-      'WASD mover  ·  SHIFT correr  ·  E coche  ·  J pedir encargo  ·  ESPACIO freno de mano  ·  K guardar  ·  M sonido'
+      'WASD mover · SHIFT correr · E coche · F pegar · Q cambiar objetivo · TAB arma · J encargo · ESPACIO freno · K guardar'
     );
     this.tweens.add({
       targets: this.helpText, alpha: 0.35, delay: 14000, duration: 2500,
@@ -196,6 +196,13 @@ export class UIScene extends Phaser.Scene {
     this.stamBar = this.add.image(16, h - 36, 'px')
       .setOrigin(0, 1).setDisplaySize(210, 4).setTint(0x6f9ad9).setVisible(false);
 
+    // Lo que llevas en la mano, abajo a la derecha. Ocupa el mismo sitio que
+    // el panel del coche, pero nunca salen a la vez: o vas a pie, o conduces.
+    this.armaTexto = this.add.text(this.scale.width - 16, h - 24, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
+      fontSize: '19px', color: COLORS.ink,
+    }).setOrigin(1, 1);
+
     // aviso de "E para..." pegado al marcador
     this.accionTexto = this.add.text(16, h - 78, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '15px',
@@ -318,6 +325,13 @@ export class UIScene extends Phaser.Scene {
     this.updateHealth(d.health ?? 100, d.healthMax ?? 100);
     this.updateAliento(d.aliento ?? 1);
     this.accionTexto.setText(d.maquinaCerca ? 'E para comprar algo de comer' : '');
+    if (d.arma) {
+      const balas = d.arma.balas === null ? '' : `  ${d.arma.balas}`;
+      this.armaTexto.setText(`${d.arma.nombre.toUpperCase()}${balas}`);
+      this.armaTexto.setColor(d.arma.balas === 0 ? COLORS.danger : COLORS.ink);
+    } else {
+      this.armaTexto.setText('');
+    }
     this.updateTerritory(d.territory);
 
     this.vehiclePanel.setVisible(d.driving);

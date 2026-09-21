@@ -49,6 +49,21 @@ export class PoliceSystem {
     return this.units.some((u) => u.state === ESTADO.PERSIGUIENDO);
   }
 
+  // Un delito gordo pone la busca EN un nivel, no suma. Sumando, cargarse a
+  // alguien de un tiro daba tres estrellas de golpe (dos por el muerto y una
+  // por el ruido), que es una barbaridad para lo que ha pasado.
+  reportarCrimen(x, y, nivelMinimo) {
+    this.lastKnown = { x, y };
+    if (GameState.wanted < nivelMinimo) GameState.setWanted(nivelMinimo);
+    for (const u of this.units) {
+      if (u.state === ESTADO.PATRULLA || u.state === ESTADO.VOLVIENDO) {
+        u.state = ESTADO.INVESTIGANDO;
+        u.lastSeen = { x, y };
+        u.timer = 14;
+      }
+    }
+  }
+
   report(x, y, raise = 1) {
     GameState.raiseWanted(raise);
     this.lastKnown = { x, y };

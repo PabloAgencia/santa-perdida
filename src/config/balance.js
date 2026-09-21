@@ -28,7 +28,7 @@ export const ENTRENAR = {
   aguantePorSegundoCorriendo: 0.12,
   volantePorMetro: 0.0009,
   musculoPorGolpe: 0.08,
-  punteriaPorAcierto: 0.05,
+  punteriaPorAcierto: 0.15,
 };
 
 export const CAMERA = {

@@ -39,7 +39,49 @@ class GameStateClass {
       punteria: 0,    // disparando (cuando existan las armas)
       atractivo: 20,  // ropa, fisico y el coche que llevas
     };
+    // Lo que llevas encima. Los puños no se pierden nunca; el resto se
+    // compra. `null` de municion = no gasta (armas de cerca).
+    this.armas = { puno: null };
+    this.armaActual = 'puno';
     this.flags = {};
+  }
+
+  // ---------- armas ----------
+
+  tieneArma(clave) {
+    return clave in this.armas;
+  }
+
+  darArma(clave, municion = 0) {
+    if (!(clave in this.armas)) this.armas[clave] = municion > 0 ? 0 : null;
+    if (municion > 0) this.armas[clave] = (this.armas[clave] || 0) + municion;
+    EventBus.emit(EVT.STATS_CHANGED, { arma: clave });
+    return this.armas[clave];
+  }
+
+  municion(clave = this.armaActual) {
+    return this.armas[clave] ?? null;
+  }
+
+  // ¿se puede disparar? las de cerca siempre; las de fuego, si quedan balas
+  puedeDisparar(clave = this.armaActual) {
+    if (!this.tieneArma(clave)) return false;
+    const balas = this.armas[clave];
+    return balas === null || balas > 0;
+  }
+
+  gastarBala(clave = this.armaActual, cuantas = 1) {
+    if (this.armas[clave] === null || this.armas[clave] === undefined) return;
+    this.armas[clave] = Math.max(0, this.armas[clave] - cuantas);
+  }
+
+  // pasa a la siguiente arma que se lleve encima
+  cambiarArma(orden, paso = 1) {
+    const llevo = orden.filter((c) => this.tieneArma(c));
+    if (llevo.length <= 1) return this.armaActual;
+    const i = llevo.indexOf(this.armaActual);
+    this.armaActual = llevo[(i + paso + llevo.length) % llevo.length];
+    return this.armaActual;
   }
 
   // ---------- atributos ----------
@@ -179,6 +221,8 @@ class GameStateClass {
       job: this.job,
       stats: this.stats,
       atributos: this.atributos,
+      armas: this.armas,
+      armaActual: this.armaActual,
       flags: this.flags,
       savedAt: Date.now(),
     };
@@ -198,6 +242,8 @@ class GameStateClass {
     this.stats = Object.assign(this.stats, data.stats ?? {});
     // partidas viejas no traen atributos: se quedan con los de inicio
     this.atributos = Object.assign(this.atributos, data.atributos ?? {});
+    this.armas = data.armas ?? { puno: null };
+    this.armaActual = data.armaActual ?? 'puno';
     this.flags = data.flags ?? {};
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;

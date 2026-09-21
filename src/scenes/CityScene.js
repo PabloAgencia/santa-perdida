@@ -15,6 +15,8 @@ import { StreetLamp } from '../entities/StreetLamp.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
+import { CombatSystem } from '../systems/CombatSystem.js';
+import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
 import { T } from '../config/city.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
@@ -73,6 +75,7 @@ export class CityScene extends Phaser.Scene {
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
+    this.combat = new CombatSystem(this);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
 
@@ -651,8 +654,16 @@ export class CityScene extends Phaser.Scene {
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
       mute: 'M', pausa: 'ESC',
+      atacar: 'F', objetivo: 'Q', arma: 'TAB',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,SHIFT,ESC');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,SHIFT,ESC,F,Q,TAB');
+
+    // el raton tambien pega: el boton izquierdo es lo que sale solo
+    this.input.on('pointerdown', (p) => {
+      if (p.leftButtonDown() && !this.drivingVehicle && this.scene.isActive()) {
+        this.atacarAhora();
+      }
+    });
 
     // los navegadores no dejan sonar nada hasta que el jugador toca algo
     const wake = () => {
@@ -846,6 +857,13 @@ export class CityScene extends Phaser.Scene {
       EventBus.emit(EVT.NOTIFY, { text: 'Partida guardada', tone: 'dim' });
     }
 
+    // ---- pelea ----
+    if (!this.drivingVehicle) {
+      if (Phaser.Input.Keyboard.JustDown(k.atacar)) this.atacarAhora();
+      if (Phaser.Input.Keyboard.JustDown(k.objetivo)) this.combat.siguienteObjetivo(this.player);
+      if (Phaser.Input.Keyboard.JustDown(k.arma)) this.combat.cambiarArma(1);
+    }
+
     if (Phaser.Input.Keyboard.JustDown(k.mute)) {
       const muted = Audio.toggleMute();
       EventBus.emit(EVT.NOTIFY, {
@@ -903,6 +921,7 @@ export class CityScene extends Phaser.Scene {
     this.updateLamps();
     this.checkPlayerHarm(dt);
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
+    this.combat.update(dt, this.player, !this.drivingVehicle);
 
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;
@@ -1143,6 +1162,11 @@ export class CityScene extends Phaser.Scene {
       .setDisplaySize(16, 20).setTint(0xe8b54a).setAlpha(0.8).setDepth(6);
   }
 
+  atacarAhora() {
+    if (this.drivingVehicle) return;
+    this.combat.atacar(this.player, this.player.running);
+  }
+
   // la maquina de refrescos de la acera: E al lado y a beber
   usarMaquinaCerca() {
     if (!this.pickups.cercaDeMaquina) return false;
@@ -1231,6 +1255,10 @@ export class CityScene extends Phaser.Scene {
       healthMax: GameState.vidaMaxima,
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
+      arma: this.drivingVehicle ? null : {
+        nombre: ARMAS[GameState.armaActual].nombre,
+        balas: GameState.municion(),
+      },
       chasing: this.police.chasing,
       territory: this.factions.currentInfo(),
       mission: this.missions.estado(),

@@ -1,4 +1,5 @@
 import { FASES } from '../world/personArt.js';
+import { VIDA } from '../config/weapons.js';
 
 export class Pedestrian {
   constructor(scene, map, x, y, skin, faction = null, pathfinder = null) {
@@ -23,6 +24,8 @@ export class Pedestrian {
     this.target = null;
     this.stateTimer = 0;
     this.stuck = 0;
+    this.vida = faction ? VIDA.pandillero : VIDA.peaton;
+    this.vidaMax = this.vida;
     this.down = false;
     this.downTimer = 0;
     this.baseSpeed = 38 + Math.random() * 24;
@@ -32,6 +35,40 @@ export class Pedestrian {
     this.paso = 0;
     this.fase = 0;
     this.sprite = scene.add.image(x, y, `${this.base}-0`);
+  }
+
+  // Un golpe o un tiro. Devuelve 'muerto', 'tocado' o null si ya estaba en
+  // el suelo. Al que sobrevive le da por huir, o por venir a por ti si es de
+  // una banda que ya te tenia ganas.
+  recibirDano(cantidad, desdeX, desdeY, deLaBanda = false) {
+    if (this.down) return null;
+    this.vida -= cantidad;
+    this.marcarGolpe();
+
+    if (this.vida <= 0) {
+      this.knockDown(true);
+      return 'muerto';
+    }
+    if (!this.hostile) {
+      if (deLaBanda && this.faction) {
+        this.rencor = true;
+        this.hostile = true;
+        this.chaseTarget = { x: desdeX, y: desdeY };
+      } else {
+        this.flee(desdeX, desdeY, 4);
+      }
+    }
+    return 'tocado';
+  }
+
+  // parpadeo rojo al encajar un golpe: sin esto no se sabe si le has dado
+  marcarGolpe() {
+    this.sprite.setTint(0xff8a7a);
+    if (this.scene && this.scene.time) {
+      this.scene.time.delayedCall(110, () => {
+        if (!this.down && this.sprite && this.sprite.active) this.sprite.clearTint();
+      });
+    }
   }
 
   knockDown(fatal = false) {

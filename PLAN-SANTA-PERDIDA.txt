@@ -806,6 +806,48 @@ DECIMOQUINTA TANDA (21-sep-2026, madrugada): el personaje empieza a existir
   que antes). Consola limpia.
 
 ================================================================================
+DECIMOSEXTA TANDA (21-sep-2026, madrugada): armas y pelea
+================================================================================
+Era el agujero mas grande del juego: las bandas te podian pegar y tu solo
+podias huir o atropellarlas.
+
+  COMO SE APUNTA (lo importante)
+     NO se apunta con el raton. Se FIJA al enemigo mas cercano que tengas
+     delante (cono de 60 grados) y se le dispara a el; con Q se cambia de
+     objetivo. Al fijado se le ve un aro rojo y su barra de vida encima.
+     Es como lo resolvio Chinatown Wars, que es el unico GTA con esta camara.
+     Apuntar a mano desde arriba es un suplicio, y probarlo confirmo que la
+     fijacion es lo que hace que se pueda jugar.
+
+  CUATRO ARMAS (`config/weapons.js`): puños, bate, pistola y escopeta, con su
+     alcance, daño, cadencia y dispersion. Teclas: F o el raton para atacar,
+     Q para cambiar de objetivo, TAB para cambiar de arma.
+
+  LO QUE HAY QUE SABER DEL BALANCE (todo medido jugando)
+     - Con el objetivo fijado hay que ACERTAR. La pistola empezo con 7 grados
+       de dispersion: a 150 px fallaba 7 de cada 10 tiros y era ridiculo.
+       Bajada a 3,5: ahora tumba a un pandillero en 4 disparos.
+     - Moverse empeora la punteria (x1,8) y la punteria del personaje la
+       mejora hasta un 60%: quedarse quieto para disparar tiene premio.
+     - El musculo suma daño a puños y bate.
+     - Matar ya NO suma estrellas, las PONE: dos por una persona, tres por un
+       agente. Sumando, un tiro mortal daba tres estrellas de golpe (dos por
+       el muerto y una por el ruido), que era una barbaridad.
+     - Disparar solo alerta a la policia SI HAY TESTIGOS a menos de 300 px.
+       Un tiro en un callejon vacio no deberia traer una patrulla de la nada.
+
+  LAS ARMAS SE CONSIGUEN JUGANDO: al caer, un pandillero deja su hierro en el
+     suelo un 35% de las veces (y un agente, siempre). Se recoge al pasar por
+     encima y dura 40 segundos. Asi se consigue la primera pistola sin tienda.
+     COMPROBADO: empezando solo con los puños, tumbando pandilleros, a las dos
+     bajas ya llevaba pistola.
+
+  Y los peatones y agentes tienen vida de verdad (60, 85 y 110), parpadean en
+  rojo al encajar, y al sobrevivir huyen o se encaran si son de una banda.
+
+  MEDIDO: 210 fps con todo funcionando. Consola limpia.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
