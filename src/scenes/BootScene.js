@@ -355,6 +355,42 @@ export class BootScene extends Phaser.Scene {
     cor.generateTexture('hud-corazon', 22, 22);
     cor.destroy();
 
+    // el rifle de asalto: cargador curvo y cañon largo
+    const rif = this.g();
+    rif.fillStyle(OSCURO, 1);
+    rif.fillRect(2, 14, 36, 8);
+    rif.fillRect(12, 21, 8, 9);                // cargador
+    rif.fillRect(24, 21, 7, 11);               // empuñadura
+    rif.fillStyle(ACERO, 1);
+    rif.fillRect(4, 15, 33, 4);
+    rif.fillStyle(0x4a5058, 1);
+    rif.fillRect(13, 22, 6, 8);
+    rif.fillRect(25, 22, 5, 9);
+    rif.fillStyle(0x2a2f36, 1);
+    rif.fillRect(30, 13, 6, 3);                // culata
+    rif.fillStyle(0xc8ced6, 1);
+    rif.fillRect(3, 13, 3, 2);                 // punto de mira
+    rif.generateTexture('icono-rifle', 40, 40);
+    rif.destroy();
+
+    // el de mira: cañon larguisimo y visor encima
+    const sni = this.g();
+    sni.fillStyle(OSCURO, 1);
+    sni.fillRect(1, 16, 38, 7);
+    sni.fillRect(22, 22, 7, 12);               // empuñadura
+    sni.fillRect(11, 9, 16, 6);                // visor
+    sni.fillStyle(ACERO, 1);
+    sni.fillRect(2, 17, 36, 3);
+    sni.fillStyle(0x6f7681, 1);
+    sni.fillRect(13, 10, 12, 4);
+    sni.fillStyle(0x3a4047, 1);
+    sni.fillRect(23, 23, 5, 10);
+    sni.fillRect(29, 15, 9, 5);                // culata
+    sni.fillStyle(0xc8ced6, 1);
+    sni.fillRect(11, 11, 2, 2);                // lente
+    sni.generateTexture('icono-sniper', 40, 40);
+    sni.destroy();
+
     // la estrella de la busca, de cinco puntas como las de siempre
     const est = this.g();
     const puntas = (g, cx, cy, fuera, dentro, color) => {

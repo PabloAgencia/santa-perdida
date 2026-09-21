@@ -21,11 +21,11 @@ const TIRO = {
 // maximo: aguanta mas, dispara mejor y aguanta la distancia sin arrimarse.
 const CLASES = {
   patrulla: {
-    textura: 'officer', vida: VIDA.policia, velocidad: 112,
+    textura: 'officer', vida: VIDA.policia, velocidad: 112, sonido: 'pistola',
     tiro: TIRO,
   },
   asalto: {
-    textura: 'swat', vida: VIDA.policia + 60, velocidad: 104,
+    textura: 'swat', vida: VIDA.policia + 60, velocidad: 104, sonido: 'rifle',
     tiro: {
       desdeBusca: 1,     // si ha salido el furgon, ya da igual la busca
       alcance: 340,
@@ -51,6 +51,7 @@ export class Officer {
     this.clase = clase;
     const c = CLASES[clase] || CLASES.patrulla;
     this.tiro = c.tiro;
+    this.sonido = c.sonido || 'pistola';
     this.textura = c.textura;
     this.speed = c.velocidad + Math.random() * 22;
     this.stuck = 0;
@@ -107,7 +108,7 @@ export class Officer {
       // tienen que ser decisiones distintas
       const corriendo = this.scene.player && this.scene.player.running;
       const desvio = TIRO.dispersion + (corriendo ? TIRO.masSiCorres : 0);
-      combat.disparoDeNPC(this, objetivo, TIRO.dano, TIRO.alcance, desvio);
+      combat.disparoDeNPC(this, objetivo, TIRO.dano, TIRO.alcance, desvio, this.sonido);
     }
     return dist < TIRO.seQuedanA;
   }

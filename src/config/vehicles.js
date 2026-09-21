@@ -10,15 +10,28 @@ export const GLASS = 0x1d2128;
 // Ondas triangulares: la sierra a tono alto zumbaba como una mosca.
 // Los tonos se mantienen graves a proposito; el motor se nota por el cuerpo,
 // no por agudos.
+// Cada motor suena distinto. Con grabacion (audio/motor-*.mp3) manda
+// `muestra` y `tono`; si el fichero no esta, se sintetiza con base/range/wave.
+//
+// El reparto sale de medir las grabaciones: `motor-2` es la mas grave (42%
+// de la energia por debajo de 200 Hz), asi que va a la furgoneta; `motor-3`
+// es la mas aguda y larga, para el deportivo; `motor-4` es la que mas varia,
+// que suena a traqueteo y le pega al cacharro; `motor-1` es un motor grande
+// y estable, para el sedan y la patrulla.
 export const ENGINES = {
-  barato:     { base: 40, range: 62,  wave: 'triangle', body: 0.6,  bright: 620, vol: 0.85 },
-  rapido:     { base: 48, range: 92,  wave: 'triangle', body: 0.45, bright: 950, vol: 1.0 },
-  resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 0.95 },
-  moto:       { base: 58, range: 118, wave: 'triangle', body: 0.3,  bright: 1150, vol: 0.75 },
-  furgoneta:  { base: 28, range: 44,  wave: 'triangle', body: 0.9,  bright: 430, vol: 0.9 },
-  policia:    { base: 46, range: 86,  wave: 'triangle', body: 0.5,  bright: 880, vol: 0.9 },
+  barato:     { base: 40, range: 62,  wave: 'triangle', body: 0.6,  bright: 620, vol: 0.85,
+                muestra: 'motor-4', tono: 1 },
+  rapido:     { base: 48, range: 92,  wave: 'triangle', body: 0.45, bright: 950, vol: 1.0,
+                muestra: 'motor-3', tono: 1 },
+  resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 0.95,
+                muestra: 'motor-1', tono: 0.88 },
+  moto:       { base: 58, range: 118, wave: 'triangle', body: 0.3,  bright: 1150, vol: 0.75,
+                muestra: 'motor-moto', tono: 1.05 },
+  furgoneta:  { base: 28, range: 44,  wave: 'triangle', body: 0.9,  bright: 430, vol: 0.9,
+                muestra: 'motor-2', tono: 0.82 },
+  policia:    { base: 46, range: 86,  wave: 'triangle', body: 0.5,  bright: 880, vol: 0.9,
+                muestra: 'motor-1', tono: 1.08 },
 };
-
 export const VEHICLES = {
   chinchorro: {
     name: 'Chinchorro',

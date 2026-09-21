@@ -1105,6 +1105,42 @@ podido
      tamaño y el sitio de cada cosa. AI Studio pide plan de pago o clave de
      API para el modelo de imagen; con una de las dos claves que ya hay
      creadas en el panel se genera todo desde aqui.
+VIGESIMOPRIMERA TANDA (22-sep-2026): sonido de verdad y dos armas mas
+================================================================================
+Pablo bajo los sonidos de Pixabay y los dejo en `audio/`.
+
+  CADA COCHE, SU MOTOR. Habia cinco grabaciones sin repartir, asi que las
+  medi (duracion, centroide espectral, reparto de energia por bandas y
+  cuanto varia el volumen) y las asigne por caracter:
+     motor-2  42% de energia por debajo de 200 Hz, la mas grave -> CARGUERO
+              (y el furgon de asalto, con el tono aun mas bajo)
+     motor-3  la mas aguda (57% por encima de 900 Hz) y la mas larga -> VELA GT
+     motor-4  la que mas varia de volumen, suena a traqueteo -> CHINCHORRO
+     motor-1  motor grande y estable -> BASTION (tono 0,88) y PATRULLA (1,08)
+     motor-moto -> AVISPA
+  El mismo fichero suena distinto en dos coches gracias al `tono` de cada
+  uno, asi que no hay dos que se parezcan.
+
+  COMO SUENA AL ACELERAR: la grabacion va en bucle y se le cambia la
+  velocidad de reproduccion de 0,62 a 1,87 segun las vueltas, con la caja de
+  cambios de cinco marchas por encima. MEDIDO: a tope 1,87 y al ralenti 1,12.
+
+  LO DEMAS TAMBIEN SUENA: choque, frenada (se dispara al empezar a derrapar,
+  no en bucle, que sonaba a sierra), puñetazo y un disparo distinto por arma.
+  Si un fichero no esta, se sigue sintetizando como antes.
+
+  DOS ARMAS NUEVAS Y TODOS LOS ALCANCES REPARTIDOS
+     puños     26 px    lo que llevas siempre
+     bate      34 px    pega el triple, pero hay que pegarse
+     escopeta 165 px    de cerca no perdona, de lejos no hace nada
+     pistola  300 px    la de andar por casa
+     RIFLE    560 px    22 de daño cada 0,14 s, cargador de 210. 4.200 €
+     SNIPER  1100 px    95 de daño, 0,6 grados de desvio, un tiro cada 1,9 s.
+                        9.000 € y 220 € cada cinco balas
+  La pantalla mide unos 1.100 px de ancho: el sniper llega justo de un lado
+  al otro, y por eso no hace falta ninguna mas larga.
+  Los dos entran en la tienda y en el cambio de arma (TAB), con sus iconos
+  dibujados. Los SWAT ahora disparan con el sonido del rifle.
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

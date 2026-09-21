@@ -73,14 +73,19 @@ class GameAudio {
     }
 
     const CLAVES = {
-      'motor-loop.mp3': 'motor',
+      'motor-1.mp3': 'motor-1',
+      'motor-2.mp3': 'motor-2',
+      'motor-3.mp3': 'motor-3',
+      'motor-4.mp3': 'motor-4',
+      'motor-moto.mp3': 'motor-moto',
       'frenada.mp3': 'frenada',
       'choque.mp3': 'choque',
       'disparo-pistola.mp3': 'pistola',
       'disparo-escopeta.mp3': 'escopeta',
+      'disparo-rifle.mp3': 'rifle',
+      'disparo-sniper.mp3': 'sniper',
       'punetazo.mp3': 'golpe',
     };
-
     for (const nombre of nombres) {
       const clave = CLAVES[nombre];
       if (!clave) continue;
@@ -88,26 +93,37 @@ class GameAudio {
         const res = await fetch(`audio/${nombre}`);
         if (!res.ok) continue;
         this.muestras[clave] = await this.ctx.decodeAudioData(await res.arrayBuffer());
-        if (clave === 'motor') this._motorDeMuestra();
       } catch (e) { /* si falla uno, el resto sigue */ }
     }
   }
-  // El motor grabado se reproduce en bucle y se le cambia la VELOCIDAD DE
-  // REPRODUCCION segun las vueltas: es como suenan los motores en los juegos
-  // de coches desde siempre, y con las marchas de aqui da el subir y bajar.
-  _motorDeMuestra() {
-    if (this.motorFuente) return;
+  // El motor grabado se reproduce EN BUCLE y se le cambia la velocidad de
+  // reproduccion segun las vueltas: asi suenan los motores en los juegos de
+  // coches desde siempre, y con la caja de cambios de aqui da el subir y
+  // bajar de verdad. Cada vehiculo tiene su grabacion y su tono, asi que una
+  // furgoneta y un deportivo no se parecen en nada.
+  _ponerMotor(clave) {
+    if (this.motorClave === clave) return;
+    if (this.motorFuente) {
+      try { this.motorFuente.stop(); } catch (e) { /* ya parado */ }
+      this.motorFuente.disconnect();
+      this.motorFuente = null;
+    }
+    this.motorClave = clave;
+    const buf = this.muestras[clave];
+    if (!buf) return;
+
+    if (!this.motorGain) {
+      this.motorGain = this.ctx.createGain();
+      this.motorGain.gain.value = 0;
+      this.motorGain.connect(this.master);
+    }
     const src = this.ctx.createBufferSource();
-    src.buffer = this.muestras.motor;
+    src.buffer = buf;
     src.loop = true;
-    this.motorGain = this.ctx.createGain();
-    this.motorGain.gain.value = 0;
     src.connect(this.motorGain);
-    this.motorGain.connect(this.master);
     src.start();
     this.motorFuente = src;
   }
-
   // suena una muestra suelta, con un poco de variacion de tono
   soltar(clave, volumen = 1, tono = 1) {
     const buf = this.muestras[clave];
@@ -253,25 +269,27 @@ class GameAudio {
 
   engine(on, ratio, throttle, perfil = null) {
     if (!this.started) return;
-
-    // con el motor grabado, el sintetizado se calla y manda la muestra
-    if (this.motorFuente) {
-      const t2 = this.ctx.currentTime;
-      const r2 = clamp(ratio, 0, 1);
-      const caja2 = this._vueltasDe(r2);
-      const p2 = perfil || { vol: 1 };
-      this.motorFuente.playbackRate.setTargetAtTime(0.62 + caja2.vueltas * 1.25, t2, 0.06);
-      this.motorGain.gain.setTargetAtTime(
-        on ? (0.35 + caja2.vueltas * 0.5) * (p2.vol || 1) : 0, t2, 0.08
-      );
-      if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
-      if (this.aireGain) this.aireGain.gain.setTargetAtTime(on ? r2 * 0.25 : 0, t2, 0.12);
-      return;
-    }
     const t = this.ctx.currentTime;
     const r = clamp(ratio, 0, 1);
     const p = perfil || { base: 46, range: 155, wave: 'sawtooth', body: 0.5, bright: 2300, vol: 1 };
 
+    // con el motor grabado, el sintetizado se calla y manda la muestra
+    const perfilMuestra = perfil && perfil.muestra;
+    if (perfilMuestra && this.muestras[perfilMuestra]) {
+      this._ponerMotor(perfilMuestra);
+      const t2 = this.ctx.currentTime;
+      const r2 = clamp(ratio, 0, 1);
+      const caja2 = this._vueltasDe(r2);
+      const tono = (perfil.tono || 1) * (0.62 + caja2.vueltas * 1.25);
+      this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.06);
+      this.motorGain.gain.setTargetAtTime(
+        on ? (0.3 + caja2.vueltas * 0.45) * (perfil.vol || 1) : 0, t2, 0.08
+      );
+      if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
+      if (this.aireGain) this.aireGain.gain.setTargetAtTime(0, t2, 0.1);
+      return;
+    }
+    if (this.motorGain) this.motorGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
     if (this.engWave !== p.wave) {
       this.engWave = p.wave;
       this.osc1.type = p.wave;
@@ -306,6 +324,19 @@ class GameAudio {
   skid(amount) {
     if (!this.started) return;
     const a = clamp(amount, 0, 1);
+
+    // con grabacion, la frenada se dispara al empezar a derrapar y no se
+    // repite hasta que el coche deja de hacerlo: en bucle sonaba a sierra
+    if (this.muestras.frenada) {
+      if (a > 0.45 && !this.derrapando) {
+        this.derrapando = true;
+        this.soltar('frenada', 0.5);
+      } else if (a < 0.2) {
+        this.derrapando = false;
+      }
+      this.skidGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);
+      return;
+    }
     this.skidGain.gain.setTargetAtTime(a * 0.07, this.ctx.currentTime, 0.05);
     this.skidFilter.frequency.setTargetAtTime(1500 + a * 900, this.ctx.currentTime, 0.08);
   }

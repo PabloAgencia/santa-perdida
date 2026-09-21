@@ -42,7 +42,7 @@ export class ShopScene extends Phaser.Scene {
   create() {
     const w = this.scale.width;
     const h = this.scale.height;
-    this.sala = { x: w / 2 - 330, y: h / 2 - 210, w: 660, h: 420 };
+    this.sala = { x: w / 2 - 330, y: h / 2 - 250, w: 660, h: 500 };
 
     this.add.image(0, 0, 'px').setOrigin(0, 0).setDisplaySize(w, h).setTint(0x05060a);
     this.pintarLocal();
@@ -119,7 +119,7 @@ export class ShopScene extends Phaser.Scene {
       fontSize: '17px', color: '#e8e2d2', wordWrap: { width: 356 },
     }).setOrigin(0, 0.5);
 
-    this.dinero = this.add.text(s.x + s.w - 30, s.y + 244, '', {
+    this.dinero = this.add.text(s.x + s.w - 30, s.y + 228, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
       fontSize: '22px', color: COLORS.money,
     }).setOrigin(1, 0);
@@ -139,7 +139,7 @@ export class ShopScene extends Phaser.Scene {
   // te ofrece son balas, no otra pistola.
   catalogo() {
     const lista = [];
-    for (const clave of ['bate', 'pistola', 'escopeta']) {
+    for (const clave of ['bate', 'pistola', 'escopeta', 'rifle', 'sniper']) {
       const a = ARMAS[clave];
       if (!GameState.tieneArma(clave)) {
         lista.push({
@@ -178,7 +178,7 @@ export class ShopScene extends Phaser.Scene {
 
     this.lista = this.catalogo();
     this.lista.forEach((op, i) => {
-      const y = s.y + 272 + i * 33;
+      const y = s.y + 262 + i * 33;
       const texto = this.add.text(s.x + 210, y, op.nombre, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
         fontSize: '22px', color: COLORS.ink,

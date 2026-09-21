@@ -121,7 +121,7 @@ export class CombatSystem {
     }
     this.aplicar(objetivo, dano, player, true);
     GameState.subirAtributo('musculo', ENTRENAR.musculoPorGolpe);
-    Audio.crash(0.18);
+    if (!Audio.soltar('golpe', 0.7)) Audio.crash(0.18);
     return true;
   }
 
@@ -151,7 +151,10 @@ export class CombatSystem {
     }
 
     if (algunoDentro) GameState.subirAtributo('punteria', ENTRENAR.punteriaPorAcierto);
-    Audio.crash(arma.clave === 'escopeta' ? 0.5 : 0.3);
+    // cada arma con su disparo grabado; si no hay fichero, el ruido de antes
+    if (!Audio.soltar(arma.sonido, arma.clave === 'sniper' ? 0.9 : 0.75)) {
+      Audio.crash(arma.clave === 'escopeta' ? 0.5 : 0.3);
+    }
 
     // Un tiro se oye y la gente sale corriendo. Pero la policia solo se
     // entera si queda alguien para contarlo: pegar un tiro en un callejon
@@ -232,7 +235,7 @@ export class CombatSystem {
   // Un agente o un pandillero le pega un tiro al jugador. Usa el mismo
   // trazado que el del jugador, asi que las paredes paran las balas igual
   // para todos: nada de que a ti te frenen y a ellos no.
-  disparoDeNPC(origen, objetivo, dano, alcance, dispersionGrados) {
+  disparoDeNPC(origen, objetivo, dano, alcance, dispersionGrados, sonido = 'pistola') {
     const base = Math.atan2(objetivo.y - origen.y, objetivo.x - origen.x);
     const desvio = Phaser.Math.DegToRad((Math.random() - 0.5) * 2 * dispersionGrados);
     const angulo = base + desvio;
@@ -256,7 +259,7 @@ export class CombatSystem {
     }
 
     this.pintarDisparo(origen, fin.x, fin.y);
-    Audio.crash(0.22);
+    if (!Audio.soltar(sonido, 0.45)) Audio.crash(0.22);
     if (acierto) {
       GameState.damage(dano, 'disparo');
       this.scene.cameras.main.shake(90, 0.003);
