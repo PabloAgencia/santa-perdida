@@ -3,7 +3,7 @@ const RADIO = 5;
 // Farola con cuerpo: base en la acera, brazo sobre la calzada y foco al final.
 // Se puede tirar con el coche, y si cae se apaga.
 export class StreetLamp {
-  constructor(scene, x, y, angleHaciaCalle) {
+  constructor(scene, x, y, angleHaciaCalle, escalaLuz = 1) {
     this.scene = scene;
     this.x = x;
     this.y = y;
@@ -18,9 +18,9 @@ export class StreetLamp {
     this.headY = y + sin * brazo;
 
     this.light = scene.add.image(this.headX, this.headY, 'lamp')
-      .setDisplaySize(118, 118)
+      .setDisplaySize(128 * escalaLuz, 128 * escalaLuz)
       .setBlendMode(Phaser.BlendModes.ADD)
-      .setAlpha(0.34)
+      .setAlpha(0.3 + escalaLuz * 0.06)
       .setDepth(-900);
 
     this.sombra = scene.add.image(x + 3, y + 4, 'px')

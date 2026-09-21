@@ -33,7 +33,10 @@ export const DRIVING = {
 };
 
 export const SAVE = {
-  key: 'santa-perdida-save',
+  // tres ranuras de partida, como los GTA de siempre
+  key: 'santa-perdida-save',      // se le pega el numero: ...-save-1
+  keyRanuraActiva: 'santa-perdida-ranura',
+  ranuras: 3,
   version: 1,
   autosaveMs: 15000,
 };

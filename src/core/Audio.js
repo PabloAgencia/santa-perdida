@@ -25,6 +25,7 @@ class GameAudio {
     this.noise = this._makeNoise();
     this._buildEngine();
     this._buildSkid();
+    this._buildSiren();
     this.started = true;
   }
 
@@ -98,6 +99,38 @@ class GameAudio {
     this.skidFilter.connect(this.skidGain);
     this.skidGain.connect(this.master);
     src.start();
+  }
+
+  // Sirena: dos tonos que se alternan, como una de verdad. Suena mas fuerte
+  // cuanto mas cerca tienes a la patrulla, asi que te avisa de por donde
+  // vienen aunque no los veas en pantalla.
+  _buildSiren() {
+    const ctx = this.ctx;
+    this.sirGain = ctx.createGain();
+    this.sirGain.gain.value = 0;
+
+    const filtro = ctx.createBiquadFilter();
+    filtro.type = 'lowpass';
+    filtro.frequency.value = 2100;
+
+    this.sirOsc = ctx.createOscillator();
+    this.sirOsc.type = 'square';
+    this.sirOsc.frequency.value = 620;
+
+    this.sirOsc.connect(filtro);
+    filtro.connect(this.sirGain);
+    this.sirGain.connect(this.master);
+    this.sirOsc.start();
+  }
+
+  siren(level) {
+    if (!this.started) return;
+    const t = this.ctx.currentTime;
+    const l = clamp(level, 0, 1);
+    this.sirGain.gain.setTargetAtTime(l * 0.055, t, 0.12);
+    if (l <= 0) return;
+    const alto = Math.floor(t * 2.4) % 2 === 0;
+    this.sirOsc.frequency.setTargetAtTime(alto ? 760 : 570, t, 0.015);
   }
 
   // perfil = uno de ENGINES. Al ralenti suena muy bajito y va creciendo con

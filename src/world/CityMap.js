@@ -23,6 +23,8 @@ export class CityMap {
     this.grid = new Uint8Array(this.w * this.h).fill(T.GRASS);
     this.solid = new Uint8Array(this.w * this.h);
     this.roadMask = new Uint8Array(this.w * this.h);
+    // pasos de peatones: 1 = se cruza de norte a sur, 2 = de este a oeste
+    this.crossMask = new Uint8Array(this.w * this.h);
 
     this.buildings = [];
     this.roadSpots = [];
@@ -128,6 +130,15 @@ export class CityMap {
     return this.roadMask[this.idx(tx, ty)] === 1;
   }
 
+  isCrossTile(tx, ty) {
+    if (!this.inBounds(tx, ty)) return false;
+    return this.crossMask[this.idx(tx, ty)] !== 0;
+  }
+
+  isCrossPoint(px, py) {
+    return this.isCrossTile(Math.floor(px / TILE), Math.floor(py / TILE));
+  }
+
   // ---------- generacion ----------
 
   generate() {
@@ -140,6 +151,7 @@ export class CityMap {
 
     this._carveRoads();
     this._paintSidewalks();
+    this._markCrossings();
     this._buildBlocks();
     this._buildPort();
     this._placeLandmarks();
@@ -264,6 +276,40 @@ export class CityMap {
           }
         }
         if (near) this.setTile(tx, ty, T.SIDEWALK);
+      }
+    }
+  }
+
+  // Pasos de peatones a las cuatro bocas de cada cruce, como en la calle de
+  // verdad. El A* de los peatones solo les deja pisar asfalto aqui, asi que
+  // dejan de cruzar en diagonal por mitad de la manzana.
+  _markCrossings() {
+    const c = this.cfg;
+    const ANCHO = 2; // casillas de ancho del paso
+
+    const hs = c.roadsH.map((r) => ({ start: r.y, size: r.h }));
+    hs.push({ start: c.portRoad.y, size: c.portRoad.h });
+    const vs = c.roadsV.map((r) => ({ start: r.x, size: r.w }));
+
+    const marcar = (tx, ty, w, h, valor) => {
+      for (let y = ty; y < ty + h; y++) {
+        for (let x = tx; x < tx + w; x++) {
+          if (!this.inBounds(x, y)) continue;
+          const i = this.idx(x, y);
+          if (this.roadMask[i] !== 1) continue;
+          this.crossMask[i] = valor;
+        }
+      }
+    };
+
+    for (const h of hs) {
+      for (const v of vs) {
+        // a los dos lados del cruce, cruzando la calle horizontal (1)
+        marcar(v.start - ANCHO, h.start, ANCHO, h.size, 1);
+        marcar(v.start + v.size, h.start, ANCHO, h.size, 1);
+        // arriba y abajo del cruce, cruzando la calle vertical (2)
+        marcar(v.start, h.start - ANCHO, v.size, ANCHO, 2);
+        marcar(v.start, h.start + h.size, v.size, ANCHO, 2);
       }
     }
   }

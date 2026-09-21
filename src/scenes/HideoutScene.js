@@ -36,6 +36,10 @@ export class HideoutScene extends Phaser.Scene {
     }
 
     this.muebles(s);
+    this.cama = { x: s.x + 90, y: s.y + 101 };
+    this.add.text(this.cama.x, this.cama.y + 44, 'DORMIR', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
+    }).setOrigin(0.5);
 
     // luz de la bombilla
     this.add.image(s.x + s.w / 2, s.y + 120, 'lamp')
@@ -93,7 +97,8 @@ export class HideoutScene extends Phaser.Scene {
     this.confirmacion = 0;
     this.saliendo = false;
     this.cameras.main.fadeIn(420, 0, 0, 0);
-    GameState.heal(100);
+    // Curarse ya NO es automatico por entrar: hay que echarse en la cama.
+    // Entrar y salir dejaba la vida a 100 gratis y sin enterarte.
   }
 
   muebles(s) {
@@ -134,6 +139,7 @@ export class HideoutScene extends Phaser.Scene {
 
     const enGuardar = Phaser.Math.Distance.Between(this.px, this.py, this.save.x, this.save.y) < 42;
     const enPuerta = Phaser.Math.Distance.Between(this.px, this.py, this.puerta.x, this.puerta.y) < 46;
+    const enCama = Phaser.Math.Distance.Between(this.px, this.py, this.cama.x, this.cama.y) < 54;
 
     // el mensaje de confirmacion aguanta unos segundos; antes lo pisaba el
     // texto de ayuda en el fotograma siguiente y no se llegaba a ver
@@ -142,7 +148,9 @@ export class HideoutScene extends Phaser.Scene {
     } else {
       this.aviso.setColor('#e6e1d4');
       this.aviso.setText(
-        enGuardar ? 'E para guardar la partida' : enPuerta ? 'E para salir a la calle' : ''
+        enGuardar ? 'E para guardar la partida'
+          : enCama ? (GameState.health >= 100 ? 'Estas entero' : 'E para dormir y curarte')
+            : enPuerta ? 'E para salir a la calle' : ''
       );
     }
 
@@ -155,6 +163,19 @@ export class HideoutScene extends Phaser.Scene {
         this.confirmacion = 2.5;
         this.destello();
         EventBus.emit(EVT.NOTIFY, { text: 'Partida guardada en el escondite', tone: 'money' });
+      } else if (enCama) {
+        if (GameState.health >= 100) {
+          this.aviso.setColor('#8a8578');
+          this.aviso.setText('No te hace falta dormir');
+          this.confirmacion = 1.6;
+        } else {
+          GameState.heal(100);
+          Audio.notes([392, 330, 262], 0.16, 'triangle', 0.1);
+          this.cameras.main.flash(420, 20, 24, 30);
+          this.aviso.setColor('#8fd694');
+          this.aviso.setText('HAS DORMIDO. Salud al maximo');
+          this.confirmacion = 2.5;
+        }
       } else if (enPuerta) {
         this.salir();
       }

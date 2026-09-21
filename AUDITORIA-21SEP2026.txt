@@ -1,0 +1,180 @@
+================================================================================
+SANTA PERDIDA - AUDITORIA Y ARREGLOS              21 de septiembre de 2026
+================================================================================
+Primero se audito el juego entero (33 ficheros, 6.241 lineas, mas partidas
+reales en el navegador). Despues se arreglo TODO lo que salio.
+Cada linea que pone MEDIDO esta comprobada ejecutandolo, antes y despues.
+
+Estado final: 17 hallazgos, 17 arreglados.
+
+
+================================================================================
+1. LOS COCHES QUE SE QUEDABAN CLAVADOS EN LOS CRUCES          [ARREGLADO]
+================================================================================
+Lo vio Pablo en pantalla: tres coches encajados en un cruce sin avanzar.
+
+  La causa (dos, en realidad):
+  a) El contador de atasco se REINICIABA con el movimiento de la propia
+     maniobra de desatasco. Subia a 2,2 s, el coche daba marcha atras, la
+     velocidad pasaba del umbral, el contador se ponia a cero y volvia a
+     empotrarse. Un bucle cada 2,5 s, para siempre.
+     MEDIDO antes: un Vela GT, 15 segundos y 2 px recorridos.
+  b) Si el que te tapaba era otro coche, el contador ni contaba. Tres coches
+     esperandose unos a otros no arrancaban nunca, porque cada uno esperaba
+     al de delante.
+
+  Arreglado: la maniobra lleva su propio reloj, el atasco cuenta tambien con
+  un coche delante (con mas paciencia: 3,6 s, que puede ser una cola normal),
+  y a los tres intentos fallidos el coche se recicla si no se le esta viendo.
+
+  MEDIDO (2 min de trafico x 6 ejecuciones):
+      antes:  39 km/h de media, 29% de coches clavados
+      ahora:  46 km/h de media,  0-1% de coches clavados
+  Y en el navegador, en vivo: 0 coches clavados en 25 s, 35-55 km/h.
+
+  DE PROPINA, SEMAFOROS (nuevo systems/TrafficLights.js): 26 cruces, 92
+  luces, verde 8,5 s y ambar 1,6 s, cada cruce con su desfase. Comprobado que
+  nunca dan verde a los dos ejes a la vez y que ningun poste cae sobre la
+  calzada. Solo mandan cuando hay otro coche disputando el cruce: con la
+  calle vacia se pasa sin frenar (la primera version paraba siempre y hundia
+  la ciudad a 21 km/h).
+
+
+================================================================================
+2. MISIONES: SE JUGABAN 4 DE 10                               [ARREGLADO]
+================================================================================
+  "EL SOPLON" ERA IMPOSIBLE. El paso de seguir un coche solo sabia fallar: si
+  te alejabas, fallabas; y si aguantabas los 75 segundos pegado a el, fallaba
+  por tiempo igual.
+  MEDIDO antes: 75 s clavado a 80 px del coche -> MISION FALLIDA.
+  Ahora aguantar el limite es superarlo, como en los pasos de "aguantar".
+  MEDIDO despues, en el navegador: el paso se supera y la mision pasa al
+  paso 2 de 2, "Cortale el paso".
+
+  Ademas el coche al que seguias nacia hasta a 900 px y se perdia a los 620:
+  podia fallar en el primer segundo (paso una vez). Ahora nace a 180-380 px,
+  hay 4 segundos de cortesia y el limite sube a 700.
+
+  SEIS MISIONES NO SE DESBLOQUEABAN NUNCA. Pedian mas reputacion de la que
+  daban las anteriores: corre-chaval pedia 10 y como mucho se llegaba a 9.
+  Bajados los minimos (8 / 15 / 18 / 25).
+  MEDIDO: antes 4 de 10 jugables, ahora 10 de 10.
+
+
+================================================================================
+3. PEATONES Y ATROPELLOS                                      [ARREGLADO]
+================================================================================
+  LA CAUSA DE FONDO: flee() no borraba el camino que el peaton llevaba
+  calculado. Como el camino manda sobre el destino, el peaton "huia" hacia
+  donde ya iba, pero al doble de velocidad. De ahi que se metieran debajo de
+  los coches.
+  MEDIDO antes: al mandarle huir a (68,1683), su destino real seguia siendo
+  (336,1648), el punto de la ruta vieja.
+
+  PASOS DE CEBRA DE VERDAD: el mapa marca los cuatro pasos de cada cruce
+  (1.285 casillas) y el A* solo deja pisar asfalto ahi, cruzando recto.
+  Ademas miran antes de cruzar: si viene un coche que llega en menos de 2 s,
+  esperan en el bordillo.
+  Y los coches ven mucho mejor: el cono pasa de 40+velocidad*0,4 a
+  70+velocidad*0,8 y mira donde VA A ESTAR el peaton dentro de un segundo.
+
+  MEDIDO (3 min x 4 ejecuciones):
+      atropellos del trafico:   de 12,75 de media  a  2,6      (-80%)
+      cruces por el paso:       de 0%              a  97%
+      peatones vivos:           de 18,9            a  19,9 de 20
+  En el navegador, en vivo: 97% de los cruces por la cebra, 71 esperas en el
+  bordillo y ni un solo cuerpo en el suelo en ese rato.
+
+  Los cuerpos ya no ocupan sitio de gente viva en el cupo.
+
+  EL TRAFICO YA TE VE A PIE. No estabas en la lista de peatones que miran los
+  coches: eras invisible para ellos.
+  MEDIDO antes: 36 fotogramas con un coche encima y ninguno solto el gas;
+  22 puntos de vida en 15 s parado en el carril. Ahora frenan por ti.
+
+
+================================================================================
+4. COSAS QUE FALTABAN DEL PLAN VIEJO                          [HECHAS]
+================================================================================
+  CONDUCTORES DENTRO DE LOS COCHES (pendiente nº4): los 14 coches del trafico
+  llevan a alguien al volante y se le ve la cabeza. Al robarles el coche se
+  bajan: tres de cada cuatro salen corriendo y uno se te encara y te pega.
+  MEDIDO: 14/14 con conductor; al robar uno, el conductor sale y huye.
+
+  CONDUCTORES TEMERARIOS (pendiente nº3): 4-5 de cada 100 medido. No frenan
+  por la gente y si atropellan a alguien aceleran y se van.
+
+
+================================================================================
+5. SENSACION AL CONDUCIR                                      [ARREGLADO]
+================================================================================
+  Antes todos los coches llegaban a su velocidad punta en un segundo: la
+  furgoneta se conducia igual que el deportivo. Ahora el empuje cae segun te
+  acercas al tope, y cada clase tiene su caracter.
+  MEDIDO, segundos hasta el 90% de su punta (las puntas no se han tocado):
+      moto 1,9  ·  deportivo 2,5  ·  utilitario 2,4  ·  todoterreno 3,0  ·
+      furgoneta 3,3        (antes: todos entre 0,9 y 1,25 hasta el TOPE)
+  Frenadas mas largas y PILOTOS DE FRENO rojos al pisarlo.
+
+  SIRENA: la policia era muda. Ahora suena una sirena de dos tonos que sube
+  de volumen cuanto mas cerca la tienes. MEDIDO: con tres patrullas encima,
+  nivel 0,30.
+
+  FAROS: 18 de 18 coches aparcados y vacios llevaban el haz encendido. Ahora
+  solo lo llevan los que estan en marcha o con alguien dentro. MEDIDO: 0/18.
+
+  CURARSE ERA GRATIS E INFINITO: entrar al escondite ponia la vida a 100 sin
+  pagar ni esperar. Ahora hay que echarse en la cama y pulsar E.
+  MEDIDO: entras con 40 de vida y sigues con 40 hasta que duermes.
+
+
+================================================================================
+6. HUD                                                        [ARREGLADO]
+================================================================================
+  Los avisos se pintaban a 56 px del borde, justo encima de la barra de salud
+  y de la linea de ayuda: llegaban a leerse cuatro textos superpuestos.
+  MEDIDO ahora: avisos en 530-602, etiqueta de salud 658, barra 674, ayuda
+  698. Ni un solape con cuatro avisos a la vez.
+  Y la ayuda ya menciona la J, que es la tecla que pide encargos.
+
+
+================================================================================
+7. VISUAL                                                     [ARREGLADO]
+================================================================================
+  EDIFICIOS CON ALTURA: se ven la pared sur y la este, con lineas verticales
+  de fachada, y la sombra cae segun lo alto que sea el edificio (el centro
+  30 px, las casas bajas 11). Ya no son cajas planas.
+  FAROLAS: de 310 a 103, dos por tramo alternando acera y con el charco de
+  luz variado. Se acabo el efecto peine.
+  PLAZA DEL FAROL: era un circulo azul plano que parecia una piscina. Ahora
+  es plaza empedrada con cuatro parterres, fuente con pilon y una estatua con
+  sombra larga.
+  PASOS DE CEBRA pintados exactamente donde cruza la gente.
+  MINIMAPA: el tinte de las bandas ya no cubre el asfalto, solo las manzanas.
+  TITULO DEL MENU: entra en 0,42 s en vez de 1,1 s.
+
+
+================================================================================
+8. RENDIMIENTO
+================================================================================
+  El A*, al obligar a cruzar por los pasos, explora mucho mas. La lista de
+  nodos abiertos era LINEAL y el navegador se quedo colgado de verdad. Se
+  cambio por un monticulo binario y se limito a 3 busquedas por fotograma.
+  MEDIDO: 400 rutas, 0,25 ms de media y 1,85 ms la peor.
+
+  Con todo lo nuevo en marcha: 0,21 ms de logica y 3,8 ms de fotograma
+  completo, unos 260 fps. Antes eran 0,14 y 3,2 ms. Sigue sobradisimo.
+  Consola del navegador limpia, cero errores.
+
+
+================================================================================
+LO QUE QUEDA (y es decision tuya)
+================================================================================
+  - Ajustar a gusto: aceleracion y frenada (config/vehicles.js), volumen de
+    la sirena (core/Audio.js, siren()) y duracion del verde
+    (systems/TrafficLights.js, VERDE y AMBAR).
+  - Si los pasos de cebra te parecen demasiados o muy blancos, se toca el
+    alfa en CityScene.drawCrosswalks (ahora 0,42).
+  - Resto de la fase 3: comprar coches y pisos, y la economia por barrios.
+  - La camara suelta no se ha reproducido en ninguna prueba. El seguro sigue.
+  - Pricedown en textos pequeños: sigue igual, es cuestion de gusto.

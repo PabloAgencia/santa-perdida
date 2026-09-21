@@ -60,7 +60,7 @@ export const MISSIONS = [
     faccion: 'rompiente',
     nombre: 'Corre, chaval',
     intro: 'Un chaval del barrio la ha liado y tiene que desaparecer un rato.',
-    minRep: 10,
+    minRep: 8,
     pago: 240,
     rep: 10,
     pasos: [
@@ -87,7 +87,7 @@ export const MISSIONS = [
     faccion: 'verdial',
     nombre: 'Sin testigos',
     intro: 'Alguien ha hablado de mas. Su coche tiene que aparecer en el fondo del puerto.',
-    minRep: 15,
+    minRep: 8,
     pago: 330,
     rep: 12,
     pasos: [
@@ -101,7 +101,7 @@ export const MISSIONS = [
     faccion: 'amarres',
     nombre: 'Contrarreloj',
     intro: 'Una entrega que tenia que estar hace veinte minutos. Vuela.',
-    minRep: 20,
+    minRep: 15,
     pago: 300,
     rep: 9,
     pasos: [
@@ -114,7 +114,7 @@ export const MISSIONS = [
     faccion: 'rompiente',
     nombre: 'El soplon',
     intro: 'Va a ir a contarlo. Siguele y averigua adonde va, pero sin que te vea.',
-    minRep: 20,
+    minRep: 15,
     pago: 280,
     rep: 11,
     pasos: [
@@ -127,7 +127,7 @@ export const MISSIONS = [
     faccion: 'verdial',
     nombre: 'Aguanta ahi',
     intro: 'Te has metido donde no debias. Ahora toca salir vivo.',
-    minRep: 25,
+    minRep: 18,
     pago: 380,
     rep: 14,
     pasos: [
@@ -141,7 +141,7 @@ export const MISSIONS = [
     faccion: 'amarres',
     nombre: 'El ultimo viaje',
     intro: 'Lo gordo. Del puerto al otro extremo, con media ciudad buscandote.',
-    minRep: 35,
+    minRep: 25,
     pago: 600,
     rep: 20,
     pasos: [

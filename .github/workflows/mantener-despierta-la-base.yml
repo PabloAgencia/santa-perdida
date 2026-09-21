@@ -1,0 +1,37 @@
+# Supabase duerme los proyectos gratuitos tras 7 dias sin actividad, y NO se
+# despiertan solos cuando alguien entra: hay que reactivarlos a mano desde el
+# panel. Si eso pasa con el juego publicado, al jugador le falla el registro.
+#
+# Esto toca la base cada tres dias para que no llegue a dormirse. No lleva
+# ninguna clave secreta: la que usa es la publica del navegador, la misma que
+# ya va dentro del juego.
+
+name: Mantener despierta la base de datos
+
+on:
+  schedule:
+    # a las 6:17 de la mañana, los dias 1, 4, 7... de cada mes
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:        # y a mano desde la pestaña Actions cuando quieras
+
+jobs:
+  despertar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tocar la base de datos
+        run: |
+          URL="https://ivwlobdksywgsxhblppk.supabase.co"
+          ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2d2xvYmRrc3l3Z3N4aGJscHBrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5OTM5MTYsImV4cCI6MjEwNTU2OTkxNn0.8osr0fxDTxGwJMfuf9ReMN9UFKM2gyJFID3lTMlGwwM"
+
+          # el marcador de BitFall es publico: una lectura basta como actividad
+          codigo=$(curl -s -o /tmp/respuesta.txt -w "%{http_code}" \
+            "$URL/rest/v1/leaderboard?select=id&limit=1" \
+            -H "apikey: $ANON" -H "Authorization: Bearer $ANON")
+
+          echo "La base ha respondido con codigo $codigo"
+          if [ "$codigo" = "200" ]; then
+            echo "Todo en orden: la base esta despierta."
+          else
+            echo "::warning::La base no ha respondido bien ($codigo). Puede estar pausada: hay que entrar en supabase.com y reactivarla."
+            cat /tmp/respuesta.txt
+          fi

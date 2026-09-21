@@ -133,13 +133,30 @@ export class RoadNetwork {
     return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
   }
 
-  // siguiente tramo al llegar a un cruce, evitando dar media vuelta
+  // Siguiente tramo al llegar a un cruce, evitando dar media vuelta. Se
+  // prefiere SEGUIR RECTO: sorteando a partes iguales, un coche giraba en casi
+  // todos los cruces y el trafico parecia que iba dando tumbos.
   nextEdge(edge) {
     const out = this.nodes[edge.to].out;
     if (out.length === 0) return null;
     const options = out.filter((id) => this.edges[id].to !== edge.from);
     const pool = options.length > 0 ? options : out;
-    return this.edges[pool[Math.floor(Math.random() * pool.length)]];
+
+    let total = 0;
+    const pesos = pool.map((id) => {
+      const e = this.edges[id];
+      const recto = e.dx * edge.dx + e.dy * edge.dy;   // 1 seguir, 0 girar
+      const peso = recto > 0.7 ? 6 : 1;
+      total += peso;
+      return peso;
+    });
+
+    let dado = Math.random() * total;
+    for (let i = 0; i < pool.length; i++) {
+      dado -= pesos[i];
+      if (dado <= 0) return this.edges[pool[i]];
+    }
+    return this.edges[pool[pool.length - 1]];
   }
 
   randomEdge() {

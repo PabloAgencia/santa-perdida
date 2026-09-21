@@ -354,6 +354,19 @@ export class BootScene extends Phaser.Scene {
     lamp.generateTexture('lamp', 128, 128);
     lamp.destroy();
 
+    // paso de cebra: franjas paralelas a la marcha de los coches, como en la
+    // calle. Una casilla entera, para poder sembrarlas por la rejilla.
+    for (const [nombre, horizontal] of [['cebra-h', true], ['cebra-v', false]]) {
+      const z = this.g();
+      z.fillStyle(0xe8e4d8, 1);
+      for (let i = 0; i < 2; i++) {
+        if (horizontal) z.fillRect(0, 5 + i * 15, TILE, 8);
+        else z.fillRect(5 + i * 15, 0, 8, TILE);
+      }
+      z.generateTexture(nombre, TILE, TILE);
+      z.destroy();
+    }
+
     // destello de la sirena
     const l = this.g();
     l.fillStyle(0xffffff, 0.9);

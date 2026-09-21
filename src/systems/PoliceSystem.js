@@ -14,15 +14,20 @@ export const ESTADO = {
   BLOQUEO: 'bloqueo',
 };
 
-const UNIDADES_POR_BUSCA = [1, 2, 3, 5];
-const VISION = 360;
-const VISION_PERSIGUIENDO = 540;
+// Numeros pensados para que HAYA forma de escapar. Antes, huyendo en un
+// utilitario, solo se escapaba 1 de cada 8 veces: te veian casi desde fuera
+// de la pantalla, eran cinco coches mas rapidos que el tuyo y hacian falta
+// casi veinte segundos sin que te vieran para bajar un nivel.
+const UNIDADES_POR_BUSCA = [1, 2, 3, 4];
+const VISION = 300;
+const VISION_PERSIGUIENDO = 400;
 const SPAWN_MIN = 700;
 const SPAWN_MAX = 1500;
 const DESPAWN = 2400;
-const SIN_VER_PARA_BAJAR = 6.5;
-const DETENCION_DIST = 52;
-const TIEMPO_PARA_DETENER = 2.8;
+const SIN_VER_PARA_BAJAR = 4;
+const DISTANCIA_QUE_TE_PIERDEN = 620;
+const DETENCION_DIST = 48;
+const TIEMPO_PARA_DETENER = 3.6;
 const BAJARSE_DIST = 180;
 
 export class PoliceSystem {
@@ -62,9 +67,20 @@ export class PoliceSystem {
     this.cull(player);
     this.topUp(player);
 
+    // Si les sacas medio barrio, te pierden aunque tecnicamente te "vean" al
+    // fondo de una recta. Es lo que hace que huir sirva de algo.
+    let masCerca = Infinity;
+    for (const u of this.units) {
+      masCerca = Math.min(
+        masCerca,
+        Phaser.Math.Distance.Between(u.vehicle.x, u.vehicle.y, player.x, player.y)
+      );
+    }
+    const lesHasSacadoDistancia = masCerca > DISTANCIA_QUE_TE_PIERDEN;
+
     let algunoVe = false;
     for (const u of this.units) {
-      const ve = this.canSee(u, player);
+      const ve = this.canSee(u, player) && !lesHasSacadoDistancia;
       if (ve) {
         algunoVe = true;
         this.lastKnown = { x: player.x, y: player.y };
@@ -140,6 +156,7 @@ export class PoliceSystem {
       const vehicle = new Vehicle(this.scene, this.map, 'patrulla', x, y, across, { color: 0 });
       vehicle.ai = true;
       vehicle.police = true;
+      vehicle.encendido = true;
       this.scene.vehicles.push(vehicle);
 
       const siren = this.scene.add.image(x, y, 'siren').setVisible(false).setDepth(9999);
@@ -301,15 +318,15 @@ export class PoliceSystem {
 
     if (u.state === ESTADO.PERSIGUIENDO) {
       goal = u.lastSeen || { x: player.x, y: player.y };
-      limit = v.stats.maxSpeed * 0.86;
+      limit = v.stats.maxSpeed * 0.76;
 
       // no van todos al mismo punto: cada unidad ataca por un lado y, si
       // huyes en coche, apuntan a donde VAS a estar, no a donde estas
       const dist = Phaser.Math.Distance.Between(v.x, v.y, goal.x, goal.y);
       if (playerVehicle && dist > 220) {
         goal = {
-          x: goal.x + playerVehicle.vx * 0.55,
-          y: goal.y + playerVehicle.vy * 0.55,
+          x: goal.x + playerVehicle.vx * 0.38,
+          y: goal.y + playerVehicle.vy * 0.38,
         };
       } else if (dist > 90) {
         const lado = u.flanco * (Math.PI * 2) / 3;
@@ -470,6 +487,7 @@ export class PoliceSystem {
       });
       vehicle.ai = true;
       vehicle.police = true;
+      vehicle.encendido = true;
       this.scene.vehicles.push(vehicle);
 
       const siren = this.scene.add.image(p.x, p.y, 'siren').setVisible(false).setDepth(9999);
@@ -508,6 +526,17 @@ export class PoliceSystem {
       .setDepth(u.vehicle.y + 1)
       .setTint(azul ? 0x4a8fe8 : 0xe8524a)
       .setAlpha(0.75);
+  }
+
+  // cuanto se oye la sirena desde donde esta el jugador (0 = nada)
+  nivelSirena(x, y) {
+    let mejor = 0;
+    for (const u of this.units) {
+      if (!u.siren.visible) continue;
+      const d = Phaser.Math.Distance.Between(u.vehicle.x, u.vehicle.y, x, y);
+      mejor = Math.max(mejor, 1 - d / 950);
+    }
+    return Phaser.Math.Clamp(mejor, 0, 1);
   }
 
   clearAll() {

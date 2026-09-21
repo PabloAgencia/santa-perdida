@@ -8,6 +8,7 @@ import { JobSystem } from '../systems/JobSystem.js';
 import { resolveVehicleCollisions } from '../systems/VehicleCollisions.js';
 import { RoadNetwork, LANE_OFFSET } from '../world/RoadNetwork.js';
 import { TrafficSystem } from '../systems/TrafficSystem.js';
+import { TrafficLights } from '../systems/TrafficLights.js';
 import { NPCSystem } from '../systems/NPCSystem.js';
 import { PoliceSystem } from '../systems/PoliceSystem.js';
 import { StreetLamp } from '../entities/StreetLamp.js';
@@ -53,6 +54,7 @@ export class CityScene extends Phaser.Scene {
     this.respawning = false;
 
     this.drawGround();
+    this.drawCrosswalks();
     this.drawBuildings();
     this.drawLandmarks();
 
@@ -61,8 +63,10 @@ export class CityScene extends Phaser.Scene {
     this.player = new Player(this, this.map, 0, 0);
     this.jobs = new JobSystem(this, this.map);
     this.net = new RoadNetwork(CITY);
-    this.traffic = new TrafficSystem(this, this.map, this.net);
+    // el orden importa: el trafico pide conductores a los NPC al crearse
     this.npcs = new NPCSystem(this, this.map);
+    this.lights = new TrafficLights(this, this.net);
+    this.traffic = new TrafficSystem(this, this.map, this.net, this.lights);
     this.police = new PoliceSystem(this, this.map, this.net);
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
@@ -116,6 +120,22 @@ export class CityScene extends Phaser.Scene {
     this.ground.setDepth(-2000);
   }
 
+  // los pasos de peatones se pintan donde el mapa dice que estan, asi que lo
+  // que ves es exactamente por donde cruza la gente
+  drawCrosswalks() {
+    const m = this.map;
+    for (let ty = 0; ty < m.h; ty++) {
+      for (let tx = 0; tx < m.w; tx++) {
+        const tipo = m.crossMask[m.idx(tx, ty)];
+        if (!tipo) continue;
+        this.add
+          .image((tx + 0.5) * TILE, (ty + 0.5) * TILE, tipo === 1 ? 'cebra-h' : 'cebra-v')
+          .setAlpha(0.42)
+          .setDepth(-1900);
+      }
+    }
+  }
+
   drawBuildings() {
     for (const b of this.map.buildings) {
       const rnd = buildingRng(b.tx, b.ty);
@@ -127,10 +147,35 @@ export class CityScene extends Phaser.Scene {
           .setAlpha(alpha)
           .setDepth(depth);
 
+      // ALTURA: se ven las paredes del lado sur y del este, como si la camara
+      // mirase desde arriba pero un poco desde el noroeste. Sin esto los
+      // edificios eran cajas planas y la ciudad no tenia relieve.
+      const ALTURAS = {
+        centro: 30, comercial: 18, residencial: 11,
+        conflictivo: 13, industrial: 15, puerto: 13,
+      };
+      const alto = (ALTURAS[b.zone] || 12) + Math.round(rnd() * 5);
+
       // sombra propia: el sol entra siempre desde arriba a la izquierda,
       // asi toda la ciudad comparte la misma luz
-      const drop = 5 + Math.round(rnd() * 5);
+      const drop = alto + 5;
       block(b.px + drop, b.py + drop, b.pw + 2, b.ph + 2, 0x05060a, -1250, 0.5);
+
+      // pared sur y pared este, mas oscuras que el tejado
+      const paredS = shade(b.color, 0.44);
+      const paredE = shade(b.color, 0.56);
+      block(b.px + alto / 2, b.py + b.ph / 2 + alto / 2, b.pw, alto, paredS, -1210);
+      block(b.px + b.pw / 2 + alto / 2, b.py + alto / 2, alto, b.ph, paredE, -1211);
+
+      // lineas verticales en la pared: le dan textura de fachada
+      const huecos = Math.max(2, Math.floor(b.pw / 26));
+      for (let i = 1; i < huecos; i++) {
+        block(
+          b.px - b.pw / 2 + (i * b.pw) / huecos + alto / 2,
+          b.py + b.ph / 2 + alto / 2,
+          2, alto, shade(b.color, 0.3), -1209, 0.7
+        );
+      }
 
       block(b.px, b.py, b.pw, b.ph, b.color, -1200);
 
@@ -228,12 +273,15 @@ export class CityScene extends Phaser.Scene {
         else if (tile === T.SIDEWALK) c = [48, 51, 57];
         else c = [32, 37, 40];
 
-        // territorio de banda teñido encima, como el mapa de zonas del SA
+        // Territorio de banda teñido encima, como el mapa de zonas del SA,
+        // pero SOLO sobre las manzanas: tiñendo tambien el asfalto no habia
+        // forma de ver por donde se iba.
+        const esCalle = this.map.roadMask[this.map.idx(tx, ty)] === 1 || tile === T.SIDEWALK;
         const zone = this.map.zoneNames[this.map.zoneGrid[this.map.idx(tx, ty)]];
-        const owner = zone ? ZONE_OWNER[zone] : null;
+        const owner = esCalle ? null : zone ? ZONE_OWNER[zone] : null;
         if (owner) {
           const col = FACTIONS[owner].color;
-          const mix = 0.3;
+          const mix = 0.42;
           c = [
             c[0] * (1 - mix) + ((col >> 16) & 255) * mix,
             c[1] * (1 - mix) + ((col >> 8) & 255) * mix,
@@ -263,13 +311,33 @@ export class CityScene extends Phaser.Scene {
 
     for (const L of this.map.landmarks) {
       if (L.type === 'plaza') {
-        this.add.circle(L.monument.px, L.monument.py, 86, 0x2f3a3f).setDepth(-1220);
-        this.add.circle(L.monument.px, L.monument.py, 74, 0x1e4450).setDepth(-1215);
-        this.add.circle(L.monument.px, L.monument.py, 74, 0x2f6b7a, 0.35).setDepth(-1214);
-        block(L.monument.px + 5, L.monument.py + 5, 60, 60, 0x05060a, -1210, 0.5);
-        block(L.monument.px, L.monument.py, 52, 52, 0x4a4b52, -1205);
-        block(L.monument.px, L.monument.py, 30, 30, 0x6d6a5e, -1204);
-        block(L.monument.px, L.monument.py, 14, 14, 0xc8a955, -1203);
+        // Antes era un circulo azul plano que parecia una piscina. Ahora es
+        // una plaza empedrada con una fuente y una estatua en medio.
+        this.add.circle(L.monument.px, L.monument.py, 108, 0x474b52).setDepth(-1222);
+        this.add.circle(L.monument.px, L.monument.py, 108)
+          .setStrokeStyle(4, 0x5c6169, 0.8).setDepth(-1221);
+        this.add.circle(L.monument.px, L.monument.py, 84, 0x3f444b).setDepth(-1220);
+
+        // cuatro parterres alrededor de la fuente
+        for (const a of [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4]) {
+          const gx = L.monument.px + Math.cos(a) * 96;
+          const gy = L.monument.py + Math.sin(a) * 70;
+          this.add.circle(gx + 4, gy + 5, 20, 0x05060a, 0.4).setDepth(-1219);
+          this.add.circle(gx, gy, 19, 0x2c3a29).setDepth(-1218);
+          this.add.circle(gx - 4, gy - 4, 11, 0x3a4c35).setDepth(-1217);
+        }
+
+        // pilon de la fuente: el agua es solo el centro, no toda la plaza
+        this.add.circle(L.monument.px + 4, L.monument.py + 6, 50, 0x05060a, 0.45).setDepth(-1216);
+        this.add.circle(L.monument.px, L.monument.py, 48, 0x6b6a62).setDepth(-1215);
+        this.add.circle(L.monument.px, L.monument.py, 41, 0x1e4450).setDepth(-1214);
+        this.add.circle(L.monument.px, L.monument.py, 41, 0x4a8fa8, 0.3).setDepth(-1213);
+
+        // estatua con su sombra larga, para que se lea que es alta
+        block(L.monument.px + 9, L.monument.py + 12, 20, 34, 0x05060a, -1208, 0.5);
+        block(L.monument.px, L.monument.py, 24, 24, 0x5a5b60, -1206);
+        block(L.monument.px, L.monument.py - 4, 15, 26, 0x7a766a, -1205);
+        block(L.monument.px, L.monument.py - 12, 9, 12, 0xc8a955, -1204);
         for (const a of [0, Math.PI / 2, Math.PI, -Math.PI / 2]) {
           block(
             L.monument.px + Math.cos(a) * 150,
@@ -489,14 +557,19 @@ export class CityScene extends Phaser.Scene {
     const BORDE = 104;
     const puntos = [];
 
+    // Dos por tramo y alternando la acera, en vez de tres a cada lado. Antes
+    // eran 310 farolas identicas y alineadas: conduciendo se veian veinte a
+    // la vez, como los dientes de un peine.
+    let turno = 0;
     for (const e of this.net.edges) {
       if (e.from > e.to) continue;
-      for (const t of [0.22, 0.5, 0.78]) {
+      for (const t of [0.3, 0.72]) {
         const lane = this.net.pointAlong(e, t);
         // pointAlong da el punto del CARRIL; hay que volver al eje de la calle
         const cx = lane.x - e.rx * LANE_OFFSET;
         const cy = lane.y - e.ry * LANE_OFFSET;
-        for (const lado of [-1, 1]) {
+        const preferido = turno++ % 2 === 0 ? -1 : 1;
+        for (const lado of [preferido, -preferido]) {
           const x = cx + e.rx * BORDE * lado;
           const y = cy + e.ry * BORDE * lado;
           if (this.map.isRoadPoint(x, y)) continue;
@@ -508,11 +581,15 @@ export class CityScene extends Phaser.Scene {
           const puntaY = y + Math.sin(haciaCalle) * 17;
           if (this.map.isRoadPoint(puntaX, puntaY)) continue;
           puntos.push({ x, y, haciaCalle });
+          break; // una por posicion: si cabe en la acera preferida, ahi se queda
         }
       }
     }
 
-    this.lamps = puntos.map((p) => new StreetLamp(this, p.x, p.y, p.haciaCalle));
+    // un poco de variedad en el charco de luz, que no parezcan clonadas
+    this.lamps = puntos.map(
+      (p) => new StreetLamp(this, p.x, p.y, p.haciaCalle, 0.82 + Math.random() * 0.42)
+    );
   }
 
   findStartSpot() {
@@ -570,9 +647,9 @@ export class CityScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D',
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
-      mute: 'M',
+      mute: 'M', pausa: 'ESC',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,SHIFT');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,SHIFT,ESC');
 
     // los navegadores no dejan sonar nada hasta que el jugador toca algo
     const wake = () => {
@@ -702,8 +779,16 @@ export class CityScene extends Phaser.Scene {
   }
 
   enterVehicle(v) {
+    // si el coche llevaba a alguien dentro, se baja: unos huyen y otros se
+    // encaran, como en un robo de coche de verdad
+    if (v.ai && this.traffic) {
+      const cond = this.traffic.soltarConductor(v);
+      if (cond) this.npcs.expulsarConductor(cond, v, this.player);
+    }
+
     this.drivingVehicle = v;
     v.occupied = true;
+    v.encendido = true;
     this.player.setVisible(false);
     this.player.setPosition(v.x, v.y);
     EventBus.emit(EVT.VEHICLE_ENTERED, { vehicle: v });
@@ -715,6 +800,9 @@ export class CityScene extends Phaser.Scene {
     if (!v) return;
     const spot = v.findExitSpot();
     v.occupied = false;
+    v.encendido = false;
+    v.frenando = false;
+    v.syncSprite();
     this.drivingVehicle = null;
     this.player.setPosition(spot.x, spot.y);
     this.player.setVisible(true);
@@ -739,6 +827,11 @@ export class CityScene extends Phaser.Scene {
         const v = this.nearestVehicle();
         if (v) this.enterVehicle(v);
       }
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(k.pausa)) {
+      this.abrirPausa();
+      return;
     }
 
     if (Phaser.Input.Keyboard.JustDown(k.save)) {
@@ -767,7 +860,14 @@ export class CityScene extends Phaser.Scene {
       this.player.update(dt, { left, right, up, down, run: k.run.isDown });
     }
 
-    this.traffic.update(dt, this.player.x, this.player.y, this.npcs.people);
+    this.lights.update(dt, this.player.x, this.player.y);
+
+    // Para el trafico tu tambien eres un peaton cuando vas a pie: antes no
+    // estabas en esta lista y ningun coche levantaba el pie por ti.
+    const gente = this.drivingVehicle
+      ? this.npcs.people
+      : this.npcs.people.concat(this.player);
+    this.traffic.update(dt, this.player.x, this.player.y, gente);
 
     // los aparcados solo gastan calculo mientras alguien los mueve
     for (const v of this.vehicles) {
@@ -801,6 +901,8 @@ export class CityScene extends Phaser.Scene {
       Audio.engine(false, 0, false);
       Audio.skid(0);
     }
+
+    Audio.siren(this.police.nivelSirena(this.player.x, this.player.y));
 
     this.jobs.update(dt, this.player.x, this.player.y);
 
@@ -1029,6 +1131,17 @@ export class CityScene extends Phaser.Scene {
       .setDisplaySize(16, 20).setTint(0xe8b54a).setAlpha(0.8).setDepth(6);
   }
 
+  // menu de pausa: la ciudad se congela y se abre por encima
+  abrirPausa() {
+    this.captureState();
+    Audio.engine(false, 0, false);
+    Audio.skid(0);
+    Audio.siren(0);
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('PauseScene');
+  }
+
   // entrar al escondite: se pausa la ciudad y se abre el interior
   enterHideout() {
     if (!this.hideoutDoor) return false;
@@ -1099,6 +1212,7 @@ export class CityScene extends Phaser.Scene {
       territory: this.factions.currentInfo(),
       mission: this.missions.estado(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
+      contactos: this.missions.puntos(),
     });
   }
 }

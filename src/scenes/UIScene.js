@@ -68,7 +68,7 @@ export class UIScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0, 1);
     this.helpText.setText(
-      'WASD mover  ·  SHIFT correr  ·  E coche  ·  ESPACIO freno de mano  ·  K guardar  ·  M sonido'
+      'WASD mover  ·  SHIFT correr  ·  E coche  ·  J pedir encargo  ·  ESPACIO freno de mano  ·  K guardar  ·  M sonido'
     );
     this.tweens.add({
       targets: this.helpText, alpha: 0.35, delay: 14000, duration: 2500,
@@ -120,6 +120,8 @@ export class UIScene extends Phaser.Scene {
     this.mapTarget = this.add.image(0, 0, 'px')
       .setDisplaySize(6, 6).setTint(0xe8b54a).setVisible(false);
     this.mapPolice = [];
+    // donde te esperan los contactos que dan encargos
+    this.mapContactos = [];
     this.mapPlayer = this.add.image(0, 0, 'px')
       .setDisplaySize(6, 6).setTint(0xf2efe6);
   }
@@ -206,6 +208,21 @@ export class UIScene extends Phaser.Scene {
     } else {
       this.mapTarget.setVisible(false);
     }
+
+    const contactos = d.contactos || [];
+    while (this.mapContactos.length < contactos.length) {
+      this.mapContactos.push(
+        this.add.image(0, 0, 'px').setDisplaySize(7, 7).setTint(0xffffff)
+      );
+    }
+    this.mapContactos.forEach((punto, i) => {
+      if (i < contactos.length) {
+        const c = this.toMinimap(contactos[i].x, contactos[i].y);
+        punto.setPosition(c.x, c.y).setTint(contactos[i].color).setVisible(true);
+      } else {
+        punto.setVisible(false);
+      }
+    });
 
     const police = d.police || [];
     while (this.mapPolice.length < police.length) {
@@ -331,8 +348,10 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
+  // Los avisos van MUY por encima del marcador de salud y de la linea de
+  // ayuda: antes se pintaban a 56 px del borde y se pisaban unos a otros.
   layoutNotices() {
-    const baseY = this.scale.height - 56;
+    const baseY = this.scale.height - 118;
     this.notices.forEach((label, i) => {
       label.setPosition(16, baseY - i * 24);
     });

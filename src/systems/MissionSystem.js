@@ -37,7 +37,11 @@ export class MissionSystem {
     this.refrescarDadores();
   }
 
+  // Los encargos NO salen todos de golpe: cada banda te enseña UNO cada vez,
+  // el siguiente aparece cuando cumples el anterior, y te avisa de que hay
+  // gente nueva esperandote en el mapa.
   refrescarDadores() {
+    const antes = new Set(this.dadores.map((d) => d.mision.id));
     for (const d of this.dadores) d.objetos.forEach((o) => o.destroy());
     this.dadores = [];
 
@@ -46,7 +50,7 @@ export class MissionSystem {
       const libres = this.disponiblesDe(key);
       if (libres.length === 0) continue;
 
-      libres.slice(0, 2).forEach((mision, i) => {
+      libres.slice(0, 1).forEach((mision, i) => {
         const zona = f.zones[i % f.zones.length];
         const punto = this.puntoFijoEnZona(zona, mision.id);
         if (!punto) return;
@@ -60,27 +64,42 @@ export class MissionSystem {
           );
         }
         const halo = this.scene.add.image(punto.x, punto.y, 'lamp')
-          .setDisplaySize(150, 150)
+          .setDisplaySize(190, 190)
           .setTint(f.accent)
           .setBlendMode(Phaser.BlendModes.ADD)
-          .setAlpha(0.5)
+          .setAlpha(0.8)
           .setDepth(3);
         objetos.push(halo);
         this.scene.tweens.add({
-          targets: halo, alpha: { from: 0.25, to: 0.6 },
+          targets: halo, alpha: { from: 0.45, to: 0.95 },
           duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
         });
 
-        const marca = this.scene.add.image(punto.x, punto.y, 'px')
-          .setDisplaySize(13, 20).setTint(0xf2efe6).setDepth(10);
+        // El que da el encargo es UNA PERSONA de la banda, plantada ahi, no un
+        // rombo flotando. Su sombra y un balanceo suave para que se vea vivo.
+        objetos.push(
+          this.scene.add.image(punto.x, punto.y + 4, 'shadow')
+            .setScale(0.32).setAlpha(0.45).setDepth(punto.y - 3)
+        );
+        const contacto = this.scene.add.image(punto.x, punto.y, `gang-${key}-0`)
+          .setDepth(punto.y);
+        objetos.push(contacto);
+        this.scene.tweens.add({
+          targets: contacto, angle: { from: -7, to: 7 },
+          duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+        });
+
+        // rombo pequeño sobre su cabeza, para localizarlo de lejos
+        const marca = this.scene.add.image(punto.x, punto.y - 24, 'px')
+          .setDisplaySize(14, 14).setTint(f.accent).setRotation(Math.PI / 4).setDepth(10);
         objetos.push(marca);
         this.scene.tweens.add({
-          targets: marca, y: punto.y - 8,
+          targets: marca, y: punto.y - 30,
           duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
         });
 
         objetos.push(
-          this.scene.add.text(punto.x, punto.y + 26, f.short, {
+          this.scene.add.text(punto.x, punto.y + 34, f.short, {
             fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: '#e6e1d4',
           }).setOrigin(0.5).setAlpha(0.8).setDepth(10)
         );
@@ -90,6 +109,23 @@ export class MissionSystem {
         });
       });
     }
+
+    // avisar solo de los que son nuevos de verdad
+    for (const d of this.dadores) {
+      if (antes.has(d.mision.id)) continue;
+      if (antes.size === 0) continue;   // al empezar la partida no se avisa
+      EventBus.emit(EVT.NOTIFY, {
+        text: `${FACTIONS[d.faccion].short} te espera para un trabajo nuevo`,
+        tone: 'objective',
+      });
+    }
+  }
+
+  // para pintarlos en el minimapa
+  puntos() {
+    return this.dadores.map((d) => ({
+      x: d.x, y: d.y, color: FACTIONS[d.faccion].accent,
+    }));
   }
 
   // El que da la mision necesita un sitio FIJO (siempre el mismo, para poder
@@ -197,10 +233,21 @@ export class MissionSystem {
 
   crearBlanco(paso) {
     const spots = this.map.roadSpots;
+    const px = this.scene.player.x;
+    const py = this.scene.player.y;
+
+    // El coche tiene que nacer A LA VISTA. Antes salia en cualquier punto a
+    // menos de 900 px, y como se pierde a los 700 podia fallar de salida.
     const cerca = spots
-      .filter((s) => Phaser.Math.Distance.Between(s.x, s.y, this.scene.player.x, this.scene.player.y) < 900)
+      .filter((s) => {
+        const d = Phaser.Math.Distance.Between(s.x, s.y, px, py);
+        return d > 180 && d < 380;
+      })
       .filter((s) => !this.map.isSolidBox(s.x, s.y, 34, 34));
-    const punto = cerca[Math.floor(Math.random() * cerca.length)] || spots[0];
+    const anchas = cerca.length > 0
+      ? cerca
+      : spots.filter((s) => Phaser.Math.Distance.Between(s.x, s.y, px, py) < 620);
+    const punto = anchas[Math.floor(Math.random() * anchas.length)] || spots[0];
 
     const tipo = VEHICLE_KEYS[Math.floor(Math.random() * VEHICLE_KEYS.length)];
     const v = new Vehicle(this.scene, this.map, tipo, punto.x, punto.y, 0, {
@@ -208,9 +255,15 @@ export class MissionSystem {
     });
     v.ai = true;
     v.esBlanco = true;
+    v.encendido = true;
     this.scene.vehicles.push(v);
 
-    this.blanco = { vehicle: v, edge: this.net.randomEdge(), huyendo: paso.tipo === 'seguir' };
+    this.blanco = {
+      vehicle: v,
+      edge: this.net.randomEdge(),
+      huyendo: paso.tipo === 'seguir',
+      gracia: 4,
+    };
     this.aro.setVisible(true);
   }
 
@@ -226,7 +279,10 @@ export class MissionSystem {
   // ---------- bucle ----------
 
   update(dt, player, playerVehicle) {
-    if (!this.activa) return;
+    if (!this.activa) {
+      this.avisarSiHayContactoCerca(player);
+      return;
+    }
 
     const paso = this.pasoActual;
     if (!paso) return;
@@ -234,8 +290,10 @@ export class MissionSystem {
     if (paso.limite) {
       this.activa.tiempo -= dt;
       if (this.activa.tiempo <= 0) {
-        // en "aguantar" el reloj juega a tu favor: llegar a cero es superarlo
-        if (paso.tipo === 'aguantar') this.siguientePaso();
+        // En "aguantar" y en "seguir" el reloj juega a tu favor: llegar a cero
+        // es superarlo. Antes 'seguir' no tenia NINGUNA forma de ganarse: te
+        // pegabas al coche los 75 segundos y la mision fallaba igual.
+        if (paso.tipo === 'aguantar' || paso.tipo === 'seguir') this.siguientePaso();
         else this.fallar('Se te acabo el tiempo');
         return;
       }
@@ -272,13 +330,27 @@ export class MissionSystem {
       case 'seguir': {
         if (!this.blanco) { this.siguientePaso(); break; }
         this.aro.setPosition(this.blanco.vehicle.x, this.blanco.vehicle.y).setVisible(true);
+        // unos segundos de cortesia al empezar, para llegar hasta el
+        if (this.blanco.gracia > 0) { this.blanco.gracia -= dt; break; }
         const d = Phaser.Math.Distance.Between(
           this.blanco.vehicle.x, this.blanco.vehicle.y, player.x, player.y
         );
-        if (d > 620) this.fallar('Le has perdido');
+        if (d > 700) this.fallar('Le has perdido');
         break;
       }
     }
+  }
+
+  // al ponerte a su lado te dice que puedes hablar con el, una sola vez
+  avisarSiHayContactoCerca(player) {
+    const cerca = this.dadorCerca(player.x, player.y);
+    if (cerca === this.ultimoCerca) return;
+    this.ultimoCerca = cerca;
+    if (!cerca) return;
+    EventBus.emit(EVT.NOTIFY, {
+      text: `E para hablar con ${FACTIONS[cerca.faccion].short}: ${cerca.mision.nombre}`,
+      tone: 'objective',
+    });
   }
 
   moverBlanco(dt) {

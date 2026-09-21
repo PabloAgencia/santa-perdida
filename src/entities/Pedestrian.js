@@ -16,6 +16,8 @@ export class Pedestrian {
     this.hostile = false;
     this.chaseTarget = null;
     this.attackCooldown = 0;
+    this.enCoche = null;
+    this.rencor = false;
 
     this.state = 'walking';
     this.target = null;
@@ -40,6 +42,7 @@ export class Pedestrian {
     this.downTimer = 0;
     this.hostile = false;
     this.chaseTarget = null;
+    this.ruta = null;
     this.sprite.setTint(fatal ? 0x6e3a34 : 0x9a5a52);
     this.sprite.setRotation(this.angle + Math.PI / 2);
     this.shadow.setAlpha(0.15);
@@ -55,14 +58,32 @@ export class Pedestrian {
     }
   }
 
+  // Huir de algo. OJO: hay que BORRAR la ruta que llevaba calculada; si no,
+  // el camino manda sobre el destino y el peaton "huye" hacia donde iba, pero
+  // al doble de velocidad. Era justo lo que le pasaba debajo de los coches.
   flee(fromX, fromY, seconds = 2.6) {
-    if (this.down) return;
+    if (this.down || this.enCoche) return;
     this.state = 'fleeing';
     this.stateTimer = seconds;
-    const a = Math.atan2(this.y - fromY, this.x - fromX);
+    this.ruta = null;
+    this.rutaIdx = 0;
+
+    const escape = Math.atan2(this.y - fromY, this.x - fromX);
+    // se busca una salida que NO sea calzada: la gente se aparta a la acera,
+    // no corre calle abajo por delante del coche
+    const opciones = [0, 0.6, -0.6, 1.2, -1.2, Math.PI / 2, -Math.PI / 2];
+    for (const giro of opciones) {
+      const a = escape + giro;
+      const x = this.x + Math.cos(a) * 130;
+      const y = this.y + Math.sin(a) * 130;
+      if (this.map.isSolidBox(x, y, this.radius, this.radius)) continue;
+      if (this.map.isRoadPoint(x, y)) continue;
+      this.target = { x, y };
+      return;
+    }
     this.target = {
-      x: this.x + Math.cos(a) * 260,
-      y: this.y + Math.sin(a) * 260,
+      x: this.x + Math.cos(escape) * 200,
+      y: this.y + Math.sin(escape) * 200,
     };
   }
 
@@ -89,12 +110,20 @@ export class Pedestrian {
     this.trazarRuta();
   }
 
-  // se calcula el camino rodeando edificios; si no hay, se va en linea recta
+  // se calcula el camino rodeando edificios y cruzando por los pasos
   trazarRuta() {
     this.ruta = null;
     this.rutaIdx = 0;
+    this.necesitaRuta = false;
     if (!this.pathfinder || !this.target) return;
-    const camino = this.pathfinder.buscar(this.x, this.y, this.target.x, this.target.y);
+
+    // si este fotograma ya se han calculado demasiados caminos, se espera al
+    // siguiente en vez de tirar en linea recta
+    if (this.pathfinder.presupuesto !== undefined && this.pathfinder.presupuesto <= 0) {
+      this.necesitaRuta = true;
+      return;
+    }
+    const camino = this.pathfinder.buscarPorPasos(this.x, this.y, this.target.x, this.target.y);
     if (camino && camino.length > 0) this.ruta = camino;
   }
 
@@ -116,8 +145,64 @@ export class Pedestrian {
     return onRoad / steps;
   }
 
-  update(dt, spots) {
+  // ---------- ir montado en un coche ----------
+
+  sentarEn(v) {
+    this.enCoche = v;
+    this.x = v.x;
+    this.y = v.y;
+    this.sprite.setVisible(false);
+    this.shadow.setVisible(false);
+
+    if (!this.cabeza) {
+      this.cabeza = this.scene.add.image(v.x, v.y, 'px')
+        .setDisplaySize(5, 5).setTint(0xd8b48c);
+    }
+    // al volante: un poco por delante del centro y hacia su lado
+    const cos = Math.cos(v.angle);
+    const sin = Math.sin(v.angle);
+    const ox = v.stats.length * 0.08;
+    const oy = -v.stats.width * 0.2;
+    this.cabeza
+      .setPosition(v.x + cos * ox - sin * oy, v.y + sin * ox + cos * oy)
+      .setDepth(v.y + 0.5)
+      .setVisible(true);
+  }
+
+  bajarDe(v) {
+    this.enCoche = null;
+    if (this.cabeza) this.cabeza.setVisible(false);
+    const spot = v.findExitSpot();
+    this.x = spot.x;
+    this.y = spot.y;
+    this.sprite.setVisible(true);
+    this.shadow.setVisible(true);
+    this.syncSprite();
+  }
+
+  // ---------- cruzar mirando ----------
+
+  vieneUnCoche(vehicles) {
+    if (!vehicles) return false;
+    for (const v of vehicles) {
+      const speed = v.speed;
+      if (speed < 30) continue;
+      const dx = this.x - v.x;
+      const dy = this.y - v.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 240) continue;
+      const haciaMi = (dx * v.vx + dy * v.vy) / speed;
+      if (haciaMi <= 0) continue;
+      const lateral = Math.abs(-dx * v.vy + dy * v.vx) / speed;
+      if (lateral > 44) continue;
+      if (haciaMi / speed < 2.1) return true;
+    }
+    return false;
+  }
+
+  update(dt, spots, vehicles = null) {
     if (this.attackCooldown > 0) this.attackCooldown -= dt;
+    if (this.enCoche) return;
 
     if (this.down) {
       this.downTimer += dt;
@@ -125,7 +210,7 @@ export class Pedestrian {
       return;
     }
 
-    // los de banda que te tienen ganas van a por ti en vez de pasear
+    // los que te tienen ganas van a por ti en vez de pasear
     if (this.hostile && this.chaseTarget) {
       const dx = this.chaseTarget.x - this.x;
       const dy = this.chaseTarget.y - this.y;
@@ -159,6 +244,7 @@ export class Pedestrian {
       this.syncSprite();
       return;
     }
+    if (this.necesitaRuta) this.trazarRuta();
 
     const meta = this.destinoInmediato;
     if (!meta) {
@@ -188,6 +274,18 @@ export class Pedestrian {
         this.state = 'waiting';
         this.stateTimer = 0.8 + Math.random() * 2.2;
       }
+      this.syncSprite();
+      return;
+    }
+
+    // Mirar antes de cruzar: si esta en el bordillo a punto de pisar asfalto y
+    // viene un coche, se espera. Huyendo no: ahi ya se corre sin mirar.
+    if (this.state !== 'fleeing' &&
+        !this.map.isRoadPoint(this.x, this.y) &&
+        this.map.isRoadPoint(meta.x, meta.y) &&
+        this.vieneUnCoche(vehicles)) {
+      this.state = 'waiting';
+      this.stateTimer = 0.45;
       this.syncSprite();
       return;
     }
@@ -249,6 +347,7 @@ export class Pedestrian {
   destroy() {
     this.sprite.destroy();
     this.shadow.destroy();
+    if (this.cabeza) this.cabeza.destroy();
     if (this.blood) this.blood.destroy();
   }
 }

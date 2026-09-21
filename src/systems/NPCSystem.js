@@ -10,11 +10,15 @@ const ATTACK_RANGE = 22;
 const ATTACK_DAMAGE = 9;
 
 const MAX_PEDS = 20;
+const TOPE_DURO = 34;       // vivos + cuerpos, para no crecer sin fin
 const SPAWN_MIN = 260;
 const SPAWN_MAX = 900;
 const DESPAWN = 1500;
 const SKINS = 12;
 const DOWN_LIFETIME = 22;
+
+// de cada cuatro conductores a los que les robas el coche, uno se encara
+const CONDUCTOR_BRAVO = 0.25;
 
 export class NPCSystem {
   constructor(scene, map) {
@@ -24,13 +28,20 @@ export class NPCSystem {
     this.pathfinder = new Pathfinder(map);
   }
 
+  get vivos() {
+    let n = 0;
+    for (const p of this.people) if (!p.down) n++;
+    return n;
+  }
+
   update(dt, focusX, focusY, vehicles, player = null, onFoot = false, playerVehicle = null) {
+    this.pathfinder.nuevoFotograma(3);
     this.cull(focusX, focusY);
     this.topUp(focusX, focusY);
     this.updateHostility(focusX, focusY, onFoot);
 
     for (const p of this.people) {
-      p.update(dt, this.map.sidewalkSpots);
+      p.update(dt, this.map.sidewalkSpots, vehicles);
     }
 
     this.checkVehicles(vehicles, playerVehicle);
@@ -39,7 +50,19 @@ export class NPCSystem {
 
   updateHostility(px, py, onFoot) {
     for (const p of this.people) {
-      if (!p.faction || p.down) continue;
+      if (p.down) continue;
+
+      // al que le has robado el coche te sigue teniendo ganas aunque no sea
+      // de ninguna banda
+      if (p.rencor) {
+        const lejos = Phaser.Math.Distance.Between(p.x, p.y, px, py) > 420;
+        p.hostile = onFoot && !lejos;
+        p.chaseTarget = p.hostile ? { x: px, y: py } : null;
+        if (lejos) p.rencor = false;
+        continue;
+      }
+
+      if (!p.faction) continue;
       const enemigo = GameState.isHostile(p.faction);
       const cerca = Phaser.Math.Distance.Between(p.x, p.y, px, py) < HOSTILE_RANGE;
       p.hostile = enemigo && cerca && onFoot;
@@ -77,7 +100,9 @@ export class NPCSystem {
     const aqui = aquiZone ? ZONE_OWNER[aquiZone] : null;
 
     let attempts = 0;
-    while (this.people.length < MAX_PEDS && attempts < 80) {
+    // los cuerpos tirados NO ocupan sitio de gente viva: si no, tras unos
+    // atropellos la calle se quedaba desierta
+    while (this.vivos < MAX_PEDS && this.people.length < TOPE_DURO && attempts < 80) {
       attempts++;
       const s = spots[Math.floor(Math.random() * spots.length)];
       const d = Phaser.Math.Distance.Between(s.x, s.y, fx, fy);
@@ -98,6 +123,34 @@ export class NPCSystem {
     }
   }
 
+  // ---------- conductores ----------
+
+  // uno al volante de cada coche del trafico. No entra en la lista de gente:
+  // si no, su propio coche le veria como un peaton al que atropellar.
+  crearConductor(vehicle) {
+    const skin = Math.floor(Math.random() * SKINS);
+    const cond = new Pedestrian(this.scene, this.map, vehicle.x, vehicle.y, skin, null, this.pathfinder);
+    cond.sentarEn(vehicle);
+    return cond;
+  }
+
+  // le han robado el coche: se baja y, o sale corriendo, o se encara
+  expulsarConductor(cond, vehicle, player) {
+    if (!cond) return;
+    cond.bajarDe(vehicle);
+    this.people.push(cond);
+
+    if (Math.random() < CONDUCTOR_BRAVO) {
+      cond.rencor = true;
+      cond.hostile = true;
+      cond.chaseTarget = { x: player.x, y: player.y };
+      EventBus.emit(EVT.NOTIFY, { text: 'El conductor se te encara', tone: 'danger' });
+    } else {
+      cond.flee(vehicle.x, vehicle.y, 6);
+      EventBus.emit(EVT.NOTIFY, { text: 'El conductor sale corriendo', tone: 'dim' });
+    }
+  }
+
   checkVehicles(vehicles, playerVehicle = null) {
     for (const v of vehicles) {
       const speed = v.speed;
@@ -105,7 +158,7 @@ export class NPCSystem {
       const circles = v.getCircles();
 
       for (const p of this.people) {
-        if (p.down) continue;
+        if (p.down || p.enCoche) continue;
         const dist = Phaser.Math.Distance.Between(p.x, p.y, v.x, v.y);
         if (dist > v.stats.length) continue;
 
@@ -126,6 +179,8 @@ export class NPCSystem {
             pedestrian: p, vehicle: v, speed, fatal: mortal,
             culpaDelJugador: v === playerVehicle,
           });
+          // el temerario ni frena ni mira: acelera y se va
+          if (v.temerario && this.scene.traffic) this.scene.traffic.huirTrasAtropello(v);
         } else if (!hit) {
           p.flee(v.x, v.y, 2.2);
         }

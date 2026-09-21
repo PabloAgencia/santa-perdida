@@ -553,54 +553,218 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
 
 
 ================================================================================
-PENDIENTE — LO SIGUIENTE QUE HAY QUE HACER  (apuntado el 20-sep-2026)
+DECIMOTERCERA TANDA (21-sep-2026): auditoria entera y arreglo de todo lo que
+salio en ella. Los numeros son medidos, con el juego corriendo.
 ================================================================================
-Pablo se quedo sin cuota de sesion aqui. Esto es lo que pidio y NO esta hecho.
-Se retoma por este orden.
 
-1. PEATONES QUE CRUZAN EN DIAGONAL Y LOS ATROPELLAN
-   Sintoma: "no paran de cruzar en diagonal y los atropellan".
-   Estado: se penalizo el asfalto x6 en el A* (`world/Pathfinder.js`), pero
-   siguen saliendo 8 de 20 sobre la calzada.
-   Que falta:
-     - Cruzar SOLO por puntos de cruce, no por donde pille. Marcar pasos de
-       peatones en la rejilla (en los cruces de la red de carriles) y que el
-       A* solo permita pisar asfalto en esas casillas.
-     - Cruzar en perpendicular, nunca en diagonal: al entrar en calzada,
-       fijar el rumbo al eje de la calle hasta salir al otro lado.
-     - Mirar antes de cruzar: si viene un coche a menos de X, esperar en el
-       bordillo.
+  LOS COCHES CLAVADOS EN LOS CRUCES (lo que vio Pablo en pantalla)
+     - La causa: el contador de atasco se REINICIABA con el movimiento de la
+       propia maniobra de desatasco. Subia a 2,2 s, daba marcha atras, la
+       velocidad pasaba de 22 px/s, el contador se ponia a cero y volvia a
+       empotrarse. Ciclo cada 2,5 s, para siempre. Traza real de un Vela GT:
+       15 segundos y 2 px recorridos.
+     - Y una segunda causa igual de tonta: si el que te tapa es otro coche, el
+       contador ni siquiera contaba. Tres coches esperandose unos a otros no
+       se movian nunca, porque cada uno creia que el de delante iba a arrancar.
+     - Arreglado: la maniobra tiene su propio reloj, el atasco cuenta tambien
+       con un coche delante (con mas paciencia, 3,6 s, que puede ser una cola
+       normal), y a los tres intentos fallidos el coche se recicla si no se le
+       esta viendo.
+       MEDIDO, 2 min de trafico x 6 ejecuciones:
+         antes: 39 km/h de media, 29% de coches clavados
+         ahora: 46 km/h de media,  0-1% de coches clavados
+     - SEMAFOROS NUEVOS (`systems/TrafficLights.js`): 26 cruces, 92 luces,
+       verde 8,5 s y ambar 1,6 s con desfase por cruce. Comprobado que nunca
+       dan verde a los dos ejes a la vez y que todos los ejes tienen su verde.
+       OJO con esto: la primera version paraba en rojo SIEMPRE y hundia la
+       ciudad a 21 km/h. Ahora el semaforo solo manda si hay otro coche
+       disputando el cruce; con la calle vacia se pasa sin frenar.
 
-2. LOS COCHES NO DETECTAN BIEN A LOS PEATONES
-   `peopleAhead()` en `systems/driving.js` existe, pero el cono es estrecho y
-   corto (40 + velocidad*0.4). Hay que ampliarlo y anticipar: mirar tambien
-   hacia donde se mueve el peaton, no solo donde esta.
+  PEATONES: PASOS DE CEBRA DE VERDAD (pendientes 1 y 2 del plan viejo)
+     - `world/CityMap.js` marca los cuatro pasos de cada cruce (1.285
+       casillas). El A* de los peatones solo les deja pisar asfalto ahi, y
+       cruzando RECTO: nada de diagonales a media calle.
+     - `flee()` no borraba la ruta que el peaton llevaba calculada, asi que
+       "huia" hacia donde ya iba pero al doble de velocidad. Era la causa de
+       fondo de que se tiraran debajo de los coches. Ahora borra la ruta y
+       busca salida a la acera, no calle abajo.
+     - Miran antes de cruzar: si viene un coche que llega en menos de 2 s, se
+       esperan en el bordillo.
+     - Los coches ven mucho mejor: el cono pasa de 40+velocidad*0,4 a
+       70+velocidad*0,8 y ademas mira donde VA A ESTAR el peaton dentro de un
+       segundo, no solo donde esta.
+       MEDIDO, 3 min x 4 ejecuciones:
+         atropellos del trafico: de 12,75 de media a 2,6  (-80%)
+         cruces por el paso de cebra: de 0% a 97%
+     - Los cuerpos ya no ocupan sitio de gente viva en el cupo: la calle no se
+       queda desierta despues de unos atropellos.
 
-3. CONDUCTORES CRIMINALES (5%)
-   Que un 5% de los coches de trafico sean temerarios: no frenan por
-   peatones, y si atropellan a alguien ACELERAN y huyen. Sitio: al crear el
-   coche en `TrafficSystem.topUp()`, marcar `car.temerario = Math.random() < 0.05`
-   y usarlo en `driveCar` (saltarse `genteDelante`) y al recibir PED_HIT.
+  ROBO DE COCHES CON CONDUCTOR (pendiente 4 del plan viejo)
+     - Los 14 coches del trafico llevan a alguien al volante (se le ve la
+       cabeza). Al robarle el coche se baja: tres de cada cuatro salen
+       corriendo y uno se te encara y te pega.
+     - CONDUCTORES TEMERARIOS (pendiente 3): un 5% medido. No frenan por la
+       gente y si atropellan a alguien aceleran y huyen.
 
-4. ROBO DE COCHES CON CONDUCTOR DENTRO (como GTA)
-   Ahora los coches de trafico van vacios. Deberia:
-     - Verse al conductor dentro.
-     - Al robarlo, que SALGA el NPC y eche a correr (la mayoria de veces).
-     - Que a veces el conductor sea hostil y se ponga a pegarte.
-   Piezas que ya existen y sirven: `entities/Pedestrian.js` sabe huir
-   (`flee`) y sabe ser hostil y pegar (`hostile` + NPCSystem.checkAttacks).
-   Lo que falta es que el coche de trafico tenga un peaton asociado, que se
-   cree al bajarse y que se le diga si huye o si se encara.
+  MISIONES: DE 4 JUGABLES A 10
+     - "El soplon" era IMPOSIBLE: el paso 'seguir' solo sabia fallar. Te
+       pegabas al coche los 75 segundos y fallaba por tiempo igual. Ahora
+       aguantar el limite es superarlo, como en 'aguantar'.
+     - El coche al que sigues nacia hasta a 900 px y se pierde a los 620: se
+       podia caer la mision en el primer segundo. Ahora nace a 180-380 px, hay
+       4 segundos de cortesia y el limite sube a 700.
+     - La reputacion pedida era inalcanzable: 6 de las 10 misiones no se
+       desbloqueaban nunca (corre-chaval pedia 10 y como mucho se llegaba a 9).
+       Bajados los minimos a 8/15/18/25. COMPROBADO: se llega a las 10.
 
-5. CAMARA QUE SE QUEDA SUELTA
-   Pablo la vio dejar de seguir al personaje. En arranque limpio sigue bien,
-   asi que es algo puntual (volver del escondite, reaparecer, una pausa).
-   YA SE PUSO UN SEGURO que la reengancha sola cada fotograma si se suelta,
-   pero NO se ha reproducido la causa real. Si vuelve a pasar, hay que buscar
-   el momento exacto en que se suelta.
+  SENSACION AL CONDUCIR
+     - La aceleracion ya no es plana: el empuje cae segun te acercas al tope.
+       Antes TODOS los coches llegaban a su maxima en un segundo y la
+       furgoneta se conducia igual que el deportivo.
+       MEDIDO, segundos hasta el 90% de su velocidad punta:
+         moto 1,9 · deportivo 2,5 · utilitario 2,4 · todoterreno 3,0 ·
+         furgoneta 3,3   (antes: todos entre 0,9 y 1,25 hasta el TOPE)
+       Las velocidades punta no se han tocado.
+     - Frenos mas largos y luces de freno rojas al pisarlo.
+     - SIRENA de policia sintetizada (dos tonos alternos) que suena mas fuerte
+       cuanto mas cerca tienes la patrulla. Hasta ahora la policia era muda.
+     - Los coches aparcados y vacios ya no llevan los faros puestos (eran 18
+       de 18 con el haz encendido).
+     - Curarse dejo de ser gratis y automatico: entrar al escondite ya no te
+       pone la vida a 100. Hay que echarse en la cama y pulsar E.
 
-6. TEXTO PEQUEÑO EN PRICEDOWN
-   Todo esta en Pricedown por peticion de Pablo, pero en tamaños pequeños se
-   lee peor que la monoespaciada. Si molesta, cambiar SOLO los textos chicos
-   (ayuda de controles, distancias, etiquetas del minimapa).
+  HUD
+     - Los avisos se pintaban a 56 px del borde, encima de la barra de salud y
+       de la linea de ayuda: llegaban a leerse cuatro textos superpuestos.
+       Subidos a 118 px.
+     - La ayuda no mencionaba la J, que es justo la tecla que pide encargos,
+       con el HUD diciendote "busca un encargo". Ya esta.
 
+  VISUAL
+     - EDIFICIOS CON ALTURA: se ven la pared sur y la este, con lineas
+       verticales de fachada y la sombra desplazada segun lo alto que sea.
+       El centro son los mas altos (30 px) y las casas bajas 11.
+     - FAROLAS: de 310 a 103, dos por tramo alternando acera y con el charco
+       de luz variado. Conduciendo se veian veinte a la vez, como un peine.
+     - PLAZA DEL FAROL: era un circulo azul plano que parecia una piscina.
+       Ahora es plaza empedrada, cuatro parterres, fuente con pilon y una
+       estatua con sombra larga.
+     - PASOS DE CEBRA pintados donde de verdad cruza la gente.
+     - MINIMAPA: el tinte de las bandas ya no tiñe el asfalto, solo las
+       manzanas. Antes no habia forma de ver por donde se iba.
+     - El titulo del menu entra en 0,42 s en vez de 1,1 s.
+
+  RENDIMIENTO
+     - El A* con la restriccion de pasos de cebra explora mucho mas, y la
+       lista de abiertos era LINEAL: el navegador se quedo colgado. Se cambio
+       por un monticulo binario y se limito a 3 busquedas por fotograma.
+       MEDIDO: 400 rutas en 0,25 ms de media, 1,85 ms la peor.
+     - Logica de trafico y peatones: 0,075 ms por fotograma de media, pico
+       3,7 ms. Va sobradisimo.
+
+  AVISO DE PROCESO: si la pestaña de Chrome se queda colgada (un bucle largo
+  en el renderer) se lleva por delante la conexion de la extension. Toda esta
+  tanda se acabo comprobando con bancos de pruebas en Node que cargan los
+  modulos del juego con un Phaser de pega. Estan en el scratchpad de la
+  sesion: probar-rutas, probar-trafico, peatones, extras. Merece la pena
+  rehacerlos si hay que volver a medir.
+
+
+================================================================================
+DECIMOCUARTA TANDA (21-sep-2026, noche): lo que Pablo vio jugando
+================================================================================
+
+  "LOS COCHES SIGUEN LOCOS PERDIDOS"
+     - La causa estaba en `systems/driving.js`: steerTo miraba la velocidad SIN
+       SIGNO. Si un coche ya iba hacia atras, se le mandaba frenar, y frenar
+       yendo hacia atras es acelerar hacia atras. Encima el volante actua
+       invertido en marcha atras, asi que giraba al reves y se salia de la
+       calle. Se quedaban de culo dando tumbos.
+       MEDIDO antes: 31% del tiempo en marcha atras y 32% apuntando a otro
+       sitio. Despues: 1-2% y 3-5%. En el navegador: 3,7% y 6,7%.
+     - Ademas, en cada cruce sorteaban salida a partes iguales y giraban casi
+       siempre: ahora seguir recto pesa seis veces mas (`world/RoadNetwork.js`).
+     - Y cogen el volante antes (el agarre empezaba al 16% de su velocidad
+       punta, ahora al 10%): saliendo de un cruce despacio no podian girar y se
+       iban derechos contra la acera.
+
+  "LA POLICIA ME PISA DEMASIADO LOS TALONES, NO HAY MANERA DE ESCAPAR"
+     Era verdad y se pudo medir. Prueba: huir en coche con 3 estrellas.
+       ANTES: en utilitario escapaba 1 de cada 8 intentos. En furgoneta, 1.
+       AHORA, doblando esquinas: utilitario 6 de 8 (17 s), furgoneta 4 de 8,
+       deportivo 6 de 8. Yendo en linea recta por la avenida, 1 de 8: si no
+       rompes la linea de vision, no los pierdes. Que es como debe ser.
+     Que se toco: te ven a 300 px en vez de 360 (400 en vez de 540 si te
+     persiguen), a nivel 3 son cuatro coches y no cinco, la patrulla corre a
+     355 en vez de 385 y persigue al 76% en vez del 86%, adivinan peor hacia
+     donde vas, bajan un nivel a los 4 s sin verte en vez de 6,5, y sobre todo:
+     SI LES SACAS 620 px TE PIERDEN aunque te tengan a la vista. Detenerte
+     tambien cuesta mas (3,6 s rodeado en vez de 2,8).
+
+  MENU DE PAUSA (`scenes/PauseScene.js`), con ESC
+     Seguir jugando · Guardar partida · Partida nueva (con confirmacion, que
+     borra todo) · Controles · Volver al menu principal. Comprobado: congela la
+     ciudad, reanuda, reinicia con el dinero a 35 y vuelve al menu sin recargar.
+
+  LAS MISIONES LAS DAN PERSONAS Y VAN SALIENDO POCO A POCO
+     - Antes eran hasta seis marcadores a la vez, con un rombo blanco flotando.
+       Ahora cada banda te enseña UN contacto: una persona de esa banda
+       plantada en su barrio, con su haz de luz del color de la banda, su
+       rombo y el nombre de la banda debajo.
+     - Al acercarte: "E para hablar con AMARRES: Primer recado".
+     - Al cumplir un encargo aparece el siguiente y te avisa: "AMARRES te
+       espera para un trabajo nuevo".
+     - Los contactos salen tambien en el minimapa, del color de su banda.
+
+  TRES RANURAS DE PARTIDA, AQUI Y EN LA NUBE
+     - Como los GTA de siempre: tres partidas independientes, cada una con
+       su dinero, sus misiones y sus entregas. Pantalla "TUS PARTIDAS"
+       (`scenes/SlotsScene.js`) con el resumen de cada una y cuando se jugo.
+       ENTER seguir o empezar ahi · N empezar de cero en esa ranura ·
+       B borrar · T traerla de tu cuenta · ESC volver.
+     - El menu principal lleva un atajo a la ultima que jugaste
+       ("SEGUIR LA PARTIDA 2") y desde la pausa se puede cambiar de partida.
+     - La partida que hubiera de antes pasa sola a la ranura 1 al actualizar:
+       nadie pierde lo jugado. COMPROBADO.
+
+  CUENTAS Y PARTIDAS EN LA NUBE (`core/Cloud.js` y `core/AccountUI.js`)
+     - Registro con CORREO Y CONTRASENA (minimo 6, sin confirmar el correo).
+       Desde el menu principal: "ENTRAR CON TU CORREO" / "MI CUENTA".
+     - Supabase, el MISMO proyecto que el marcador de BitFall
+       (ivwlobdksywgsxhblppk), con tabla propia `santa_state`, con clave
+       (jugador, ranura): subir la 2 no toca la 1 ni la 3. El SQL entero
+       esta en `supabase-cuentas.sql` dentro de la carpeta del juego.
+     - Hecho por HTTP directo, SIN el SDK: el juego no depende de ningun CDN
+       y sigue funcionando sin internet. La clave anon va en el codigo a
+       proposito (es publica); lo que protege los datos es que la base solo
+       deja leer y escribir las filas de uno mismo.
+     - Al entrar se ponen al dia solas: sube lo que solo esta aqui y baja lo
+       que solo esta en la nube. Lo que esta en los dos sitios NO se toca:
+       eso lo decide el jugador en TUS PARTIDAS con la tecla T.
+     - La partida se sube sola al guardar, como mucho una vez cada 20 s.
+     - Se puede borrar la cuenta desde el propio juego. Borra la nube, no lo
+       guardado en este navegador. OJO: borra tambien la partida de BitFall,
+       porque la cuenta es la misma para los dos juegos.
+     COMPROBADO de punta a punta: registro; las tres ranuras viajan por
+     separado (35 EUR en la 1 y 535 en la 2, cada una en su sitio); borrada
+     la 2 de aqui y traida de la nube vuelve identica; sin sesion no se ve
+     nada; con sesion solo se ven las ranuras propias; una ranura fuera de
+     1-3 la rechaza la base de datos; y al borrar la cuenta no queda ni el
+     usuario ni las partidas.
+     PENDIENTE: no hay forma de recuperar la contrasena si se olvida.
+
+================================================================================
+PENDIENTE — LO SIGUIENTE QUE HAY QUE HACER  (apuntado el 21-sep-2026)
+================================================================================
+1. VERLO CON LOS OJOS. Todo lo de arriba esta medido, pero la comprobacion
+   visual en el navegador se quedo a medias porque Chrome se cerro. Hay que
+   abrir el juego y mirar: semaforos, pasos de cebra, altura de los edificios,
+   la plaza y las farolas.
+2. AJUSTAR A GUSTO lo que es de gusto: aceleracion y frenada
+   (`config/vehicles.js`), volumen de la sirena (`core/Audio.js`, siren()) y
+   duracion del verde (`systems/TrafficLights.js`, VERDE y AMBAR).
+3. RESTO DE LA FASE 3: comprar coches y pisos, y la economia por barrios de
+   Chinatown Wars. Las 10 misiones ya se pueden jugar enteras.
+4. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba (escondite,
+   muerte, entrar y salir del coche). El seguro sigue puesto.
+5. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.

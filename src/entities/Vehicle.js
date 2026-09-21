@@ -21,6 +21,9 @@ export class Vehicle {
     this.lateral = 0;
     this.crashCooldown = 0;
     this.occupied = false;
+    // un coche aparcado y vacio no lleva los faros puestos
+    this.encendido = opts.encendido ?? false;
+    this.frenando = false;
     this.color = opts.color ?? Math.floor(Math.random() * this.stats.palette.length);
     this.mass = (this.stats.length * this.stats.width) / 900;
 
@@ -33,7 +36,15 @@ export class Vehicle {
       .setOrigin(0.5, 0)
       .setDisplaySize(this.stats.width * 5.5, this.stats.length * 4.2)
       .setBlendMode(Phaser.BlendModes.ADD)
-      .setAlpha(0.85);
+      .setAlpha(0.85)
+      .setVisible(false);
+
+    // pilotos de freno: se encienden al pisar el freno, como en los GTA
+    this.stopLights = scene.add.image(x, y, 'px')
+      .setDisplaySize(4, this.stats.width * 0.72)
+      .setTint(0xff3b28)
+      .setAlpha(0.9)
+      .setVisible(false);
 
     this.sprite = scene.add.image(x, y, `veh-${type}-${this.color}`);
 
@@ -102,8 +113,14 @@ export class Vehicle {
     const power = this.wrecked ? 0.35 : 1;
     const topSpeed = s.maxSpeed * power;
 
+    this.frenando = !!input.brake && vf > 1;
+
     if (input.throttle) {
-      vf += s.accel * power * dt;
+      // El empuje cae segun te acercas al tope. Antes la aceleracion era
+      // plana y todos los coches llegaban a su maxima en un segundo: daba
+      // igual conducir una furgoneta que un deportivo.
+      const falta = Phaser.Math.Clamp(1 - Math.abs(vf) / topSpeed, 0, 1);
+      vf += s.accel * power * (0.18 + 0.82 * Math.pow(falta, 0.7)) * dt;
     } else if (input.brake) {
       if (vf > 1) vf = Math.max(0, vf - s.brake * dt);
       else vf = Math.max(-s.reverseSpeed * power, vf - s.accel * 0.7 * dt);
@@ -115,7 +132,9 @@ export class Vehicle {
 
     // no se gira parado, y a tope de velocidad el volante pesa un poco mas.
     // El coche coge el volante enseguida: es lo que hace que se sienta agil.
-    const grip = Math.min(1, Math.abs(vf) / (s.maxSpeed * 0.16));
+    // Se coge el volante antes: con el umbral alto, un coche saliendo de un
+    // cruce despacio no podia girar y se iba derecho contra la acera.
+    const grip = Math.min(1, Math.abs(vf) / (s.maxSpeed * 0.1));
     const heavy = 1 - 0.22 * Math.min(1, Math.abs(vf) / s.maxSpeed);
     const dir = vf < 0 ? -1 : 1;
     const steer = s.turnRate * grip * heavy * dir;
@@ -176,13 +195,27 @@ export class Vehicle {
   }
 
   syncSprite() {
+    const cos = Math.cos(this.angle);
+    const sin = Math.sin(this.angle);
     const nose = this.stats.length * 0.42;
-    this.beam.setPosition(
-      this.x + Math.cos(this.angle) * nose,
-      this.y + Math.sin(this.angle) * nose
-    );
-    this.beam.setRotation(this.angle - Math.PI / 2);
-    this.beam.setDepth(this.y - 4);
+
+    // solo lleva luces el que esta en marcha o con alguien dentro
+    const luces = this.occupied || this.encendido;
+    this.beam.setVisible(luces);
+    if (luces) {
+      this.beam.setPosition(this.x + cos * nose, this.y + sin * nose);
+      this.beam.setRotation(this.angle - Math.PI / 2);
+      this.beam.setDepth(this.y - 4);
+    }
+
+    this.stopLights.setVisible(luces && this.frenando);
+    if (luces && this.frenando) {
+      const cola = -this.stats.length * 0.46;
+      this.stopLights
+        .setPosition(this.x + cos * cola, this.y + sin * cola)
+        .setRotation(this.angle)
+        .setDepth(this.y + 0.2);
+    }
 
     this.sprite.setPosition(this.x, this.y);
     this.sprite.setRotation(this.angle);
@@ -247,5 +280,6 @@ export class Vehicle {
     this.sprite.destroy();
     this.shadow.destroy();
     this.beam.destroy();
+    this.stopLights.destroy();
   }
 }
