@@ -1048,6 +1048,63 @@ Todo pedido por Pablo despues de jugar.
      directa' y no se podia conectar a Git; hubo que borrarlo y volver a
      crearlo por API con `source: github`, como FinLearn. Cada push a main
      lo despliega. El workflow de Actions se ha retirado por innecesario.
+VIGESIMA TANDA (22-sep-2026): la ciudad seis veces mas grande y como se ha
+podido
+================================================================================
+
+  EL DESCUBRIMIENTO: UNA CAPA DE DIBUJO SE RASTERIZA ENTERA CADA FOTOGRAMA.
+     Pintar los edificios en capas en vez de en sprites fue un acierto con
+     313 edificios (98 fps), pero al pasar a 701 el juego se hundio a 21 fps
+     aunque solo se viera una esquina de la ciudad: el coste no depende de
+     lo que se ve, sino de cuantos rectangulos tiene la capa.
+     La solucion, en dos partes:
+       1. TROCEAR POR ZONAS de 2.048 px, y cada fotograma dejar visibles solo
+          las zonas que pisa la camara (lo que no se ve, no se dibuja).
+       2. AGRUPAR LAS PROFUNDIDADES EN CUATRO (sombras, cuerpo, detalles y
+          cosas de la acera). Cada profundidad distinta es una capa mas que
+          rasterizar; con doce profundidades habia 64 capas encendidas a la
+          vez y el troceo solo servia de poco.
+     MEDIDO: 13 fps -> 83 fps con la ciudad de 325x262.
+
+  Y ANTES DE ESO, dos cosas mas que quitaron objetos de en medio:
+     - Los pasos de peatones eran casi cuatro mil imagenes sueltas. Ahora van
+       en DOS BLITTERS (uno por orientacion), que pintan miles de copias de
+       la misma textura como si fueran un solo objeto.
+     - Los arboles, bancos, papeleras y bocas de riego, a las mismas capas
+       que los edificios.
+     De 20.380 objetos a 5.900 con una ciudad el doble de grande.
+
+  LA CIUDAD: 325 x 262 casillas (10.400 x 8.384 px), SEIS VECES Y MEDIA la
+     original. Trece filas de calles por catorce columnas, 701 edificios.
+     El reparto de barrios se genera por distancia al centro: centro en el
+     medio, el barrio malo al este, la industria al sur, lo comercial al
+     oeste y lo residencial al norte.
+
+  ICONOS MEJOR REPARTIDOS Y QUE APARECEN JUGANDO
+     - Siete armerias, UNA POR BARRIO primero y las que falten despues: antes
+       salian tres seguidas en el centro y ninguna en media ciudad.
+     - LOS SITIOS SE DESCUBREN: una armeria no sale en el mapa hasta que
+       pasas a menos de 340 px de ella, con aviso de 'Nuevo sitio'. El mapa
+       grande dice cuantas te quedan por encontrar. Se guarda en la partida
+       (`GameState.descubiertos`), asi que la ciudad se va llenando segun la
+       recorres, que es lo que invita a recorrerla.
+     - Los puntos de referencia (Plaza del Farol, Torre Sombra, El Faro, la
+       Grua) si salen desde el principio, con su nombre: para eso estan.
+
+  SONIDO: EL JUEGO YA ADMITE FICHEROS DE AUDIO. Si aparece `audio/motor-loop
+     .mp3`, el motor sintetizado se calla y suena el grabado, con la
+     velocidad de reproduccion atada a las vueltas y la caja de cambios de
+     cinco marchas por encima. Lo mismo con el choque, la frenada, los
+     disparos y el puñetazo. Lo que no este, se sigue sintetizando.
+     La lista de que bajar y como esta en SONIDOS-QUE-BAJAR.txt. La carpeta
+     `audio/` lleva un `lista.json` que se rehace con
+     `node herramientas/actualizar-audio.js`: sin el, el juego pediria
+     ficheros que no existen y llenaria la consola de errores.
+
+  ARTE CON IA: los prompts estan escritos en PROMPTS-AI-STUDIO.txt, con el
+     tamaño y el sitio de cada cosa. AI Studio pide plan de pago o clave de
+     API para el modelo de imagen; con una de las dos claves que ya hay
+     creadas en el panel se genera todo desde aqui.
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

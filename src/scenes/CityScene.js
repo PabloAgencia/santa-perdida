@@ -27,6 +27,9 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { shade } from '../core/color.js';
 import { Audio } from '../core/Audio.js';
 
+// lado de la zona de dibujo, en pixeles
+const ZONA_DIBUJO = 2048;
+
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
 };
@@ -117,6 +120,68 @@ export class CityScene extends Phaser.Scene {
 
   // ---------- mundo ----------
 
+  // LAS CAPAS DE DIBUJO, troceadas por zonas.
+  //
+  // Todo lo que no se mueve (edificios, arboles, bancos) se pinta en capas
+  // en vez de en miles de sprites. Pero una capa de dibujo se vuelve a
+  // rasterizar ENTERA en cada fotograma, asi que con la ciudad grande una
+  // sola capa con ocho mil rectangulos hundia el juego a 21 fps aunque solo
+  // se viera una esquina.
+  //
+  // Por eso hay una capa por zona de 2.048 px y profundidad, y cada
+  // fotograma solo se dejan encendidas las que pisa la camara. Lo que no se
+  // ve, no se dibuja.
+  // Las profundidades se agrupan en CUATRO: sombras, cuerpo del edificio,
+  // detalles y cosas de la acera. Cada profundidad distinta es una capa mas
+  // que rasterizar, y como los edificios no se solapan entre si, dentro de
+  // cada grupo basta con respetar el orden en que se pintan.
+  cuboDe(depth) {
+    if (depth <= -1240) return -1250;
+    if (depth <= -1195) return -1200;
+    if (depth <= -1000) return -1150;
+    return -875;
+  }
+
+  capaDibujo(depth, x, y) {
+    if (!this.capas) this.capas = new Map();
+    const cubo = this.cuboDe(depth);
+    const rx = Math.floor(x / ZONA_DIBUJO);
+    const ry = Math.floor(y / ZONA_DIBUJO);
+    const clave = `${cubo}|${rx}|${ry}`;
+    let g = this.capas.get(clave);
+    if (!g) {
+      g = this.add.graphics().setDepth(cubo);
+      g.zonaX = rx;
+      g.zonaY = ry;
+      this.capas.set(clave, g);
+    }
+    return g;
+  }
+
+  // enciende solo las zonas que se ven, con un margen de una zona
+  actualizarCapas() {
+    if (!this.capas) return;
+    const v = this.cameras.main.worldView;
+    const x0 = Math.floor(v.x / ZONA_DIBUJO) - 1;
+    const x1 = Math.floor(v.right / ZONA_DIBUJO) + 1;
+    const y0 = Math.floor(v.y / ZONA_DIBUJO) - 1;
+    const y1 = Math.floor(v.bottom / ZONA_DIBUJO) + 1;
+    for (const g of this.capas.values()) {
+      g.setVisible(g.zonaX >= x0 && g.zonaX <= x1 && g.zonaY >= y0 && g.zonaY <= y1);
+    }
+  }
+
+  pintarRect(x, y, w, h, tint, depth, alpha = 1) {
+    const g = this.capaDibujo(depth, x, y);
+    g.fillStyle(tint, alpha);
+    g.fillRect(x - w / 2, y - h / 2, w, h);
+  }
+
+  pintarCirculo(x, y, r, tint, depth, alpha = 1) {
+    const g = this.capaDibujo(depth, x, y);
+    g.fillStyle(tint, alpha);
+    g.fillCircle(x, y, r);
+  }
   drawGround() {
     const tilemap = this.make.tilemap({
       data: this.map.getTileData2D(),
@@ -130,16 +195,30 @@ export class CityScene extends Phaser.Scene {
 
   // los pasos de peatones se pintan donde el mapa dice que estan, asi que lo
   // que ves es exactamente por donde cruza la gente
+  // Los pasos de peatones se pintan donde el mapa dice que estan, asi que lo
+  // que ves es exactamente por donde cruza la gente. Van en dos BLITTERS (uno
+  // por orientacion): con la ciudad grande eran casi cuatro mil imagenes
+  // sueltas, y un blitter pinta miles de copias de la misma textura como si
+  // fuera un solo objeto.
   drawCrosswalks() {
     const m = this.map;
+    const bh = this.add.blitter(0, 0, 'cebra-h').setDepth(-1900);
+    const bv = this.add.blitter(0, 0, 'cebra-v').setDepth(-1900);
+    const anchoH = this.textures.get('cebra-h').getSourceImage().width;
+    const altoH = this.textures.get('cebra-h').getSourceImage().height;
+    const anchoV = this.textures.get('cebra-v').getSourceImage().width;
+    const altoV = this.textures.get('cebra-v').getSourceImage().height;
+
     for (let ty = 0; ty < m.h; ty++) {
       for (let tx = 0; tx < m.w; tx++) {
         const tipo = m.crossMask[m.idx(tx, ty)];
         if (!tipo) continue;
-        this.add
-          .image((tx + 0.5) * TILE, (ty + 0.5) * TILE, tipo === 1 ? 'cebra-h' : 'cebra-v')
-          .setAlpha(0.42)
-          .setDepth(-1900);
+        const cx = (tx + 0.5) * TILE;
+        const cy = (ty + 0.5) * TILE;
+        const bob = tipo === 1
+          ? bh.create(cx - anchoH / 2, cy - altoH / 2)
+          : bv.create(cx - anchoV / 2, cy - altoV / 2);
+        bob.alpha = 0.42;
       }
     }
   }
@@ -150,20 +229,8 @@ export class CityScene extends Phaser.Scene {
   // objetos en la escena, solo para cosas que NO se mueven nunca. Agrupados
   // por profundidad son doce objetos y se dibujan de una pasada.
   drawBuildings() {
-    const capas = new Map();
-    const capa = (depth) => {
-      let g = capas.get(depth);
-      if (!g) {
-        g = this.add.graphics().setDepth(depth);
-        capas.set(depth, g);
-      }
-      return g;
-    };
-    const block = (x, y, w, h, tint, depth, alpha = 1) => {
-      const g = capa(depth);
-      g.fillStyle(tint, alpha);
-      g.fillRect(x - w / 2, y - h / 2, w, h);
-    };
+    const block = (x, y, w, h, tint, depth, alpha = 1) =>
+      this.pintarRect(x, y, w, h, tint, depth, alpha);
 
     for (const b of this.map.buildings) {
       const rnd = buildingRng(b.tx, b.ty);
@@ -471,7 +538,7 @@ export class CityScene extends Phaser.Scene {
           );
         }
         if (b.pw > 150 && b.ph > 150) {
-          this.add.circle(b.px, b.py, 26, shade(b.color, 0.55)).setDepth(-1174);
+          this.pintarCirculo(b.px, b.py, 26, shade(b.color, 0.55), -1174);
           this.add.circle(b.px, b.py, 20).setStrokeStyle(3, 0xe0d6c2, 0.7).setDepth(-1173);
         }
         break;
@@ -541,15 +608,14 @@ export class CityScene extends Phaser.Scene {
       const y = spot.y + (rnd() - 0.5) * 14;
       const tipo = rnd();
       const img = (ox, oy, w, h, tint, depth, alpha = 1) =>
-        this.add.image(x + ox, y + oy, 'px')
-          .setDisplaySize(w, h).setTint(tint).setAlpha(alpha).setDepth(depth);
+        this.pintarRect(x + ox, y + oy, w, h, tint, depth, alpha);
 
       if (tipo < 0.42) {
         // arbol: sombra, copa y tronco asomando
-        this.add.circle(x + 4, y + 5, 15, 0x05060a, 0.4).setDepth(-880);
+        this.pintarCirculo(x + 4, y + 5, 15, 0x05060a, -880, 0.4);
         img(0, 0, 6, 6, 0x4a3a28, -876);
-        this.add.circle(x, y, 14, 0x2c3a29).setDepth(-875);
-        this.add.circle(x - 3, y - 3, 8, 0x3a4c35).setDepth(-874);
+        this.pintarCirculo(x, y, 14, 0x2c3a29, -875);
+        this.pintarCirculo(x - 3, y - 3, 8, 0x3a4c35, -874);
       } else if (tipo < 0.62) {
         // papelera
         img(2, 3, 11, 11, 0x05060a, -876, 0.35);
@@ -966,6 +1032,7 @@ export class CityScene extends Phaser.Scene {
     }
 
     this.updateCamera(dt);
+    this.actualizarCapas();
 
     this.autosaveTimer += delta;
     if (this.autosaveTimer >= SAVE.autosaveMs) {

@@ -74,8 +74,19 @@ export class MapaScene extends Phaser.Scene {
     if (city.hideoutDoor) {
       this.marca(city.hideoutDoor.x, city.hideoutDoor.y, 0xe8b54a, 'Tu escondite', 12);
     }
+    // solo lo que ya has visto: la ciudad se va llenando segun la recorres
+    let sinDescubrir = 0;
     for (const t of city.shops ? city.shops.tiendas : []) {
+      if (!GameState.conoce(t.clave)) { sinDescubrir++; continue; }
       this.marca(t.x, t.y, 0x7fd08a, 'Armeria');
+    }
+
+    // los sitios que se ven desde lejos si salen desde el principio: son
+    // justo para orientarse
+    for (const L of city.map.cfg.landmarks || []) {
+      const px = (L.x + L.w / 2) * 32;
+      const py = (L.y + L.h / 2) * 32;
+      this.marca(px, py, 0xc8a465, L.label, 9);
     }
     // los contactos que dan trabajo, para saber a quien ir a ver
     const contactos = city.missions ? city.missions.puntos() : [];
@@ -89,6 +100,14 @@ export class MapaScene extends Phaser.Scene {
     const ang = city.drivingVehicle ? city.drivingVehicle.angle : city.player.angle;
     this.add.image(p.x, p.y, 'arrow')
       .setDisplaySize(20, 20).setTint(0xf2efe6).setRotation(ang + Math.PI / 2);
+
+    if (sinDescubrir > 0) {
+      this.add.text(this.x0 + this.ancho, this.y0 - 22,
+        `Te quedan ${sinDescubrir} armerias por encontrar`, {
+          fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
+          fontSize: '14px', color: '#9aa3ad',
+        }).setOrigin(1, 0);
+    }
 
     const zona = city.map.zoneAt(city.player.x, city.player.y);
     const nombre = zona ? (city.map.cfg.zones[zona] || {}).label || zona : '';

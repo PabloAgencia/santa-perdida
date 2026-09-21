@@ -1,0 +1,5 @@
+Aqui van los sonidos que se bajen de Pixabay, con los nombres exactos que
+dice SONIDOS-QUE-BAJAR.txt (motor-loop.mp3, choque.mp3, frenada.mp3,
+disparo-pistola.mp3, disparo-escopeta.mp3, punetazo.mp3).
+
+El juego los detecta al arrancar. Lo que no este, se sigue sintetizando.

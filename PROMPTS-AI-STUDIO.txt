@@ -1,0 +1,122 @@
+PROMPTS PARA GENERAR ARTE DEL JUEGO                          (22-sep-2026)
+================================================================================
+
+Para pegar tal cual en Google AI Studio (o en cualquier generador de imagen).
+Cada bloque dice DONDE va lo que salga y COMO tiene que quedar el fichero.
+
+LO QUE PASO AL INTENTARLO YO
+  Entre con tu sesion en aistudio.google.com: estabas dentro, pero el modelo
+  de imagen (Nano Banana) sale bloqueado con "Upgrade to unlock" y pide plan
+  de pago o clave de API. Tienes DOS claves creadas en el panel; con una de
+  ellas yo puedo generar todo esto desde aqui en un minuto y dejarlo montado.
+  Pegamela cuando quieras y lo hago.
+
+REGLAS QUE VALEN PARA TODOS LOS PROMPTS
+  · Vista CENITAL pura (desde arriba del todo), sin perspectiva.
+  · Fondo TRANSPARENTE (o de un verde/magenta plano que se pueda recortar).
+  · Sin sombras pegadas al suelo: las pone el juego.
+  · Paleta oscura y apagada, de noche urbana. Nada de colores chillones.
+  · Sin texto, sin marcas de agua, sin bordes.
+
+
+================================================================================
+1. COCHES VISTOS DESDE ARRIBA   (lo que mas se nota)
+================================================================================
+Van a: src/scenes/BootScene.js, sustituyendo los coches dibujados a mano.
+Formato: PNG con transparencia, 128 x 64 px, el morro mirando a la DERECHA.
+
+PROMPT (repetir cambiando el modelo):
+  Top-down view of a car, seen perfectly from directly above, 90 degree
+  overhead angle, centered, front of the car pointing right. Pixel art style,
+  clean hard edges, 128x64 pixels, dark muted night-time palette, no shadow
+  under the car, transparent background, no text, no watermark.
+  The car is: <MODELO>
+
+  <MODELO> para cada uno de los seis:
+   · a battered 1980s small hatchback, faded olive green paint, dented doors
+   · a low sharp sports coupe, dark red paint, black racing stripe
+   · a heavy square 1970s sedan, navy blue, chrome bumpers
+   · a small motorcycle with a rider seen from above, yellow and black
+   · a long delivery van, dirty white panels, no windows on the sides
+   · a police patrol car, white and dark blue, light bar on the roof
+   · a black armored police van, barred windows, roof lights   (el furgon SWAT)
+
+
+================================================================================
+2. TEJADOS DE EDIFICIO   (la ciudad entera se ve desde arriba)
+================================================================================
+Van a: capa de dibujo de los edificios en CityScene.
+Formato: PNG 256 x 256 px, que se pueda repetir en mosaico sin costura.
+
+PROMPT:
+  Seamless tileable top-down texture of a city building rooftop seen from
+  directly above, 256x256 pixels, pixel art, dark muted palette, night time.
+  Flat roof with <DETALLE>. No perspective, no shadows, no text.
+
+  <DETALLE> para cada barrio:
+   · air conditioning units, vents and a water tank        (centro)
+   · red clay roof tiles and a small chimney               (residencial)
+   · corrugated metal panels, rust stains, a skylight      (industrial)
+   · a rooftop terrace with plants and a parasol           (comercial)
+   · cracked asphalt, graffiti, a broken antenna           (barrio conflictivo)
+   · wooden planks, crates and fishing nets                (puerto)
+
+
+================================================================================
+3. ICONOS DEL MARCADOR   (ya los dibuje a mano, esto seria mejorarlos)
+================================================================================
+Van a: BootScene.makeIconosDeHud().
+Formato: PNG 64 x 64 px, transparente, silueta clara que se lea en pequeño.
+
+PROMPT:
+  Simple flat game HUD icon, 64x64 pixels, centered, thick dark outline,
+  readable at 20 pixels, transparent background, no text, muted colors.
+  The icon is: <COSA>
+
+  <COSA>:
+   · a clenched fist seen from the side
+   · a wooden baseball bat, diagonal
+   · a handgun pointing right
+   · a double-barrel shotgun pointing right
+   · a red heart
+   · a grey bulletproof vest shield
+   · a five pointed star
+   · a green shop sign with a gun on it       (el punto de la armeria)
+   · a house with a key                        (el escondite)
+
+
+================================================================================
+4. PERSONAJES   (solo si los coches y los tejados salen bien)
+================================================================================
+Van a: src/world/personArt.js. OJO: el cuerpo del personaje cambia con la
+grasa y el musculo, asi que hacen falta TRES versiones del jugador (delgado,
+normal, fuerte) o el sistema de cuerpo deja de funcionar.
+Formato: PNG 32 x 32, transparente, mirando a la derecha.
+
+PROMPT:
+  Top-down view of a person seen from directly above, 32x32 pixels, pixel
+  art, only head and shoulders visible from above, facing right, dark muted
+  palette, transparent background, no shadow, no text.
+  The person is: <QUIEN>
+
+  <QUIEN>:
+   · a man in a dark jacket and jeans, short brown hair        (jugador)
+   · a police officer in a blue uniform with a cap             (policia)
+   · a SWAT officer in black tactical gear and helmet          (asalto)
+   · a gang member in a red hoodie                             (banda 1)
+   · a gang member in a green tracksuit                        (banda 2)
+   · a gang member in a purple jacket                          (banda 3)
+
+
+================================================================================
+QUE HAGO YO CUANDO LLEGUEN LAS IMAGENES
+================================================================================
+  1. Recortar y ajustar al tamaño exacto que espera el juego.
+  2. Meterlas en `sprites/` y cargarlas en BootScene.
+  3. Dejar el dibujo a mano como respaldo: si una imagen falta, el juego
+     sigue funcionando igual que ahora.
+  4. Probar en el navegador que no se rompe el orden de profundidad ni las
+     colisiones (los sprites nuevos pueden traer margenes distintos).
+
+  Empezaria por los COCHES: son lo que mas se mira y lo que menos riesgo
+  tiene, porque no dependen del sistema de cuerpo ni de las animaciones.

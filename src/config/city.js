@@ -16,16 +16,16 @@ export const T = {
 export const SOLID_TILES = new Set([T.WATER]);
 
 export const CITY = {
-  // La ciudad ha crecido dos veces: 124x104 al principio, 173x146 y ahora
-  // 221x182 casillas (7.072 x 5.824 px), mas de tres veces la original.
-  // Todo sale de aqui: para agrandarla otra vez basta con añadir calles y su
-  // fila o columna en blockZones.
-  width: 221,
-  height: 182,
+  // La ciudad ha crecido tres veces: 124x104 al principio, 173x146, 221x182
+  // y ahora 325x262 casillas (10400 x 8384 px), mas de SEIS veces
+  // la original. Todo sale de aqui: para agrandarla otra vez basta con añadir
+  // calles y su fila o columna en blockZones.
+  width: 325,
+  height: 262,
   seed: 20260920,
 
-  seaTop: 173,
-  portTop: 154,
+  seaTop: 253,
+  portTop: 234,
 
   roadsH: [
     { y: 4, h: 5 },
@@ -37,23 +37,32 @@ export const CITY = {
     { y: 112, h: 5 },
     { y: 130, h: 5 },
     { y: 148, h: 5 },
+    { y: 166, h: 5 },
+    { y: 184, h: 5 },
+    { y: 202, h: 5 },
+    { y: 220, h: 5 },
   ],
   roadsV: [
     { x: 4, w: 5 },
-    { x: 26, w: 5 },
-    { x: 50, w: 5 },
-    { x: 74, w: 5 },
-    { x: 98, w: 5 },
-    { x: 122, w: 5 },
-    { x: 146, w: 5 },
-    { x: 170, w: 5 },
-    { x: 194, w: 5 },
-    { x: 212, w: 5 },
+    { x: 28, w: 5 },
+    { x: 52, w: 5 },
+    { x: 76, w: 5 },
+    { x: 100, w: 5 },
+    { x: 124, w: 5 },
+    { x: 148, w: 5 },
+    { x: 172, w: 5 },
+    { x: 196, w: 5 },
+    { x: 220, w: 5 },
+    { x: 244, w: 5 },
+    { x: 268, w: 5 },
+    { x: 292, w: 5 },
+    { x: 316, w: 5 },
   ],
 
   // calle del puerto y sus dos bajadas desde la ronda sur
-  portRoad: { y: 162, h: 5, x0: 10, x1: 209 },
-  portLinks: [{ x: 74, w: 5 }, { x: 170, w: 5 }],
+  portRoad: { y: 242, h: 5, x0: 10, x1: 313 },
+  portLinks: [{ x: 100, w: 5 }, { x: 220, w: 5 }],
+
   zones: {
     residencial: {
       label: 'Residencial',
@@ -90,22 +99,27 @@ export const CITY = {
   // que zona ocupa cada manzana: [fila][columna]
   // filas de arriba a abajo, columnas de izquierda a derecha
   blockZones: [
-    ['residencial', 'residencial', 'residencial', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
-    ['residencial', 'residencial', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
-    ['residencial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'industrial'],
-    ['comercial', 'comercial', 'comercial', 'centro', 'centro', 'comercial', 'conflictivo', 'industrial', 'industrial'],
-    ['comercial', 'comercial', 'comercial', 'comercial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial'],
-    ['comercial', 'residencial', 'residencial', 'comercial', 'comercial', 'industrial', 'industrial', 'industrial', 'conflictivo'],
-    ['residencial', 'residencial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial', 'conflictivo', 'conflictivo'],
-    ['industrial', 'industrial', 'comercial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'residencial', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'centro', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'industrial', 'conflictivo', 'conflictivo', 'conflictivo'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['comercial', 'comercial', 'comercial', 'comercial', 'centro', 'centro', 'centro', 'centro', 'centro', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial'],
+    ['industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial', 'industrial'],
   ],
+
   hideout: { blockRow: 0, blockCol: 0, label: 'Tu escondite' },
 
   // sitios reconocibles para poder orientarse: sin esto todas las manzanas
   // se parecen y no hay forma de saber donde estas
   landmarks: [
-    { type: 'plaza', label: 'Plaza del Farol', x: 104, y: 82, w: 15, h: 9 },
-    { type: 'torre', label: 'Torre Sombra', x: 106, y: 64, w: 11, h: 9 },
-    { type: 'faro', label: 'El Faro', x: 196, y: 167, w: 6, h: 6 },
-    { type: 'grua', label: 'Grua del Puerto', x: 56, y: 167, w: 16, h: 4 },
+    { type: 'plaza', label: 'Plaza del Farol', x: 154, y: 125, w: 15, h: 9 },
+    { type: 'torre', label: 'Torre Sombra', x: 156, y: 107, w: 11, h: 9 },
+    { type: 'faro', label: 'El Faro', x: 299, y: 247, w: 6, h: 6 },
+    { type: 'grua', label: 'Grua del Puerto', x: 56, y: 247, w: 16, h: 4 },
   ],};

@@ -1,14 +1,17 @@
 import { TILE } from '../config/balance.js';
+import { GameState } from '../core/GameState.js';
+import { EventBus, EVT } from '../core/EventBus.js';
 
-// La armeria. Cuatro locales repartidos por la ciudad, con su puerta a la calle
+// La armeria. Siete locales repartidos por la ciudad, con su puerta a la calle
 // y su marcador, como el escondite. Conseguir un hierro matando a alguien esta
 // bien para el apuro, pero si no hay donde comprar, el dinero no sirve de nada
 // y las balas se acaban.
 //
 // Aqui solo esta el sitio: lo que se vende y a que precio va en ShopScene.
 
-const TIENDAS = 4;   // la ciudad crecio al doble, una mas
-const SEPARACION = 1400;
+const TIENDAS = 7;          // una por barrio, en una ciudad seis veces mayor
+const SEPARACION = 1700;
+const DESCUBRE = 340;       // a esta distancia te enteras de que existe
 const ALCANCE = 62;
 
 export class ShopSystem {
@@ -45,14 +48,22 @@ export class ShopSystem {
     );
     Phaser.Utils.Array.Shuffle(candidatos);
 
-    for (const b of candidatos) {
-      if (this.tiendas.length >= TIENDAS) break;
-      if (this.tiendas.some((t) => Phaser.Math.Distance.Between(t.x, t.y, b.px, b.py) < SEPARACION)) continue;
-      const puerta = this.puertaDe(b);
-      if (!puerta) continue;
+    // Primero una por barrio y luego las que falten: si no, salian tres
+    // seguidas en el centro y ninguna en media ciudad.
+    const barriosPuestos = new Set();
+    for (const pasada of [1, 2]) {
+      for (const b of candidatos) {
+        if (this.tiendas.length >= TIENDAS) break;
+        if (pasada === 1 && barriosPuestos.has(b.zone)) continue;
+        if (this.tiendas.some((t) => Phaser.Math.Distance.Between(t.x, t.y, b.px, b.py) < SEPARACION)) continue;
+        const puerta = this.puertaDe(b);
+        if (!puerta) continue;
 
-      this.tiendas.push({ x: puerta.x, y: puerta.y, edificio: b });
-      this.pintar(puerta);
+        barriosPuestos.add(b.zone);
+        const clave = `armeria-${Math.round(puerta.x)}-${Math.round(puerta.y)}`;
+        this.tiendas.push({ x: puerta.x, y: puerta.y, edificio: b, clave, zona: b.zone });
+        this.pintar(puerta);
+      }
     }
   }
 
@@ -71,12 +82,15 @@ export class ShopSystem {
 
   update(player, enCoche) {
     this.cerca = null;
-    if (enCoche) return;
     for (const t of this.tiendas) {
-      if (Phaser.Math.Distance.Between(t.x, t.y, player.x, player.y) < ALCANCE) {
-        this.cerca = t;
-        return;
+      const d = Phaser.Math.Distance.Between(t.x, t.y, player.x, player.y);
+
+      // pasar por delante basta para que quede marcada en el mapa
+      if (d < DESCUBRE && GameState.descubrir(t.clave)) {
+        EventBus.emit(EVT.NOTIFY, { text: 'Nuevo sitio: armeria', tone: 'objective' });
+        EventBus.emit(EVT.STATS_CHANGED, { descubierto: t.clave });
       }
+      if (!enCoche && d < ALCANCE) this.cerca = t;
     }
   }
 }

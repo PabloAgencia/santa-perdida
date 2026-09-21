@@ -1,4 +1,7 @@
-// Todo el sonido se sintetiza en el navegador: ni un fichero de audio.
+// El sonido se sintetiza en el navegador, pero si hay ficheros en /audio se
+// usan ESOS en su lugar: un motor grabado de verdad no hay sintetizador que
+// lo iguale. Ver SONIDOS-QUE-BAJAR.txt para la lista y los nombres exactos.
+// Si el fichero no esta, el juego suena igual que antes y no falla nada.
 // El navegador no deja arrancar el sonido sin que el jugador toque algo,
 // asi que start() se llama con la primera tecla o el primer clic.
 
@@ -23,6 +26,8 @@ class GameAudio {
     this.master.connect(this.ctx.destination);
 
     this.noise = this._makeNoise();
+    this.muestras = {};
+    this.cargarMuestras();
     this._buildEngine();
     this._buildSkid();
     this._buildSiren();
@@ -54,6 +59,70 @@ class GameAudio {
   // verdad tiene VARIOS armonicos de la frecuencia de encendido, aire
   // (ruido filtrado) y, sobre todo, MARCHAS: las vueltas suben, cambia y
   // caen de golpe. Eso es lo que se oye como "de menos a mas".
+  // Carga lo que haya en /audio. La lista viene de audio/lista.json para no
+  // pedir ficheros que no existen y llenar la consola de errores: esa lista
+  // la rehace `node herramientas/actualizar-audio.js` al meter sonidos.
+  async cargarMuestras() {
+    let nombres = [];
+    try {
+      const res = await fetch('audio/lista.json');
+      if (!res.ok) return;
+      nombres = await res.json();
+    } catch (e) {
+      return;
+    }
+
+    const CLAVES = {
+      'motor-loop.mp3': 'motor',
+      'frenada.mp3': 'frenada',
+      'choque.mp3': 'choque',
+      'disparo-pistola.mp3': 'pistola',
+      'disparo-escopeta.mp3': 'escopeta',
+      'punetazo.mp3': 'golpe',
+    };
+
+    for (const nombre of nombres) {
+      const clave = CLAVES[nombre];
+      if (!clave) continue;
+      try {
+        const res = await fetch(`audio/${nombre}`);
+        if (!res.ok) continue;
+        this.muestras[clave] = await this.ctx.decodeAudioData(await res.arrayBuffer());
+        if (clave === 'motor') this._motorDeMuestra();
+      } catch (e) { /* si falla uno, el resto sigue */ }
+    }
+  }
+  // El motor grabado se reproduce en bucle y se le cambia la VELOCIDAD DE
+  // REPRODUCCION segun las vueltas: es como suenan los motores en los juegos
+  // de coches desde siempre, y con las marchas de aqui da el subir y bajar.
+  _motorDeMuestra() {
+    if (this.motorFuente) return;
+    const src = this.ctx.createBufferSource();
+    src.buffer = this.muestras.motor;
+    src.loop = true;
+    this.motorGain = this.ctx.createGain();
+    this.motorGain.gain.value = 0;
+    src.connect(this.motorGain);
+    this.motorGain.connect(this.master);
+    src.start();
+    this.motorFuente = src;
+  }
+
+  // suena una muestra suelta, con un poco de variacion de tono
+  soltar(clave, volumen = 1, tono = 1) {
+    const buf = this.muestras[clave];
+    if (!buf) return false;
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    src.playbackRate.value = tono * (0.94 + Math.random() * 0.12);
+    const g = this.ctx.createGain();
+    g.gain.value = volumen;
+    src.connect(g);
+    g.connect(this.master);
+    src.start();
+    return true;
+  }
+
   _buildEngine() {
     const ctx = this.ctx;
     this.engGain = ctx.createGain();
@@ -184,6 +253,21 @@ class GameAudio {
 
   engine(on, ratio, throttle, perfil = null) {
     if (!this.started) return;
+
+    // con el motor grabado, el sintetizado se calla y manda la muestra
+    if (this.motorFuente) {
+      const t2 = this.ctx.currentTime;
+      const r2 = clamp(ratio, 0, 1);
+      const caja2 = this._vueltasDe(r2);
+      const p2 = perfil || { vol: 1 };
+      this.motorFuente.playbackRate.setTargetAtTime(0.62 + caja2.vueltas * 1.25, t2, 0.06);
+      this.motorGain.gain.setTargetAtTime(
+        on ? (0.35 + caja2.vueltas * 0.5) * (p2.vol || 1) : 0, t2, 0.08
+      );
+      if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
+      if (this.aireGain) this.aireGain.gain.setTargetAtTime(on ? r2 * 0.25 : 0, t2, 0.12);
+      return;
+    }
     const t = this.ctx.currentTime;
     const r = clamp(ratio, 0, 1);
     const p = perfil || { base: 46, range: 155, wave: 'sawtooth', body: 0.5, bright: 2300, vol: 1 };
@@ -228,6 +312,7 @@ class GameAudio {
 
   crash(intensity) {
     if (!this.started) return;
+    if (this.soltar('choque', clamp(intensity, 0.15, 1) * 0.9)) return;
     const ctx = this.ctx;
     const t = ctx.currentTime;
     const a = clamp(intensity, 0.15, 1);

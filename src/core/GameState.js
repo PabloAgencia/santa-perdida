@@ -45,7 +45,23 @@ class GameStateClass {
     this.armaActual = 'puno';
     // el chaleco se gasta antes que la vida, y no se recupera solo
     this.blindaje = 0;
+    // Sitios que ya has visto de cerca. El mapa solo enseña lo descubierto:
+    // una ciudad de la que lo sabes todo desde el minuto uno no invita a
+    // recorrerla.
+    this.descubiertos = {};
     this.flags = {};
+  }
+
+  // ---------- sitios ----------
+
+  descubrir(clave) {
+    if (this.descubiertos[clave]) return false;
+    this.descubiertos[clave] = true;
+    return true;
+  }
+
+  conoce(clave) {
+    return !!this.descubiertos[clave];
   }
 
   // ---------- armas ----------
@@ -249,6 +265,7 @@ class GameStateClass {
       armas: this.armas,
       armaActual: this.armaActual,
       blindaje: this.blindaje,
+      descubiertos: this.descubiertos,
       flags: this.flags,
       savedAt: Date.now(),
     };
@@ -271,6 +288,7 @@ class GameStateClass {
     this.armas = data.armas ?? { puno: null };
     this.armaActual = data.armaActual ?? 'puno';
     this.blindaje = data.blindaje ?? 0;
+    this.descubiertos = data.descubiertos ?? {};
     this.flags = data.flags ?? {};
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;

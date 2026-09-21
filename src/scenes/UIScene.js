@@ -141,11 +141,24 @@ export class UIScene extends Phaser.Scene {
       .setDisplaySize(13, 13).setTint(0xf2efe6);
     this.mapaMundo.add([this.mapTarget, this.mapPlayer]);
 
-    // las armerias son sitios fijos: se marcan una vez y ahi se quedan
+    // Las armerias salen en el mapa solo cuando las has descubierto. Se
+    // crean todas y se enseñan o no: asi no hay que rehacer nada al
+    // encontrar una.
+    this.puntosTienda = [];
     for (const t of city.shops ? city.shops.tiendas : []) {
       const q = this.toMinimap(t.x, t.y);
+      const punto = this.add.image(q.x, q.y, 'px')
+        .setDisplaySize(7, 7).setTint(0x7fd08a).setVisible(GameState.conoce(t.clave));
+      punto.clave = t.clave;
+      this.puntosTienda.push(punto);
+      this.mapaMundo.add(punto);
+    }
+
+    // los puntos de referencia si se ven desde el principio: para eso estan
+    for (const L of city.map.cfg.landmarks || []) {
+      const q = this.toMinimap((L.x + L.w / 2) * 32, (L.y + L.h / 2) * 32);
       this.mapaMundo.add(
-        this.add.image(q.x, q.y, 'px').setDisplaySize(7, 7).setTint(0x7fd08a)
+        this.add.image(q.x, q.y, 'px').setDisplaySize(6, 6).setTint(0xc8a465).setAlpha(0.9)
       );
     }
     if (city.hideoutDoor) {
@@ -281,6 +294,10 @@ export class UIScene extends Phaser.Scene {
     this.mapaMundo.setPosition(this.mapX + ox, this.mapY + oy);
 
     this.mapPlayer.setPosition(p.x, p.y).setRotation((d.player.angle || 0) + Math.PI / 2);
+
+    for (const punto of this.puntosTienda) {
+      if (!punto.visible && GameState.conoce(punto.clave)) punto.setVisible(true);
+    }
 
     if (d.target) {
       const t = this.toMinimap(d.target.x, d.target.y);

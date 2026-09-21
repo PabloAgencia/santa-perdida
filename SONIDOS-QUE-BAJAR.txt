@@ -1,0 +1,78 @@
+SONIDOS QUE HAY QUE BAJAR DE PIXABAY                        (22-sep-2026)
+================================================================================
+
+El juego ya suena sin esto (todo sintetizado), pero en cuanto aparezca un
+fichero con el nombre exacto en la carpeta `audio/`, el juego lo usa solo.
+No hay que tocar ni una linea de codigo: se detecta al arrancar y, si no
+esta, se sigue sintetizando.
+
+Yo no puedo bajarlos: Pixabay bloquea la descarga por script (te salta la
+pantalla de "Just a moment" de Cloudflare). Desde el navegador, a mano, son
+dos minutos.
+
+POR QUE NO SE USAN LOS SONIDOS DE LOS GTA
+  El juego esta publicado en santa-perdida.pages.dev y en GitHub Pages, y el
+  repositorio es publico. El audio de un GTA es de Rockstar: una reclamacion
+  tumbaria la web y el repositorio. En tu ordenador, para ti, haz lo que
+  quieras; en lo que esta publicado a tu nombre, no.
+
+
+--------------------------------------------------------------------------------
+LO IMPORTANTE: EL MOTOR
+--------------------------------------------------------------------------------
+  Guardar como:  audio/motor-loop.mp3
+
+  Buscar en pixabay.com/sound-effects:   "car engine loop"
+                                         "engine idle loop"
+                                         "car idle"
+
+  QUE TIENE QUE SER: un motor AL RALENTI o a pocas vueltas, en BUCLE, de 3 a
+  10 segundos, sin arranque de llave al principio ni frenazo al final, y sin
+  musica ni voces. Cuanto mas plano y aburrido, mejor.
+
+  POR QUE ASI: el juego le cambia la velocidad de reproduccion segun las
+  vueltas (de 0,62 a 1,87), y por encima va montada la caja de cambios de
+  cinco marchas que ya esta hecha. Si el fichero ya trae el motor acelerando,
+  al estirarlo suena raro. Con un ralenti limpio sale el "de menos a mas" de
+  verdad.
+
+  Si encuentras uno bueno de coche deportivo y otro de furgoneta, guardame
+  los dos y los reparto por tipo de vehiculo (dime y lo monto).
+
+
+--------------------------------------------------------------------------------
+LOS DEMAS (opcionales, por orden de lo que mas se nota)
+--------------------------------------------------------------------------------
+  audio/choque.mp3          "car crash" / "metal impact"
+                            Un golpe seco de chapa, menos de 1 segundo.
+
+  audio/frenada.mp3         "tire screech" / "car skid"
+                            Derrape de ruedas, 1-2 segundos.
+
+  audio/disparo-pistola.mp3 "pistol shot" / "gun shot"
+                            Un tiro seco, sin eco largo.
+
+  audio/disparo-escopeta.mp3  "shotgun"
+                            Mas grave y con mas cuerpo que el anterior.
+
+  audio/punetazo.mp3        "punch" / "body hit"
+                            Golpe corto y sordo.
+
+
+--------------------------------------------------------------------------------
+COMO BAJARLOS
+--------------------------------------------------------------------------------
+  1. pixabay.com/sound-effects/ y buscar lo de arriba.
+  2. Escucharlo antes: que no traiga musica de fondo ni voces.
+  3. Descargar (la licencia de Pixabay permite uso comercial y no pide
+     atribucion, asi que se puede publicar sin problema).
+  4. Renombrarlo con el nombre EXACTO de esta lista.
+  5. Dejarlo en `E:\Escritorio\GTA PRUEBA\audio\`.
+  6. Ejecutar una vez:   node herramientas/actualizar-audio.js
+     (eso apunta los sonidos nuevos en audio/lista.json; sin ese paso el
+     juego no los busca, y asi la consola no se llena de errores por los
+     ficheros que todavia no estan)
+  7. Recargar el juego. Nada mas.
+
+  Si un fichero suena demasiado alto o bajo, dimelo y ajusto el volumen en
+  `src/core/Audio.js`; no hace falta volver a bajarlo.
