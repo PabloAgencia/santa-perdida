@@ -846,7 +846,30 @@ LA CIUDAD MAS VIVA
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------
- 19. PROBAR GOOGLE AI STUDIO para lo que suma sin romper la coherencia, por
+--------------------------------------------------------------------------------
+EL PERSONAJE  (pedido por Pablo el 21-sep) -> detalle en SISTEMA-PERSONAJE.txt
+--------------------------------------------------------------------------------
+ 19. COMIDA: maquinas de refrescos por la calle (+vida, +algo de grasa) y
+     puestos de comida con racion a elegir. Hoy la unica forma de curarse es
+     cruzar media ciudad hasta el escondite.
+ 20. ESTADISTICAS que suben con lo que haces y que HACEN algo: grasa,
+     musculo, aguante, pulso al volante, punteria y atractivo.
+ 21. EL FISICO SE VE: gordo, flaco o cachas cambiando `ancho` y `largo` en
+     `world/personArt.js`. OJO, correccion a lo que se dijo antes: aqui esto
+     es BARATO, porque el personaje es dibujo parametrico, no un modelo 3D.
+ 22. GIMNASIO con tres maquinas (pesas, cinta, saco), minijuegos cortos y
+     tope diario para que la progresion no se haga en una tarde.
+ 23. ROPA en el armario del piso: cambia los colores del sprite, sube el
+     atractivo y el respeto con unas bandas y lo baja con otras.
+ 24. GARAJE SEGUN EL TAMAÑO DE LA CASA: cuchitril 1 coche, piso 2, casa del
+     centro 4, nave del puerto 6 (y ahi se entregan los coches encargados).
+     Se guardan con su color, su tuneo y su estado.
+ 25. CHALECO que se gasta antes que la vida y que se ve en el sprite.
+
+--------------------------------------------------------------------------------
+ARTE
+--------------------------------------------------------------------------------
+ 26. PROBAR GOOGLE AI STUDIO para lo que suma sin romper la coherencia, por
      este orden: retratos de los contactos de banda, iconos, props de calle
      en una sola lamina, portada del menu, y una prueba controlada de los
      cinco coches. Detalle en IDEAS-ARTE-CON-IA.txt.
@@ -857,14 +880,14 @@ ARTE
 --------------------------------------------------------------------------------
 COLGANDO DE OTRA COSA
 --------------------------------------------------------------------------------
- 20. CORREO DE RECUPERAR CONTRASEÑA: el codigo esta hecho y probado en los
+ 27. CORREO DE RECUPERAR CONTRASEÑA: el codigo esta hecho y probado en los
      dos juegos y Supabase ya apunta a Resend, pero el dominio
      juegos.creskio.com estaba "pending" de verificar en Resend. En cuanto
      se ponga en verde, probar de punta a punta. (21-sep, 22:40)
- 21. AJUSTAR A GUSTO: aceleracion y frenada (`config/vehicles.js`), verde de
+ 28. AJUSTAR A GUSTO: aceleracion y frenada (`config/vehicles.js`), verde de
      los semaforos (`systems/TrafficLights.js`), volumen de la sirena
      (`core/Audio.js`) y cuanto se ven los pasos de cebra
      (`CityScene.drawCrosswalks`, ahora 0,42 de alfa).
- 22. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.
- 23. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba. El seguro
+ 29. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.
+ 30. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba. El seguro
      sigue puesto.

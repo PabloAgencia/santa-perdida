@@ -1,0 +1,196 @@
+================================================================================
+SANTA PERDIDA — EL PERSONAJE: ESTADISTICAS, FISICO, COMIDA Y GIMNASIO
+Pedido por Pablo el 21-sep-2026. Inspirado en San Andreas, con numeros propios.
+================================================================================
+
+CORRECCION A LO QUE DIJE AYER
+  En el primer cuaderno puse el gimnasio y el fisico como [C] caro y dije que
+  lo dejaria fuera. Estaba pensando en San Andreas, donde cambiar el cuerpo
+  de CJ son modelos 3D distintos.
+  AQUI NO. Tu personaje se dibuja por codigo en `world/personArt.js` con dos
+  numeros: `ancho` y `largo`. Estar gordo, flaco o cachas es cambiar esos dos
+  numeros y regenerar las cuatro texturas de andar. Se hace en un rato.
+  Asi que el fisico pasa de [C] a [B]. Adelante con ello.
+
+
+================================================================================
+1. LAS ESTADISTICAS
+================================================================================
+Seis, y cada una TIENE QUE HACER ALGO que se note. Una estadistica que no
+cambia nada es un numero en una pantalla y sobra.
+
+  GRASA (0-100)
+    Sube: comiendo. Baja: corriendo, peleando y en el gimnasio.
+    Efecto: mucha grasa = corres mas lento y te cansas antes, pero aguantas
+    algo mas los golpes. Poca grasa con poco musculo = flaco, rapido pero
+    endeble.
+
+  MUSCULO (0-100)
+    Sube: gimnasio y peleas. Baja: si pasas mucho tiempo sin entrenar.
+    Efecto: mas daño cuerpo a cuerpo, mas vida maxima, y apartas a los
+    peatones de un empujon en vez de rebotar con ellos.
+
+  AGUANTE (0-100)
+    Sube: correr con SHIFT y las peleas largas.
+    Efecto: cuanto corres antes de quedarte sin fuelle. Hoy puedes correr
+    infinito; con esto hay que dosificar, y la mejora se nota de verdad.
+
+  PULSO AL VOLANTE (0-100)
+    Sube: conduciendo (metros hechos, que ya los cuentas en `stats`).
+    Efecto: el coche agarra mejor y derrapa menos. Es tocar `lateralRetention`
+    y `turnRate` con un multiplicador segun la estadistica.
+    Esto es lo que hace que a las tres horas conduzcas como otra persona.
+
+  PUNTERIA (0-100)
+    Sube: disparando y acertando (cuando existan las armas).
+    Efecto: menos dispersion y mas alcance de la fijacion automatica.
+
+  ATRACTIVO / "como te miran" (0-100)
+    Sube: ropa buena, fisico cuidado, coche caro, dinero.
+    En San Andreas la ropa vale la mitad de esta estadistica; aqui igual.
+    Efecto: los contactos te sueltan encargos mejores, en las tiendas te
+    hacen precio, y la gente de tu banda te sigue antes.
+
+  DONDE VIVEN: `core/GameState.js`, un objeto `stats` (ya existe) con estos
+  seis. Se guardan en la partida y viajan a la nube solos.
+  DONDE SE VEN: pantalla nueva en la pausa, con seis barras.
+
+
+================================================================================
+2. EL FISICO QUE SE VE
+================================================================================
+Tres numeros de `personArt.js` hacen todo el trabajo:
+
+    ancho  -> lo ancho que es el tronco   (grasa y musculo)
+    largo  -> lo largo                    (queda casi fijo)
+    hombros-> se marcan mas con musculo
+
+  LA REGLA
+    ancho base 13
+    + grasa/100  * 5      (gordo: hasta 18, redondo)
+    + musculo/100 * 3     (cachas: hombros y brazos mas gruesos)
+    Un flaco sin musculo se queda en 11 y se le nota escuchimizado.
+
+  CUANDO SE REGENERA: solo al cambiar de tramo (cada 10 puntos), no cada
+  fotograma. Son cuatro `generateTexture` y listo.
+
+  DETALLE BONITO Y BARATO: que el brazo se separe mas del tronco al estar
+  cachas. Ya esta parametrizado (`brazoY = ancho * 0.66`), sale solo.
+
+
+================================================================================
+3. COMIDA
+================================================================================
+  MAQUINAS DE REFRESCOS (las que pide Pablo)
+    Repartidas por las aceras, junto a los edificios. Son un cuadrado con su
+    luz. Te acercas, E, pagas 2-4 €:
+      · refresco     +10 de vida, +1 de grasa
+      · bocadillo    +25 de vida, +2 de grasa
+    Es la forma barata y rapida de curarse en plena calle. Ahora mismo, si
+    te pegan, la unica cura es cruzar media ciudad hasta el escondite.
+
+  PUESTOS Y BARES
+    En las plazas y el paseo. Mas caros y con racion a elegir, como en San
+    Andreas (pequeña +1 grasa, mediana +2, grande +3):
+      · picar algo   15 €,  +30 vida, +1 grasa
+      · comer bien   30 €,  +60 vida, +2 grasa
+      · atracarse    45 €, +100 vida, +3 grasa   (y te mueves peor un rato)
+
+  HAMBRE (opcional y suave)
+    En San Andreas hay que comer al menos cada 72 horas de juego o pasas
+    hambre. Aqui, con un dia de juego corto, lo suave seria: si no comes en
+    todo un dia de juego, empiezas a perder aguante (no vida). Nada de morir
+    de hambre: eso molesta mas de lo que aporta.
+    -> Que se pueda quitar en los ajustes.
+
+
+================================================================================
+4. GIMNASIO
+================================================================================
+  UN LOCAL por zona (centro y comercial). Entras, pagas la cuota (20 €) y
+  eliges maquina. Interior propio, como el escondite.
+
+  TRES MAQUINAS, tres minijuegos cortos (10-20 segundos):
+    · PESAS      -> musculo. Pulsar la tecla al ritmo que marca una barra;
+                    si te pasas de rapido, no cuenta.
+    · CINTA      -> quema grasa y sube aguante. Mantener el ritmo con las
+                    flechas alternas.
+    · SACO       -> musculo y algo de puntería de cerca. Golpear a tiempo.
+
+  RITMO (adaptado de San Andreas, donde en la cinta se pierde 2,5% de grasa
+  cada 14 segundos y corriendo por la calle 1,5% cada 150):
+    · en el gimnasio: rapido, es para lo que vas.
+    · corriendo por la ciudad: lento pero constante, para que el que no pisa
+      el gimnasio tambien note algo.
+    · TOPE DIARIO: no se puede subir todo en una tarde encerrado. Un limite
+      por dia de juego obliga a volver y estira la progresion.
+
+  EFECTO VISIBLE: al salir del gimnasio, el personaje se ve distinto. Es el
+  premio de verdad.
+
+
+================================================================================
+5. ROPA Y ASPECTO
+================================================================================
+  Armario en cada piso. Cambia colores de `personArt.js`: chaqueta, piel,
+  pelo y el detalle. Por eso es barato.
+    · ropa de calle (gratis, la de inicio)
+    · ropa de banda (en los colores de cada una): sube el atractivo y el
+      respeto con esa banda, lo baja con las rivales
+    · ropa cara del centro: sube el atractivo y hace que en los barrios
+      malos te miren peor
+    · mono de trabajo: los guardias y la policia sospechan menos de ti
+  En San Andreas la ropa es el 4% del respeto y la mitad del atractivo:
+  misma idea aqui.
+
+
+================================================================================
+6. TIENDA DE ARMAS Y BLINDAJE  (ya estaba apuntado, aqui con detalle)
+================================================================================
+  DOS TIENDAS: una en el barrio conflictivo (barata, sin preguntas) y otra
+  en el comercial (mas cara, pero no te miran raro al salir).
+
+  CATALOGO propuesto, encajado con tu economia (empiezas con 35 €, un
+  reparto paga 40-90, una mision 180-600):
+      bate            120 €
+      pistola         900 €      + municion  30 € las 20 balas
+      escopeta      2.400 €      + municion  60 € las 10
+      subfusil      5.000 €      + municion 120 € las 60
+      CHALECO         700 €      100 puntos de blindaje que se gastan
+                                 antes que la vida
+  El chaleco se ve: una franja mas clara en el tronco del sprite. Otra vez,
+  gratis por ser dibujo parametrico.
+
+
+================================================================================
+7. GARAJE SEGUN EL TAMAÑO DE LA CASA  (lo que pregunta Pablo: si, apuntado)
+================================================================================
+  Cada piso tiene su garaje y CABEN MAS COCHES CUANTO MAS GRANDE (y mas caro)
+  sea. Propuesta:
+
+      cuchitril del barrio malo    1.500 €   -> 1 coche
+      piso normal                  6.000 €   -> 2 coches
+      casa del centro             18.000 €   -> 4 coches
+      nave del puerto             30.000 €   -> 6 coches y sitio para
+                                                camiones y furgonetas
+
+  · Al aparcar dentro, el coche se guarda con su color, su tuneo y su estado.
+  · Si el garaje esta lleno y metes otro, te avisa de cual vas a perder.
+  · Los coches guardados se reponen ahi al cargar la partida (ya guardas los
+    coches del jugador, solo falta marcar cuales estan "en garaje").
+  · La nave del puerto es ademas donde se entregan los coches encargados.
+
+
+================================================================================
+ORDEN QUE PROPONGO PARA TODO ESTE BLOQUE
+================================================================================
+  1. Maquinas de refrescos y puestos de comida  [B]  — utilidad inmediata:
+     hoy no hay forma de curarse sin cruzar la ciudad.
+  2. Aguante (correr se agota)                  [B]  — cambia como se anda.
+  3. Grasa y musculo con el fisico que se ve    [B]  — dos numeros.
+  4. Gimnasio con sus tres maquinas             [M]
+  5. Pulso al volante y punteria                [M]  — las que mas se notan
+     a la hora de juego.
+  6. Ropa en el armario                         [M]
+  7. Atractivo y sus efectos                    [M]  — el ultimo, porque
+     depende de que existan tiendas y contactos.
