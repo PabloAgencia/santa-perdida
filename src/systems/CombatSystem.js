@@ -205,7 +205,8 @@ export class CombatSystem {
     if (!this.scene.pickups) return;
     if (ente.esPolicia) {
       this.scene.pickups.soltarArma(ente.x, ente.y, 'pistola', 14);
-    } else if (ente.faction && Math.random() < 0.35) {
+    } else if (ente.armado) {
+      // solo suelta hierro el que lo llevaba: si te ha estado disparando, ahi queda
       const clave = Math.random() < 0.25 ? 'escopeta' : 'pistola';
       this.scene.pickups.soltarArma(ente.x, ente.y, clave, clave === 'escopeta' ? 6 : 10);
     } else if (!ente.faction && Math.random() < 0.08) {
@@ -222,6 +223,57 @@ export class CombatSystem {
     return this.scene.police.units.some(
       (u) => Phaser.Math.Distance.Between(u.vehicle.x, u.vehicle.y, player.x, player.y) < radio * 2
     );
+  }
+
+  // ---------- cuando disparan ELLOS ----------
+
+  // Un agente o un pandillero le pega un tiro al jugador. Usa el mismo
+  // trazado que el del jugador, asi que las paredes paran las balas igual
+  // para todos: nada de que a ti te frenen y a ellos no.
+  disparoDeNPC(origen, objetivo, dano, alcance, dispersionGrados) {
+    const base = Math.atan2(objetivo.y - origen.y, objetivo.x - origen.x);
+    const desvio = Phaser.Math.DegToRad((Math.random() - 0.5) * 2 * dispersionGrados);
+    const angulo = base + desvio;
+
+    const cos = Math.cos(angulo);
+    const sin = Math.sin(angulo);
+    const pasos = Math.ceil(alcance / 8);
+    let fin = { x: origen.x + cos * alcance, y: origen.y + sin * alcance };
+    let acierto = false;
+
+    for (let i = 1; i <= pasos; i++) {
+      const d = (i / pasos) * alcance;
+      const x = origen.x + cos * d;
+      const y = origen.y + sin * d;
+      if (this.scene.map.isSolidPoint(x, y)) { fin = { x, y }; break; }
+      if (Math.hypot(objetivo.x - x, objetivo.y - y) < 11) {
+        fin = { x, y };
+        acierto = true;
+        break;
+      }
+    }
+
+    this.pintarDisparo(origen, fin.x, fin.y);
+    Audio.crash(0.22);
+    if (acierto) {
+      GameState.damage(dano, 'disparo');
+      this.scene.cameras.main.shake(90, 0.003);
+    }
+    return acierto;
+  }
+
+  // ¿hay pared de por medio? sirve para que no disparen a ciegas
+  veA(origen, objetivo, alcance) {
+    const dist = Phaser.Math.Distance.Between(origen.x, origen.y, objetivo.x, objetivo.y);
+    if (dist > alcance) return false;
+    const pasos = Math.ceil(dist / 16);
+    for (let i = 1; i < pasos; i++) {
+      const t = i / pasos;
+      const x = origen.x + (objetivo.x - origen.x) * t;
+      const y = origen.y + (objetivo.y - origen.y) * t;
+      if (this.scene.map.isSolidPoint(x, y)) return false;
+    }
+    return true;
   }
 
   // ---------- pintura ----------

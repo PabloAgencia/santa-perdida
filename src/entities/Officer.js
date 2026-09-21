@@ -1,7 +1,21 @@
 import { FASES } from '../world/personArt.js';
 import { VIDA } from '../config/weapons.js';
+import { GameState } from '../core/GameState.js';
 
 const RADIO = 9;
+
+// Con una estrella te quieren detener y van a por ti; a partir de dos sacan
+// el arma. Asi la primera estrella se puede jugar corriendo, y tener tres
+// significa algo distinto a tener una.
+const TIRO = {
+  desdeBusca: 2,
+  alcance: 290,
+  dano: 8,
+  cadencia: 1.5,       // segundos entre tiros
+  dispersion: 9,       // grados: fallan bastante mas que tu
+  masSiCorres: 6,      // y mucho mas si no te quedas quieto
+  seQuedanA: 140,      // si estan a menos, no se acercan mas: paran y disparan
+};
 
 // Agente a pie. Sale del coche cuando vas andando y te persigue para
 // detenerte; si te subes a un coche, vuelve corriendo al suyo.
@@ -17,6 +31,7 @@ export class Officer {
     this.stuck = 0;
     this.vida = VIDA.policia;
     this.down = false;
+    this.recarga = 1.3;   // margen para reaccionar al verles bajar del coche
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.32).setAlpha(0.45);
     this.paso = 0;
@@ -44,12 +59,40 @@ export class Officer {
     return 'muerto';
   }
 
+  // Dispara si le toca: solo con dos estrellas o mas, con el jugador a tiro y
+  // sin pared en medio. Devuelve true si ademas debe quedarse quieto.
+  intentarDisparar(dt, objetivo, dist) {
+    this.recarga -= dt;
+    if (GameState.wanted < TIRO.desdeBusca) return false;
+    if (dist > TIRO.alcance) return false;
+
+    const combat = this.scene.combat;
+    if (!combat || !combat.veA(this, objetivo, TIRO.alcance)) return false;
+
+    if (this.recarga <= 0) {
+      this.recarga = TIRO.cadencia * (0.8 + Math.random() * 0.5);
+      // a un blanco que corre se le falla: quedarse quieto a cubierto y correr
+      // tienen que ser decisiones distintas
+      const corriendo = this.scene.player && this.scene.player.running;
+      const desvio = TIRO.dispersion + (corriendo ? TIRO.masSiCorres : 0);
+      combat.disparoDeNPC(this, objetivo, TIRO.dano, TIRO.alcance, desvio);
+    }
+    return dist < TIRO.seQuedanA;
+  }
+
   update(dt, tx, ty) {
     if (this.down) return Infinity;
     const dx = tx - this.x;
     const dy = ty - this.y;
     const dist = Math.hypot(dx, dy);
     if (dist < 4) {
+      this.sync();
+      return dist;
+    }
+
+    if (this.intentarDisparar(dt, { x: tx, y: ty }, dist)) {
+      // plantado y encarado, disparando: no se te echa encima
+      this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(dy, dx), 12 * dt);
       this.sync();
       return dist;
     }

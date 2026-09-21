@@ -117,6 +117,13 @@ export class UIScene extends Phaser.Scene {
       .setDisplaySize(this.mapW, this.mapH)
       .setAlpha(0.9);
 
+    // las armerias son sitios fijos: se marcan una vez y ahi se quedan, para
+    // que se pueda ir a por balas sin recorrer la ciudad a ciegas
+    for (const t of city.shops ? city.shops.tiendas : []) {
+      const p = this.toMinimap(t.x, t.y);
+      this.add.image(p.x, p.y, 'px').setDisplaySize(5, 5).setTint(0x7fd08a).setAlpha(0.95);
+    }
+
     this.mapTarget = this.add.image(0, 0, 'px')
       .setDisplaySize(6, 6).setTint(0xe8b54a).setVisible(false);
     this.mapPolice = [];
@@ -186,7 +193,14 @@ export class UIScene extends Phaser.Scene {
       .setOrigin(0, 1).setDisplaySize(210, 8).setTint(0x3a3f45);
     this.healthBar = this.add.image(16, h - 46, 'px')
       .setOrigin(0, 1).setDisplaySize(210, 8).setTint(0x8fd694);
-    this.healthLabel = this.add.text(16, h - 62, 'SALUD', {
+    // el chaleco, justo encima de la salud: solo aparece si llevas puesto,
+    // y se ve bajar antes que la vida, que es la gracia de llevarlo
+    this.armorBg = this.add.image(16, h - 58, 'px')
+      .setOrigin(0, 1).setDisplaySize(210, 6).setTint(0x3a3f45).setVisible(false);
+    this.armorBar = this.add.image(16, h - 58, 'px')
+      .setOrigin(0, 1).setDisplaySize(210, 6).setTint(0xbfc6d0).setVisible(false);
+
+    this.healthLabel = this.add.text(16, h - 70, 'SALUD', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: COLORS.dim,
     }).setOrigin(0, 1);
 
@@ -273,6 +287,14 @@ export class UIScene extends Phaser.Scene {
     this.healthBar.setTint(ratio > 0.5 ? 0x8fd694 : ratio > 0.22 ? 0xe8b54a : 0xd9584a);
   }
 
+  updateBlindaje(valor) {
+    const puesto = valor > 0;
+    this.armorBg.setVisible(puesto);
+    this.armorBar.setVisible(puesto);
+    if (!puesto) return;
+    this.armorBar.setDisplaySize(Math.max(0, 210 * Phaser.Math.Clamp(valor / 100, 0, 1)), 6);
+  }
+
   updateAliento(ratio) {
     const lleno = ratio >= 0.999;
     this.stamBg.setVisible(!lleno);
@@ -323,8 +345,12 @@ export class UIScene extends Phaser.Scene {
     this.updateMinimap(d);
     this.updateWanted(d.wanted || 0);
     this.updateHealth(d.health ?? 100, d.healthMax ?? 100);
+    this.updateBlindaje(d.blindaje ?? 0);
     this.updateAliento(d.aliento ?? 1);
-    this.accionTexto.setText(d.maquinaCerca ? 'E para comprar algo de comer' : '');
+    this.accionTexto.setText(
+      d.tiendaCerca ? 'E para entrar en la armeria'
+        : d.maquinaCerca ? 'E para comprar algo de comer' : ''
+    );
     if (d.arma) {
       const balas = d.arma.balas === null ? '' : `  ${d.arma.balas}`;
       this.armaTexto.setText(`${d.arma.nombre.toUpperCase()}${balas}`);

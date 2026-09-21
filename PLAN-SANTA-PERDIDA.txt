@@ -847,6 +847,61 @@ podias huir o atropellarlas.
 
   MEDIDO: 210 fps con todo funcionando. Consola limpia.
 
+DECIMOSEPTIMA TANDA (22-sep-2026): que ellos tambien disparen, el chaleco y
+la armeria
+================================================================================
+Hasta ahora el unico con un arma eras tu: la policia y las bandas solo pegaban.
+Con eso, tener pistola no era una ventaja, era el juego entero.
+
+  LA POLICIA DISPARA A PARTIR DE DOS ESTRELLAS (`entities/Officer.js`)
+     Con UNA estrella te quieren DETENER: corren detras de ti y te trincan si
+     te alcanzan. Con DOS o mas sacan el arma. Asi cada estrella significa
+     algo distinto, que es como funciona en los GTA.
+     El agente que dispara se PLANTA a 140 px y no se te echa encima: si se
+     pegara a ti, disparar seria lo mismo que pegar.
+
+  LAS BANDAS: uno de cada cuatro lleva hierro (`armado` en Pedestrian). Dispara
+     peor que la policia (240 px de alcance, 9 grados) y tambien se planta, a
+     120 px. El resto sigue yendo a puñetazos.
+
+  LO QUE HUBO QUE MEDIR (y por que quedo asi)
+     - Con 6 grados de dispersion, un agente a 139 px acertaba los 4 tiros de
+       4. Eso no es un tiroteo, es una ejecucion. Subido a 9 grados:
+         parado a 140 px ... 45% de aciertos     a 250 px ... 22%
+         corriendo a 140 ... 27%                 a 250 px ... 15%
+       Correr ahora sirve para algo: son 6 grados mas de desvio.
+     - Cadencia 1,5 s y 8 de daño: un agente quita ~2,4 por segundo. Con tres
+       encima y sin chaleco, mueres en medio minuto. Con chaleco, el doble.
+
+  EL CHALECO (`GameState.blindaje`): se come el golpe ANTES que la vida, y si
+     el golpe es mayor que lo que queda, el resto entra en la carne. Barra
+     propia en el HUD, gris, justo encima de la de salud, y solo sale si
+     llevas puesto. Al morir se pierde: te lo dejas donde caiste.
+
+  LA ARMERIA (`systems/ShopSystem.js` + `scenes/ShopScene.js`): tres locales
+     repartidos por la ciudad (uno por barrio, a 1.400 px unos de otros), con
+     su marcador verde en la puerta y su punto verde FIJO en el minimapa. Se
+     entra con E y la ciudad se queda congelada detras.
+     El catalogo se arma con lo que ya llevas: si tienes la pistola, lo que se
+     te ofrece son balas. Bate 120, pistola 900, escopeta 2.400, chaleco 400.
+     Con la policia detras no te abren.
+     Y el que cae suelta el arma QUE LLEVABA, no una al azar: si te ha estado
+     disparando, ahi esta.
+
+  MENOS CORAZONES (lo pidio Pablo al verlo): de 26 a 9 pedidos (salen 5 en
+     esta ciudad, que es lo que cabe con 1.100 px de separacion), solo en
+     callejones y tardando 150 s en volver. Antes se rellenaba con aceras
+     normales y acababan a la vista desde la calle. Las maquinas, de 34 a 20.
+
+  ARREGLADO DE PASO: si el coche patrulla se quedaba clavado porque tu estabas
+     en la acera, no se bajaba nadie y te quedabas mirandoles a 200 px sin que
+     pasara nada. Ahora, si el coche lleva 1,2 s sin poder avanzar y estas a
+     menos de 340 px, se bajan igual.
+
+  MEDIDO EN EL JUEGO: consola limpia, 3 armerias, compra y venta correctas,
+  el chaleco parando los tiros y bajando en el HUD, el agente disparando a dos
+  estrellas y NO a una, y el pandillero armado plantado a 120 px.
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
@@ -878,12 +933,10 @@ LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
 --------------------------------------------------------------------------------
 EL SALTO GRANDE
 --------------------------------------------------------------------------------
-  5. ARMAS Y PELEA, con FIJACION AUTOMATICA al enemigo mas cercano y una
-     tecla para cambiar de objetivo (el metodo de Chinatown Wars, el unico
-     que funciona en cenital). Es el agujero mas grande del juego: sin armas,
-     el respeto, el territorio y la policia no significan nada.
-  6. TIENDA DE ARMAS Y CHALECO, con precios encajados en la economia de aqui
-     (bate 120, pistola 900, escopeta 2.400, subfusil 5.000, chaleco 700).
+  5. HECHO (16a tanda). Armas y pelea con fijacion automatica.
+  6. HECHO (17a tanda). Armeria, chaleco (400) y enemigos que disparan.
+     LO QUE QUEDA DE ESTE PUNTO: el subfusil, y que el chaleco tambien se
+     pueda encontrar por la calle y no solo comprarse.
   7. TALLER DE PINTURA (el "pay'n'spray" de toda la vida): entras con el
      coche, pagas, sale de otro color, con la chapa arreglada y SIN policia
      detras si no te estan viendo. -> PEDIDO EXPRESAMENTE POR PABLO.

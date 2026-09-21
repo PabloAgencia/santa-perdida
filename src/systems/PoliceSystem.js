@@ -229,10 +229,19 @@ export class PoliceSystem {
     if (v.speed > 55) return;
 
     const dist = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
-    if (dist > BAJARSE_DIST || dist < 30) return;
+
+    // Si el coche esta clavado porque tu estas donde el no puede entrar (una
+    // acera, un callejon), se bajan aunque estes lejos. Antes te quedabas a
+    // 200 px mirandoles sin que pasara nada.
+    u.quieto = v.speed < 22 ? (u.quieto || 0) + dt : 0;
+    const noTeAlcanza = u.quieto > 1.2 && dist < 340;
+
+    if (dist < 30) return;
+    if (dist > BAJARSE_DIST && !noTeAlcanza) return;
 
     const spot = v.findExitSpot();
     u.officer = new Officer(this.scene, this.map, spot.x, spot.y);
+    u.quieto = 0;
     v.vx = 0;
     v.vy = 0;
     EventBus.emit(EVT.NOTIFY, { text: 'Se han bajado del coche', tone: 'danger' });

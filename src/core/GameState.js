@@ -43,6 +43,8 @@ class GameStateClass {
     // compra. `null` de municion = no gasta (armas de cerca).
     this.armas = { puno: null };
     this.armaActual = 'puno';
+    // el chaleco se gasta antes que la vida, y no se recupera solo
+    this.blindaje = 0;
     this.flags = {};
   }
 
@@ -140,8 +142,31 @@ class GameStateClass {
     return this.money >= Math.round(amount);
   }
 
+  darBlindaje(cantidad) {
+    this.blindaje = Phaser.Math.Clamp(this.blindaje + cantidad, 0, 100);
+    return this.blindaje;
+  }
+
+  // El chaleco come el golpe primero. Si el golpe es mayor que lo que queda
+  // de chaleco, el resto entra en la carne: asi un chaleco a punto de romperse
+  // no te salva de una escopeta.
   damage(amount, cause = '') {
     if (amount <= 0 || this.health <= 0) return this.health;
+
+    if (this.blindaje > 0) {
+      const parado = Math.min(this.blindaje, amount);
+      this.blindaje -= parado;
+      amount -= parado;
+      if (amount <= 0) {
+        // el golpe se lo ha comido el chaleco: se avisa igual, pero se dice
+        // cuanto ha parado para poder pintarlo distinto a una herida
+        EventBus.emit(EVT.PLAYER_HURT, {
+          health: this.health, amount: 0, blindajeParado: parado, cause,
+        });
+        return this.health;
+      }
+    }
+
     this.health = Math.max(0, this.health - amount);
     EventBus.emit(EVT.PLAYER_HURT, { health: this.health, amount, cause });
     if (this.health === 0) EventBus.emit(EVT.PLAYER_DEAD, { cause });
@@ -223,6 +248,7 @@ class GameStateClass {
       atributos: this.atributos,
       armas: this.armas,
       armaActual: this.armaActual,
+      blindaje: this.blindaje,
       flags: this.flags,
       savedAt: Date.now(),
     };
@@ -244,6 +270,7 @@ class GameStateClass {
     this.atributos = Object.assign(this.atributos, data.atributos ?? {});
     this.armas = data.armas ?? { puno: null };
     this.armaActual = data.armaActual ?? 'puno';
+    this.blindaje = data.blindaje ?? 0;
     this.flags = data.flags ?? {};
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;

@@ -19,6 +19,9 @@ export class Pedestrian {
     this.attackCooldown = 0;
     this.enCoche = null;
     this.rencor = false;
+    // uno de cada cuatro de banda lleva hierro; el resto, a puñetazos
+    this.armado = !!faction && Math.random() < 0.25;
+    this.recarga = 0;
 
     this.state = 'walking';
     this.target = null;

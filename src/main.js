@@ -4,6 +4,7 @@ import { CityScene } from './scenes/CityScene.js';
 import { UIScene } from './scenes/UIScene.js';
 import { HideoutScene } from './scenes/HideoutScene.js';
 import { PauseScene } from './scenes/PauseScene.js';
+import { ShopScene } from './scenes/ShopScene.js';
 import { SlotsScene } from './scenes/SlotsScene.js';
 
 // Phaser dibuja el texto sobre el lienzo una sola vez: si la fuente no esta
@@ -32,7 +33,7 @@ const game = new Phaser.Game({
     antialias: true,
     powerPreference: 'high-performance',
   },
-  scene: [BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene],
+  scene: [BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene, ShopScene],
 });
 
 window.SantaPerdida = { game };

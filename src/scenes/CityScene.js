@@ -15,6 +15,7 @@ import { StreetLamp } from '../entities/StreetLamp.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
+import { ShopSystem } from '../systems/ShopSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -75,6 +76,7 @@ export class CityScene extends Phaser.Scene {
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
+    this.shops = new ShopSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
@@ -840,6 +842,7 @@ export class CityScene extends Phaser.Scene {
       else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
+        !this.entrarEnLaArmeria() &&
         !this.usarMaquinaCerca()
       ) {
         const v = this.nearestVehicle();
@@ -921,6 +924,7 @@ export class CityScene extends Phaser.Scene {
     this.updateLamps();
     this.checkPlayerHarm(dt);
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
+    this.shops.update(this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle);
 
     if (this.drivingVehicle) {
@@ -1100,6 +1104,7 @@ export class CityScene extends Phaser.Scene {
       if (fee > 0) GameState.spendMoney(fee, reason);
       GameState.setWanted(0);
       GameState.heal(GameState.vidaMaxima);
+      GameState.blindaje = 0;   // el chaleco se queda donde te caiste
       this.police.clearAll();
 
       if (this.drivingVehicle) {
@@ -1165,6 +1170,21 @@ export class CityScene extends Phaser.Scene {
   atacarAhora() {
     if (this.drivingVehicle) return;
     this.combat.atacar(this.player, this.player.running);
+  }
+
+  // la armeria: E en la puerta y se abre el mostrador con la ciudad congelada
+  entrarEnLaArmeria() {
+    if (!this.shops || !this.shops.cerca) return false;
+    if (GameState.wanted > 0) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no te abren', tone: 'danger' });
+      return true;
+    }
+    Audio.engine(false, 0, false);
+    this.captureState();
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('ShopScene');
+    return true;
   }
 
   // la maquina de refrescos de la acera: E al lado y a beber
@@ -1253,6 +1273,8 @@ export class CityScene extends Phaser.Scene {
       wanted: GameState.wanted,
       health: GameState.health,
       healthMax: GameState.vidaMaxima,
+      blindaje: GameState.blindaje,
+      tiendaCerca: !!(this.shops && this.shops.cerca),
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
       arma: this.drivingVehicle ? null : {

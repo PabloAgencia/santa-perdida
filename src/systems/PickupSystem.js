@@ -13,11 +13,16 @@ import { ARMAS } from '../config/weapons.js';
 //   · MAQUINAS: en plena acera y siempre disponibles, pero cuestan dinero y
 //     engordan. Para cuando no te queda tiempo de buscar un corazon.
 
-const CORAZONES = 26;
-const MAQUINAS = 34;
+// Pocos y lejos unos de otros. Si hay un corazon en cada esquina, buscarlo
+// no vale nada y la vida deja de ser un recurso: son un premio por conocerse
+// la ciudad, no una fuente de salud.
+const CORAZONES = 9;
+const SEPARACION_CORAZONES = 1100;
+const MAQUINAS = 20;
+const SEPARACION_MAQUINAS = 520;
 
 const VIDA_CORAZON = 25;
-const REAPARECE = 95;           // segundos que tarda en volver un corazon
+const REAPARECE = 150;          // segundos que tarda en volver un corazon
 const ALCANCE_CORAZON = 22;     // se coge al pasarle por encima
 const ALCANCE_MAQUINA = 40;     // a esta hay que acercarse y pulsar E
 
@@ -66,17 +71,11 @@ export class PickupSystem {
     Phaser.Utils.Array.Shuffle(sitios);
     for (const p of sitios) {
       if (elegidos.length >= CORAZONES) break;
-      if (elegidos.some((q) => Phaser.Math.Distance.Between(q.x, q.y, p.x, p.y) < 420)) continue;
+      if (elegidos.some((q) => Phaser.Math.Distance.Between(q.x, q.y, p.x, p.y) < SEPARACION_CORAZONES)) continue;
       elegidos.push(p);
     }
-    // si la ciudad tiene pocos callejones, se completa con aceras apartadas
-    if (elegidos.length < CORAZONES) {
-      for (const s of Phaser.Utils.Array.Shuffle(this.map.sidewalkSpots.slice())) {
-        if (elegidos.length >= CORAZONES) break;
-        if (elegidos.some((q) => Phaser.Math.Distance.Between(q.x, q.y, s.x, s.y) < 420)) continue;
-        elegidos.push({ x: s.x, y: s.y });
-      }
-    }
+    // si no caben tantos, se queda con los que caben: antes se rellenaba con
+    // aceras normales y acababan a la vista desde la calle
 
     for (const p of elegidos) {
       const brillo = this.scene.add.image(p.x, p.y, 'lamp')
@@ -97,7 +96,7 @@ export class PickupSystem {
     const spots = Phaser.Utils.Array.Shuffle(this.map.sidewalkSpots.slice());
     for (const s of spots) {
       if (this.maquinas.length >= MAQUINAS) break;
-      if (this.maquinas.some((m) => Phaser.Math.Distance.Between(m.x, m.y, s.x, s.y) < 300)) continue;
+      if (this.maquinas.some((m) => Phaser.Math.Distance.Between(m.x, m.y, s.x, s.y) < SEPARACION_MAQUINAS)) continue;
 
       // ¿hay pared pegada? se mira a los cuatro lados
       const lados = [[1, 0], [-1, 0], [0, 1], [0, -1]];

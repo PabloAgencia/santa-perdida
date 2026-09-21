@@ -9,6 +9,16 @@ const HOSTILE_RANGE = 330;
 const ATTACK_RANGE = 22;
 const ATTACK_DAMAGE = 9;
 
+// Uno de cada cuatro de banda lleva pistola. Dispara peor que la policia y
+// con menos alcance: la calle no es un cuerpo de seguridad.
+const TIRO_BANDA = {
+  alcance: 240,
+  dano: 7,
+  cadencia: 1.5,
+  dispersion: 9,
+  seQuedanA: 120,
+};
+
 const MAX_PEDS = 20;
 const TOPE_DURO = 34;       // vivos + cuerpos, para no crecer sin fin
 const SPAWN_MIN = 260;
@@ -45,7 +55,7 @@ export class NPCSystem {
     }
 
     this.checkVehicles(vehicles, playerVehicle);
-    if (player && onFoot) this.checkAttacks(player);
+    if (player && onFoot) this.checkAttacks(player, dt);
   }
 
   updateHostility(px, py, onFoot) {
@@ -66,13 +76,34 @@ export class NPCSystem {
       const enemigo = GameState.isHostile(p.faction);
       const cerca = Phaser.Math.Distance.Between(p.x, p.y, px, py) < HOSTILE_RANGE;
       p.hostile = enemigo && cerca && onFoot;
-      p.chaseTarget = p.hostile ? { x: px, y: py } : null;
+      // el que dispara se planta y no se te echa encima (lo marca checkAttacks)
+      p.chaseTarget = p.hostile && !p.plantado ? { x: px, y: py } : null;
     }
   }
 
-  checkAttacks(player) {
+  checkAttacks(player, dt) {
     for (const p of this.people) {
-      if (!p.hostile || p.down || p.attackCooldown > 0) continue;
+      if (!p.hostile || p.down) continue;
+
+      // el que lleva hierro dispara de lejos; el resto tiene que llegar hasta ti
+      if (p.armado) {
+        p.recarga -= dt;
+        const dist = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);
+        const combat = this.scene.combat;
+        if (dist < TIRO_BANDA.alcance && combat && combat.veA(p, player, TIRO_BANDA.alcance)) {
+          if (p.recarga <= 0) {
+            p.recarga = TIRO_BANDA.cadencia * (0.75 + Math.random() * 0.6);
+            combat.disparoDeNPC(p, player, TIRO_BANDA.dano, TIRO_BANDA.alcance, TIRO_BANDA.dispersion);
+          }
+          // planta cara en vez de pegarse a ti
+          p.plantado = dist < TIRO_BANDA.seQuedanA;
+          if (p.plantado) p.chaseTarget = null;
+          continue;
+        }
+      }
+
+      p.plantado = false;
+      if (p.attackCooldown > 0) continue;
       if (Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y) > ATTACK_RANGE) continue;
       p.attackCooldown = 1.2;
       GameState.damage(ATTACK_DAMAGE, 'paliza');
