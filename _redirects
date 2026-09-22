@@ -1,0 +1,19 @@
+# UNA SOLA DIRECCION BUENA
+#
+# Este fichero solo lo entiende Cloudflare Pages (GitHub Pages lo ignora, asi
+# que no estorba). Manda a quien entre por santa-perdida.pages.dev a la
+# direccion de verdad del juego, conservando la ruta que pidiera.
+#
+# POR QUE
+#   Tener el juego en dos sitios costo una tarde entera: Pablo entraba por
+#   Cloudflare, que servia una copia a la que le faltaban carpetas, y veia el
+#   juego viejo mientras yo comprobaba el bueno y lo veia bien. Con esto solo
+#   hay una direccion y no puede volver a pasar.
+#
+# OJO, LA CONTRAPARTIDA
+#   Mientras este esto, la copia de Cloudflare NO sirve de recambio si GitHub
+#   se cae: redirigiria a una web caida. Si algun dia se quiere el recambio de
+#   verdad, hay que quitar esto y poner delante algo que pruebe una y tire de
+#   la otra (un Worker), no un redirect fijo.
+
+/*    https://santaperdida.creskio.com/:splat    302
