@@ -1,0 +1,71 @@
+# PUBLICAR EN CLOUDFLARE CADA VEZ QUE SE SUBE ALGO A GITHUB.
+#
+# POR QUE EXISTE ESTO
+#   El juego vive en dos sitios: GitHub Pages (santaperdida.creskio.com) y
+#   Cloudflare Pages (santa-perdida.pages.dev). Cloudflare estaba conectado
+#   directamente al repositorio y se actualizaba solo... a medias: subia los
+#   cambios de las carpetas que ya conocia, pero NO subia las carpetas
+#   NUEVAS. Asi se quedaron fuera `arte/` (donde vive la portada) y
+#   `herramientas/`, y el juego de esa web salia sin portada por mucho que se
+#   recargara. Se perdio una tarde entera con eso.
+#
+#   Esto lo hace determinista: en cada push se sube el proyecto ENTERO, con
+#   las carpetas que haya, nuevas o viejas. GitHub manda y Cloudflare copia.
+#
+# LO QUE HACE FALTA, UNA SOLA VEZ (dos secretos en el repositorio)
+#   En github.com/PabloAgencia/santa-perdida  ->  Settings  ->
+#   Secrets and variables  ->  Actions  ->  New repository secret:
+#
+#     CLOUDFLARE_API_TOKEN   se saca en el panel de Cloudflare:
+#                            Mi perfil -> API Tokens -> Create Token ->
+#                            plantilla "Edit Cloudflare Workers", o un token
+#                            personalizado con el permiso
+#                            "Cloudflare Pages: Edit".
+#     CLOUDFLARE_ACCOUNT_ID  sale en la pagina principal de Cloudflare, en la
+#                            barra de la derecha ("Account ID").
+#
+#   Sin esos dos secretos este workflow no corre y no pasa nada: GitHub Pages
+#   sigue publicando igual.
+
+name: Publicar en Cloudflare
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:          # y a mano desde la pestaña Actions
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bajar el proyecto
+        uses: actions/checkout@v4
+
+      - name: Comprobar que estan los secretos
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::error::Faltan CLOUDFLARE_API_TOKEN o CLOUDFLARE_ACCOUNT_ID en los secretos del repositorio. Mira las instrucciones al principio de este fichero."
+            exit 1
+          fi
+          echo "Secretos en su sitio."
+
+      - name: Subirlo todo a Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # el punto es la raiz del proyecto: se sube TODO tal cual esta, que
+          # es justo lo que no hacia la conexion automatica
+          command: pages deploy . --project-name=santa-perdida --branch=main --commit-dirty=true
+
+      - name: Comprobar que la portada ha llegado
+        run: |
+          # No basta con que el despliegue diga que ha ido bien: lo que
+          # fallaba era precisamente una carpeta que no subia. Se comprueba.
+          sleep 20
+          cuerpo=$(curl -s --max-time 20 "https://santa-perdida.pages.dev/arte/lista.json")
+          echo "arte/lista.json devuelve: $cuerpo"
+          case "$cuerpo" in
+            *portada*) echo "La portada esta publicada en Cloudflare." ;;
+            *) echo "::warning::Cloudflare sigue sin servir arte/lista.json. Revisar el proyecto en el panel." ;;
+          esac
