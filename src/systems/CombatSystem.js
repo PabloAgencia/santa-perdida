@@ -111,6 +111,9 @@ export class CombatSystem {
   }
 
   golpear(player, objetivo, arma) {
+    // el brazo sale, pegues o falles: fallar tambien se ve
+    if (player.golpe) player.golpe();
+
     // el musculo se nota en los puños y en el bate
     const extra = (GameState.atributo('musculo') / 100) * arma.dano * COMBATE.danoExtraPorMusculo;
     const dano = arma.dano + extra;

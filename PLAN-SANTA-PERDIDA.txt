@@ -1552,6 +1552,60 @@ VIGESIMOSEXTA TANDA (22-sep-2026): el personaje mueve los brazos de verdad
   piezas se mueven, es poner una pose en vez de un ciclo) y el ragdoll al
   morir con Matter.js.
 
+
+
+================================================================================
+VIGESIMOSEPTIMA TANDA (22-sep-2026): el brazo apunta y el puño sale
+================================================================================
+
+  Ahora que las extremidades son piezas sueltas (tanda 26), poner una pose es
+  poner unos numeros. Esto es lo que se gana con aquello.
+
+  EL BRAZO SIGUE AL OBJETIVO
+     Con un arma de fuego y alguien fijado, el personaje le ENCAÑONA aunque
+     vaya andando hacia otro lado. Es lo que da la sensacion de que el tio
+     sabe donde esta el enemigo.
+
+     El truco esta en el angulo RELATIVO. El contenedor ya va girado con el
+     cuerpo, asi que al brazo no se le da el angulo del objetivo sino la
+     DIFERENCIA entre ese angulo y hacia donde mira el cuerpo. Con eso, el
+     brazo apunta al sitio bueno en el mundo pase lo que pase con el cuerpo.
+     MEDIDO: cuerpo a 0 grados andando a la derecha, objetivo detras, brazo
+     a -179 grados. Apunta atras mientras anda adelante.
+
+     Y depende del arma:
+       una mano (pistola)  el brazo de tirar fuera y el otro recogido
+       dos manos (escopeta, rifle, sniper)  los dos al frente
+     Para eso se ha añadido `dosManos` a config/weapons.js. Solo sirve para
+     la pose: no toca daño, alcance ni nada del combate.
+
+     UN FALLO QUE SE VIO EN PANTALLA: puestos los dos brazos en el mismo
+     sitio y con el mismo giro, se superponian EXACTOS y las dos manos se
+     apilaban. Salia un rombo brillante flotando, no unos brazos. Ahora van
+     escalonados a lo largo de la linea de tiro, una mano delante de la
+     otra, como se agarra un arma larga. Medido: 6,2 px de separacion.
+
+  EL PUÑETAZO
+     Al pegar, el brazo sale del todo y vuelve; el otro se echa atras, que es
+     lo que hace el cuerpo de verdad. Sale aunque falles: fallar tambien se
+     ve. Dura 0,16 s.
+     MEDIDO: el brazo va del hombro (-2,2) a 3,2 y vuelve exactamente a -2,2.
+
+  QUE MANDA SOBRE QUE
+     Por orden: el golpe, apuntar, y el braceo de andar. Las PIERNAS siguen
+     andando en los tres casos, que apuntar no te deja los pies clavados.
+     Con los puños o el bate NO se encañona: ahi el brazo solo sale al pegar.
+
+  COMPROBADO de punta a punta: andar, correr, pegar, coger pistola, fijar a
+  alguien detras y apuntarle mientras andas hacia delante, cambiar a rifle
+  (dos manos) y soltar el objetivo. Consola limpia.
+
+  LO QUE QUEDA DE ESTE BLOQUE
+     - El ragdoll al morir o al ser atropellado, con Matter.js. Ahora que el
+       cuerpo son cinco piezas, desmadejarlas es lo suyo.
+     - Llevar las extremidades a peatones y policias, si a Pablo le gusta
+       como ha quedado en el jugador.
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

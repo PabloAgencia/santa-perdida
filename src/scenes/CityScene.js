@@ -1028,6 +1028,7 @@ export class CityScene extends Phaser.Scene {
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle);
+    this.encanonar();
 
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;
@@ -1273,6 +1274,23 @@ export class CityScene extends Phaser.Scene {
   atacarAhora() {
     if (this.drivingVehicle) return;
     this.combat.atacar(this.player, this.player.running);
+  }
+
+  // EL BRAZO SIGUE AL OBJETIVO. Con un arma de fuego y alguien fijado, el
+  // personaje le encañona aunque este andando hacia otro lado. Con los puños
+  // o el bate no: ahi el brazo solo sale al pegar.
+  encanonar() {
+    const obj = this.combat.objetivo;
+    const arma = ARMAS[GameState.armaActual] || ARMAS.puno;
+
+    if (!obj || obj.down || arma.cuerpo || this.drivingVehicle) {
+      this.player.apuntarA(null);
+      return;
+    }
+    this.player.apuntarA(
+      Math.atan2(obj.y - this.player.y, obj.x - this.player.x),
+      !!arma.dosManos
+    );
   }
 
   // la armeria: E en la puerta y se abre el mostrador con la ciudad congelada

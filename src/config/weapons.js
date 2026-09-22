@@ -14,6 +14,9 @@
 // dispersion   cuanto se desvia (grados); la punteria del personaje la baja
 // cargador     balas por disparo (la escopeta suelta varias a la vez)
 // cuerpo       true = hay que estar pegado, no gasta municion
+// dosManos     como se agarra. Solo sirve para la POSE de los brazos:
+//              con dos manos los dos se juntan al frente; con una sola,
+//              el otro brazo se queda al costado.
 // sonido       que muestra de audio suena al disparar
 
 export const ARMAS = {
@@ -30,6 +33,7 @@ export const ARMAS = {
     sonido: 'golpe',
   },
   bate: {
+    dosManos: true,
     clave: 'bate',
     nombre: 'Bate',
     cuerpo: true,
@@ -42,6 +46,7 @@ export const ARMAS = {
     sonido: 'golpe',
   },
   pistola: {
+    dosManos: false,
     clave: 'pistola',
     nombre: 'Pistola',
     cuerpo: false,
@@ -58,6 +63,7 @@ export const ARMAS = {
     ruido: 620,          // a que distancia lo oyen (y se asustan)
   },
   escopeta: {
+    dosManos: true,
     clave: 'escopeta',
     nombre: 'Escopeta',
     cuerpo: false,
@@ -77,6 +83,7 @@ export const ARMAS = {
   // casi al doble de rapido y el cargador es grande, pero moverse la
   // descoloca mucho mas y las balas cuestan un dineral.
   rifle: {
+    dosManos: true,
     clave: 'rifle',
     nombre: 'Rifle de asalto',
     cuerpo: false,
@@ -95,6 +102,7 @@ export const ARMAS = {
   // El sniper: de una punta de la calle a la otra, sin desvio ninguno, pero
   // dos segundos entre tiro y tiro. De cerca es un ladrillo.
   sniper: {
+    dosManos: true,
     clave: 'sniper',
     nombre: 'Rifle de mira',
     cuerpo: false,

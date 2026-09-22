@@ -21,6 +21,11 @@ const CORRIENDO = 3.8;      // correr es zancada mas larga, no mas rapida
 const GIRO_ADORNO = 0.14;   // radianes
 const PIERNA = 0.85;        // la pierna recorre algo menos que el brazo
 
+// Apuntar y pegar
+const SACA_BRAZO = 3.2;     // px que adelanta el brazo al apuntar
+const GOLPE_DURA = 0.16;    // s que dura el brazo estirado al pegar
+const GOLPE_SACA = 5.5;     // px que sale el brazo en el golpe
+
 export class Player {
   constructor(scene, map, x, y) {
     this.scene = scene;
@@ -39,6 +44,9 @@ export class Player {
     this.shadow = scene.add.image(x, y + 5, 'shadow').setScale(0.42).setAlpha(0.5);
     this.paso = 0;
     this.fase = 0;
+    this.vaiven = 0;
+    this.apuntando = null;    // {angulo, dosManos} cuando tienes a alguien fijado
+    this.golpeando = 0;       // segundos que le quedan al brazo estirado
 
     // EL CUERPO ES UN CONTENEDOR, no una sola imagen. Dentro, y en este
     // orden (lo de antes queda detras):
@@ -164,21 +172,83 @@ export class Player {
     this.colocarExtremidades(0);
   }
 
+  // ---------- poses de los brazos ----------
+
+  // LO QUE MANDA SOBRE EL BRACEO. Por orden: si acabas de pegar, el golpe;
+  // si tienes a alguien fijado con un arma de fuego, la de apuntar; si no,
+  // el braceo de andar. Las PIERNAS siguen andando en los tres casos, que
+  // apuntar no te deja los pies clavados.
+  apuntarA(anguloMundo, dosManos = false) {
+    this.apuntando = anguloMundo === null || anguloMundo === undefined
+      ? null
+      : { angulo: anguloMundo, dosManos };
+  }
+
+  // un golpe: el brazo sale del todo y vuelve. Lo llama el combate.
+  golpe() {
+    this.golpeando = GOLPE_DURA;
+  }
+
   // Coloca las cuatro piezas para un punto del ciclo de paso (-1 a 1).
   // El brazo se desliza por el eje del cuerpo; el giro es solo un adorno.
   colocarExtremidades(swing) {
     const paso = this.running ? CORRIENDO : ANDANDO;
     const d = swing * paso;
 
-    this.brazoIzq.setPosition(this.hombroX + d, -this.hombroY)
-      .setRotation(swing * GIRO_ADORNO);
-    this.brazoDer.setPosition(this.hombroX - d, this.hombroY)
-      .setRotation(-swing * GIRO_ADORNO);
-    // las piernas van al reves que los brazos, como al andar de verdad
+    // las piernas van al reves que los brazos, y andan pase lo que pase
     this.piernaIzq.setPosition(this.caderaX - d * PIERNA, -this.caderaY)
       .setRotation(-swing * GIRO_ADORNO * 0.6);
     this.piernaDer.setPosition(this.caderaX + d * PIERNA, this.caderaY)
       .setRotation(swing * GIRO_ADORNO * 0.6);
+
+    if (this.golpeando > 0) return this.poseGolpe();
+    if (this.apuntando) return this.poseApuntar();
+
+    this.brazoIzq.setPosition(this.hombroX + d, -this.hombroY)
+      .setRotation(swing * GIRO_ADORNO);
+    this.brazoDer.setPosition(this.hombroX - d, this.hombroY)
+      .setRotation(-swing * GIRO_ADORNO);
+    return undefined;
+  }
+
+  // El brazo apunta AL OBJETIVO, no hacia delante. Como el contenedor ya va
+  // girado con el cuerpo, al brazo se le da el angulo RELATIVO: la
+  // diferencia entre donde esta el objetivo y hacia donde mira el cuerpo.
+  // Asi el tio puede ir andando en una direccion y encañonando en otra.
+  poseApuntar() {
+    const rel = Phaser.Math.Angle.Wrap(this.apuntando.angulo - this.angle);
+    const x = this.hombroX + SACA_BRAZO;
+
+    if (this.apuntando.dosManos) {
+      // LAS DOS MANOS AL ARMA, PERO ESCALONADAS. Puestos en el mismo sitio y
+      // con el mismo giro, los dos brazos se superponian exactos y las dos
+      // manos se apilaban: en pantalla salia un rombo brillante, no unos
+      // brazos. Asi va una mano delante de la otra, como se agarra un arma
+      // larga de verdad.
+      const adelanto = 2.2;
+      this.brazoDer.setPosition(x, this.hombroY * 0.5).setRotation(rel);
+      this.brazoIzq.setPosition(
+        x + Math.cos(rel) * adelanto,
+        -this.hombroY * 0.28 + Math.sin(rel) * adelanto
+      ).setRotation(rel);
+    } else {
+      // una mano: el brazo de tirar fuera, el otro recogido al costado
+      this.brazoDer.setPosition(x, this.hombroY * 0.6).setRotation(rel);
+      this.brazoIzq.setPosition(this.hombroX - 1.5, -this.hombroY)
+        .setRotation(rel * 0.2);
+    }
+  }
+
+  // El puñetazo: un brazo sale del todo y el otro se echa atras, que es lo
+  // que hace el cuerpo de verdad al pegar.
+  poseGolpe() {
+    const t = this.golpeando / GOLPE_DURA;      // 1 al empezar, 0 al acabar
+    // sale de golpe y vuelve mas despacio: pegar es seco, recoger no
+    const fuera = Math.sin(t * Math.PI) * GOLPE_SACA;
+    this.brazoDer.setPosition(this.hombroX + fuera, this.hombroY * 0.55)
+      .setRotation(-0.2 * (fuera / GOLPE_SACA));
+    this.brazoIzq.setPosition(this.hombroX - fuera * 0.5, -this.hombroY)
+      .setRotation(0.1);
   }
 
   ponerRopa(clave) {
@@ -276,6 +346,7 @@ export class Player {
       this.vaiven = Math.max(0, (this.vaiven ?? 0) - dt * 2.2);
       if (this.vaiven > 0) this.paso += dt * 1.4;   // sigue el ciclo mientras se apaga
     }
+    if (this.golpeando > 0) this.golpeando = Math.max(0, this.golpeando - dt);
     this.colocarExtremidades(Math.sin(this.paso * Math.PI * 2) * this.vaiven);
 
     this.syncSprite();
