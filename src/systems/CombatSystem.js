@@ -110,6 +110,41 @@ export class CombatSystem {
     return this.disparar(player, objetivo, arma, enMovimiento);
   }
 
+  // DISPARAR DESDE EL COCHE.
+  //
+  // Solo con armas de UNA MANO: la otra va al volante. Con la escopeta o el
+  // rifle no se puede, igual que en los GTA de la epoca, y eso le da sentido
+  // a llevar pistola aunque tengas algo mejor en el maletero.
+  //
+  // El tiro sale DEL COCHE, no de ti, asi que el vehiculo hace de tirador: ya
+  // tiene x, y y angle, que es todo lo que necesita el sistema. Y cuanto mas
+  // rapido vas, peor apuntas: a tope de velocidad el desvio se triplica.
+  dispararDesdeCoche(vehiculo) {
+    if (this.espera > 0) return false;
+    const arma = this.arma;
+
+    if (arma.cuerpo || arma.dosManos) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: `${arma.nombre}: no se puede desde el coche`, tone: 'dim',
+      });
+      this.espera = 0.5;
+      return false;
+    }
+    if (!GameState.puedeDisparar()) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Sin munición', tone: 'danger' });
+      this.espera = 0.4;
+      return false;
+    }
+
+    this.espera = arma.cadencia * 1.25;   // se dispara mas lento al volante
+    const objetivo = this.objetivo && !this.objetivo.down
+      ? this.objetivo
+      : this.buscarObjetivo(vehiculo);
+
+    const marcha = Phaser.Math.Clamp(vehiculo.speed / vehiculo.stats.maxSpeed, 0, 1);
+    return this.disparar(vehiculo, objetivo, arma, true, 1 + marcha * 2);
+  }
+
   golpear(player, objetivo, arma) {
     // el brazo sale, pegues o falles: fallar tambien se ve
     if (player.golpe) player.golpe();
@@ -128,13 +163,16 @@ export class CombatSystem {
     return true;
   }
 
-  disparar(player, objetivo, arma, enMovimiento) {
+  // `torpeza` multiplica el desvio: 1 a pie, mas al disparar desde el coche
+  // segun lo rapido que vayas
+  disparar(player, objetivo, arma, enMovimiento, torpeza = 1) {
     GameState.gastarBala(arma.clave, 1);
 
     // la punteria del personaje y estarse quieto cierran el tiro
     const punteria = GameState.atributo('punteria') / 100;
     let dispersion = arma.dispersion * (1 - punteria * COMBATE.mejoraPorPunteria);
     if (enMovimiento) dispersion *= COMBATE.penalizacionEnMovimiento;
+    dispersion *= torpeza;
 
     const balas = arma.balasPorDisparo || 1;
     let algunoDentro = false;
@@ -312,22 +350,32 @@ export class CombatSystem {
 
   // ---------- bucle ----------
 
-  update(dt, player, aPie) {
+  update(dt, player, aPie, vehiculo = null) {
     if (this.espera > 0) this.espera -= dt;
 
-    if (!aPie) {
+    // DESDE EL COCHE TAMBIEN SE FIJA, pero solo con un arma de una mano, que
+    // es lo unico con lo que se puede disparar al volante. Enseñar el
+    // marcador sobre alguien al que no le puedes tirar solo confunde.
+    const arma = this.arma;
+    const alVolante = !aPie && vehiculo && !arma.cuerpo && !arma.dosManos;
+
+    if (!aPie && !alVolante) {
       this.objetivo = null;
       this.ocultarMarca();
       return;
     }
 
+    // quien apunta: tu a pie, el coche al volante. Los dos tienen x, y y
+    // angle, que es todo lo que mira el sistema.
+    const tirador = aPie ? player : vehiculo;
+
     // el objetivo se pierde si cae, se aleja o desaparece
     if (this.objetivo) {
       const fuera = this.objetivo.down ||
-        Phaser.Math.Distance.Between(this.objetivo.x, this.objetivo.y, player.x, player.y) > this.arma.alcance * 1.15;
+        Phaser.Math.Distance.Between(this.objetivo.x, this.objetivo.y, tirador.x, tirador.y) > this.arma.alcance * 1.15;
       if (fuera) this.objetivo = null;
     }
-    if (!this.objetivo) this.objetivo = this.buscarObjetivo(player);
+    if (!this.objetivo) this.objetivo = this.buscarObjetivo(tirador);
 
     if (!this.objetivo) {
       this.ocultarMarca();

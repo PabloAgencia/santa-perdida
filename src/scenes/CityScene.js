@@ -164,11 +164,9 @@ export class CityScene extends Phaser.Scene {
     });
     this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,SHIFT,ESC,F,Q,TAB');
 
-    // el raton tambien pega: el boton izquierdo es lo que sale solo
+    // el raton tambien pega, y al volante tambien dispara
     this.input.on('pointerdown', (p) => {
-      if (p.leftButtonDown() && !this.drivingVehicle && this.scene.isActive()) {
-        this.atacarAhora();
-      }
+      if (p.leftButtonDown() && this.scene.isActive()) this.atacarAhora();
     });
 
     // los navegadores no dejan sonar nada hasta que el jugador toca algo
@@ -375,7 +373,10 @@ export class CityScene extends Phaser.Scene {
     // ---- pelea ----
     if (!this.drivingVehicle) {
       if (Phaser.Input.Keyboard.JustDown(k.atacar)) this.atacarAhora();
-      if (Phaser.Input.Keyboard.JustDown(k.objetivo)) this.combat.siguienteObjetivo(this.player);
+      // cambiar de objetivo vale a pie y al volante
+      if (Phaser.Input.Keyboard.JustDown(k.objetivo)) {
+        this.combat.siguienteObjetivo(this.drivingVehicle || this.player);
+      }
       if (Phaser.Input.Keyboard.JustDown(k.arma)) this.combat.cambiarArma(1);
     }
 
@@ -443,7 +444,7 @@ export class CityScene extends Phaser.Scene {
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
-    this.combat.update(dt, this.player, !this.drivingVehicle);
+    this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
 
@@ -692,7 +693,11 @@ export class CityScene extends Phaser.Scene {
   }
 
   atacarAhora() {
-    if (this.drivingVehicle) return;
+    // al volante se dispara por la ventanilla, y solo con una mano
+    if (this.drivingVehicle) {
+      this.combat.dispararDesdeCoche(this.drivingVehicle);
+      return;
+    }
     this.combat.atacar(this.player, this.player.running);
   }
 
