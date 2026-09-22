@@ -107,7 +107,10 @@ export class PoliceSystem {
         algunoVe = true;
         this.lastKnown = { x: player.x, y: player.y };
       }
-      this.runUnit(u, dt, player, ve, playerVehicle);
+      // una patrulla robada ya no la conduce la unidad: la conduces tu. Sus
+      // agentes, en cambio, siguen a lo suyo (que es ir a por ti), y la luz
+      // sigue parpadeando, que la llevas puesta.
+      if (!u.robada) this.runUnit(u, dt, player, ve, playerVehicle);
       this.updateOfficers(u, dt, player, playerVehicle, ve);
       this.updateSiren(u, dt);
     }
@@ -277,9 +280,19 @@ export class PoliceSystem {
       const dist = o.update(dt, player.x, player.y);
       if (o.down) continue;   // el que cae se queda tirado en la calle
 
-      // si te subes a un coche o escapas lejos, vuelve al suyo y su plaza
-      // queda libre otra vez
-      if (playerVehicle || dist > 520 || GameState.wanted === 0) {
+      // Si te subes a un coche o escapas lejos, vuelve al suyo y su plaza
+      // queda libre otra vez.
+      //
+      // PERO NO SI LE HAS ROBADO EL COCHE: no tienen a donde volver. Aqui
+      // estaba el fallo de "robo la patrulla y no sale nadie": subirse al
+      // coche cuenta como `playerVehicle`, asi que los dos agentes que
+      // acababan de bajar se destruian en el fotograma siguiente. Salian de
+      // verdad, pero no daba tiempo ni a verlos.
+      const seVuelven = u.robada
+        ? (dist > 900 || GameState.wanted === 0)
+        : (playerVehicle || dist > 520 || GameState.wanted === 0);
+
+      if (seVuelven) {
         o.destroy();
         u.officers.splice(i, 1);
         u.plazas++;
@@ -314,6 +327,40 @@ export class PoliceSystem {
     if (dist > BAJARSE_DIST && !noTeAlcanza) return;
 
     this.bajarDelCoche(u, u.plazas, 'Se han bajado del coche');
+  }
+
+  // LE ROBAS LA PATRULLA A LA POLICIA. Los que iban dentro salen de golpe y
+  // se quedan en la calle yendo a por ti.
+  //
+  // Esto hacia falta porque los agentes NO existen mientras van en el coche:
+  // la unidad guarda cuantas plazas lleva ocupadas y solo crea el sprite al
+  // bajarse. Sin esto, le robabas el coche a la policia y no salia nadie: el
+  // coche se quedaba vacio de la nada.
+  robarPatrulla(vehicle) {
+    const u = this.units.find((x) => x.vehicle === vehicle);
+    if (!u || u.robada) return false;
+    u.robada = true;
+
+    // los que iban dentro salen a la calle
+    if (u.plazas > 0) this.bajarDelCoche(u, u.plazas, null);
+
+    // el coche deja de ser suyo: ni lo conducen ni les pita la sirena
+    u.vehicle.ai = false;
+    u.vehicle.police = false;
+    u.siren.setVisible(false);
+    u.sinSirena = true;
+
+    GameState.raiseWanted(1);
+    EventBus.emit(EVT.NOTIFY, { text: 'Has robado un coche patrulla', tone: 'danger' });
+    return true;
+  }
+
+  // Retira la unidad pero DEJA EL COCHE, que lo estas conduciendo tu.
+  retirarSinCoche(i) {
+    const u = this.units[i];
+    for (const o of u.officers) o.destroy();
+    u.siren.destroy();
+    this.units.splice(i, 1);
   }
 
   // Bajan de golpe los que queden dentro, cada uno por su lado del coche.
@@ -569,27 +616,25 @@ export class PoliceSystem {
         this.units.filter((x) => !x.roadblock && !x.furgon).length > max &&
         u.state !== ESTADO.PERSIGUIENDO;
 
-      // OJO: si el jugador se ha subido a la patrulla NO se puede destruir el
-      // coche, que es justo lo que pasaba: desaparecia con el dentro.
+      // SI LE HAS ROBADO EL COCHE. No se puede destruir el vehiculo, que lo
+      // conduces tu, y TAMPOCO se puede retirar la unidad de golpe: sus
+      // agentes estan en la calle y alguien tiene que moverlos y dejar que el
+      // combate los fije. Antes se retiraba entera y los destruia a los dos
+      // en el fotograma siguiente, asi que robabas una patrulla y no salia
+      // nadie. La unidad se queda, sin coche, hasta que no quede ninguno.
       if (u.vehicle.occupied) {
-        this.soltarUnidad(i);
+        if (!u.robada) this.robarPatrulla(u.vehicle);
+        if (u.officers.every((o) => o.down)) this.retirarSinCoche(i);
         continue;
       }
       if (lejos || sobra || caducado) this.removeUnit(i);
     }
   }
 
-  // el jugador se queda el coche: se deshace la unidad pero el vehiculo vive
-  soltarUnidad(i) {
-    const u = this.units[i];
-    for (const o of u.officers) o.destroy();
-    u.siren.destroy();
-    u.vehicle.ai = false;
-    u.vehicle.police = false;
-    this.units.splice(i, 1);
-    GameState.raiseWanted(1);
-    EventBus.emit(EVT.NOTIFY, { text: 'Has robado un coche patrulla', tone: 'danger' });
-  }
+  // (habia aqui un `soltarUnidad` que deshacia la unidad entera al robarle el
+  //  coche. Destruia a los agentes que acababan de bajarse, asi que robar una
+  //  patrulla no enseñaba a nadie. Lo hacen ahora `robarPatrulla` y
+  //  `retirarSinCoche`, que dejan a los agentes en la calle.)
 
   removeUnit(i) {
     const u = this.units[i];
@@ -642,6 +687,8 @@ export class PoliceSystem {
   }
 
   updateSiren(u, dt) {
+    // el coche robado ya no lleva sirena: es tuyo
+    if (u.sinSirena) return;
     const activo =
       u.state === ESTADO.PERSIGUIENDO ||
       u.state === ESTADO.INVESTIGANDO ||

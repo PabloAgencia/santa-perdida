@@ -21,12 +21,16 @@ export class PauseScene extends Phaser.Scene {
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.72);
 
+    // El panel y el reparto de dentro estan medidos para que quepan las SIETE
+    // opciones mas el aviso. Antes eran 340 px de alto con las opciones cada
+    // 42: la ultima caia en h/2+180, fuera del panel, y el aviso estaba en
+    // h/2+148, o sea PISANDO las opciones.
     this.add.image(w / 2, h / 2, 'px')
-      .setDisplaySize(440, 340).setTint(0x0d1014).setAlpha(0.95);
+      .setDisplaySize(440, 372).setTint(0x0d1014).setAlpha(0.95);
 
-    this.add.text(w / 2, h / 2 - 140, 'PAUSA', {
+    this.add.text(w / 2, h / 2 - 152, 'PAUSA', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 6,
-      fontSize: '46px', color: '#e8b54a',
+      fontSize: '42px', color: '#e8b54a',
     }).setOrigin(0.5);
 
     this.opciones = [
@@ -34,18 +38,26 @@ export class PauseScene extends Phaser.Scene {
       { label: `GUARDAR EN LA ${SaveSystem.ranura}`, accion: () => this.guardar() },
       { label: 'CAMBIAR DE PARTIDA', accion: () => this.aLasRanuras() },
       { label: 'EMPEZAR DE CERO AQUI', accion: () => this.nueva() },
-      { label: 'COMO ESTAS', accion: () => this.verAtributos() },
+      { label: 'ESTADISTICAS', accion: () => this.verAtributos() },
       { label: 'CONTROLES', accion: () => this.controles() },
       { label: 'VOLVER AL MENU', accion: () => this.alMenu() },
     ];
 
     this.indice = 0;
     this.items = this.opciones.map((op, i) =>
-      this.add.text(w / 2, h / 2 - 72 + i * 42, op.label, {
+      this.add.text(w / 2, h / 2 - 98 + i * 36, op.label, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
-        fontSize: '26px', color: COLORS.ink,
+        fontSize: '24px', color: COLORS.ink,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-        .on('pointerover', () => { this.indice = i; this.pintar(); })
+        // con el raton suena igual que con las flechas, pero solo al CAMBIAR
+        // de opcion: pasando por encima de la que ya esta elegida sonaba en
+        // cada temblor del raton y era un traqueteo insoportable
+        .on('pointerover', () => {
+          if (this.indice === i) return;
+          this.indice = i;
+          this.pintar();
+          Audio.menuMove();
+        })
         .on('pointerdown', () => this.elegir())
     );
 
@@ -54,7 +66,7 @@ export class PauseScene extends Phaser.Scene {
       fontSize: '22px', color: '#e8b54a',
     }).setOrigin(0.5);
 
-    this.aviso = this.add.text(w / 2, h / 2 + 148, 'ESC para seguir jugando', {
+    this.aviso = this.add.text(w / 2, h / 2 + 152, 'ESC para seguir jugando', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
       fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0.5);

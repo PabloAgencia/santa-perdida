@@ -892,7 +892,11 @@ export class CityScene extends Phaser.Scene {
   enterVehicle(v) {
     // si el coche llevaba a alguien dentro, se baja: unos huyen y otros se
     // encaran, como en un robo de coche de verdad
-    if (v.ai && this.traffic) {
+    if (v.police && this.police) {
+      // la patrulla tiene su propio camino: sus agentes no existen mientras
+      // van dentro, hay que crearlos al bajarlos
+      this.police.robarPatrulla(v);
+    } else if (v.ai && this.traffic) {
       const cond = this.traffic.soltarConductor(v);
       if (cond) this.npcs.expulsarConductor(cond, v, this.player);
     }

@@ -194,7 +194,13 @@ export class ShopScene extends Phaser.Scene {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
         fontSize: '22px', color: COLORS.ink,
       }).setOrigin(0, 0.5).setInteractive({ useHandCursor: true })
-        .on('pointerover', () => { this.indice = i; this.pintar(); })
+        // suena igual que con las flechas, pero solo al CAMBIAR de articulo
+        .on('pointerover', () => {
+          if (this.indice === i) return;
+          this.indice = i;
+          this.pintar();
+          Audio.menuMove();
+        })
         .on('pointerdown', () => this.elegir());
 
       const coste = this.add.text(s.x + s.w - 30, y, op.salir ? '' : `${op.precio} €`, {

@@ -50,6 +50,42 @@ export function colorDelCuerpo(scene, clave, porDefecto = 0xa8552f) {
   return (r << 16) | (g << 8) | b;
 }
 
+// HASTA DONDE LLEGA EL CUERPO POR CADA COSTADO.
+//
+// Esto existe por un fallo que costo una tanda: los brazos van DETRAS del
+// tronco, asi que si el hombro cae dentro de la silueta, el brazo no se ve.
+// Nada. Se pusieron los hombros "un poco mas adentro" para que no parecieran
+// despegados y desaparecieron del todo.
+//
+// Se mide en vez de calcularse porque cada cuerpo ocupa lo suyo: el dibujo
+// por codigo es simetrico, pero las fotos de IA no (la del jugador llega a
+// -11 por arriba y a +8 por abajo), y ademas cambian al engordar.
+//
+// Devuelve, en pixeles desde el centro, lo que sobresale por arriba y por
+// abajo mirando solo la MITAD DELANTERA, que es donde estan los hombros.
+export function costadosDelCuerpo(scene, clave, porDefecto = 7) {
+  if (!scene.textures.exists(clave)) return { arriba: porDefecto, abajo: porDefecto };
+  const img = scene.textures.get(clave).getSourceImage();
+  const cx = img.width / 2;
+  const cy = img.height / 2;
+
+  let arriba = 0;
+  let abajo = 0;
+  for (let x = Math.floor(cx * 0.8); x < img.width; x++) {
+    for (let y = 0; y < img.height; y++) {
+      const p = scene.textures.getPixel(x, y, clave);
+      if (!p || p.alpha < 60) continue;
+      const d = y - cy;
+      if (d < 0) arriba = Math.max(arriba, -d);
+      else abajo = Math.max(abajo, d);
+    }
+  }
+  return {
+    arriba: arriba || porDefecto,
+    abajo: abajo || porDefecto,
+  };
+}
+
 // Una extremidad: una capsula con contorno oscuro y, si lleva mano, un
 // circulo de piel en la punta. El origen se pone luego en el extremo de
 // dentro, que es por donde tiene que girar.

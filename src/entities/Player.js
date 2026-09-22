@@ -2,7 +2,7 @@ import { PLAYER, ENTRENAR } from '../config/balance.js';
 import { FASES, makeWalkFrames } from '../world/personArt.js';
 import { ROPA, LIENZO, CUERPO, anchoDelCuerpo, tramoDelCuerpo } from '../config/aspecto.js';
 import { GameState } from '../core/GameState.js';
-import { colorDelCuerpo, makeExtremidad, aclarar } from '../world/extremidades.js';
+import { colorDelCuerpo, costadosDelCuerpo, makeExtremidad, aclarar } from '../world/extremidades.js';
 
 // CUANTO SE MUEVE EL BRAZO, EN PIXELES ADELANTE Y ATRAS.
 //
@@ -159,16 +159,28 @@ export class Player {
       p.setTexture('jug-pierna').setOrigin(0.25, 0.5);
     }
 
-    // Hombros y caderas, en las medidas del cuerpo de ahora.
-    // El hombro va DETRAS del centro: puesto delante, el brazo se adelantaba
-    // mas que la cabeza y el personaje parecia que iba braceando por encima
-    // de si mismo.
+    // LOS HOMBROS, FUERA DE LA SILUETA. Los brazos van detras del tronco: si
+    // el hombro cae dentro del cuerpo, el brazo no se ve NADA. Asi paso la
+    // primera vez, poniendolos a `ancho * 0.44` cuando la silueta de la foto
+    // llega a 11 px: quedaron enterrados.
+    // Por eso se MIDE el cuerpo en vez de calcularlo: las fotos de IA no son
+    // simetricas (la del jugador llega a -11 arriba y a +8 abajo) y ademas
+    // cambian al engordar.
+    const costados = costadosDelCuerpo(this.scene, `${this.texturaBase}-0`, ancho * 0.6);
     this.hombroX = -2.2;
-    // el hombro METIDO hacia dentro: con 0,52 el brazo salia entero por
-    // fuera del tronco y se leia como una pieza aparte flotando al lado
-    this.hombroY = ancho * 0.44;
-    this.caderaX = -CUERPO.largo * 0.3;
-    this.caderaY = ancho * 0.22;
+    // Justo por FUERA del borde del cuerpo: asi asoman unos 3 px de los 5 que
+    // mide el brazo y el resto queda tapado por el tronco, que es lo que lo
+    // hace parecer pegado al hombro y no una pieza flotando.
+    this.hombroYArriba = costados.arriba + 0.8;
+    this.hombroYAbajo = costados.abajo + 0.8;
+
+    // Las piernas SOLO con el cuerpo dibujado por codigo. Las fotos de IA ya
+    // traen los pies pintados por detras: añadirle piernas le dejaria cuatro.
+    this.conPiernas = this.texturaBase === 'player';
+    this.piernaIzq.setVisible(this.conPiernas);
+    this.piernaDer.setVisible(this.conPiernas);
+    this.caderaX = -CUERPO.largo * 0.34;
+    this.caderaY = ancho * 0.24;
     this.colocarExtremidades(0);
   }
 
@@ -204,9 +216,9 @@ export class Player {
     if (this.golpeando > 0) return this.poseGolpe();
     if (this.apuntando) return this.poseApuntar();
 
-    this.brazoIzq.setPosition(this.hombroX + d, -this.hombroY)
+    this.brazoIzq.setPosition(this.hombroX + d, -this.hombroYArriba)
       .setRotation(swing * GIRO_ADORNO);
-    this.brazoDer.setPosition(this.hombroX - d, this.hombroY)
+    this.brazoDer.setPosition(this.hombroX - d, this.hombroYAbajo)
       .setRotation(-swing * GIRO_ADORNO);
     return undefined;
   }
@@ -219,22 +231,25 @@ export class Player {
     const rel = Phaser.Math.Angle.Wrap(this.apuntando.angulo - this.angle);
     const x = this.hombroX + SACA_BRAZO;
 
+    // OJO: los hombros NO se meten hacia el centro al apuntar. Los brazos van
+    // detras del tronco, asi que cualquier cosa que los acerque al eje los
+    // esconde debajo del cuerpo. Se quedan en su costado y lo que cambia es
+    // que se adelantan y giran.
     if (this.apuntando.dosManos) {
-      // LAS DOS MANOS AL ARMA, PERO ESCALONADAS. Puestos en el mismo sitio y
-      // con el mismo giro, los dos brazos se superponian exactos y las dos
-      // manos se apilaban: en pantalla salia un rombo brillante, no unos
-      // brazos. Asi va una mano delante de la otra, como se agarra un arma
-      // larga de verdad.
+      // LAS DOS MANOS AL ARMA, ESCALONADAS. Con los dos brazos en el mismo
+      // sitio y el mismo giro se superponian exactos y las manos se apilaban:
+      // salia un rombo brillante, no unos brazos. Asi va una mano por delante
+      // de la otra, como se agarra un arma larga.
       const adelanto = 2.2;
-      this.brazoDer.setPosition(x, this.hombroY * 0.5).setRotation(rel);
+      this.brazoDer.setPosition(x, this.hombroYAbajo).setRotation(rel);
       this.brazoIzq.setPosition(
         x + Math.cos(rel) * adelanto,
-        -this.hombroY * 0.28 + Math.sin(rel) * adelanto
+        -this.hombroYArriba + Math.sin(rel) * adelanto
       ).setRotation(rel);
     } else {
       // una mano: el brazo de tirar fuera, el otro recogido al costado
-      this.brazoDer.setPosition(x, this.hombroY * 0.6).setRotation(rel);
-      this.brazoIzq.setPosition(this.hombroX - 1.5, -this.hombroY)
+      this.brazoDer.setPosition(x, this.hombroYAbajo).setRotation(rel);
+      this.brazoIzq.setPosition(this.hombroX - 1.5, -this.hombroYArriba)
         .setRotation(rel * 0.2);
     }
   }
@@ -245,9 +260,9 @@ export class Player {
     const t = this.golpeando / GOLPE_DURA;      // 1 al empezar, 0 al acabar
     // sale de golpe y vuelve mas despacio: pegar es seco, recoger no
     const fuera = Math.sin(t * Math.PI) * GOLPE_SACA;
-    this.brazoDer.setPosition(this.hombroX + fuera, this.hombroY * 0.55)
+    this.brazoDer.setPosition(this.hombroX + fuera, this.hombroYAbajo)
       .setRotation(-0.2 * (fuera / GOLPE_SACA));
-    this.brazoIzq.setPosition(this.hombroX - fuera * 0.5, -this.hombroY)
+    this.brazoIzq.setPosition(this.hombroX - fuera * 0.5, -this.hombroYArriba)
       .setRotation(0.1);
   }
 

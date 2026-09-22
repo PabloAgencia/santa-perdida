@@ -54,7 +54,13 @@ export class SlotsScene extends Phaser.Scene {
       }).setOrigin(1, 0.5);
 
       marco.setInteractive({ useHandCursor: true })
-        .on('pointerover', () => { this.indice = i; this.pintar(); })
+        // suena igual que con las flechas, pero solo al CAMBIAR de ranura
+        .on('pointerover', () => {
+          if (this.indice === i) return;
+          this.indice = i;
+          this.pintar();
+          Audio.menuMove();
+        })
         .on('pointerdown', () => this.jugar());
 
       this.filas.push({ marco, numero, titulo, detalle, enLaNube });

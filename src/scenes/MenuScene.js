@@ -84,7 +84,15 @@ export class MenuScene extends Phaser.Scene {
         fontSize: conPortada ? '32px' : '30px',
         color: COLORS.ink,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
-        .on('pointerover', () => { this.indice = i; this.pintar(); })
+        // con el raton suena igual que con las flechas, pero solo al CAMBIAR
+        // de opcion: si no, cada temblor del raton encima de la elegida
+        // soltaba un pitido y era un traqueteo
+        .on('pointerover', () => {
+          if (this.indice === i) return;
+          this.indice = i;
+          this.pintar();
+          Audio.menuMove();
+        })
         .on('pointerdown', () => this.elegir())
     );
 
