@@ -17,6 +17,29 @@ raro, se repite el mismo prompt: cada tirada sale distinta.
 #  PERSONAJES
 ################################################################################
 
+CUAL COGER SI SALEN DE FRENTE O DE ESPALDAS
+  Ninguna de las dos, en realidad: la buena es la que se ve DESDE ARRIBA. En
+  el juego la camara esta en el cielo y el personaje gira sobre si mismo hacia
+  donde anda; si el dibujo es una persona de pie, al girar parece una peonza
+  dando vueltas tumbada, y eso canta muchisimo.
+
+  Para saber en tres segundos si una vale:
+    · Se le ve la CARA (ojos, nariz)?          -> no vale
+    · Se le ven las PIERNAS enteras?           -> no vale
+    · Se ve sobre todo la coronilla y los
+      hombros, y los pies asoman como dos
+      puntitas por debajo?                     -> esa es
+
+  Si solo hay de frente y de espaldas, COGE LA DE ESPALDAS. Desde arriba lo
+  que se ve de una persona es la cabeza y los hombros, y una de espaldas se
+  parece bastante; la de frente trae cara, que desde arriba no existe.
+  Y si es de espaldas pero de pie, mandamela igual: recortando de la cabeza a
+  la cintura suele colar. Si no cuela, se repite y ya esta.
+
+  Tampoco pasa nada si no salen: los personajes se dibujan por codigo y a 32
+  pixeles se ven bien. Son lo que menos gana con la foto.
+
+
 De TU personaje hacen falta tres versiones, porque el juego te engorda si
 comes y te pone fuerte si peleas, y el cuerpo se ve. Del resto, una sola.
 
@@ -27,7 +50,7 @@ comes y te pone fuerte si peleas, y el cuerpo se ve. Del resto, una sola.
 Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
 overhead angle, like a security camera on the ceiling looking straight down.
 Only the top of his head, his shoulders and the tips of his shoes are visible.
-NO face, NO perspective, NO tilt. He is standing still, facing RIGHT, arms
+NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. He is standing still, facing RIGHT, arms
 slightly away from the body. Average build, dark green bomber jacket, dark
 blue jeans, short dark brown hair. Pixel art, chunky readable pixels, dark
 muted night-time palette, strong dark outline around the silhouette so it
@@ -42,7 +65,7 @@ image.
 Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
 overhead angle, like a security camera on the ceiling looking straight down.
 Only the top of his head, his shoulders and the tips of his shoes are visible.
-NO face, NO perspective, NO tilt. He is standing still, facing RIGHT, arms
+NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. He is standing still, facing RIGHT, arms
 pushed out by a wide belly. He is clearly FAT: much wider than tall from
 above, round shoulders, the jacket tight on him. Same man as before: dark
 green bomber jacket, dark blue jeans, short dark brown hair. Pixel art, chunky
@@ -58,7 +81,7 @@ and filling most of the image.
 Top-down sprite of a man seen from DIRECTLY ABOVE at a perfect 90 degree
 overhead angle, like a security camera on the ceiling looking straight down.
 Only the top of his head, his shoulders and the tips of his shoes are visible.
-NO face, NO perspective, NO tilt. He is standing still, facing RIGHT. He is
+NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. He is standing still, facing RIGHT. He is
 clearly MUSCULAR: very broad shoulders, thick arms held away from the body,
 narrow waist. Same man as before: dark green bomber jacket, dark blue jeans,
 short dark brown hair. Pixel art, chunky readable pixels, dark muted
@@ -73,7 +96,7 @@ watermark, no border, the figure centered and filling most of the image.
 Top-down sprite of a police officer seen from DIRECTLY ABOVE at a perfect 90
 degree overhead angle, like a security camera on the ceiling looking straight
 down. Only the top of the cap, the shoulders and the tips of the boots are
-visible. NO face, NO perspective, NO tilt. Standing still, facing RIGHT, arms
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing still, facing RIGHT, arms
 slightly away from the body. Dark navy blue uniform with a light grey shirt
 collar, black duty belt, police cap seen from above. Pixel art, chunky
 readable pixels, dark muted night-time palette, strong dark outline around the
@@ -88,7 +111,7 @@ and filling most of the image.
 Top-down sprite of a SWAT officer seen from DIRECTLY ABOVE at a perfect 90
 degree overhead angle, like a security camera on the ceiling looking straight
 down. Only the top of the helmet, the bulky shoulders and the tips of the
-boots are visible. NO face, NO perspective, NO tilt. Standing still, facing
+boots are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing still, facing
 RIGHT, holding a rifle across the chest. All black tactical gear, heavy vest
 that makes the shoulders wide and square, black helmet seen from above with a
 small grey stripe. Pixel art, chunky readable pixels, dark muted night-time
@@ -103,7 +126,7 @@ watermark, no border, the figure centered and filling most of the image.
 Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
 90 degree overhead angle, like a security camera on the ceiling looking
 straight down. Only the top of the head, the shoulders and the tips of the
-trainers are visible. NO face, NO perspective, NO tilt. Standing still, facing
+trainers are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing still, facing
 RIGHT, arms loose. Dark red hooded sweatshirt with the hood down, black
 trousers, black cap seen from above. Pixel art, chunky readable pixels, dark
 muted night-time palette, strong dark outline around the silhouette so it
@@ -118,7 +141,7 @@ image.
 Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
 90 degree overhead angle, like a security camera on the ceiling looking
 straight down. Only the top of the head, the shoulders and the tips of the
-trainers are visible. NO face, NO perspective, NO tilt. Standing still, facing
+trainers are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing still, facing
 RIGHT, arms loose. Dark green tracksuit jacket with a white stripe on each
 sleeve, dark trousers, short black hair. Pixel art, chunky readable pixels,
 dark muted night-time palette, strong dark outline around the silhouette so it
@@ -133,7 +156,7 @@ image.
 Top-down sprite of a street gang member seen from DIRECTLY ABOVE at a perfect
 90 degree overhead angle, like a security camera on the ceiling looking
 straight down. Only the top of the head, the shoulders and the tips of the
-boots are visible. NO face, NO perspective, NO tilt. Standing still, facing
+boots are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing still, facing
 RIGHT, arms loose. Dark purple leather jacket, black trousers, long dark hair
 seen from above. Pixel art, chunky readable pixels, dark muted night-time
 palette, strong dark outline around the silhouette so it reads at a small
@@ -147,7 +170,7 @@ watermark, no border, the figure centered and filling most of the image.
 Top-down sprite of an ordinary man walking down the street, seen from DIRECTLY
 ABOVE at a perfect 90 degree overhead angle, like a security camera on the
 ceiling looking straight down. Only the top of the head, the shoulders and the
-tips of the shoes are visible. NO face, NO perspective, NO tilt. Standing
+tips of the shoes are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor. Standing
 still, facing RIGHT, arms loose. Brown work jacket, grey trousers, balding
 head seen from above. Pixel art, chunky readable pixels, dark muted
 night-time palette, strong dark outline around the silhouette so it reads at a
@@ -161,7 +184,7 @@ watermark, no border, the figure centered and filling most of the image.
 Top-down sprite of an ordinary woman walking down the street, seen from
 DIRECTLY ABOVE at a perfect 90 degree overhead angle, like a security camera
 on the ceiling looking straight down. Only the top of the head, the shoulders
-and the tips of the shoes are visible. NO face, NO perspective, NO tilt.
+and the tips of the shoes are visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT a back view: the camera is on the ceiling pointing straight down at the floor.
 Standing still, facing RIGHT, one arm holding a small bag. Dark teal coat,
 black trousers, dark hair tied back seen from above. Pixel art, chunky
 readable pixels, dark muted night-time palette, strong dark outline around the
