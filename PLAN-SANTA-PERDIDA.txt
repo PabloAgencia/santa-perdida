@@ -1242,9 +1242,7 @@ portada
      mandan ellas; si no, suena lo sintetizado. Apuntados en
      SONIDOS-QUE-BAJAR.txt.
 
-  LA PORTADA DEL MENU
-     Montado el sitio para que entre, pero LA IMAGEN TODAVIA NO EXISTE: la
-     tiene que generar Pablo con Gemini.
+  LA PORTADA DEL MENU   [YA ESTA DENTRO: Pablo la genero el mismo dia]
 
      - Carpeta nueva `arte/`, aparte de `sprites/`, porque una portada es un
        cuadro entero y no pasa por preparar-sprites.py, que lo que hace es
@@ -1260,16 +1258,48 @@ portada
      - Se encaja RECORTANDO, nunca estirando (escala por el lado que mas
        falta le hace). Estirada, en una ventana estrecha los personajes
        saldrian achaparrados.
-     - Lleva un barrido lento de 24 s y un velo oscuro encima. Quieta del
-       todo, la pantalla de inicio parece una captura congelada.
+     - Lleva un barrido lento y un velo oscuro encima. Quieta del todo, la
+       pantalla de inicio parece una captura congelada.
 
-     EL PROMPT esta en PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU",
-     con dos versiones: el mosaico de viñetas (la buena) y una sola escena
-     (el repuesto, mas facil de acertar). Los dos insisten tres veces en que
-     NO lleve ni una letra, porque el titulo lo escribe el juego por encima.
+     EL PROBLEMA QUE TRAIA LA IMAGEN, Y COMO SE RESOLVIO
+       La portada que genero Pablo venia con el titulo, el subtitulo Y LAS
+       CUATRO OPCIONES pintadas dentro. El titulo y el subtitulo son mucho
+       mejores que los que sabe escribir Phaser, asi que CON PORTADA el juego
+       deja de escribir los suyos y se queda con los de la imagen.
+       Las opciones no podian quedarse pintadas: cambian de texto ("SEGUIR LA
+       PARTIDA 1" cuando hay partida), se iluminan y llevan cursor.
 
-  COMPROBADO: los cinco ficheros tocados pasan `node --check`, el menu sigue
-  pintando igual con el skyline de repuesto, y las 155 texturas cargan.
+       `herramientas/preparar-portada.py` las borra esmerilando esa zona:
+       desenfoque de 26 px mas un oscurecido del 50%, con los bordes
+       difuminados, de modo que queda un panel que parece puesto a proposito.
+       Encima, el juego escribe las opciones de verdad, colocadas justo donde
+       estaban las pintadas (y=398 y 47,5 px de salto, medidos sobre la
+       imagen y pasados a las medidas de la escena).
+
+       DOS COSAS QUE SE APRENDIERON AHI
+         · La primera version esmerilaba una franja de lado a lado y se comia
+           medio cuadro: el sol, el cerro y las palmeras. Un panel ceñido al
+           texto tapa lo que hay que tapar y deja el resto nitido.
+         · Difuminar una mascara la ENCOGE. Dibujada justo del tamaño del
+           texto, la primera y la ultima linea se quedaban en el borde suave y
+           seguian leyendose. Por eso el script parte de la zona del texto y
+           le suma la pluma por los cuatro lados.
+         · El barrido bajo del 6% al 3,5%: el panel va cocido en la imagen y
+           las opciones son texto fijo. Si la imagen se mueve mucho, el panel
+           se le escapa al texto por debajo.
+
+       MEDIDO: pixeles de letra pintada en la zona, 17.679 antes y 0 despues.
+       El script lo comprueba solo y avisa si quedan.
+
+     EL PROMPT esta en PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU".
+     AVISO para la proxima: decia tres veces que no llevara letras y las
+     llevo igual. Con una portada no pasa nada (se esmerila y listo), pero si
+     algun dia hace falta otra, mejor contar con que las traera.
+
+  COMPROBADO: los ficheros tocados pasan `node --check`; el menu con portada
+  pinta las opciones sobre el panel, el cursor es un triangulo dorado que se
+  mueve, y quitando la textura a mano vuelve el skyline de siempre sin un
+  solo error en consola.
 
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
@@ -1410,3 +1440,69 @@ COLGANDO DE OTRA COSA
  29. PRICEDOWN EN TEXTOS PEQUEÑOS: sigue igual, es cuestion de gusto.
  30. LA CAMARA SUELTA: no se ha reproducido en ninguna prueba. El seguro
      sigue puesto.
+
+
+================================================================================
+EL ENCARGO DE CHATGPT (22-sep-2026) — COMPARADO CON LO QUE YA HABIA
+================================================================================
+
+Pablo trajo un encargo largo de ChatGPT con siete fases. Antes de apuntarlo
+como plan nuevo se ha comparado con el repositorio y con los dos ficheros de
+ideas. CONCLUSION: NO ES UN PLAN NUEVO. Es, casi punto por punto, lo que ya
+estaba escrito en IDEAS-DE-LOS-GTA-2-LO-GORDO.txt, y encima en el mismo orden.
+
+  ChatGPT FASE 1 (actividades y progresion)  = IDEAS-2 punto 2
+  ChatGPT FASE 2 (importacion/exportacion)   = IDEAS-2 punto 3
+  ChatGPT FASE 3 (encuentros aleatorios)     = IDEAS-2 punto 4
+  ChatGPT FASE 4 (desafios)                  = IDEAS-2 punto 5
+  ChatGPT FASE 5 (negocios)                  = IDEAS-2 punto 6
+  ChatGPT FASE 7 (la ciudad se abre)         = IDEAS-2 punto 7
+
+Eso es buena señal: dos cabezas por separado han salido con la misma lista y
+el mismo orden. Pero conviene saberlo para no creerse que hay un encargo nuevo
+encima del que ya habia.
+
+COMPROBADO EN EL CODIGO (no supuesto):
+  · encuentros aleatorios .... 0 coincidencias. No existe.
+  · desafios / rampages ...... 0 coincidencias. No existe.
+  · import/export ............ no existe (las 18 coincidencias de "puerto"
+                               son el nombre del barrio).
+  · negocios ................. 4 coincidencias sueltas. Practicamente nada.
+  · habilidades/mejoras ...... 2 coincidencias. Practicamente nada.
+  · combate .................. SI existe (CombatSystem.js, tandas 16 y 17).
+                               ChatGPT pide "auditarlo porque es reciente";
+                               ya se auditó y esta integrado con la policia y
+                               con las bandas. Pulido si, reescritura no.
+  · mapa grande .............. SI, ya se hizo (tandas 19 y 20). ChatGPT
+                               acierta al decir que NO toca agrandarlo mas.
+
+LO QUE CHATGPT SI APORTA DE NUEVO, Y MERECE LA PENA GUARDAR
+  1. ARQUITECTURA ANTES QUE CONTENIDO. No programar cada actividad y cada
+     negocio a mano: un armazon generico (progreso, niveles, mejoras,
+     requisitos, guardado) y luego rellenarlo. Esto no estaba escrito en
+     ningun sitio y es lo mas valioso del encargo.
+  2. HACER 1-2 NEGOCIOS COMPLETOS primero, y solo despues abrir la mano.
+  3. IDENTIDAD DE BARRIO como requisito: un barrio no es un color de suelo,
+     es densidad, trafico, peatones, bandas, policia, negocios y peligros.
+  4. RAZON DENTRO DEL MUNDO para las zonas cerradas: control policial, obra,
+     puente cortado. Nunca una pared invisible.
+  5. RENDIMIENTO COMO REGLA: aparecer y desaparecer por cercania, y las
+     entidades lejanas actualizandose menos. La ciudad ya es grande.
+  6. COMPORTAMIENTO EMERGENTE en vez de escenas programadas a mano: reglas
+     sencillas por NPC (ve pelea -> huye; policia ve pelea -> interviene) que
+     al cruzarse producen situaciones solas.
+
+DONDE NO HAY QUE HACERLE CASO
+  · "Empieza por la auditoria completa del repositorio". Ya existe una:
+    AUDITORIA-21SEP2026.txt, mas el registro de sesiones de este fichero.
+    Repetirla entera es gastar cuota en releer lo que ya esta escrito.
+  · "No reemplaces el combate porque es reciente". De acuerdo en no
+    reemplazarlo, pero el motivo es otro: ya paso su auditoria.
+
+ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
+  Sigue mandando la lista de 14 del final de IDEAS-DE-LOS-GTA-2-LO-GORDO.txt.
+  Lo unico que cambia es COMO se atacan los puntos 2, 5 y 6: primero el
+  armazon generico, despues el contenido.
+
+  PENDIENTE DE PABLO: decir por cual empezamos. Cada uno de estos es una
+  tanda entera, asi que no se arranca solo.

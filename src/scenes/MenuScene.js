@@ -28,32 +28,36 @@ export class MenuScene extends Phaser.Scene {
     if (conPortada) this.portada(w, h);
     else this.skyline(w, h);
 
-    // el titulo tiene que leerse limpio por encima de lo que haya detras
-    this.add.image(0, h * 0.5, 'px').setOrigin(0, 0)
-      .setDisplaySize(w, h * 0.5).setTint(0x000000)
-      .setAlpha(conPortada ? 0.72 : 0.62);
-    for (let i = 0; i < 9; i++) {
-      this.add.image(w / 2, h * 0.31, 'px')
-        .setDisplaySize(w, 190 - i * 18)
-        .setTint(0x05060a)
-        .setAlpha(0.14);
+    // CON PORTADA el titulo y el subtitulo YA VIENEN PINTADOS en la
+    // ilustracion, y estan mucho mejor hechos que los que sabe escribir
+    // Phaser. Aqui no se escriben, que si no se ven dos veces.
+    if (!conPortada) {
+      // el titulo tiene que leerse limpio por encima del perfil de ciudad
+      this.add.image(0, h * 0.5, 'px').setOrigin(0, 0)
+        .setDisplaySize(w, h * 0.5).setTint(0x000000).setAlpha(0.62);
+      for (let i = 0; i < 9; i++) {
+        this.add.image(w / 2, h * 0.31, 'px')
+          .setDisplaySize(w, 190 - i * 18)
+          .setTint(0x05060a)
+          .setAlpha(0.14);
+      }
+
+      const titulo = this.add.text(w / 2, h * 0.3, 'S A N T A   P E R D I D A', {
+        fontFamily: TITULO, stroke: '#05060a', strokeThickness: 10, fontSize: '76px', color: '#e8b54a',
+      }).setOrigin(0.5);
+
+      this.add.text(w / 2, h * 0.3 + 52, 'aqui nadie pregunta de donde vienes', {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: COLORS.dim,
+      }).setOrigin(0.5);
+
+      // entra rapido: con 1,1 s de fundido el menu parecia vacio al abrirlo
+      titulo.setAlpha(0.35);
+      this.tweens.add({ targets: titulo, alpha: 1, duration: 420, ease: 'Sine.out' });
+      this.tweens.add({
+        targets: titulo, y: h * 0.3 - 6,
+        duration: 3400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+      });
     }
-
-    const titulo = this.add.text(w / 2, h * 0.3, 'S A N T A   P E R D I D A', {
-      fontFamily: TITULO, stroke: '#05060a', strokeThickness: 10, fontSize: '76px', color: '#e8b54a',
-    }).setOrigin(0.5);
-
-    this.add.text(w / 2, h * 0.3 + 52, 'aqui nadie pregunta de donde vienes', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: COLORS.dim,
-    }).setOrigin(0.5);
-
-    // entra rapido: con 1,1 s de fundido el menu parecia vacio al abrirlo
-    titulo.setAlpha(0.35);
-    this.tweens.add({ targets: titulo, alpha: 1, duration: 420, ease: 'Sine.out' });
-    this.tweens.add({
-      targets: titulo, y: h * 0.3 - 6,
-      duration: 3400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-    });
 
     this.opciones = [
       // atajo directo a la partida que estabas jugando
@@ -63,19 +67,31 @@ export class MenuScene extends Phaser.Scene {
       { label: 'CONTROLES', accion: () => this.verControles() },
     ];
 
+    // Con portada las opciones van ENCIMA del panel esmerilado que la
+    // ilustracion trae cocido (ahi estaban las opciones pintadas, que
+    // herramientas/preparar-portada.py borro). Estos dos numeros salen de
+    // medir donde estaban en la imagen, pasados a las medidas de la escena.
     this.indice = 0;
+    const primera = conPortada ? 398 : h * 0.56;
+    const salto = conPortada ? 47.5 : 44;
     this.items = this.opciones.map((op, i) =>
-      this.add.text(w / 2, h * 0.56 + i * 44, op.label, {
-        fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px',
+      this.add.text(w / 2, primera + i * salto, op.label, {
+        fontFamily: TITULO, stroke: '#05060a',
+        // sobre la ilustracion el borde tiene que ser mas gordo: el fondo
+        // tiene color y detalle, y con 4 las letras se despegaban poco
+        strokeThickness: conPortada ? 6 : 4,
+        fontSize: conPortada ? '32px' : '30px',
         color: COLORS.ink,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         .on('pointerover', () => { this.indice = i; this.pintar(); })
         .on('pointerdown', () => this.elegir())
     );
 
-    this.cursor = this.add.text(0, 0, '>', {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '24px', color: '#e8b54a',
-    }).setOrigin(0.5);
+    // Triangulo dibujado, no el caracter '>'. Pricedown no trae el triangulo
+    // relleno (el navegador lo sacaria de otra fuente y desentona), y un '>'
+    // al lado de letras tan gordas se queda en nada.
+    this.cursor = this.add.triangle(0, 0, 0, 0, 0, 20, 17, 10, 0xe8b54a)
+      .setStrokeStyle(3, 0x05060a);
 
     this.ayuda = this.add.text(w / 2, h - 34, 'Flechas o raton para elegir  ·  ENTER para entrar', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
@@ -137,14 +153,24 @@ export class MenuScene extends Phaser.Scene {
     const tex = this.textures.get('portada').getSourceImage();
     const escala = Math.max(w / tex.width, h / tex.height);
     img.setScale(escala);
+    // El barrido es del 3,5% y no mas: la ilustracion lleva COCIDO el panel
+    // esmerilado donde van las opciones, y las opciones son texto fijo. Si la
+    // imagen se mueve mucho, el panel se le escapa al texto por debajo.
     this.tweens.add({
-      targets: img, scale: escala * 1.06,
-      duration: 24000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+      targets: img, scale: escala * 1.035,
+      duration: 26000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    // un velo fino por encima: la ilustracion viene mas clara que el menu y
-    // sin esto el texto blanco se pierde sobre las zonas de cielo
+
+    // velo fino: baja el cielo lo justo para que el texto blanco no se pierda
     this.add.image(0, 0, 'px').setOrigin(0, 0)
-      .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.3);
+      .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.2);
+
+    // y un degradado abajo del todo, para la linea de ayuda: ahi la
+    // ilustracion tiene el coche y la carretera iluminados
+    for (let i = 0; i < 10; i++) {
+      this.add.image(0, h - 78 + i * 8, 'px').setOrigin(0, 0)
+        .setDisplaySize(w, 10).setTint(0x05060a).setAlpha(0.06 + i * 0.045);
+    }
   }
 
   // perfil de ciudad dibujado con rectangulos, para que el menu no sea un vacio

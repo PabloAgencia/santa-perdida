@@ -507,10 +507,11 @@ Si aun asi sale con damero, no pasa nada: el preparador tambien sabe quitarlo.
 ################################################################################
 
 DONDE SE DEJA
-  arte\portada.png        (NO en sprites\, que eso lo recorta el preparador
+  la RAIZ, como "portada santa perdida.png"  (NO en sprites\, que eso lo recorta el preparador
                            y esto es un cuadro entero)
-  Y despues hay que apuntarla en arte\lista.json -> ["portada.png"]
-  Eso lo hago yo: tu dejame el fichero y avisame.
+  Despues se pasa por  python herramientas/preparar-portada.py , que la deja
+  en arte\portada.jpg y apunta arte\lista.json. Eso lo hago yo: tu dejame el
+  fichero en la raiz y avisame.
 
 MEDIDAS
   Apaisada 16:9, 1920x1080 o mas grande. Pidele a Gemini "16:9 landscape".

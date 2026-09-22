@@ -6,23 +6,44 @@ otra que venga despues. NO pasa por herramientas\preparar-sprites.py: ese
 script recorta figuras sobre fondo magenta, y una portada es un cuadro entero
 que no hay que recortar de nada.
 
-QUE HAY QUE HACER PARA QUE SE VEA
-  1. Dejar el fichero aqui con el nombre exacto:  portada.png
-  2. Apuntarlo en lista.json, que tiene que quedar asi:
+LO QUE HAY AHORA
+  portada.jpg   La pantalla de inicio. La genero Pablo el 22-sep-2026.
 
-       ["portada.png"]
+PARA CAMBIARLA POR OTRA
+  1. Dejar la imagen nueva en la RAIZ del proyecto, con este nombre exacto:
+       portada santa perdida.png
+  2. Ejecutar:
+       python herramientas/preparar-portada.py
+     (eso deja arte\portada.jpg listo y apunta lista.json; lo hago yo, que
+      Pablo no ejecuta scripts)
+  3. Recargar el juego.
 
-     (con lista.json vacio -- [] -- el menu pinta el perfil de ciudad de
-     siempre, que es lo que hay ahora; asi el juego nunca pide un fichero que
-     no existe y la consola no se llena de errores 404)
+QUE HACE ESE SCRIPT, Y POR QUE HACE FALTA
+  La portada trae el titulo, el subtitulo y las cuatro opciones PINTADAS
+  dentro. El titulo y el subtitulo se quedan: estan mejor hechos que los que
+  sabe escribir Phaser, y el juego deja de escribir los suyos cuando hay
+  portada. Las opciones NO pueden quedarse: cambian de texto, se iluminan al
+  pasar por encima y llevan cursor.
+
+  El script las borra esmerilando esa franja (desenfoque fuerte mas un
+  oscurecido, con los bordes difuminados). Queda un panel que parece puesto a
+  proposito, y encima el juego escribe las opciones de verdad.
+
+  Se comprueba solo: cuenta los pixeles de letra antes y despues, y si
+  quedan letras legibles avisa en vez de dar el visto bueno.
+
+SI LA IMAGEN NUEVA TIENE LAS OPCIONES EN OTRO SITIO
+  Hay que mover cuatro numeros en el script (ZONA_IZQ, ZONA_DER, ZONA_ARRIBA
+  y ZONA_ABAJO, en tanto por uno del lienzo) y dos en src\scenes\MenuScene.js
+  (`primera` y `salto`, que es donde se colocan las opciones de verdad).
 
 MEDIDAS
-  Apaisada, 1920x1080 o mas. El menu la encaja recortando por los lados, no
-  la estira, asi que no se deforma aunque la ventana tenga otra proporcion.
+  Apaisada 16:9, 1920x1080 o mas. El menu la encaja recortando por los lados,
+  no la estira, asi que no se deforma aunque la ventana tenga otra proporcion.
 
-QUE NO PONER EN LA IMAGEN
-  El titulo, el subtitulo y las opciones los escribe el juego por encima, con
-  su tipografia. Si la ilustracion ya trae letras, se ven dos veces.
+SI SE BORRA TODO ESTO
+  Con lista.json vacio -- [] -- el menu vuelve al perfil de ciudad dibujado
+  por codigo, con su titulo y su subtitulo. El juego no se rompe.
 
-DONDE ESTA EL PROMPT PARA GENERARLA
-  En PROMPTS-AI-STUDIO.txt, al final, en la seccion "LA PORTADA".
+DONDE ESTA EL PROMPT PARA GENERAR UNA
+  En PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU".
