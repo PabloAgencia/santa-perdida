@@ -92,7 +92,7 @@ def quitar_magenta(img):
     return Image.fromarray(a, 'RGBA')
 
 
-def quitar_fondo(img):
+def quitar_fondo(img, convexo=True):
     """Se queda con el vehiculo y tira el fondo.
 
     El fondo que pinta Gemini es un damero con degradados y ruido, asi que
@@ -142,6 +142,12 @@ def quitar_fondo(img):
                 continue
             vecinos += np.roll(np.roll(lejos, dy, axis=0), dx, axis=1).astype(np.int16)
     seguro = lejos & (vecinos >= 4)
+
+    if not convexo:
+        # una persona tiene huecos de verdad (entre el brazo y el cuerpo), asi
+        # que aqui manda el color y no la silueta
+        a[:, :, 3][~seguro] = 0
+        return Image.fromarray(a.astype(np.uint8), 'RGBA')
 
     # relleno por filas y por columnas: la interseccion deja la silueta limpia
     relleno = np.zeros((al, an), dtype=bool)
@@ -316,7 +322,11 @@ PERSONAJES = {
     'peaton-6': 'ped-5',
 }
 
+# El lienzo es de 32 px, pero la persona ocupa 23: es lo que mide la que
+# dibuja el juego (22x24), y si la foto llena los 32 el personaje sale un 45%
+# mas grande que su propia sombra y que su circulo de colision.
 LADO_PERSONAJE = 32
+LADO_CUERPO = 23
 
 
 def preparar_personajes(hechos):
@@ -339,14 +349,18 @@ def preparar_personajes(hechos):
             continue
 
         img = Image.open(os.path.join(carpeta, fichero))
-        img = mancha_principal(quitar_fondo(img))
-        img = enderezar(recortar(img))
-        img = encajar(img, LADO_PERSONAJE, LADO_PERSONAJE)
+        img = mancha_principal(quitar_fondo(img, convexo=False))
+        img = recortar(img)
+        # todas salen de espaldas mirando hacia arriba, y el juego las dibuja
+        # mirando a la derecha: un cuarto de vuelta en el sentido del reloj
+        img = img.rotate(-90, expand=True)
+        img = encajar(img, LADO_CUERPO, LADO_CUERPO)
 
         base = PERSONAJES[clave]
         for fase, subir in enumerate((0, -1, 0, 1)):
             lienzo = Image.new('RGBA', (LADO_PERSONAJE, LADO_PERSONAJE), (0, 0, 0, 0))
-            lienzo.paste(img, (0, subir))
+            hueco = (LADO_PERSONAJE - LADO_CUERPO) // 2
+            lienzo.paste(img, (hueco, hueco + subir))
             nombre = f'{base}-{fase}.png'
             lienzo.save(os.path.join(DESTINO, nombre))
             hechos.append(nombre)

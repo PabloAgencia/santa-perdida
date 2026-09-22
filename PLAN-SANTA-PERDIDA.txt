@@ -1141,6 +1141,53 @@ Pablo bajo los sonidos de Pixabay y los dejo en `audio/`.
   al otro, y por eso no hace falta ninguna mas larga.
   Los dos entran en la tienda y en el cambio de arma (TAB), con sus iconos
   dibujados. Los SWAT ahora disparan con el sonido del rifle.
+VIGESIMOSEGUNDA TANDA (22-sep-2026): el arte generado con IA, dentro
+================================================================================
+Pablo genero las imagenes con Gemini y aqui se han metido todas.
+
+  LO QUE HAY YA CON IMAGEN: siete vehiculos (cada coche en los cinco colores
+  de su paleta), seis tejados de barrio, once iconos y catorce personajes.
+  Lo que no tiene imagen se sigue dibujando por codigo, y si mañana se borra
+  una imagen, el juego vuelve solo a como estaba.
+
+  EL RECORTE, QUE FUE LO QUE COSTO
+     El fondo que pinta Gemini es un damero PINTADO, con degradados y ruido.
+     Perseguir sus colores se comia las ventanas del coche, que son del mismo
+     negro. Lo que funciona:
+       · COCHES: un coche visto desde arriba es CONVEXO. Se marcan los
+         pixeles que no pueden ser fondo y se rellena, fila a fila y columna
+         a columna, lo que queda entre el primero y el ultimo. Las ventanas
+         quedan dentro y el damero fuera.
+       · PERSONAS: ahi el relleno NO vale, porque entre el brazo y el cuerpo
+         hay hueco de verdad y se llenaba de parches. En las personas manda
+         el color: fuera todo lo que se parezca al fondo.
+     Y en los dos casos, al final se conserva solo lo que esta pegado al
+     centro, con lo que se va la marquita del Playground, que cae suelta en
+     una esquina. La marca invisible del color (SynthID) no se toca.
+
+  DETALLES QUE HUBO QUE MEDIR
+     - Los personajes salieron de espaldas MIRANDO ARRIBA y el juego los
+       dibuja mirando a la derecha: un cuarto de vuelta a cada uno.
+     - La foto llenaba los 32 px del lienzo y el personaje salia un 45% mas
+       grande que su sombra y que su circulo de colision. Ajustado a 23 px,
+       que es lo que mide el dibujado a mano (22x24).
+     - Cada persona sale en cuatro fotogramas, moviendo la imagen un pixel
+       arriba y abajo: desde arriba no se ven las piernas, asi que con ese
+       balanceo basta para que parezca que camina. COMPROBADO que los cuatro
+       se alternan al andar.
+     - Los tres cuerpos del jugador (normal, gordo y fuerte) van con clave
+       propia, porque 'player' es la textura que dibuja el juego y siempre
+       existe: sin separarlas el cuerpo se quedaba congelado.
+     - La patrulla y el furgon no se tiñen: un coche de policia pintado de
+       verde deja de ser un coche de policia.
+
+  Y UN FALLO DE CARGA QUE SE VEIA RARO: las imagenes se pedian a mitad de la
+  carga inicial y el juego arrancaba sin esperarlas, asi que entraban las
+  primeras de la lista y las ultimas no. Por eso unos coches salian con foto
+  y otros con el dibujo viejo. Ahora se cargan DESPUES de dibujar todo y el
+  menu no arranca hasta que estan las 102.
+
+  MEDIDO: 90 fps con la ciudad grande y consola limpia.
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
