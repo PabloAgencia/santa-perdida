@@ -156,7 +156,12 @@ export class Player {
     } else if (this.fase !== 0) {
       this.fase = 0;
       this.paso = 0;
-      this.sprite.setTexture('player-0');
+      // OJO: la textura de parado tiene que ser la MISMA familia que la de
+      // andar. Aqui estaba puesto 'player-0' a pelo, que es el monigote que
+      // dibuja el codigo, asi que con las imagenes de IA puestas el
+      // personaje cambiaba de aspecto cada vez que te parabas y volvia al
+      // sprite bueno al andar. Parecia que parpadeaba.
+      this.sprite.setTexture(`${this.texturaBase || 'player'}-0`);
     }
 
     this.syncSprite();

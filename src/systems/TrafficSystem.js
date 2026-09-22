@@ -19,6 +19,14 @@ const PACIENCIA = 2.0;      // s clavado antes de maniobrar
 const MANIOBRA = 1.1;       // s de marcha atras
 const INTENTOS_MAX = 3;     // tras esto, si no se le ve, se recicla
 
+// coche que se ha ido de su carril
+const PERDIDO_LATERAL = 95;   // px de separacion del carril para darlo por perdido
+const PERDIDO_PACIENCIA = 1.2; // s fuera antes de reengancharlo a otro tramo
+
+// el punto al que apunta nunca puede estar mas cerca de esto: si el objetivo
+// se le pega al morro, el coche gira, se pasa, vuelve a girar y hace circulos
+const MIRA_MINIMA = 70;
+
 export class TrafficSystem {
   constructor(scene, map, network, lights = null) {
     this.scene = scene;
@@ -115,14 +123,44 @@ export class TrafficSystem {
 
     if (!car.siguiente) car.siguiente = this.net.nextEdge(car.edge);
 
+    // CAMBIO DE CALLE. Se decide por la PROYECCION sobre el tramo (t >= 1 =
+    // ya ha pasado de largo), no solo por estar cerca del punto de salida.
+    //
+    // Antes era solo lo segundo, y ahi estaba el fallo de los coches dando
+    // vueltas: un coche que se salia del carril se quedaba a 150 px del
+    // punto de salida, nunca entraba en los 52 px que pedia el cambio, y se
+    // pasaba la vida orbitando un punto que tenia pegado al morro.
+    const prog = this.net.progreso(car.edge, v.x, v.y);
     const target = this.net.exitPoint(car.edge);
-    if (Phaser.Math.Distance.Between(v.x, v.y, target.x, target.y) < ARRIVE) {
+    const llegado = prog.t >= 1
+      || Phaser.Math.Distance.Between(v.x, v.y, target.x, target.y) < ARRIVE;
+
+    if (llegado) {
       // la siguiente ya estaba decidida desde lejos: es lo que permite
       // apuntar a ella y trazar la curva en vez de girar de golpe
       car.edge = car.siguiente || this.net.nextEdge(car.edge);
       if (!car.edge) return;
       car.siguiente = this.net.nextEdge(car.edge);
       car.intentos = 0;
+      car.perdido = 0;
+    } else if (prog.lateral > PERDIDO_LATERAL) {
+      // SE HA IDO LEJOS DE SU CARRIL. Se le da un momento por si vuelve solo
+      // (un roce lo aparta y se recoloca), y si sigue fuera se le asigna el
+      // tramo que de verdad le pega, mirando donde esta y hacia donde mira.
+      // Sin esto perseguia un carril al que ya no podia volver.
+      car.perdido = (car.perdido || 0) + dt;
+      if (car.perdido > PERDIDO_PACIENCIA) {
+        const nuevo = this.net.edgeMasCercano(
+          v.x, v.y, Math.cos(v.angle), Math.sin(v.angle)
+        );
+        if (nuevo) {
+          car.edge = nuevo;
+          car.siguiente = this.net.nextEdge(nuevo);
+        }
+        car.perdido = 0;
+      }
+    } else {
+      car.perdido = 0;
     }
 
     // --- maniobra de desatasco en curso ---
@@ -137,7 +175,13 @@ export class TrafficSystem {
         left: car.giro > 0, right: car.giro < 0, handbrake: false,
       });
       if (car.maniobra <= 0) {
-        car.edge = this.net.nextEdge(car.edge) || this.net.randomEdge();
+        // Se le reengancha al tramo que TIENE DEBAJO, no a uno al azar de la
+        // ciudad: randomEdge podia devolver una calle a cuatro mil pixeles,
+        // y el coche salia de la maniobra apuntando a la otra punta del
+        // mapa. Eso es la mitad de los "giros inesperados".
+        car.edge = this.net.edgeMasCercano(v.x, v.y, Math.cos(v.angle), Math.sin(v.angle))
+          || this.net.nextEdge(car.edge)
+          || car.edge;
         car.siguiente = this.net.nextEdge(car.edge);
         car.atasco = 0;
         car.intentos++;
@@ -262,13 +306,27 @@ export class TrafficSystem {
     }
 
     const sig = car.siguiente;
-    if (!sig) return { x: b.x, y: b.y };
+    if (!sig) return this.alejar(v, { x: b.x, y: b.y });
 
     const c = this.net.entryPoint(sig);
     const d = this.net.exitPoint(sig);
     const largo2 = Math.hypot(d.x - c.x, d.y - c.y) || 1;
     const t3 = Math.min(1, (sobra * largo) / largo2);
-    return { x: c.x + (d.x - c.x) * t3, y: c.y + (d.y - c.y) * t3 };
+    return this.alejar(v, { x: c.x + (d.x - c.x) * t3, y: c.y + (d.y - c.y) * t3 });
+  }
+
+  // El seguro contra los circulos. Si el punto al que apunta se le queda
+  // pegado al morro, el coche no puede hacer otra cosa que girar sobre si
+  // mismo: llega, se pasa, se da la vuelta, llega otra vez. Aqui se empuja
+  // el objetivo hacia delante hasta MIRA_MINIMA, y con el objetivo lejos el
+  // volante ya tiene algo a lo que apuntar.
+  alejar(v, p) {
+    const d = Phaser.Math.Distance.Between(v.x, v.y, p.x, p.y);
+    if (d >= MIRA_MINIMA) return p;
+    return {
+      x: p.x + Math.cos(v.angle) * (MIRA_MINIMA - d),
+      y: p.y + Math.sin(v.angle) * (MIRA_MINIMA - d),
+    };
   }
   // el jugador le roba el coche a alguien: el conductor se baja
   soltarConductor(vehicle, player) {

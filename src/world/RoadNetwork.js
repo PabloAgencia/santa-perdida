@@ -127,6 +127,46 @@ export class RoadNetwork {
     };
   }
 
+  // CUANTO LLEVA RECORRIDO DE SU TRAMO Y CUANTO SE HA SALIDO DEL CARRIL.
+  // `t` va de 0 (entrada) a 1 (salida) y SE PASA DE 1 si el coche ya dejo
+  // atras el tramo. `lateral` son los pixeles que tiene el coche separados
+  // de la linea de su carril.
+  //
+  // Esto existe porque antes el cambio de calle se decidia por la distancia
+  // a un punto fijo: si el coche se salia del carril, nunca se acercaba lo
+  // bastante a ese punto, no cambiaba de calle nunca y se quedaba dando
+  // vueltas. Con la proyeccion da igual lo lejos que este de lado: en
+  // cuanto pasa de largo, se le da la siguiente calle.
+  progreso(edge, x, y) {
+    const a = this.entryPoint(edge);
+    const b = this.exitPoint(edge);
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const l2 = dx * dx + dy * dy || 1;
+    const largo = Math.sqrt(l2);
+    return {
+      t: ((x - a.x) * dx + (y - a.y) * dy) / l2,
+      lateral: Math.abs((x - a.x) * -dy + (y - a.y) * dx) / largo,
+      largo,
+    };
+  }
+
+  // El tramo que mejor le pega a un coche perdido: el que tiene mas cerca y
+  // que ademas va hacia donde el coche mira, para no mandarlo a contramano.
+  edgeMasCercano(x, y, dirX = 0, dirY = 0) {
+    let mejor = null;
+    let mejorCoste = Infinity;
+    for (const e of this.edges) {
+      const p = this.progreso(e, x, y);
+      if (p.t < -0.1 || p.t > 1.1) continue;
+      // un tramo que va al reves de como mira el coche se penaliza fuerte
+      const alineado = dirX * e.dx + dirY * e.dy;
+      const coste = p.lateral + (alineado < 0 ? 400 : 0);
+      if (coste < mejorCoste) { mejorCoste = coste; mejor = e; }
+    }
+    return mejor;
+  }
+
   pointAlong(edge, t) {
     const a = this.entryPoint(edge);
     const b = this.exitPoint(edge);
