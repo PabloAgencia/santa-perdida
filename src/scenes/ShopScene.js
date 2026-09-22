@@ -3,6 +3,7 @@ import { Audio } from '../core/Audio.js';
 import { COLORS } from '../config/balance.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { ARMAS } from '../config/weapons.js';
+import { texturaDelJugador } from '../world/personArt.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -119,7 +120,8 @@ export class ShopScene extends Phaser.Scene {
     });
 
     // y tu, de este lado
-    this.add.image(s.x + 118, s.y + 276, 'player-0')
+    // el MISMO cuerpo que llevas por la calle, no el monigote de codigo
+    this.add.image(s.x + 118, s.y + 276, texturaDelJugador(this, 0, GameState))
       .setDisplaySize(42, 42).setRotation(-Math.PI / 2);
 
     // el bocadillo de lo que dice

@@ -17,7 +17,19 @@ export class MapaScene extends Phaser.Scene {
     const h = this.scale.height;
     const city = this.scene.get('CityScene');
     this.city = city;
+
+    // EL MAPA ES UNA PAUSA, como en los GTA. La ciudad se congela detras,
+    // asi que su sonido tambien: si no, seguias oyendo tu propio motor y las
+    // sirenas mientras miras el mapa, y eso rompe la sensacion de pausa.
+    // Al cerrar no hay que hacer nada: CityScene vuelve a llamar a
+    // Audio.engine en su update y el motor arranca solo.
+    Audio.engine(false, 0, false);
+    Audio.skid(0);
+    Audio.siren(0);
     Audio.menuOpen();
+
+    // para no encimar las etiquetas unas sobre otras
+    this.etiquetas = [];
 
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.93);
@@ -57,30 +69,75 @@ export class MapaScene extends Phaser.Scene {
     };
   }
 
-  // un punto con su nombre al lado, que es lo que hace util un mapa
-  marca(x, y, color, texto, tam = 10) {
+  // Un punto con su nombre al lado, que es lo que hace util un mapa.
+  //
+  // `icono` es la clave de un dibujo (marca-armeria, marca-casa...). Si esta,
+  // manda el dibujo; si no, un cuadradito del color. Igual que en el resto del
+  // juego: la imagen es opcional.
+  marca(x, y, color, texto, tam = 10, icono = null) {
     const p = this.punto(x, y);
-    this.add.image(p.x, p.y, 'px').setDisplaySize(tam, tam).setTint(color);
-    if (texto) {
-      this.add.text(p.x + tam, p.y - 7, texto, {
+
+    if (icono && this.textures.exists(icono)) {
+      this.add.image(p.x, p.y, icono).setDisplaySize(tam + 8, tam + 8);
+    } else {
+      this.add.image(p.x, p.y, 'px').setDisplaySize(tam, tam).setTint(color);
+    }
+
+    if (texto) this.etiqueta(p.x + tam, p.y - 7, texto);
+    return p;
+  }
+
+  // EL TEXTO BUSCA HUECO. Antes cada etiqueta se plantaba al lado de su punto
+  // sin mirar, y dos sitios cercanos (la grua del puerto y un contacto de
+  // trabajo, por ejemplo) salian con los nombres uno encima del otro y no se
+  // leia ninguno. Ahora baja hasta encontrar sitio libre, y si no lo hay en
+  // cuatro intentos no se escribe: el punto se sigue viendo, que es lo
+  // importante.
+  etiqueta(x, y, texto) {
+    const alto = 15;
+    const ancho = texto.length * 7;
+
+    for (let intento = 0; intento < 5; intento++) {
+      const py = y + intento * alto;
+      const choca = this.etiquetas.some(
+        (e) => Math.abs(e.y - py) < alto && x < e.x + e.ancho && e.x < x + ancho
+      );
+      if (choca) continue;
+      this.etiquetas.push({ x, y: py, ancho });
+      return this.add.text(x, py, texto, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
         fontSize: '13px', color: '#d8d3c4',
       });
     }
-    return p;
+    return null;
   }
 
   pintarMarcas() {
     const city = this.city;
 
     if (city.hideoutDoor) {
-      this.marca(city.hideoutDoor.x, city.hideoutDoor.y, 0xe8b54a, 'Tu escondite', 12);
+      this.marca(city.hideoutDoor.x, city.hideoutDoor.y, 0xe8b54a, 'Tu escondite', 12, 'marca-casa');
     }
     // solo lo que ya has visto: la ciudad se va llenando segun la recorres
     let sinDescubrir = 0;
     for (const t of city.shops ? city.shops.tiendas : []) {
       if (!GameState.conoce(t.clave)) { sinDescubrir++; continue; }
-      this.marca(t.x, t.y, 0x7fd08a, 'Armeria');
+      this.marca(t.x, t.y, 0x7fd08a, 'Armeria', 10, 'marca-armeria');
+    }
+
+    // TUS PISOS, que no salian en el mapa: comprabas uno y luego no sabias
+    // volver. Los que ya has descubierto salen aunque no los hayas comprado,
+    // con el precio, para saber donde esta el siguiente.
+    for (const piso of city.pisos ? city.pisos.pisos : []) {
+      if (!GameState.conoce(piso.clave)) continue;
+      const tuyo = GameState.esDueno(piso.clave);
+      this.marca(
+        piso.x, piso.y,
+        tuyo ? 0xe8b54a : 0x7fa8d0,
+        tuyo ? piso.nombre : `${piso.precio} €`,
+        tuyo ? 12 : 9,
+        tuyo ? 'marca-casa' : null
+      );
     }
 
     // los sitios que se ven desde lejos si salen desde el principio: son
@@ -92,7 +149,9 @@ export class MapaScene extends Phaser.Scene {
     }
     // los contactos que dan trabajo, para saber a quien ir a ver
     const contactos = city.missions ? city.missions.puntos() : [];
-    for (const c of contactos) this.marca(c.x, c.y, c.color || 0xffffff, 'Trabajo');
+    for (const c of contactos) {
+      this.marca(c.x, c.y, c.color || 0xffffff, 'Trabajo', 10, 'marca-trabajo');
+    }
 
     const destino = city.missions && city.missions.objetivo;
     if (destino) this.marca(destino.x, destino.y, 0xd9584a, 'Adonde vas', 12);

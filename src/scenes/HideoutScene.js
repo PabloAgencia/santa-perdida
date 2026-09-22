@@ -3,6 +3,7 @@ import { SaveSystem } from '../core/SaveSystem.js';
 import { Audio } from '../core/Audio.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER } from '../config/balance.js';
+import { texturaDelJugador } from '../world/personArt.js';
 
 // Pablo lo quiere todo en Pricedown, sin excepciones
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
@@ -120,7 +121,10 @@ export class HideoutScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
-    this.jugador = this.add.image(s.x + s.w / 2, s.y + s.h - 70, 'player-0');
+    // el MISMO cuerpo que llevas por la calle, no el monigote de codigo
+    this.jugador = this.add.image(
+      s.x + s.w / 2, s.y + s.h - 70, texturaDelJugador(this, 0, GameState)
+    );
     this.px = this.jugador.x;
     this.py = this.jugador.y;
 

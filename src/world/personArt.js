@@ -94,6 +94,26 @@ function shadeLocal(hex, f) {
 
 export const FASES = 4;
 
+// QUE TEXTURA TIENE EL CUERPO DEL JUGADOR AHORA MISMO.
+//
+// Vive aqui y no dentro de Player porque los interiores (el escondite, la
+// armeria) dibujan al jugador sin tener el objeto Player delante. Cada uno lo
+// resolvia por su cuenta poniendo 'player-0' a pelo, que es el monigote que
+// dibuja el codigo: entrabas en cualquier sitio y el personaje cambiaba de
+// aspecto. Con una sola funcion, todos preguntan lo mismo.
+//
+// Devuelve la clave COMPLETA, con su fase.
+export function texturaDelJugador(scene, fase = 0, GameState = null) {
+  const hay = (c) => scene.textures.exists(`${c}-${fase}`);
+  const grasa = GameState ? GameState.atributo('grasa') : 0;
+  const musculo = GameState ? GameState.atributo('musculo') : 0;
+
+  if (grasa >= 60 && hay('player-gordo')) return `player-gordo-${fase}`;
+  if (musculo >= 60 && hay('player-fuerte')) return `player-fuerte-${fase}`;
+  if (hay('player-foto')) return `player-foto-${fase}`;
+  return `player-${fase}`;
+}
+
 // genera las cuatro texturas de un personaje: prefijo-0 .. prefijo-3
 export function makeWalkFrames(scene, prefijo, opts, tam = 28) {
   for (let f = 0; f < FASES; f++) {

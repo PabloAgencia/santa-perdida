@@ -1,7 +1,7 @@
 import { Vehicle } from '../entities/Vehicle.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
-import { steerTo, forwardBlocked } from './driving.js';
+import { steerTo, forwardBlocked, paredDelante } from './driving.js';
 import { Officer } from '../entities/Officer.js';
 
 export const ESTADO = {
@@ -533,11 +533,68 @@ export class PoliceSystem {
       goal = this.net.exitPoint(u.edge);
     }
 
+    // --- MANIOBRA DE DESATASCO EN CURSO ---
+    if (u.maniobra > 0) {
+      u.maniobra -= dt;
+      v.update(dt, {
+        throttle: false, brake: true,
+        left: u.giro > 0, right: u.giro < 0, handbrake: false,
+      });
+      return;
+    }
+
+    // LA PATRULLA YA NO VA A CIEGAS.
+    //
+    // Antes apuntaba EN LINEA RECTA al jugador sin mirar lo que tenia
+    // delante: con un edificio en medio se quedaba empujando la pared hasta
+    // que te ibas, y eso es lo que Pablo veia. El trafico si miraba; la
+    // policia no. Ahora, con muro delante, busca por donde rodear.
+    if (paredDelante(v, this.map)) goal = this.rodear(v, goal);
+
+    // Y si aun asi se queda clavado (esquina mala, dos patrullas trabadas),
+    // da marcha atras un momento, igual que el trafico.
+    const persiguiendo = u.state === ESTADO.PERSIGUIENDO
+      || u.state === ESTADO.INVESTIGANDO || u.state === ESTADO.BUSCANDO;
+    if (persiguiendo && v.speed < 24) {
+      u.atasco = (u.atasco || 0) + dt;
+      if (u.atasco > 1.6) {
+        u.maniobra = 0.9;
+        u.giro = Math.random() < 0.5 ? 1 : -1;
+        u.atasco = 0;
+        return;
+      }
+    } else {
+      u.atasco = Math.max(0, (u.atasco || 0) - dt * 0.6);
+    }
+
     // persiguiendo no frena por el coche de delante: embiste
     const blocked =
       u.state === ESTADO.PERSIGUIENDO ? false : forwardBlocked(v, this.scene.vehicles);
 
     v.update(dt, steerTo(v, goal.x, goal.y, limit, blocked));
+  }
+
+  // Por donde rodear un edificio. Se gira el objetivo a un lado y al otro,
+  // cada vez mas abierto, y se coge el primer rumbo que tenga el camino
+  // despejado. Si ninguno lo esta, se deja el objetivo original: mejor
+  // empujar la pared que quedarse quieto para siempre.
+  rodear(v, goal) {
+    const base = Math.atan2(goal.y - v.y, goal.x - v.x);
+    const dist = Math.min(240, Phaser.Math.Distance.Between(v.x, v.y, goal.x, goal.y));
+    if (dist < 40) return goal;
+
+    for (const giro of [0.55, -0.55, 0.95, -0.95, 1.5, -1.5, 2.2, -2.2]) {
+      const a = base + giro;
+      let libre = true;
+      for (let d = 30; d <= dist; d += 30) {
+        if (this.map.isSolidPoint(v.x + Math.cos(a) * d, v.y + Math.sin(a) * d)) {
+          libre = false;
+          break;
+        }
+      }
+      if (libre) return { x: v.x + Math.cos(a) * dist, y: v.y + Math.sin(a) * dist };
+    }
+    return goal;
   }
 
   // ---------- detencion ----------

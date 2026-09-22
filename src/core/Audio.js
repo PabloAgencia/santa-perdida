@@ -294,8 +294,15 @@ class GameAudio {
       const caja2 = this._vueltasDe(r2);
       const tono = (perfil.tono || 1) * (0.62 + caja2.vueltas * 1.25);
       this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.06);
+      // PARADO CASI NO SUENA. Un coche al ralenti hace ruido, si, pero en el
+      // juego te pasas mucho rato quieto (leyendo el mapa, esperando, mirando
+      // la tienda) y ahi el motor a todo trapo cansa. Con el pie fuera y el
+      // coche parado, el motor baja a un tercio: se sigue oyendo que esta
+      // encendido, pero no molesta.
+      const quieto = !throttle && r2 < 0.03;
+      const nivel = quieto ? 0.12 : 0.3 + caja2.vueltas * 0.45;
       this.motorGain.gain.setTargetAtTime(
-        on ? (0.3 + caja2.vueltas * 0.45) * (perfil.vol || 1) : 0, t2, 0.08
+        on ? nivel * (perfil.vol || 1) : 0, t2, 0.08
       );
       if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
 
@@ -327,7 +334,11 @@ class GameAudio {
     // al cambiar de marcha se levanta el pie un instante: el motor se apaga
     // un poco y vuelve. Es un detalle pequeño que se nota mucho.
     const corte = cambio ? 0.55 : 1;
-    const level = on ? (0.011 + rpm * 0.031 + (throttle ? 0.008 : 0)) * p.vol * corte : 0;
+    // parado y sin acelerar, el sintetizado tambien baja (ver el motor grabado)
+    const quieto = !throttle && r < 0.03;
+    const level = on
+      ? (quieto ? 0.006 : 0.011 + rpm * 0.031 + (throttle ? 0.008 : 0)) * p.vol * corte
+      : 0;
     this.engGain.gain.setTargetAtTime(level, t, cambio ? 0.02 : 0.07);
     this.subGain.gain.setTargetAtTime(p.body, t, 0.12);
     this.armGain.gain.setTargetAtTime(0.05 + rpm * 0.16, t, 0.09);
