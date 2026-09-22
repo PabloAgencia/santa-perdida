@@ -604,130 +604,170 @@ SI SALE CON LETRAS IGUALMENTE
 
 
 ################################################################################
-#  LOS INTERIORES (las habitaciones en las que entras)
+#  LOS INTERIORES (las habitaciones en las que entras)          SON 3 PROMPTS
 ################################################################################
 
-DONDE SE DEJAN
-  arte\           (igual que la portada; NO en sprites\)
-  Y despues:  python herramientas/preparar-portada.py
-  Eso rehace arte\lista.json mirando la carpeta, asi que basta con dejar los
-  ficheros ahi. Lo hago yo: tu dejalos y avisame.
+     1. interior-escondite.png    tu escondite del principio
+     2. interior-armeria.png      las siete armerias
+     3. interior-piso.png         los seis pisos que se compran
 
-LO MAS IMPORTANTE DE TODO: SON VISTAS DESDE ARRIBA
-  El juego es cenital. Estas habitaciones se ven como se ve un PLANO DE PISO,
-  con la camara en el techo mirando al suelo. No es una foto de una
-  habitacion tomada desde la puerta: no se ve ninguna pared de frente, solo
-  el suelo y los muebles desde arriba.
-  El truco de siempre: decirle "top-down, like the interiors in GTA Chinatown
-  Wars". Con eso lo pilla.
+DONDE SE DEJAN Y COMO SE LLAMAN
+  Carpeta:  arte\          (NO en sprites\, que eso lo recorta el preparador)
+  Nombres:  los de arriba, LITERALES, en minusculas y con guion.
+            Valen .png o .jpg.
+            Si el fichero se llama de otra forma, el juego no lo busca y se
+            queda con el dibujo por codigo: no se rompe nada, pero no se ve.
 
-LOS MUEBLES TIENEN QUE CAER DONDE EL JUEGO LOS ESPERA
-  Los sitios donde pulsas E (la cama, el punto de guardado, la puerta) estan
-  puestos en el codigo y NO se mueven. Por eso cada prompt dice exactamente
-  en que esquina va cada cosa. Si el dibujo sale con la cama en otro lado, la
-  cama se ve en un sitio y "dormir" funciona en otro: canta muchisimo.
-  Si una lamina sale con los muebles descolocados, se repite.
+  Y DESPUES:   python herramientas/actualizar-arte.py
+  El juego no mira la carpeta: se baja arte/lista.json y pide solo lo que
+  ponga ahi. Dejar el fichero NO basta. Ese script lo apunta solo, y ademas
+  te dice cual falta todavia.
 
-NI UNA LETRA, OTRA VEZ
-  El nombre del sitio ("ALTILLO EN LOS ROMPIENTES", "ARMERIA EL CERROJO") lo
-  escribe el juego por encima. Si el dibujo trae carteles, se ve doble.
-
-SIN PERSONAS
-  Tu personaje y el tendero son sprites que se mueven por encima. Si el
-  dibujo trae gente, habria dos.
-
-
---------------------------------------------------------------------------------
-  interior-escondite.png      (1200 x 760, apaisada)
---------------------------------------------------------------------------------
-Top-down interior of a small shabby room, seen from DIRECTLY ABOVE at a
-perfect 90 degree overhead angle, like a floor plan or the interiors in GTA
-Chinatown Wars. The camera is on the ceiling looking straight down at the
-floor. NO walls seen from the front, NO perspective, NO tilt.
-
-The room is a wide rectangle with dark scuffed wooden floorboards running
-left to right. Layout, and this matters:
-- TOP LEFT corner: a single unmade bed with a rumpled brown blanket, seen
-  from above.
-- LEFT SIDE, just below the bed: a small square bedside table with a mug on it.
-- TOP RIGHT corner: a cheap desk with papers and a cold cup of coffee.
-- BOTTOM CENTRE-LEFT: a worn two-seater sofa seen from above.
-- BOTTOM RIGHT: leave this area EMPTY floor, nothing there.
-- BOTTOM CENTRE edge: leave clear, that is where the door is.
-
-Dim warm light pooling in the middle of the room as if from a bare bulb, dark
-corners. Muted browns, dirty ochres and deep shadow. Hand-painted game art
-with bold dark outlines and flat shading, not photorealistic, not a 3D render.
-
-NO text, NO letters, NO numbers, NO signs, NO watermark, NO logo.
-NO people, NO characters, NO figures.
-The room fills the whole image edge to edge.
+TRES COSAS QUE VALEN PARA LOS TRES
+  · SON VISTAS DESDE ARRIBA. El juego es cenital: se ve como un plano de
+    piso, con la camara en el techo. No es una foto de la habitacion tomada
+    desde la puerta. Ninguna pared se ve de frente.
+  · NI UNA LETRA. El nombre del sitio lo escribe el juego por encima. Si el
+    dibujo trae carteles, se ve doble.
+  · SIN GENTE. Tu personaje y el tendero son sprites que se mueven por
+    encima. Si el dibujo trae gente, habria dos.
+  Si sale con letras, REPITE la tirada: borrar un cartel grande deja un
+  parche que se nota. Y si sale oscura, mejor: el juego le pone su propia luz
+  encima y las claras se lavan.
 
 
 --------------------------------------------------------------------------------
-  interior-piso.png           (1200 x 760, apaisada)
+  1.  interior-escondite.png
 --------------------------------------------------------------------------------
-La misma sala pero para los pisos que compras: se ve mas cuidada que el
-escondite, porque esa es la gracia de pagarlos.
+Top-down interior of a small, run-down hideout room, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
+interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
+looking straight down at the floor. NO walls seen from the front, NO
+perspective, NO tilt, NO vanishing point.
+
+FORMAT: landscape, 1200 x 760 pixels, 16:10. The room fills the entire
+image edge to edge, with no border and no margin.
+
+THE ROOM: a wide rectangular room with dark, scuffed wooden floorboards
+running horizontally from left to right. Scratched, stained, lived in for
+too long by someone who never unpacked.
+
+LAYOUT - this part matters, the game puts the interactions at these exact
+spots:
+- TOP-LEFT corner: a single unmade bed with a rumpled brown blanket, seen
+  from above. Pillow at the top end.
+- LEFT SIDE, directly below the bed: a small square bedside table with a
+  dirty mug and a folded newspaper on it.
+- TOP-RIGHT corner: a cheap desk against the wall, with scattered papers, a
+  cold cup of coffee and an ashtray.
+- BOTTOM CENTRE-LEFT: a worn two-seater sofa seen from above, cushions
+  sagging, facing into the room.
+- BOTTOM-RIGHT quarter: EMPTY floor. Nothing there at all.
+- BOTTOM CENTRE EDGE: leave completely clear. That is the doorway.
+
+LIGHT: one bare bulb hanging in the middle of the room. Warm dim pool of
+light in the centre, corners falling into deep shadow. Nothing is brightly
+lit.
+
+COLOUR: muted browns, dirty ochre, faded olive, deep black shadow. Low
+saturation. It should feel cheap and temporary.
+
+STYLE: hand-painted 2D game art with bold dark outlines and flat shading.
+NOT photorealistic. NOT a 3D render. NOT isometric.
+
+MUST NOT CONTAIN:
+- NO text, NO letters, NO numbers, NO signs, NO labels, NO watermark,
+  NO signature, NO logo.
+- NO people, NO characters, NO figures, NO silhouettes of anyone.
+- NO furniture in the bottom-right quarter.
+
+
+--------------------------------------------------------------------------------
+  2.  interior-armeria.png
+--------------------------------------------------------------------------------
+Top-down interior of a cramped back-street gun shop, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
+interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
+looking straight down at the floor. NO walls seen from the front, NO
+perspective, NO tilt, NO vanishing point.
+
+FORMAT: 1320 x 1000 pixels, almost square. The room fills the entire image
+edge to edge, no border, no margin.
+
+LAYOUT IN THREE HORIZONTAL BANDS - this matters, the game draws its own
+elements on top at these exact heights:
+
+  TOP THIRD - the back wall and the rack. A long weapon rack running the
+  full width, with five dark weapon shapes laid out FLAT and seen from
+  above, evenly spaced left to right. Dark gunmetal on dark scratched wood.
+  Shelves either side with cardboard ammunition boxes.
+
+  MIDDLE, about two fifths down - the counter. A long wooden shop counter
+  running almost the full width, seen from above. Worn, scratched, with a
+  scuffed edge. A small till at the left end.
+
+  BOTTOM HALF - the customer side. Plain grey tiled floor with visible grout
+  lines, a little dirty, scuff marks. Leave it CLEAR AND EMPTY.
+
+LIGHT: cold greenish strip lighting from the ceiling. Flat, unflattering,
+slightly flickering feel. Claustrophobic.
+
+COLOUR: dark greys, gunmetal, worn brown wood, a sickly green tint over
+everything. No warm colours.
+
+STYLE: hand-painted 2D game art with bold dark outlines and flat shading.
+NOT photorealistic. NOT a 3D render. NOT isometric.
+
+MUST NOT CONTAIN:
+- NO text, NO letters, NO numbers, NO price tags, NO signs, NO labels,
+  NO watermark, NO logo.
+- NO people, NO shopkeeper, NO customers, NO figures behind the counter.
+- NO clutter on the bottom half of the floor.
+
+
+--------------------------------------------------------------------------------
+  3.  interior-piso.png       (el menos urgente: los pisos comprados)
+--------------------------------------------------------------------------------
+Misma sala que el escondite pero CUIDADA, que para eso los pagas.
 
 Top-down interior of a modest but tidy apartment room, seen from DIRECTLY
-ABOVE at a perfect 90 degree overhead angle, like a floor plan or the
-interiors in GTA Chinatown Wars. The camera is on the ceiling looking
-straight down at the floor. NO walls seen from the front, NO perspective.
+ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
+interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
+looking straight down at the floor. NO walls seen from the front, NO
+perspective, NO tilt.
 
-The room is a wide rectangle with clean pale wooden flooring and a faded rug
-in the centre. Layout, and this matters:
-- TOP LEFT corner: a made double bed with a dark blue blanket, seen from above.
-- LEFT SIDE, just below the bed: a small square bedside table with a lamp.
-- TOP RIGHT corner: a table with a few neatly stacked items.
-- BOTTOM CENTRE-LEFT: a sofa seen from above, with a low coffee table.
-- BOTTOM RIGHT: leave this area EMPTY floor, nothing there.
-- BOTTOM CENTRE edge: leave clear, that is where the door is.
+FORMAT: landscape, 1200 x 760 pixels, 16:10. The room fills the entire
+image edge to edge, no border, no margin.
 
-Warm evening light coming in from one side, calm and lived-in. Muted warm
-greys, soft browns and deep blue. Hand-painted game art with bold dark
-outlines and flat shading, not photorealistic, not a 3D render.
+THE ROOM: a wide rectangular room with clean pale wooden flooring and a
+faded rug in the centre. Lived in, but looked after.
 
-NO text, NO letters, NO numbers, NO signs, NO watermark, NO logo.
-NO people, NO characters, NO figures.
-The room fills the whole image edge to edge.
+LAYOUT - the game puts the interactions at these exact spots:
+- TOP-LEFT corner: a made double bed with a dark blue blanket, seen from
+  above. Two pillows at the top end.
+- LEFT SIDE, directly below the bed: a small square bedside table with a
+  lamp on it.
+- TOP-RIGHT corner: a table with a few neatly stacked books and a plant.
+- BOTTOM CENTRE-LEFT: a sofa seen from above with a low coffee table in
+  front of it.
+- BOTTOM-RIGHT quarter: EMPTY floor. Nothing there at all.
+- BOTTOM CENTRE EDGE: leave completely clear. That is the doorway.
 
+LIGHT: warm evening light coming in from one side, calm. Soft shadows.
 
---------------------------------------------------------------------------------
-  interior-armeria.png        (1320 x 1000, casi cuadrada)
---------------------------------------------------------------------------------
-OJO: esta es mas alta que las otras dos, porque la sala de la armeria es mas
-grande y menos apaisada.
+COLOUR: muted warm greys, soft browns, deep blue. Low saturation.
 
-Top-down interior of a cramped back-street gun shop, seen from DIRECTLY ABOVE
-at a perfect 90 degree overhead angle, like a floor plan or the interiors in
-GTA Chinatown Wars. The camera is on the ceiling looking straight down at the
-floor. NO walls seen from the front, NO perspective, NO tilt.
+STYLE: hand-painted 2D game art with bold dark outlines and flat shading.
+NOT photorealistic. NOT a 3D render. NOT isometric.
 
-Layout, and this matters:
-- The TOP THIRD of the image is a dark back wall area with a long rack: a row
-  of five weapon silhouettes laid out flat, evenly spaced from left to right,
-  seen from above. Dark metal on dark wood.
-- Across the MIDDLE, roughly two fifths down: a long wooden shop counter
-  running almost the full width, seen from above, with a worn scratched top.
-- The BOTTOM HALF is the customer side: plain grey tiled floor with visible
-  grout lines, mostly empty, a little dirty. Leave it clear.
+MUST NOT CONTAIN:
+- NO text, NO letters, NO numbers, NO signs, NO watermark, NO logo.
+- NO people, NO characters, NO figures.
+- NO furniture in the bottom-right quarter.
 
-Cold greenish strip lighting from above, grubby, claustrophobic. Dark greys,
-gun metal, worn brown wood, a sickly green tint. Hand-painted game art with
-bold dark outlines and flat shading, not photorealistic, not a 3D render.
-
-NO text, NO letters, NO numbers, NO price signs, NO watermark, NO logo.
-NO people, NO characters, NO shopkeeper, NO figures.
-The room fills the whole image edge to edge.
-
-
-SI ALGUNA SALE BIEN PERO OSCURA
-  No pasa nada, mejor oscura que clara: el juego le pone encima su propia luz
-  y las claras se lavan.
 
 LO QUE VENGA DESPUES
   Cada sitio nuevo en el que se pueda entrar (el taller de pintura, el
   concesionario, los locales que se compren) lleva su lamina aqui, con el
-  mismo esquema: vista cenital, el plano descrito mueble a mueble, sin letras
-  y sin gente. Las medidas de cada sala te las doy yo cuando la montemos.
+  mismo esquema: vista cenital, el plano descrito zona a zona, sin letras y
+  sin gente. Las medidas de cada sala te las doy yo cuando la montemos.
