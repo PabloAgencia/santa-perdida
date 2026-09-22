@@ -1301,6 +1301,101 @@ portada
   mueve, y quitando la textura a mano vuelve el skyline de siempre sin un
   solo error en consola.
 
+
+
+================================================================================
+VIGESIMOCUARTA TANDA (22-sep-2026): los pisos se compran, y sitio para los
+interiores dibujados
+================================================================================
+
+  POR QUE ESTE Y NO OTRO
+     El dinero no servia para nada. Ganabas por encargos y misiones y lo
+     unico que podias comprar era un chaleco de 400. Todo lo que queda en la
+     lista (actividades con progresion, desafios, import/export) consiste en
+     GANAR mas dinero: montarlo antes de que el dinero valga para algo es
+     poner el grifo antes que el vaso. Ademas cierra la fase 3, que era lo
+     que quedaba del encargo original.
+
+  EL ARMAZON DE LAS PROPIEDADES (GameState)
+     Pisos ahora y locales despues comparten UNA sola forma de "ser dueño de
+     algo" y un solo sitio donde se guarda:
+       comprarPropiedad · esDueno · propiedad · propiedadesDe(tipo)
+       plazasLibres · guardarCoche · cochesEn · sacarCoche
+     Si los pisos se guardaran aqui y los negocios en su sistema, acabariamos
+     con dos maneras de todo. Esto es lo que ChatGPT llamaba "arquitectura
+     antes que contenido", y es lo unico verdaderamente nuevo de su encargo.
+
+     El garaje guarda objetos planos y no mira que traen: quien los saca sabe
+     que hacer con ellos. Asi vale igual para un coche comprado, uno robado o
+     uno de un encargo de exportacion.
+
+     PROBADO con 12 comprobaciones: comprar, no comprar dos veces, no comprar
+     sin dinero Y QUE NO DESCUENTE NADA al fallar, llenar el garaje y que el
+     siguiente no entre, sacar y que quede plaza, sacar fuera de rango,
+     listar por tipo, guardar y cargar con el coche dentro, y una partida
+     vieja sin el campo (carga sin nada comprado, no revienta).
+
+  LOS SEIS PISOS  (config/pisos.js + systems/PisoSystem.js)
+     Uno por barrio, y el barrio decide precio y plazas de garaje:
+       Altillo en Los Rompientes .... 1.200 $ ... 1 plaza
+       Piso en Residencial .......... 3.500 $ ... 2
+       Estudio sobre la tienda ...... 5.000 $ ... 2
+       Nave en el poligono .......... 7.500 $ ... 3
+       Almacen del puerto ........... 11.000 $ .. 4
+       Apartamento del Centro ....... 16.000 $ .. 4
+     El altillo esta a 1.200 a proposito: tiene que ser la primera cosa gorda
+     que te puedas permitir, antes incluso que un coche decente (un reparto
+     paga de 40 a 150; los coches, de 1.800 a 8.500).
+
+     LA DIFERENCIA GORDA CON LA ARMERIA, aunque el codigo se parezca:
+     la armeria se reparte AL AZAR en cada carga, y a una tienda eso le da
+     igual. A un piso NO: lo has pagado. Si el reparto cambiase, el piso que
+     compraste aparece en otro sitio o deja de existir. Por eso:
+       · la eleccion del edificio es DETERMINISTA: el mas centrado de su
+         barrio que tenga una puerta valida, con desempate por coordenada
+         (sin el desempate, dos edificios a la misma distancia podrian salir
+         en distinto orden en otra carga);
+       · y la clave es el BARRIO (`piso-centro`), no las coordenadas, asi que
+         aunque algun dia cambiara el reparto, lo que compraste sigue siendo
+         tuyo.
+     MEDIDO: dos cargas seguidas dan las seis coordenadas identicas. La
+     armeria, en las mismas dos cargas, sale en sitios distintos.
+
+     El cartel dice "SE VENDE / 1200 $" en azul, y pasa a "TU PISO" en dorado
+     al comprarlo, sin recargar nada.
+
+  ENTRAR: E en la puerta compra si no es tuyo, y entra si lo es.
+     HideoutScene ya no es "el escondite": recibe que sitio es y pinta su
+     nombre y su garaje (0/1, 0/4...). El escondite es ahora un sitio mas,
+     con cero plazas. El paso a cualquier interior se saco a
+     `CityScene.abrirInterior()`, que antes vivia dentro de enterHideout.
+
+  SITIO PARA LOS INTERIORES DIBUJADOS (todavia sin imagen)
+     El escondite, los pisos y la armeria usan una ilustracion si esta y los
+     rectangulos de siempre si no, igual que los sprites y la portada:
+       interior-escondite / interior-piso / interior-armeria
+     LO QUE NO SALE DEL DIBUJO: el tendero y tu. Esos se mueven y hablan, asi
+     que siguen siendo sprites por encima.
+     Y los sitios donde se pulsa E (cama, guardado, puerta) NO se mueven: la
+     lamina se pide con los muebles en esos mismos sitios, para que la imagen
+     no pueda descolocar el juego, solo vestirlo. Por eso los prompts
+     describen la habitacion MUEBLE A MUEBLE y por esquinas.
+     Con lamina, la luz de la bombilla baja de 0,5 a 0,2: el dibujo ya trae
+     su propia luz y sumarle otra encima lo lavaba entero.
+
+     Los prompts, en PROMPTS-AI-STUDIO.txt, seccion "LOS INTERIORES".
+
+  UN FALLO QUE SE CAZO ANTES DE QUE PASARA: preparar-portada.py escribia
+  arte/lista.json como ["portada.jpg"] y punto. En cuanto entraran los
+  interiores, volver a preparar la portada los habria borrado de la lista y
+  el juego habria dejado de pedirlos sin que nadie tocara nada. Ahora la
+  lista se REHACE mirando la carpeta.
+
+  COMPROBADO: los ficheros tocados pasan node --check; los seis pisos se
+  colocan uno por barrio; comprar, entrar, guardar y cargar funcionan de
+  punta a punta con el coche dentro del garaje; la armeria y el escondite
+  siguen pintandose igual sin lamina; consola limpia.
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

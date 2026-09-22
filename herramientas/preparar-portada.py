@@ -104,6 +104,26 @@ def letras_que_quedan(im):
     return int(((zona.min(axis=2) > 165) & (zona.max(axis=2) > 200)).sum())
 
 
+# arte/lista.json se REHACE mirando la carpeta, no se escribe a mano.
+#
+# La primera version ponia ["portada.jpg"] y punto, y eso habria borrado de la
+# lista los interiores en cuanto se volviera a preparar la portada: el juego
+# habria dejado de pedirlos sin que nadie tocara nada. Listando la carpeta,
+# meter arte nuevo es dejar el fichero y ejecutar esto.
+EXTENSIONES = ('.png', '.jpg', '.jpeg', '.webp')
+
+
+def escribir_lista():
+    carpeta = os.path.dirname(LISTA)
+    nombres = sorted(
+        n for n in os.listdir(carpeta)
+        if n.lower().endswith(EXTENSIONES)
+    )
+    with open(LISTA, 'w', encoding='utf-8') as f:
+        json.dump(nombres, f)
+    print('arte/lista.json: %s' % ', '.join(nombres))
+
+
 def main():
     if not os.path.exists(ORIGEN):
         sys.exit('No encuentro %s' % ORIGEN)
@@ -127,12 +147,10 @@ def main():
     if os.path.exists(viejo):
         os.remove(viejo)
 
-    with open(LISTA, 'w', encoding='utf-8') as f:
-        json.dump([os.path.basename(DESTINO)], f)
+    escribir_lista()
 
     kb = os.path.getsize(DESTINO) / 1024
     print('portada lista: %s  (%dx%d, %.0f KB)' % (DESTINO, salida.width, salida.height, kb))
-    print('arte/lista.json apuntado')
 
 
 if __name__ == '__main__':

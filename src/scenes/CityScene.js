@@ -16,6 +16,7 @@ import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
 import { ShopSystem } from '../systems/ShopSystem.js';
+import { PisoSystem } from '../systems/PisoSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -80,6 +81,7 @@ export class CityScene extends Phaser.Scene {
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
     this.shops = new ShopSystem(this, this.map);
+    this.pisos = new PisoSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
@@ -935,6 +937,7 @@ export class CityScene extends Phaser.Scene {
       else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
+        !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
         !this.usarMaquinaCerca()
       ) {
@@ -1023,6 +1026,7 @@ export class CityScene extends Phaser.Scene {
     this.checkPlayerHarm(dt);
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
     this.shops.update(this.player, !!this.drivingVehicle);
+    this.pisos.update(this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle);
 
     if (this.drivingVehicle) {
@@ -1326,6 +1330,43 @@ export class CityScene extends Phaser.Scene {
       return true;
     }
 
+    this.abrirInterior({ clave: 'escondite', nombre: 'TU ESCONDITE', plazas: 0 });
+    return true;
+  }
+
+  // TU PISO COMPRADO: E en la puerta. Si todavia no es tuyo, E lo compra.
+  entrarEnPisoCerca() {
+    if (!this.pisos || !this.pisos.cerca) return false;
+    const piso = this.pisos.cerca;
+
+    if (!GameState.esDueno(piso.clave)) {
+      const que = this.pisos.comprar(piso);
+      if (que === 'sin-dinero') {
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${piso.nombre}: ${piso.precio} $. No te llega`, tone: 'danger',
+        });
+      } else if (que === 'comprado') {
+        Audio.notes([392, 523.25, 659.25], 0.1);
+        EventBus.emit(EVT.BIG_MESSAGE, { text: 'YA ES TUYO', sub: piso.nombre });
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${piso.nombre} comprado. Garaje para ${piso.plazas}`, tone: 'money',
+        });
+      }
+      return true;
+    }
+
+    if (GameState.wanted > 0) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
+      return true;
+    }
+    this.abrirInterior({ clave: piso.clave, nombre: piso.nombre, plazas: piso.plazas });
+    return true;
+  }
+
+  // El paso a cualquier interior: congelar la ciudad, fundir a negro y
+  // levantar la escena de dentro. Antes esto vivia dentro de enterHideout;
+  // se saco aqui al haber mas de un sitio donde entrar.
+  abrirInterior(datos) {
     Audio.engine(false, 0, false);
     Audio.skid(0);
     this.captureState();
@@ -1335,10 +1376,9 @@ export class CityScene extends Phaser.Scene {
       this.scene.setVisible(false);
       this.scene.pause('UIScene');
       this.scene.setVisible(false, 'UIScene');
-      this.scene.launch('HideoutScene');
+      this.scene.launch('HideoutScene', datos);
       this.cameras.main.fadeIn(1, 0, 0, 0);
     });
-    return true;
   }
 
   updateCamera(dt) {

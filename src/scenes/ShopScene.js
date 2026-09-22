@@ -75,29 +75,39 @@ export class ShopScene extends Phaser.Scene {
         .setDisplaySize(an, al).setTint(color).setAlpha(alpha);
 
     caja(s.x - 6, s.y - 6, s.w + 12, s.h + 12, 0x14161a);
-    caja(s.x, s.y, s.w, s.h, 0x2b2f36);
-    // suelo de baldosa, mas claro por delante del mostrador
-    caja(s.x, s.y + 210, s.w, s.h - 210, 0x353a42);
-    for (let i = 0; i < 12; i++) {
-      caja(s.x + i * 56, s.y + 210, 1, s.h - 210, 0x2a2e35, 0.7);
+
+    // Con ilustracion del local manda ella, que trae la pared, el suelo, las
+    // armas colgadas y el mostrador ya pintados. Sin ella, los rectangulos de
+    // siempre. Lo que NUNCA sale del dibujo es el tendero ni tu: esos dos se
+    // mueven y hablan, asi que siguen siendo sprites por encima.
+    const conLamina = this.textures.exists('interior-armeria');
+    if (conLamina) {
+      this.add.image(s.x, s.y, 'interior-armeria').setOrigin(0, 0).setDisplaySize(s.w, s.h);
+    } else {
+      caja(s.x, s.y, s.w, s.h, 0x2b2f36);
+      // suelo de baldosa, mas claro por delante del mostrador
+      caja(s.x, s.y + 210, s.w, s.h - 210, 0x353a42);
+      for (let i = 0; i < 12; i++) {
+        caja(s.x + i * 56, s.y + 210, 1, s.h - 210, 0x2a2e35, 0.7);
+      }
+
+      // la pared del fondo, con las armas colgadas
+      caja(s.x + 26, s.y + 66, s.w - 52, 120, 0x20242a);
+      const percha = ['icono-escopeta', 'icono-pistola', 'icono-bate', 'icono-pistola', 'icono-escopeta'];
+      percha.forEach((clave, i) => {
+        this.add.image(s.x + 86 + i * 122, s.y + 126, clave)
+          .setDisplaySize(72, 72).setAlpha(0.92);
+      });
+
+      // el mostrador
+      caja(s.x + 40, s.y + 214, s.w - 80, 26, 0x4a3a2a);
+      caja(s.x + 40, s.y + 214, s.w - 80, 5, 0x6b563c);
     }
 
     this.add.text(s.x + s.w / 2, s.y + 20, 'ARMERIA EL CERROJO', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 5,
       fontSize: '34px', color: '#7fd08a',
     }).setOrigin(0.5, 0);
-
-    // la pared del fondo, con las armas colgadas
-    caja(s.x + 26, s.y + 66, s.w - 52, 120, 0x20242a);
-    const percha = ['icono-escopeta', 'icono-pistola', 'icono-bate', 'icono-pistola', 'icono-escopeta'];
-    percha.forEach((clave, i) => {
-      this.add.image(s.x + 86 + i * 122, s.y + 126, clave)
-        .setDisplaySize(72, 72).setAlpha(0.92);
-    });
-
-    // el mostrador
-    caja(s.x + 40, s.y + 214, s.w - 80, 26, 0x4a3a2a);
-    caja(s.x + 40, s.y + 214, s.w - 80, 5, 0x6b563c);
 
     // el dependiente, detras del mostrador
     this.tendero = this.add.image(s.x + 118, s.y + 190, 'ped-5-0')

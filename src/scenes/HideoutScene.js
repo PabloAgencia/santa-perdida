@@ -15,6 +15,18 @@ export class HideoutScene extends Phaser.Scene {
     super({ key: 'HideoutScene', active: false });
   }
 
+  // La misma habitacion vale para el escondite del principio y para cualquier
+  // piso comprado: cambia el cartel y de que garaje se habla, no la sala.
+  // Si no llega nada (por ejemplo al recargar la escena a pelo), se queda con
+  // el escondite, que es como funcionaba antes.
+  init(datos) {
+    this.sitio = {
+      clave: datos?.clave ?? 'escondite',
+      nombre: datos?.nombre ?? 'TU ESCONDITE',
+      plazas: datos?.plazas ?? 0,
+    };
+  }
+
   create() {
     const w = this.scale.width;
     const h = this.scale.height;
@@ -26,29 +38,54 @@ export class HideoutScene extends Phaser.Scene {
     const s = this.sala;
     this.add.image(s.x - 6, s.y - 6, 'px').setOrigin(0, 0)
       .setDisplaySize(s.w + 12, s.h + 12).setTint(0x1a140e);
-    this.add.image(s.x, s.y, 'px').setOrigin(0, 0)
-      .setDisplaySize(s.w, s.h).setTint(0x2e2721);
 
-    // tablas del suelo
-    for (let i = 0; i < 14; i++) {
-      this.add.image(s.x, s.y + i * 28, 'px').setOrigin(0, 0)
-        .setDisplaySize(s.w, 1).setTint(0x272019).setAlpha(0.8);
+    // Si hay ilustracion de la habitacion manda ella, con los muebles ya
+    // pintados dentro; si no, el suelo y los muebles de rectangulos de
+    // siempre. Igual que los sprites y la portada: la imagen es opcional y
+    // el juego funciona sin ella.
+    // Los sitios donde se interactua (cama, guardado, puerta) NO se mueven:
+    // la ilustracion se pide con los muebles en esos mismos sitios. Asi la
+    // imagen no puede descolocar el juego, solo vestirlo.
+    const laminaDe = this.sitio.clave === 'escondite' ? 'interior-escondite' : 'interior-piso';
+    const conLamina = this.textures.exists(laminaDe);
+
+    if (conLamina) {
+      this.add.image(s.x, s.y, laminaDe).setOrigin(0, 0).setDisplaySize(s.w, s.h);
+    } else {
+      this.add.image(s.x, s.y, 'px').setOrigin(0, 0)
+        .setDisplaySize(s.w, s.h).setTint(0x2e2721);
+
+      // tablas del suelo
+      for (let i = 0; i < 14; i++) {
+        this.add.image(s.x, s.y + i * 28, 'px').setOrigin(0, 0)
+          .setDisplaySize(s.w, 1).setTint(0x272019).setAlpha(0.8);
+      }
+      this.muebles(s);
     }
 
-    this.muebles(s);
+    this.conLamina = conLamina;
     this.cama = { x: s.x + 90, y: s.y + 101 };
     this.add.text(this.cama.x, this.cama.y + 44, 'DORMIR', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
-    // luz de la bombilla
+    // luz de la bombilla. Con ilustracion se baja: el dibujo ya trae su
+    // propia luz pintada y sumarle otra encima lo lavaba entero.
     this.add.image(s.x + s.w / 2, s.y + 120, 'lamp')
       .setDisplaySize(520, 520)
-      .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.5);
+      .setBlendMode(Phaser.BlendModes.ADD).setAlpha(conLamina ? 0.2 : 0.5);
 
-    this.add.text(s.x + s.w / 2, s.y + 26, 'TU ESCONDITE', {
+    this.add.text(s.x + s.w / 2, s.y + 26, this.sitio.nombre.toUpperCase(), {
       fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px', color: '#c8965a',
     }).setOrigin(0.5);
+
+    // el garaje, solo si el sitio tiene plazas (el escondite no tiene)
+    if (this.sitio.plazas > 0) {
+      const guardados = GameState.cochesEn(this.sitio.clave).length;
+      this.add.text(s.x + s.w / 2, s.y + 50, `GARAJE  ${guardados} / ${this.sitio.plazas}`, {
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
+      }).setOrigin(0.5);
+    }
 
     // punto de guardado
     this.save = { x: s.x + s.w - 110, y: s.y + s.h - 110 };
