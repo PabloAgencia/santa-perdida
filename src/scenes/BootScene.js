@@ -5,6 +5,10 @@ import { shade } from '../core/color.js';
 import { FACTIONS } from '../config/factions.js';
 import { makeWalkFrames } from '../world/personArt.js';
 import { ROPA, LIENZO, CUERPO, anchoDelCuerpo } from '../config/aspecto.js';
+import { VERSION } from '../config/version.js';
+
+// la version, en una pieza que valga para pegar a una direccion
+const SELLO = VERSION.replace(/[^0-9a-z]/gi, '');
 
 // Todo el arte se dibuja por codigo. Asi no hay ficheros sueltos que se
 // desparejen y toda la ciudad comparte la misma direccion artistica.
@@ -25,13 +29,22 @@ export class BootScene extends Phaser.Scene {
   // y el juego arrancaba sin esperarlas: cargaban las primeras y las ultimas
   // se quedaban fuera, asi que unos coches salian con foto y otros no.
   init() {
-    this.listaSprites = fetch('sprites/listos/lista.json')
+    // LAS LISTAS SE PIDEN SIN CACHE, Y CON LA VERSION PEGADA.
+    //
+    // Esto costo una tarde entera: Pablo no veia la portada y yo la veia. La
+    // lista de arte es un fichero diminuto que el navegador se guarda, y si
+    // la guardo cuando la portada todavia no existia, se queda con la lista
+    // vacia y el juego no pide la imagen NUNCA, por muchas veces que
+    // recargues. Con `?v=` cambiando en cada version y `no-cache`, una lista
+    // vieja no puede sobrevivir a una actualizacion.
+    const sinCache = { cache: 'no-cache' };
+    this.listaSprites = fetch(`sprites/listos/lista.json?v=${SELLO}`, sinCache)
       .then((r) => (r.ok ? r.json() : []))
       .catch(() => []);
     // arte suelto que no es un sprite del juego (la portada del menu). Va
     // aparte porque no pasa por preparar-sprites.py: es una ilustracion
     // entera, no una figura recortada sobre magenta.
-    this.listaArte = fetch('arte/lista.json')
+    this.listaArte = fetch(`arte/lista.json?v=${SELLO}`, sinCache)
       .then((r) => (r.ok ? r.json() : []))
       .catch(() => []);
   }
@@ -59,7 +72,9 @@ export class BootScene extends Phaser.Scene {
       for (const nombre of arte || []) {
         const clave = nombre.replace(/\.(png|jpg|jpeg|webp)$/i, '');
         if (this.textures.exists(clave)) this.textures.remove(clave);
-        this.load.image(clave, `arte/${nombre}`);
+        // la version pegada tambien aqui: si mañana cambia la portada, el
+        // navegador no puede servir la de ayer
+        this.load.image(clave, `arte/${nombre}?v=${SELLO}`);
       }
       // sin nada que bajar, el cargador no llega a emitir 'complete' nunca y
       // el juego se quedaba clavado en la pantalla negra

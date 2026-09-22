@@ -100,8 +100,14 @@ export class MenuScene extends Phaser.Scene {
 
     // La version, abajo a la derecha y pequeña. Es para poder saber de un
     // vistazo si lo que estas viendo es la ultima version o una web vieja.
-    this.add.text(w - 10, h - 8, VERSION, {
-      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: '#6f6a5e',
+    //
+    // Y SI FALTA LA PORTADA, LO DICE. Antes se caia al skyline en silencio y
+    // no habia forma de distinguir "esta web es vieja" de "la imagen no ha
+    // cargado". Que el juego lo confiese ahorra la tarde entera que costo la
+    // primera vez.
+    this.add.text(w - 10, h - 8, conPortada ? VERSION : `${VERSION}  ·  SIN PORTADA`, {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px',
+      color: conPortada ? '#6f6a5e' : '#d9584a',
     }).setOrigin(1, 1);
 
     this.pintar();

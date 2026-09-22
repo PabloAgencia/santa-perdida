@@ -11,7 +11,7 @@
 //
 // SE SUBE A MANO al cerrar una tanda. No hay paso de compilacion que lo
 // genere, y tampoco hace falta.
-export const VERSION = 'v25 · 22-sep-2026';
+export const VERSION = 'v26 · 22-sep-2026';
 
 // La unica direccion buena del juego. Si algun dia hay dudas otra vez.
 export const WEB = 'santaperdida.creskio.com';
