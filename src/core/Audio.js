@@ -13,6 +13,7 @@ class GameAudio {
     this.started = false;
     this.muted = false;
     this.volume = 0.13;
+    this.muestras = {};
   }
 
   start() {
@@ -124,8 +125,14 @@ class GameAudio {
     src.start();
     this.motorFuente = src;
   }
-  // suena una muestra suelta, con un poco de variacion de tono
+  // Suena una muestra suelta, con un poco de variacion de tono.
+  //
+  // OJO con las dos comprobaciones: el navegador no deja arrancar el sonido
+  // hasta que tocas algo, y si el primer toque ES un disparo (el boton del
+  // raton dispara), aqui todavia no hay ni contexto ni muestras. Sin esto,
+  // pegar el primer tiro reventaba con un error en consola.
   soltar(clave, volumen = 1, tono = 1) {
+    if (!this.started || !this.muestras) return false;
     const buf = this.muestras[clave];
     if (!buf) return false;
     const src = this.ctx.createBufferSource();

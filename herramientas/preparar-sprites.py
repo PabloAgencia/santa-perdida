@@ -42,8 +42,8 @@ MARGEN = 0.04
 VOLTEAR = {'avispa'}
 
 # Los que llevan librea no se tiñen: un coche de policia pintado de verde deja
-# de ser un coche de policia.
-SIN_TENIR = {'patrulla', 'furgon'}
+# de ser un coche de policia, y un taxi que no es amarillo tampoco es un taxi.
+SIN_TENIR = {'patrulla', 'furgon', 'taxi'}
 
 ALIAS = {
     'coche 1970s': 'bastion',

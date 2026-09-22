@@ -83,6 +83,17 @@ export const VEHICLES = {
     maxHp: 150, price: 4500,
     palette: [0xc9c3b4, 0x8a8f96, 0x4a5b6b, 0x6d5f4a, 0x2e3238],
   },
+  // El taxi: un sedan de trabajo, machacado de tanto rodar. Ni corre ni
+  // frena, pero aguanta y siempre hay uno cerca.
+  taxi: {
+    name: 'Taxi',
+    clase: 'resistente',
+    length: 50, width: 23,
+    maxSpeed: 285, accel: 142, brake: 315, reverseSpeed: 98,
+    turnRate: 2.15, lateralRetention: 0.872,
+    maxHp: 135, price: 2600,
+    palette: [0xe8b54a, 0xd9a63f],
+  },
   patrulla: {
     name: 'Patrulla',
     clase: 'policia',

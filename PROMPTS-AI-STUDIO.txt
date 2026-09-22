@@ -12,6 +12,12 @@ DONDE SE DEJA CADA COSA
 El nombre del fichero es el que pone encima de cada prompt. Si sale torcido o
 raro, se repite el mismo prompt: cada tirada sale distinta.
 
+UN TRUCO QUE FUNCIONA MEJOR QUE TODA LA EXPLICACION (lo vio Pablo)
+  Nombrar un juego que el modelo conozca. Decirle
+     "top-down view like in GTA Chinatown Wars"
+  lo pilla a la primera, mucho mejor que describirle el angulo con tres
+  frases. Si algo sale de perfil o de pie, se le añade eso y listo.
+
 
 ################################################################################
 #  PERSONAJES
