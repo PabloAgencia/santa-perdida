@@ -60,21 +60,30 @@ LOS DEMAS (opcionales, por orden de lo que mas se nota)
 
 
 OPCIONALES: LOS MENUS
-  Estos TRES no hacen falta. El juego ya los sintetiza y suenan a golpe seco
-  de menu, que es lo que se buscaba. Solo si algun dia encuentras uno que te
-  guste mas, se mete aqui y manda el fichero.
+  Estos CINCO no hacen falta. El juego ya los sintetiza, y los numeros del
+  sintetizado estan ajustados MIDIENDO un sonido de referencia, asi que se
+  parecen bastante. Solo si algun dia encuentras uno que te guste mas.
 
-  audio/menu-mover.mp3      "menu click" / "ui click"
-                            Chasquido muy corto (menos de 0,1 s), seco, sin
-                            tono musical. Es el que mas se oye: si tiene cola
-                            o nota, al bajar cuatro opciones seguidas suena a
-                            cancion.
+  OJO CON LA LICENCIA: aqui dentro solo entran sonidos que se puedan
+  publicar. El repo es PUBLICO y la web tambien. Los de Pixabay valen; un
+  sonido sacado de otro juego, no.
+
+  audio/menu-mover.mp3      "menu blip" / "ui beep"
+                            Pitido corto de unos 0,3 s, con su cola. Tono
+                            sobre 550 Hz. Es el que mas se oye.
 
   audio/menu-entrar.mp3     "menu select" / "ui confirm"
-                            Como el anterior pero mas grave y con mas cuerpo.
+                            El mismo aparato pero mas grave, sobre 355 Hz.
 
   audio/menu-atras.mp3      "menu back" / "ui cancel"
-                            Apagado y hacia abajo.
+                            Mas grave aun y mas corto.
+
+  audio/menu-abrir.mp3      "menu open" / "ui open"
+                            Al abrir el mapa, la pausa o un mostrador. Dos
+                            pitidos encadenados que SUBEN.
+
+  audio/menu-cerrar.mp3     "menu close"
+                            Al cerrarlos. Los mismos dos, pero BAJANDO.
 
 
 --------------------------------------------------------------------------------

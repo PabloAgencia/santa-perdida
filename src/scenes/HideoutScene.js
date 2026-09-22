@@ -31,6 +31,7 @@ export class HideoutScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
     this.sala = { x: w / 2 - 300, y: h / 2 - 190, w: 600, h: 380 };
+    Audio.menuOpen();
 
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x07080a);
@@ -233,6 +234,7 @@ export class HideoutScene extends Phaser.Scene {
     if (this.saliendo) return;
     this.saliendo = true;
 
+    Audio.menuClose();
     this.cameras.main.fadeOut(380, 0, 0, 0);
     this.time.delayedCall(400, () => {
       // primero se devuelve la ciudad y al final se apaga esta escena:

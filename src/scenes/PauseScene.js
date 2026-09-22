@@ -16,6 +16,7 @@ export class PauseScene extends Phaser.Scene {
   create() {
     const w = this.scale.width;
     const h = this.scale.height;
+    Audio.menuOpen();
 
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.72);
@@ -260,6 +261,12 @@ export class PauseScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(k.entrar) || Phaser.Input.Keyboard.JustDown(k.espacio)) {
       this.elegir();
     }
-    if (Phaser.Input.Keyboard.JustDown(k.salir)) this.reanudar();
+    // el sonido de cerrar va AQUI y no dentro de reanudar(): eligiendo
+    // "SEGUIR JUGANDO" con ENTER ya suena el de elegir, y los dos juntos se
+    // pisaban y quedaba un ruido sucio
+    if (Phaser.Input.Keyboard.JustDown(k.salir)) {
+      Audio.menuClose();
+      this.reanudar();
+    }
   }
 }

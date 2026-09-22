@@ -43,6 +43,7 @@ export class ShopScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
     this.sala = { x: w / 2 - 330, y: h / 2 - 250, w: 660, h: 500 };
+    Audio.menuOpen();
 
     this.add.image(0, 0, 'px').setOrigin(0, 0).setDisplaySize(w, h).setTint(0x05060a);
     this.pintarLocal();
@@ -229,11 +230,16 @@ export class ShopScene extends Phaser.Scene {
     const op = this.lista[this.indice];
     if (op.salir) return this.salir();
 
+    // que no te dejen comprar tambien tiene sonido, y es el de volver: si
+    // pulsar y que no pase nada suena igual que pulsar y que pase, no te
+    // enteras de que te han dicho que no
     if (op.lleno) {
+      Audio.menuBack();
       this.decir(Phaser.Utils.Array.GetRandom(LLENO));
       return;
     }
     if (!GameState.spendMoney(op.precio, 'armeria')) {
+      Audio.menuBack();
       this.decir(Phaser.Utils.Array.GetRandom(SIN_DINERO));
       return;
     }
@@ -246,6 +252,7 @@ export class ShopScene extends Phaser.Scene {
   }
 
   salir() {
+    Audio.menuClose();
     this.decir(DESPEDIDA);
     this.scene.stop();
     this.scene.resume('UIScene');
@@ -257,10 +264,12 @@ export class ShopScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(t.arriba) || Phaser.Input.Keyboard.JustDown(t.w)) {
       this.indice = (this.indice - 1 + this.items.length) % this.items.length;
       this.pintar();
+      Audio.menuMove();
     }
     if (Phaser.Input.Keyboard.JustDown(t.abajo) || Phaser.Input.Keyboard.JustDown(t.s)) {
       this.indice = (this.indice + 1) % this.items.length;
       this.pintar();
+      Audio.menuMove();
     }
     if (Phaser.Input.Keyboard.JustDown(t.entrar) || Phaser.Input.Keyboard.JustDown(t.espacio)) {
       this.elegir();

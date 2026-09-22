@@ -1,5 +1,6 @@
 import { COLORS } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
+import { Audio } from '../core/Audio.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -16,6 +17,7 @@ export class MapaScene extends Phaser.Scene {
     const h = this.scale.height;
     const city = this.scene.get('CityScene');
     this.city = city;
+    Audio.menuOpen();
 
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.93);
@@ -122,6 +124,7 @@ export class MapaScene extends Phaser.Scene {
   }
 
   cerrar() {
+    Audio.menuClose();
     this.scene.stop();
     this.scene.resume('UIScene');
     this.scene.resume('CityScene');

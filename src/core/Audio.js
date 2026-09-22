@@ -89,6 +89,8 @@ class GameAudio {
       'menu-mover.mp3': 'menu-mover',
       'menu-entrar.mp3': 'menu-entrar',
       'menu-atras.mp3': 'menu-atras',
+      'menu-abrir.mp3': 'menu-abrir',
+      'menu-cerrar.mp3': 'menu-cerrar',
     };
     for (const nombre of nombres) {
       const clave = CLAVES[nombre];
@@ -405,84 +407,121 @@ class GameAudio {
     });
   }
 
-  // EL SONIDO DE LOS MENUS. Antes eran dos notas de flauta y sonaban a
-  // maquina recreativa; los menus de los GTA de aquella epoca no hacen
-  // musica, hacen un GOLPE SECO, como dar con el nudillo en una mesa.
+  // EL SONIDO DE LOS MENUS.
   //
-  // Un golpe asi son dos cosas a la vez, y por separado ninguna cuela:
-  //   · el CUERPO, un tono grave que cae en picado en menos de un parpadeo
-  //     (eso es lo hueco, lo de "madera")
-  //   · el CHASQUIDO de encima, un pellizco de ruido filtrado de 20 ms
-  //     (eso es lo seco, el "clac" del plastico)
-  // Sin el chasquido suena a tambor de juguete; sin el cuerpo, a estatica.
+  // Esto se ha hecho DOS veces. La primera fue de oido, suponiendo que los
+  // menus de aquellos juegos hacian un golpe seco de nudillo. Despues se
+  // pudo MEDIR un sonido de referencia y resulto que no: son PITIDOS CORTOS
+  // con armonico, que duran unos 300 ms. Los numeros de la referencia:
   //
-  // El ruido arranca en un punto al azar del buffer para que dos pulsaciones
-  // seguidas no salgan calcadas: repetido sin variar canta muchisimo.
+  //   navegar  300 ms · centro espectral 1.649 Hz · tono en 560 Hz con
+  //            armonico en 1.109 (el doble justo)
+  //            energia: 23% por debajo de 200 Hz, 59% entre 200 y 800,
+  //                     11% de 800 a 2k, 7% de 2k a 6k
+  //   el otro  300 ms · centro 1.144 Hz · tono en 355 Hz
+  //            energia: 85% entre 200 y 800
+  //
+  // De ahi salen las tres piezas que lleva cada pitido, y ninguna sobra:
+  //   · el TONO, que es el 60-85% de la energia y lo que reconoces;
+  //   · el ARMONICO al doble de frecuencia, que es lo que hace que suene a
+  //     aparato y no a flauta;
+  //   · un SUELO GRAVE flojito (ese 23% de abajo) que le da cuerpo, y una
+  //     pizca de ruido de 8 ms arriba, que es el borde del pitido.
+  //
+  // El tono cae un 12% mientras suena. Clavado en una nota suena a piano.
+  //
   // `retraso` se programa con el reloj del audio, no con setTimeout: un
-  // setTimeout llega cuando el navegador puede, y a 55 ms de distancia esa
-  // holgura se oye como un golpe mal dado.
-  _golpeMenu({ de, a, dur, brillo, ruido, gain, retraso = 0 }) {
+  // setTimeout llega cuando el navegador puede, y esa holgura se oye.
+  _pitidoMenu({ base, dur, gain, armonico = 0.38, grave = 0.22, ruido = 0.06, retraso = 0 }) {
     const ctx = this.ctx;
     const t = ctx.currentTime + retraso;
+    const fin = t + dur;
 
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(de, t);
-    osc.frequency.exponentialRampToValueAtTime(a, t + dur * 0.8);
-    const og = ctx.createGain();
-    og.gain.setValueAtTime(0.0001, t);
-    // ataque de 4 ms: mas lento y deja de ser un golpe para ser una nota
-    og.gain.exponentialRampToValueAtTime(gain, t + 0.004);
-    og.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    osc.connect(og);
+    const salida = ctx.createGain();
+    salida.gain.value = 1;
+    salida.connect(this.master);
 
-    const clac = ctx.createBufferSource();
-    clac.buffer = this.noise;
-    const bp = ctx.createBiquadFilter();
-    bp.type = 'bandpass';
-    bp.frequency.value = brillo;
-    bp.Q.value = 1.1;
-    const cg = ctx.createGain();
-    cg.gain.setValueAtTime(gain * 0.55, t);
-    cg.gain.exponentialRampToValueAtTime(0.0001, t + ruido);
-    clac.connect(bp);
-    bp.connect(cg);
+    const voz = (freq, amp, tipo) => {
+      if (amp <= 0) return;
+      const o = ctx.createOscillator();
+      o.type = tipo;
+      o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(freq * 0.88, fin);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain * amp, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, fin);
+      o.connect(g);
+      g.connect(salida);
+      o.start(t);
+      o.stop(fin + 0.05);
+    };
 
-    // paso bajo comun: le quita el filo de sintetizador a los dos a la vez
-    const lp = ctx.createBiquadFilter();
-    lp.type = 'lowpass';
-    lp.frequency.value = brillo * 2.2;
-    og.connect(lp);
-    cg.connect(lp);
-    lp.connect(this.master);
+    voz(base, 1, 'triangle');
+    voz(base * 1.98, armonico, 'square');   // 560 -> 1.109: el doble justo
+    voz(base / 6, grave, 'sine');           // el suelo de debajo de 200 Hz
 
-    osc.start(t);
-    osc.stop(t + dur + 0.05);
-    clac.start(t, Math.random());
-    clac.stop(t + ruido + 0.02);
+    // el borde: 8 ms de ruido arriba. Arranca en un punto al azar del buffer
+    // para que dos pulsaciones seguidas no salgan calcadas.
+    if (ruido > 0) {
+      const filo = ctx.createBufferSource();
+      filo.buffer = this.noise;
+      const bp = ctx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 3200;
+      bp.Q.value = 0.8;
+      const fg = ctx.createGain();
+      fg.gain.setValueAtTime(gain * ruido, t);
+      fg.gain.exponentialRampToValueAtTime(0.0001, t + 0.008);
+      filo.connect(bp);
+      bp.connect(fg);
+      fg.connect(salida);
+      filo.start(t, Math.random());
+      filo.stop(t + 0.03);
+    }
   }
 
-  // moverse por las opciones: corto, agudito y discreto, que se pulsa mucho
+  // Moverse por las opciones: este es el que se compara con la referencia,
+  // asi que sus numeros salen de medir, no de gusto. `grave` esta alto y
+  // `armonico` bajo a proposito: la primera version tenia un 7% de energia
+  // por debajo de 200 Hz cuando la referencia tiene un 23%, y un 22% entre
+  // 800 y 2k cuando la referencia tiene un 11%. Sonaba fino y sin cuerpo.
   menuMove() {
     if (!this.started) return;
     if (this.soltar('menu-mover', 0.8)) return;
-    this._golpeMenu({ de: 430, a: 150, dur: 0.085, brillo: 1500, ruido: 0.02, gain: 0.22 });
+    this._pitidoMenu({ base: 560, dur: 0.45, gain: 0.2, armonico: 0.27, grave: 0.5, ruido: 0.12 });
   }
 
-  // entrar en una opcion: mas grave, mas gordo y con un rebote detras, para
-  // que se note que la eleccion ha entrado y no es un movimiento mas
+  // entrar: el mismo aparato pero mas grave, que es como se distingue un
+  // "has elegido" de un "te has movido" sin cambiar de familia de sonido
   menuSelect() {
     if (!this.started) return;
     if (this.soltar('menu-entrar', 0.9)) return;
-    this._golpeMenu({ de: 300, a: 82, dur: 0.17, brillo: 1150, ruido: 0.03, gain: 0.3 });
-    this._golpeMenu({ de: 200, a: 70, dur: 0.11, brillo: 900, ruido: 0.02, gain: 0.12, retraso: 0.055 });
+    this._pitidoMenu({ base: 355, dur: 0.5, gain: 0.26, armonico: 0.3, grave: 0.28 });
   }
 
-  // volver o cancelar: el mismo golpe pero apagado, hacia abajo
+  // volver o cancelar: mas grave aun y mas corto, el gesto contrario
   menuBack() {
     if (!this.started) return;
     if (this.soltar('menu-atras', 0.8)) return;
-    this._golpeMenu({ de: 230, a: 70, dur: 0.12, brillo: 780, ruido: 0.022, gain: 0.24 });
+    this._pitidoMenu({ base: 270, dur: 0.4, gain: 0.22, armonico: 0.26, grave: 0.22 });
+  }
+
+  // ABRIR Y CERRAR UNA PANTALLA (el mapa, la pausa, el mostrador). Son dos
+  // pitidos encadenados: al abrir sube y al cerrar baja. Asi la pantalla
+  // "entra" y "sale", que es la mitad de la sensacion.
+  menuOpen() {
+    if (!this.started) return;
+    if (this.soltar('menu-abrir', 0.85)) return;
+    this._pitidoMenu({ base: 340, dur: 0.16, gain: 0.2, armonico: 0.3, ruido: 0.05 });
+    this._pitidoMenu({ base: 560, dur: 0.26, gain: 0.22, armonico: 0.34, retraso: 0.075 });
+  }
+
+  menuClose() {
+    if (!this.started) return;
+    if (this.soltar('menu-cerrar', 0.85)) return;
+    this._pitidoMenu({ base: 560, dur: 0.14, gain: 0.18, armonico: 0.3, ruido: 0.05 });
+    this._pitidoMenu({ base: 300, dur: 0.24, gain: 0.2, armonico: 0.26, grave: 0.1, retraso: 0.07 });
   }
 
   pickup() { this.notes([523.25, 659.25], 0.07); }

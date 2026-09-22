@@ -1396,6 +1396,76 @@ interiores dibujados
   punta a punta con el coche dentro del garaje; la armeria y el escondite
   siguen pintandose igual sin lamina; consola limpia.
 
+
+
+================================================================================
+VIGESIMOQUINTA TANDA (22-sep-2026): el sonido de los menus, esta vez MEDIDO
+================================================================================
+
+  ME HABIA EQUIVOCADO DE CARACTER
+     En la tanda 23 se hicieron los sonidos de menu de oido, suponiendo que
+     eran golpes secos de nudillo. Despues se pudo medir un sonido de
+     referencia de verdad y resulto que no se parecen en nada: son PITIDOS
+     CORTOS con armonico, de unos 300 ms.
+
+     Lo que dice la referencia, medido con ffmpeg y numpy:
+       navegar   300 ms · centro espectral 1.649 Hz · tono 560 Hz con
+                 armonico en 1.109 (el doble justo)
+                 energia: 23% bajo 200 Hz · 59% de 200 a 800 · 11% de 800 a
+                 2k · 7% de 2k a 6k
+       el otro   300 ms · centro 1.144 Hz · tono 355 Hz · 85% de 200 a 800
+     (El tercer sonido del fichero era un retumbe de 150 ms con el 100% de la
+     energia por debajo de 200 Hz: eso no es un pitido de menu, es el fondo.)
+
+     DE DONDE SALE CADA PIEZA DEL PITIDO, que ninguna sobra:
+       · el TONO, que es el 60-85% de la energia y lo que reconoces;
+       · el ARMONICO al doble, que es lo que hace que suene a aparato y no a
+         flauta;
+       · un SUELO GRAVE flojito (ese 23% de abajo) que le da cuerpo;
+       · y 8 ms de ruido arriba, que es el borde del pitido.
+     El tono ademas cae un 12% mientras suena. Clavado en una nota suena a
+     piano.
+
+     SE AJUSTO EN DOS PASADAS, comparando contra la referencia:
+       primera   253 ms · tono 549 · 20-200= 7% · 200-800=67% · 800-2k=22%
+                 -> le faltaba grave y le sobraba armonico
+       segunda   253 ms · tono 549 · 20-200=26% · 200-800=62% · 800-2k=10%
+       REFERENCIA 300 ms · tono 560 · 20-200=23% · 200-800=59% · 800-2k=11%
+     Tres bandas de cuatro encajan y el tono se queda a 11 Hz. La unica que
+     no cuadra es la de 2k-6k (2% contra 7%), y es un artefacto de la medida:
+     el filo de ruido dura 8 ms y se diluye en una ventana de analisis de 93.
+
+  CINCO SONIDOS, Y TODAS LAS PANTALLAS IGUAL
+     menuMove    560 Hz   moverse por las opciones
+     menuSelect  355 Hz   elegir
+     menuBack    270 Hz   volver, cancelar, y que te digan que no
+     menuOpen    334->560 abrir una pantalla: dos pitidos que SUBEN
+     menuClose   560->300 cerrarla: los mismos, BAJANDO
+
+     Donde suena cada uno:
+       menu de inicio ..... mover, elegir
+       tus partidas ....... mover, elegir, ESC = atras
+       pausa .............. abrir, mover, elegir, ESC = cerrar
+       mapa (M) ........... abrir y cerrar
+       armeria ............ abrir, mover, comprar, cerrar, y ATRAS cuando no
+                            te dejan comprar (sin dinero o ya lo llevas)
+       escondite y pisos .. abrir al entrar, cerrar al salir
+
+     UN DETALLE QUE SE OIA MAL: el sonido de cerrar la pausa estaba dentro de
+     `reanudar()`, y eligiendo "SEGUIR JUGANDO" con ENTER sonaban a la vez el
+     de elegir y el de cerrar. Se paso al sitio donde se pulsa ESC.
+
+  SOBRE EL FICHERO DE REFERENCIA
+     Era un sonido sacado de otro juego. Se ha usado SOLO PARA MEDIRLO y se
+     ha sacado del repositorio: vive fuera, en E:\Escritorio\sonidos-referencia.
+     El repo es publico y la web tambien, y la regla del proyecto desde el
+     primer dia es que todo el contenido sea original. Medir un sonido para
+     imitar su caracter con un sintetizador es otra cosa: lo que se publica
+     es audio generado por el juego.
+
+     (Entro por error en el commit 837cd30 porque se hizo `git add -A` sin
+     mirar la lista. Sacado en el siguiente.)
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
