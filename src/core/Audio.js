@@ -298,7 +298,19 @@ class GameAudio {
         on ? (0.3 + caja2.vueltas * 0.45) * (perfil.vol || 1) : 0, t2, 0.08
       );
       if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
-      if (this.aireGain) this.aireGain.gain.setTargetAtTime(0, t2, 0.1);
+
+      // LA ASPEREZA, encima de la grabacion. Normalmente con muestra se
+      // calla todo lo sintetizado, pero la grabacion de la moto no tiene
+      // NADA por encima de 400 Hz (medido: 0%) y una moto raspa. Sin esto es
+      // un zumbido grave y ya. El `aire` es ruido filtrado que se abre con
+      // las vueltas, asi que rasca mas cuanto mas acelera.
+      if (this.aireGain) {
+        const rasp = on ? (perfil.aire || 0) * (0.25 + caja2.vueltas * 0.75) : 0;
+        this.aireGain.gain.setTargetAtTime(rasp, t2, 0.1);
+        this.aireFiltro.frequency.setTargetAtTime(
+          (perfil.aireHz || 900) + caja2.vueltas * 1600, t2, 0.1
+        );
+      }
       return;
     }
     if (this.motorGain) this.motorGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.1);

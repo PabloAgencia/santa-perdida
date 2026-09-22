@@ -3,6 +3,7 @@ import { Cloud } from '../core/Cloud.js';
 import { AccountUI } from '../core/AccountUI.js';
 import { Audio } from '../core/Audio.js';
 import { COLORS } from '../config/balance.js';
+import { VERSION } from '../config/version.js';
 
 // Pablo lo quiere todo en Pricedown, sin excepciones
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
@@ -96,6 +97,12 @@ export class MenuScene extends Phaser.Scene {
     this.ayuda = this.add.text(w / 2, h - 34, 'Flechas o raton para elegir  ·  ENTER para entrar', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0.5);
+
+    // La version, abajo a la derecha y pequeña. Es para poder saber de un
+    // vistazo si lo que estas viendo es la ultima version o una web vieja.
+    this.add.text(w - 10, h - 8, VERSION, {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '12px', color: '#6f6a5e',
+    }).setOrigin(1, 1);
 
     this.pintar();
 
