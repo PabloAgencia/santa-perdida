@@ -1,0 +1,28 @@
+ARTE SUELTO (lo que no es un sprite del juego)
+================================================================================
+
+Aqui va la ilustracion entera que se ve en la pantalla de inicio, y cualquier
+otra que venga despues. NO pasa por herramientas\preparar-sprites.py: ese
+script recorta figuras sobre fondo magenta, y una portada es un cuadro entero
+que no hay que recortar de nada.
+
+QUE HAY QUE HACER PARA QUE SE VEA
+  1. Dejar el fichero aqui con el nombre exacto:  portada.png
+  2. Apuntarlo en lista.json, que tiene que quedar asi:
+
+       ["portada.png"]
+
+     (con lista.json vacio -- [] -- el menu pinta el perfil de ciudad de
+     siempre, que es lo que hay ahora; asi el juego nunca pide un fichero que
+     no existe y la consola no se llena de errores 404)
+
+MEDIDAS
+  Apaisada, 1920x1080 o mas. El menu la encaja recortando por los lados, no
+  la estira, asi que no se deforma aunque la ventana tenga otra proporcion.
+
+QUE NO PONER EN LA IMAGEN
+  El titulo, el subtitulo y las opciones los escribe el juego por encima, con
+  su tipografia. Si la ilustracion ya trae letras, se ven dos veces.
+
+DONDE ESTA EL PROMPT PARA GENERARLA
+  En PROMPTS-AI-STUDIO.txt, al final, en la seccion "LA PORTADA".

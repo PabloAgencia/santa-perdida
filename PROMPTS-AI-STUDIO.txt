@@ -500,3 +500,103 @@ damero) y recortarlo cuesta. Un magenta plano no aparece en ningun sitio del
 juego, asi que se quita de un tiron y sin tocar el dibujo.
 
 Si aun asi sale con damero, no pasa nada: el preparador tambien sabe quitarlo.
+
+
+################################################################################
+#  LA PORTADA DEL MENU
+################################################################################
+
+DONDE SE DEJA
+  arte\portada.png        (NO en sprites\, que eso lo recorta el preparador
+                           y esto es un cuadro entero)
+  Y despues hay que apuntarla en arte\lista.json -> ["portada.png"]
+  Eso lo hago yo: tu dejame el fichero y avisame.
+
+MEDIDAS
+  Apaisada 16:9, 1920x1080 o mas grande. Pidele a Gemini "16:9 landscape".
+
+LO MAS IMPORTANTE: QUE NO LLEVE NI UNA LETRA
+  El titulo SANTA PERDIDA, el subtitulo y las opciones los escribe el juego
+  por encima con su tipografia. Si el dibujo ya trae texto, se ve dos veces y
+  queda fatal. Por eso el prompt repite tres veces que no ponga letras: los
+  modelos de imagen se empeñan en meter carteles, y hay que insistir.
+
+COMO SE VE EN EL JUEGO
+  Se recorta por los lados para llenar la pantalla (no se estira), lleva un
+  velo oscuro encima y la mitad de abajo se oscurece mas, que es donde van
+  las opciones. Asi que LO BUENO PONLO ARRIBA Y EN EL CENTRO: lo de abajo del
+  todo va a quedar medio tapado.
+
+
+--------------------------------------------------------------------------------
+  portada.png   ·   LA BUENA (mosaico de viñetas)
+--------------------------------------------------------------------------------
+Illustrated video game cover artwork, landscape 16:9, in the hand-painted
+airbrush comic style of early-2000s open-world crime games: bold black ink
+outlines, flat saturated colours, cel shading, no photorealism, no 3D render.
+
+The artwork is a COLLAGE of separate panels divided by thick black borders,
+like a comic page. One large main panel and five smaller ones around it.
+
+Main panel: a lone man in his thirties seen from the waist up, low heroic
+angle, looking off to the side with a hard calm expression. Dark green bomber
+jacket over a grey shirt, short dark brown hair, stubble. Behind him a sun-
+bleached coastal city skyline at dusk.
+
+Smaller panels around it: a battered saloon car speeding away from the camera
+with its tail lights lit; a police officer in a dark blue uniform shouting
+into a radio; a woman with a leather jacket leaning against a wall smoking;
+a low-angle shot of palm trees against an orange sky; a hand holding a stack
+of worn banknotes.
+
+Colour palette: deep night blue and near-black for the shadows, warm amber and
+dirty gold for the light, a burnt orange sky. Sun-faded, slightly grimy, warm.
+
+Every character is completely ORIGINAL and invented. Do NOT copy, reference or
+resemble any existing video game character, actor, celebrity, real person,
+logo, brand or existing box art. No trademarks anywhere.
+
+ABSOLUTELY NO TEXT of any kind: no title, no letters, no numbers, no words, no
+logo, no signature, no watermark, no captions, no speech bubbles, no street
+signs with writing, no number plates with characters. The image must be
+completely free of written language.
+
+
+--------------------------------------------------------------------------------
+  portada.png   ·   EL REPUESTO (una sola escena)
+--------------------------------------------------------------------------------
+Si el mosaico sale hecho un lio (pasa: las viñetas se le mezclan), prueba con
+este, que es mucho mas facil de acertar y queda igual de bien de fondo.
+
+Illustrated video game cover artwork, landscape 16:9, hand-painted airbrush
+comic style with bold black ink outlines, flat saturated colours and cel
+shading. No photorealism, no 3D render.
+
+A single wide scene: a coastal city street at dusk seen from street level. In
+the foreground, slightly off-centre to the left, a lone man in his thirties
+stands with his back half-turned, looking over his shoulder towards the
+camera, hands in the pockets of a dark green bomber jacket. Behind him the
+street runs away into the distance: palm trees, a parked battered saloon car,
+low pastel buildings with shuttered storefronts, and further back the
+silhouette of downtown towers against a burnt orange sky. Distant police
+lights glow faint blue in the far background. Dramatic low sun, long shadows
+across the tarmac.
+
+Colour palette: deep night blue and near-black shadows, warm amber and dirty
+gold highlights, burnt orange sky. Sun-faded and slightly grimy.
+
+Leave the lower third of the image visually calm and uncluttered: empty road
+surface and shadow, nothing important there.
+
+The character is completely ORIGINAL and invented. Do NOT copy, reference or
+resemble any existing video game character, actor, celebrity, real person,
+logo, brand or existing box art.
+
+ABSOLUTELY NO TEXT of any kind: no title, no letters, no numbers, no words, no
+logo, no signature, no watermark, no shop signs with writing, no number plates
+with characters. The image must be completely free of written language.
+
+
+SI SALE CON LETRAS IGUALMENTE
+  Repite la tirada. Es mas rapido que borrarlas: quitar un cartel grande de
+  una imagen deja un parche que se nota, ya nos paso.

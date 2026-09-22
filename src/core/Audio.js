@@ -86,6 +86,9 @@ class GameAudio {
       'disparo-rifle.mp3': 'rifle',
       'disparo-sniper.mp3': 'sniper',
       'punetazo.mp3': 'golpe',
+      'menu-mover.mp3': 'menu-mover',
+      'menu-entrar.mp3': 'menu-entrar',
+      'menu-atras.mp3': 'menu-atras',
     };
     for (const nombre of nombres) {
       const clave = CLAVES[nombre];
@@ -400,6 +403,86 @@ class GameAudio {
       osc.start(t);
       osc.stop(t + step + 0.2);
     });
+  }
+
+  // EL SONIDO DE LOS MENUS. Antes eran dos notas de flauta y sonaban a
+  // maquina recreativa; los menus de los GTA de aquella epoca no hacen
+  // musica, hacen un GOLPE SECO, como dar con el nudillo en una mesa.
+  //
+  // Un golpe asi son dos cosas a la vez, y por separado ninguna cuela:
+  //   · el CUERPO, un tono grave que cae en picado en menos de un parpadeo
+  //     (eso es lo hueco, lo de "madera")
+  //   · el CHASQUIDO de encima, un pellizco de ruido filtrado de 20 ms
+  //     (eso es lo seco, el "clac" del plastico)
+  // Sin el chasquido suena a tambor de juguete; sin el cuerpo, a estatica.
+  //
+  // El ruido arranca en un punto al azar del buffer para que dos pulsaciones
+  // seguidas no salgan calcadas: repetido sin variar canta muchisimo.
+  // `retraso` se programa con el reloj del audio, no con setTimeout: un
+  // setTimeout llega cuando el navegador puede, y a 55 ms de distancia esa
+  // holgura se oye como un golpe mal dado.
+  _golpeMenu({ de, a, dur, brillo, ruido, gain, retraso = 0 }) {
+    const ctx = this.ctx;
+    const t = ctx.currentTime + retraso;
+
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(de, t);
+    osc.frequency.exponentialRampToValueAtTime(a, t + dur * 0.8);
+    const og = ctx.createGain();
+    og.gain.setValueAtTime(0.0001, t);
+    // ataque de 4 ms: mas lento y deja de ser un golpe para ser una nota
+    og.gain.exponentialRampToValueAtTime(gain, t + 0.004);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(og);
+
+    const clac = ctx.createBufferSource();
+    clac.buffer = this.noise;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = brillo;
+    bp.Q.value = 1.1;
+    const cg = ctx.createGain();
+    cg.gain.setValueAtTime(gain * 0.55, t);
+    cg.gain.exponentialRampToValueAtTime(0.0001, t + ruido);
+    clac.connect(bp);
+    bp.connect(cg);
+
+    // paso bajo comun: le quita el filo de sintetizador a los dos a la vez
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.value = brillo * 2.2;
+    og.connect(lp);
+    cg.connect(lp);
+    lp.connect(this.master);
+
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+    clac.start(t, Math.random());
+    clac.stop(t + ruido + 0.02);
+  }
+
+  // moverse por las opciones: corto, agudito y discreto, que se pulsa mucho
+  menuMove() {
+    if (!this.started) return;
+    if (this.soltar('menu-mover', 0.8)) return;
+    this._golpeMenu({ de: 430, a: 150, dur: 0.085, brillo: 1500, ruido: 0.02, gain: 0.22 });
+  }
+
+  // entrar en una opcion: mas grave, mas gordo y con un rebote detras, para
+  // que se note que la eleccion ha entrado y no es un movimiento mas
+  menuSelect() {
+    if (!this.started) return;
+    if (this.soltar('menu-entrar', 0.9)) return;
+    this._golpeMenu({ de: 300, a: 82, dur: 0.17, brillo: 1150, ruido: 0.03, gain: 0.3 });
+    this._golpeMenu({ de: 200, a: 70, dur: 0.11, brillo: 900, ruido: 0.02, gain: 0.12, retraso: 0.055 });
+  }
+
+  // volver o cancelar: el mismo golpe pero apagado, hacia abajo
+  menuBack() {
+    if (!this.started) return;
+    if (this.soltar('menu-atras', 0.8)) return;
+    this._golpeMenu({ de: 230, a: 70, dur: 0.12, brillo: 780, ruido: 0.022, gain: 0.24 });
   }
 
   pickup() { this.notes([523.25, 659.25], 0.07); }

@@ -22,11 +22,16 @@ export class MenuScene extends Phaser.Scene {
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x07080a);
 
-    this.skyline(w, h);
+    // si hay ilustracion de portada manda ella; si no, el perfil de ciudad
+    // dibujado por codigo. Igual que con los sprites: la imagen es opcional.
+    const conPortada = this.textures.exists('portada');
+    if (conPortada) this.portada(w, h);
+    else this.skyline(w, h);
 
-    // el titulo tiene que leerse limpio por encima del perfil de la ciudad
+    // el titulo tiene que leerse limpio por encima de lo que haya detras
     this.add.image(0, h * 0.5, 'px').setOrigin(0, 0)
-      .setDisplaySize(w, h * 0.5).setTint(0x000000).setAlpha(0.62);
+      .setDisplaySize(w, h * 0.5).setTint(0x000000)
+      .setAlpha(conPortada ? 0.72 : 0.62);
     for (let i = 0; i < 9; i++) {
       this.add.image(w / 2, h * 0.31, 'px')
         .setDisplaySize(w, 190 - i * 18)
@@ -121,6 +126,27 @@ export class MenuScene extends Phaser.Scene {
     return Cloud.conectado ? 'MI CUENTA' : 'ENTRAR CON TU CORREO';
   }
 
+  // La ilustracion de portada. Se encaja RECORTANDO, nunca estirando: se
+  // escala por el lado que mas falta le hace y lo que sobra se sale por
+  // fuera. Estirandola, en una ventana estrecha los personajes salian
+  // achaparrados.
+  // Encima lleva un barrido lento de 24 s. Quieta del todo la pantalla de
+  // inicio parece una captura congelada; moviendose despacio respira.
+  portada(w, h) {
+    const img = this.add.image(w / 2, h / 2, 'portada').setOrigin(0.5);
+    const tex = this.textures.get('portada').getSourceImage();
+    const escala = Math.max(w / tex.width, h / tex.height);
+    img.setScale(escala);
+    this.tweens.add({
+      targets: img, scale: escala * 1.06,
+      duration: 24000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+    });
+    // un velo fino por encima: la ilustracion viene mas clara que el menu y
+    // sin esto el texto blanco se pierde sobre las zonas de cielo
+    this.add.image(0, 0, 'px').setOrigin(0, 0)
+      .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.3);
+  }
+
   // perfil de ciudad dibujado con rectangulos, para que el menu no sea un vacio
   skyline(w, h) {
     let x = -20;
@@ -162,11 +188,11 @@ export class MenuScene extends Phaser.Scene {
   mover(paso) {
     this.indice = (this.indice + paso + this.opciones.length) % this.opciones.length;
     this.pintar();
-    Audio.notes([440], 0.05, 'triangle', 0.06);
+    Audio.menuMove();
   }
 
   elegir() {
-    Audio.notes([523.25, 659.25], 0.08, 'triangle', 0.09);
+    Audio.menuSelect();
     this.opciones[this.indice].accion();
   }
 

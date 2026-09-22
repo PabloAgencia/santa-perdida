@@ -28,6 +28,12 @@ export class BootScene extends Phaser.Scene {
     this.listaSprites = fetch('sprites/listos/lista.json')
       .then((r) => (r.ok ? r.json() : []))
       .catch(() => []);
+    // arte suelto que no es un sprite del juego (la portada del menu). Va
+    // aparte porque no pasa por preparar-sprites.py: es una ilustracion
+    // entera, no una figura recortada sobre magenta.
+    this.listaArte = fetch('arte/lista.json')
+      .then((r) => (r.ok ? r.json() : []))
+      .catch(() => []);
   }
 
   create() {
@@ -43,16 +49,23 @@ export class BootScene extends Phaser.Scene {
   }
 
   cargarImagenes() {
-    this.listaSprites.then((lista) => {
-      if (!lista || lista.length === 0) {
-        this.scene.start('MenuScene');
-        return;
-      }
-      for (const nombre of lista) {
+    Promise.all([this.listaSprites, this.listaArte]).then(([lista, arte]) => {
+      for (const nombre of lista || []) {
         const clave = nombre.replace(/\.png$/i, '');
         // la imagen manda: se quita el dibujo para que entre en su sitio
         if (this.textures.exists(clave)) this.textures.remove(clave);
         this.load.image(clave, `sprites/listos/${nombre}`);
+      }
+      for (const nombre of arte || []) {
+        const clave = nombre.replace(/\.(png|jpg|jpeg|webp)$/i, '');
+        if (this.textures.exists(clave)) this.textures.remove(clave);
+        this.load.image(clave, `arte/${nombre}`);
+      }
+      // sin nada que bajar, el cargador no llega a emitir 'complete' nunca y
+      // el juego se quedaba clavado en la pantalla negra
+      if (this.load.list.size === 0) {
+        this.scene.start('MenuScene');
+        return;
       }
       this.load.once('complete', () => this.scene.start('MenuScene'));
       this.load.on('loaderror', (f) => console.warn('sprite que falla:', f.key));

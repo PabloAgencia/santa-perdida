@@ -84,11 +84,11 @@ export class PauseScene extends Phaser.Scene {
     this.confirmando = false;
     this.items[3].setText('EMPEZAR DE CERO AQUI');
     this.pintar();
-    Audio.notes([440], 0.05, 'triangle', 0.06);
+    Audio.menuMove();
   }
 
   elegir() {
-    Audio.notes([523.25, 659.25], 0.08, 'triangle', 0.09);
+    Audio.menuSelect();
     this.opciones[this.indice].accion();
   }
 

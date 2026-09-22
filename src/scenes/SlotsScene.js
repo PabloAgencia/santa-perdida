@@ -154,14 +154,14 @@ export class SlotsScene extends Phaser.Scene {
     this.confirmando = null;
     this.decir('');
     this.pintar();
-    Audio.notes([440], 0.05, 'triangle', 0.06);
+    Audio.menuMove();
   }
 
   // ---------- acciones ----------
 
   jugar() {
     const n = this.indice + 1;
-    Audio.notes([523.25, 659.25], 0.08, 'triangle', 0.09);
+    Audio.menuSelect();
     SaveSystem.usarRanura(n);
 
     if (SaveSystem.hasSave(n)) {
@@ -240,6 +240,9 @@ export class SlotsScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(k.nueva)) this.nuevaAqui();
     if (Phaser.Input.Keyboard.JustDown(k.borrar)) this.borrar();
     if (Phaser.Input.Keyboard.JustDown(k.traer)) this.traerDeLaNube();
-    if (Phaser.Input.Keyboard.JustDown(k.volver)) this.scene.start('MenuScene');
+    if (Phaser.Input.Keyboard.JustDown(k.volver)) {
+      Audio.menuBack();
+      this.scene.start('MenuScene');
+    }
   }
 }

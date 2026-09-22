@@ -59,6 +59,24 @@ LOS DEMAS (opcionales, por orden de lo que mas se nota)
                             Golpe corto y sordo.
 
 
+OPCIONALES: LOS MENUS
+  Estos TRES no hacen falta. El juego ya los sintetiza y suenan a golpe seco
+  de menu, que es lo que se buscaba. Solo si algun dia encuentras uno que te
+  guste mas, se mete aqui y manda el fichero.
+
+  audio/menu-mover.mp3      "menu click" / "ui click"
+                            Chasquido muy corto (menos de 0,1 s), seco, sin
+                            tono musical. Es el que mas se oye: si tiene cola
+                            o nota, al bajar cuatro opciones seguidas suena a
+                            cancion.
+
+  audio/menu-entrar.mp3     "menu select" / "ui confirm"
+                            Como el anterior pero mas grave y con mas cuerpo.
+
+  audio/menu-atras.mp3      "menu back" / "ui cancel"
+                            Apagado y hacia abajo.
+
+
 --------------------------------------------------------------------------------
 COMO BAJARLOS
 --------------------------------------------------------------------------------
