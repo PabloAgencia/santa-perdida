@@ -193,6 +193,38 @@ silhouette so it reads at a small size. Plain flat magenta background
 and filling most of the image.
 
 
+--------------------------------------------------------------------------------
+  peaton-3.png
+--------------------------------------------------------------------------------
+Top-down sprite of a young man walking down the street, seen from DIRECTLY
+ABOVE at a perfect 90 degree overhead angle, like a security camera on the
+ceiling looking straight down. Only the top of the head, the shoulders and the
+tips of the trainers are visible. NO face, NO perspective, NO tilt. This is
+NOT a front view and NOT a back view: the camera is on the ceiling pointing
+straight down at the floor. Standing still, facing RIGHT, one arm holding the
+strap of a backpack. Grey hooded sweatshirt, black jeans, a small dark
+backpack on his back seen from above, dark cap. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-4.png
+--------------------------------------------------------------------------------
+Top-down sprite of an older woman walking down the street, seen from DIRECTLY
+ABOVE at a perfect 90 degree overhead angle, like a security camera on the
+ceiling looking straight down. Only the top of the head, the shoulders and the
+tips of the shoes are visible. NO face, NO perspective, NO tilt. This is NOT a
+front view and NOT a back view: the camera is on the ceiling pointing straight
+down at the floor. Standing still, facing RIGHT, carrying a shopping bag in
+one hand. Long dark red winter coat, grey skirt, short grey hair seen from
+above. Pixel art, chunky readable pixels, dark muted night-time palette,
+strong dark outline around the silhouette so it reads at a small size. Plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border, the figure centered and filling most of the image.
+
 ################################################################################
 #  ICONOS
 ################################################################################

@@ -310,6 +310,8 @@ PERSONAJES = {
     'banda-morada': 'gang-amarres',
     'peaton-1': 'ped-0',
     'peaton-2': 'ped-1',
+    'peaton-3': 'ped-2',
+    'peaton-4': 'ped-3',
 }
 
 LADO_PERSONAJE = 32
