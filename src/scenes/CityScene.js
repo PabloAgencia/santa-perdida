@@ -24,6 +24,7 @@ import { SaveSystem } from '../core/SaveSystem.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
 import { PintarCiudad } from '../world/PintarCiudad.js';
+import { DanoVehiculos } from '../systems/DanoVehiculos.js';
 
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
@@ -65,6 +66,7 @@ export class CityScene extends Phaser.Scene {
     this.shops = new ShopSystem(this, this.map);
     this.pisos = new PisoSystem(this, this.map);
     this.combat = new CombatSystem(this);
+    this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
 
@@ -267,6 +269,7 @@ export class CityScene extends Phaser.Scene {
       EventBus.off(EVT.HIDEOUT_EXIT, this.onHideoutExit);
       EventBus.off(EVT.PLAYER_DEAD, this.onDead);
       EventBus.off(EVT.PLAYER_BUSTED, this.onBusted);
+      if (this.danos) this.danos.limpiar();
     });
   }
 
@@ -287,6 +290,8 @@ export class CityScene extends Phaser.Scene {
     let best = null;
     let bestDist = PLAYER.enterRange;
     for (const v of this.vehicles) {
+      // un chasis quemado no se conduce: es chatarra en mitad de la calle
+      if (v.quemado) continue;
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, v.x, v.y);
       if (d < bestDist) {
         bestDist = d;
@@ -439,7 +444,11 @@ export class CityScene extends Phaser.Scene {
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle);
+    this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
+
+    // el coche te revienta debajo: te suelta en la calle
+    if (this.drivingVehicle && this.drivingVehicle.quemado) this.exitVehicle();
 
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;

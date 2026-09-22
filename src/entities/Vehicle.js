@@ -233,6 +233,12 @@ export class Vehicle {
     this.shadow.setRotation(this.angle);
     this.shadow.setDepth(this.y - 1);
 
+    // el chasis quemado se queda negro y ahi se queda: no vuelve a cambiar
+    // de color por mucho que le den
+    if (this.quemado) {
+      this.sprite.setTint(0x2e2c2a);
+      return;
+    }
     const wear = 1 - 0.45 * (1 - this.hp / this.stats.maxHp);
     const tint = Phaser.Display.Color.GetColor(255 * wear, 255 * wear, 255 * wear);
     this.sprite.setTint(tint);
