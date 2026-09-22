@@ -1,4 +1,5 @@
 import { FASES } from '../world/personArt.js';
+import { Extremidades } from './Extremidades.js';
 import { VIDA } from '../config/weapons.js';
 
 export class Pedestrian {
@@ -38,6 +39,10 @@ export class Pedestrian {
     this.paso = 0;
     this.fase = 0;
     this.sprite = scene.add.image(x, y, `${this.base}-0`);
+    // los brazos van sueltos, no en un contenedor: el sprite usa setTint para
+    // el fogonazo al recibir un tiro y un contenedor no tiene tinte
+    this.brazos = new Extremidades(scene, this.base);
+    this.vaiven = 0;
   }
 
   // Un golpe o un tiro. Devuelve 'muerto', 'tocado' o null si ya estaba en
@@ -384,6 +389,9 @@ export class Pedestrian {
       this.fase = fase;
       this.sprite.setTexture(`${this.base}-${fase}`);
     }
+    // el vaiven del brazo se enciende al andar y se apaga al parar, igual que
+    // el del jugador: cortarlo en seco deja el brazo tieso a media zancada
+    this.vaiven = Math.min(1, this.vaiven + dt * 5);
   }
 
   tryMove(dx, dy) {
@@ -402,10 +410,26 @@ export class Pedestrian {
     this.sprite.setDepth(this.down ? this.y - 2 : this.y);
     this.shadow.setPosition(this.x, this.y + 4);
     this.shadow.setDepth(this.y - 3);
+
+    // Un caido no bracea: el sprite del cuerpo ya esta tumbado y unos brazos
+    // andando encima quedaria fatal. Dentro de un coche tampoco: solo se ve
+    // el techo.
+    const seVe = !this.down && !this.enCoche && this.sprite.visible;
+    this.brazos.setVisible(seVe);
+    if (!seVe) return;
+
+    // el vaiven se apaga solo si ha dejado de andar (animar lo reenciende)
+    this.vaiven = Math.max(0, this.vaiven - 0.02);
+    this.brazos.colocar(
+      this.x, this.y, this.angle,
+      Math.sin(this.paso * Math.PI * 2) * this.vaiven,
+      this.state === 'fleeing'
+    );
   }
 
   destroy() {
     this.sprite.destroy();
+    this.brazos.destroy();
     this.shadow.destroy();
     if (this.cabeza) this.cabeza.destroy();
     if (this.blood) this.blood.destroy();

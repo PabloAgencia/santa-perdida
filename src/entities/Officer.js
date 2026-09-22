@@ -1,4 +1,5 @@
 import { FASES } from '../world/personArt.js';
+import { Extremidades } from './Extremidades.js';
 import { VIDA } from '../config/weapons.js';
 import { GameState } from '../core/GameState.js';
 
@@ -67,6 +68,10 @@ export class Officer {
     this.paso = 0;
     this.fase = 0;
     this.sprite = scene.add.image(x, y, `${this.textura}-0`);
+    // los brazos van sueltos, no en contenedor: el sprite usa setTint al
+    // recibir un tiro y un contenedor de Phaser no tiene tinte
+    this.brazos = new Extremidades(scene, this.textura);
+    this.vaiven = 0;
   }
 
   // Los agentes aguantan mas que un peaton, y cuando caen se quedan en el
@@ -172,10 +177,23 @@ export class Officer {
   sync() {
     this.sprite.setPosition(this.x, this.y).setRotation(this.angle).setDepth(this.y);
     this.shadow.setPosition(this.x, this.y + 4).setDepth(this.y - 1);
+
+    // un agente caido no bracea: el sprite ya esta tumbado
+    this.brazos.setVisible(!this.down);
+    if (this.down) return;
+    // Al APUNTAR el brazo se queda quieto y estirado, no braceando: un
+    // policia disparandote mientras mueve los brazos como si paseara canta.
+    const apuntando = this.recarga < 0.8;
+    this.brazos.colocar(
+      this.x, this.y, this.angle,
+      apuntando ? 0 : Math.sin(this.paso * Math.PI * 2),
+      true
+    );
   }
 
   destroy() {
     this.sprite.destroy();
+    this.brazos.destroy();
     this.shadow.destroy();
   }
 }
