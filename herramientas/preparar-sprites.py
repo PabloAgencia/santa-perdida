@@ -312,6 +312,8 @@ PERSONAJES = {
     'peaton-2': 'ped-1',
     'peaton-3': 'ped-2',
     'peaton-4': 'ped-3',
+    'peaton-5': 'ped-4',
+    'peaton-6': 'ped-5',
 }
 
 LADO_PERSONAJE = 32

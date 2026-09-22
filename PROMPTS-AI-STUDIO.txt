@@ -225,6 +225,39 @@ strong dark outline around the silhouette so it reads at a small size. Plain
 flat magenta background (#FF00FF), no shadow, no text, no watermark, no
 border, the figure centered and filling most of the image.
 
+--------------------------------------------------------------------------------
+  peaton-5.png
+--------------------------------------------------------------------------------
+Top-down sprite of a businessman walking to work, seen from DIRECTLY ABOVE at
+a perfect 90 degree overhead angle, like a security camera on the ceiling
+looking straight down. Only the top of the head, the shoulders and the tips of
+the shoes are visible. NO face, NO perspective, NO tilt. This is NOT a front
+view and NOT a back view: the camera is on the ceiling pointing straight down
+at the floor. Standing still, facing RIGHT, one hand carrying a briefcase that
+hangs beside him. Dark charcoal suit jacket, matching trousers, balding head
+with grey hair at the sides seen from above. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-6.png
+--------------------------------------------------------------------------------
+Top-down sprite of a construction worker on his way home, seen from DIRECTLY
+ABOVE at a perfect 90 degree overhead angle, like a security camera on the
+ceiling looking straight down. Only the top of the helmet, the shoulders and
+the tips of the boots are visible. NO face, NO perspective, NO tilt. This is
+NOT a front view and NOT a back view: the camera is on the ceiling pointing
+straight down at the floor. Standing still, facing RIGHT, arms loose. Orange
+high visibility vest over a dark blue work shirt, worn jeans, yellow hard hat
+seen from above as a bright round shape. Pixel art, chunky readable pixels,
+dark muted night-time palette, strong dark outline around the silhouette so it
+reads at a small size. Plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border, the figure centered and filling most of the
+image.
+
 ################################################################################
 #  ICONOS
 ################################################################################
