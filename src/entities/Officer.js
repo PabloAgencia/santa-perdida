@@ -103,11 +103,16 @@ export class Officer {
     if (!combat || !combat.veA(this, objetivo, TIRO.alcance)) return false;
 
     if (this.recarga <= 0) {
-      this.recarga = TIRO.cadencia * (0.8 + Math.random() * 0.5);
+      // LA BUSCA LOS PONE PEOR. De 2 estrellas a 6, disparan hasta un 45%
+      // mas seguido y fallan un 40% menos. Sin esto, seis estrellas solo
+      // significaba "mas coches", y tener seis tiene que dar miedo.
+      const rabia = Phaser.Math.Clamp((GameState.wanted - 2) / 4, 0, 1);
+      this.recarga = TIRO.cadencia * (1 - rabia * 0.45) * (0.8 + Math.random() * 0.5);
       // a un blanco que corre se le falla: quedarse quieto a cubierto y correr
       // tienen que ser decisiones distintas
       const corriendo = this.scene.player && this.scene.player.running;
-      const desvio = TIRO.dispersion + (corriendo ? TIRO.masSiCorres : 0);
+      const desvio = TIRO.dispersion * (1 - rabia * 0.4)
+        + (corriendo ? TIRO.masSiCorres : 0);
       combat.disparoDeNPC(this, objetivo, TIRO.dano, TIRO.alcance, desvio, this.sonido);
     }
     return dist < TIRO.seQuedanA;

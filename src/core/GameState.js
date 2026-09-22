@@ -1,5 +1,5 @@
 import { EventBus, EVT } from './EventBus.js';
-import { ECONOMY, SAVE } from '../config/balance.js';
+import { ECONOMY, SAVE, BUSCA_MAXIMA } from '../config/balance.js';
 import { FACTION_KEYS, REP } from '../config/factions.js';
 
 // FUENTE UNICA DE VERDAD. Ningun otro modulo guarda copias de estos datos
@@ -264,7 +264,10 @@ class GameStateClass {
   }
 
   setWanted(level) {
-    const next = Phaser.Math.Clamp(Math.round(level), 0, 3);
+    // SEIS ESTRELLAS, no tres. Lo que cambia en cada nivel (cuantas patrullas,
+    // cuanto ven, si disparan, si cortan la calle, si sale el furgon y cuanto
+    // cuesta despegarselos) esta en la tabla BUSCA de systems/PoliceSystem.js.
+    const next = Phaser.Math.Clamp(Math.round(level), 0, BUSCA_MAXIMA);
     if (next === this.wanted) return this.wanted;
     this.wanted = next;
     EventBus.emit(EVT.WANTED_CHANGED, { wanted: this.wanted });

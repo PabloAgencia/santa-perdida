@@ -202,6 +202,12 @@ export class CombatSystem {
       this.soltarLoQueLlevaba(ente);
       // cargarse a alguien delante de testigos tiene su precio
       this.scene.police.reportarCrimen(ente.x, ente.y, ente.esPolicia ? 3 : 2);
+
+      // CARGARSE AGENTES ESCALA. `reportarCrimen` PONE un nivel minimo, no
+      // suma: sin esto te quedabas clavado en 3 por muchos que te llevaras
+      // por delante, y las estrellas 4, 5 y 6 no se alcanzaban jugando.
+      // Cada agente a partir de ahi suma uno.
+      if (ente.esPolicia && GameState.wanted >= 3) GameState.raiseWanted(1);
       if (ente.faction && this.scene.factions) this.scene.factions.onMemberHurt(ente.faction);
     }
     if (this.objetivo === ente && ente.down) this.objetivo = null;

@@ -206,6 +206,15 @@ export class DanoVehiculos {
     v.vx = 0;
     v.vy = 0;
     EventBus.emit(EVT.NOTIFY, { text: 'Ha reventado', tone: 'danger' });
+
+    // REVENTAR UN COCHE ES UN DELITO GORDO, y ademas se ve y se oye desde
+    // media calle. Si estabas cerca, te lo apuntan a ti: dos estrellas, y
+    // tres si era una patrulla. Sin esto podias ir quemando coches por la
+    // ciudad sin que pasara absolutamente nada.
+    const policia = this.scene.police;
+    if (policia && lejos < 260) {
+      policia.reportarCrimen(v.x, v.y, v.police || v.eraPatrulla ? 3 : 2);
+    }
   }
 
   // A quien pilla el reventon: tu, la gente, la policia y los coches de al

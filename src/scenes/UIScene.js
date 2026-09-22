@@ -1,6 +1,6 @@
 import { EventBus, EVT } from '../core/EventBus.js';
 import { GameState } from '../core/GameState.js';
-import { COLORS, TILE } from '../config/balance.js';
+import { COLORS, TILE, BUSCA_MAXIMA } from '../config/balance.js';
 
 // Pablo lo quiere todo en Pricedown, sin excepciones
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
@@ -178,13 +178,16 @@ export class UIScene extends Phaser.Scene {
       fontSize: '13px', color: COLORS.dim,
     }).setOrigin(1, 0);
   }
+  // SEIS ESTRELLAS. Eran tres, y con seis niveles se quedaban cortas: pasabas
+  // de 3 a 6 y el HUD decia lo mismo. Se han hecho un poco mas pequeñas y mas
+  // juntas para que las seis quepan sin comerse el dinero.
   buildWanted(w) {
     this.wantedPips = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < BUSCA_MAXIMA; i++) {
       this.wantedPips.push(
-        this.add.image(w - 16 - i * 22, 98, 'estrella')
+        this.add.image(w - 16 - i * 19, 98, 'estrella')
           .setOrigin(1, 0)
-          .setDisplaySize(19, 19)
+          .setDisplaySize(16, 16)
           .setTint(0x3a3f45)
       );
     }
@@ -351,6 +354,17 @@ export class UIScene extends Phaser.Scene {
       pip.setTint(puesta ? 0xf2d06b : 0x2a2f36);
       pip.setAlpha(puesta ? 1 : 0.45);
     });
+
+    // LA ULTIMA PARPADEA. Con seis estrellas encima hace falta que se note
+    // que estas en lo mas alto y no en un nivel cualquiera.
+    const ultima = this.wantedPips[level - 1];
+    if (this.latido) { this.latido.stop(); this.latido = null; }
+    if (ultima && level >= BUSCA_MAXIMA - 1) {
+      this.latido = this.tweens.add({
+        targets: ultima, alpha: { from: 1, to: 0.35 },
+        duration: 320, yoyo: true, repeat: -1,
+      });
+    }
   }
 
   // la vida maxima sube con el musculo, asi que la barra se mide contra ella

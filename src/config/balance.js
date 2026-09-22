@@ -1,3 +1,9 @@
+// SEIS ESTRELLAS DE BUSCA. Vive aqui, y no en PoliceSystem, porque lo
+// necesitan tanto GameState (para el tope) como el HUD (para pintar las
+// estrellas) y la policia: poniendolo en PoliceSystem, GameState tendria que
+// importarlo y se armaria un import circular.
+// QUE PASA en cada nivel esta en la tabla BUSCA de systems/PoliceSystem.js.
+export const BUSCA_MAXIMA = 6;
 export const TILE = 32;
 
 export const PLAYER = {

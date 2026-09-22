@@ -18,13 +18,47 @@ export const ESTADO = {
 // utilitario, solo se escapaba 1 de cada 8 veces: te veian casi desde fuera
 // de la pantalla, eran cinco coches mas rapidos que el tuyo y hacian falta
 // casi veinte segundos sin que te vieran para bajar un nivel.
-const UNIDADES_POR_BUSCA = [1, 2, 3, 4];
-const VISION = 300;
+// LOS SEIS NIVELES DE BUSCA, EN UNA SOLA TABLA.
+//
+// Antes eran tres niveles y los numeros estaban sueltos por el fichero
+// (`wanted >= 3` aqui, una constante VISION alla). Para cambiar como se porta
+// la policia en un nivel habia que ir a buscarlos uno a uno, y era imposible
+// ver de un vistazo si la escalada tenia sentido.
+//
+// Ahora sube de verdad: en 1 te siguen y ya esta, en 2 sacan el arma, en 3
+// te cortan la calle, en 4 sale el furgon de asalto, y en 5 y 6 son mas, ven
+// mas lejos, corren mas y cuesta el triple quitartelos de encima.
+//
+//   coches      patrullas a la vez
+//   vision      a cuantos pixeles te ven
+//   velocidad   parte de la punta del coche que usan persiguiendo
+//   disparan    si los agentes que bajan abren fuego. Quien lo decide de
+//               verdad es `desdeBusca` en Officer.js (cada clase de agente
+//               tiene el suyo); aqui esta para poder leer la escalada de un
+//               vistazo. Y de 2 a 6 ademas disparan mas seguido y fallan
+//               menos: eso tambien vive en Officer.js.
+//   controles   cortes de calle por delante
+//   furgon      el furgon de asalto con cuatro dentro
+//   despegar    segundos SIN QUE TE VEAN para bajar un nivel
+const BUSCA = [
+  { coches: 0, vision: 0, velocidad: 0, disparan: false, controles: false, furgon: false, despegar: 0 },
+  { coches: 1, vision: 250, velocidad: 0.68, disparan: false, controles: false, furgon: false, despegar: 4 },
+  { coches: 2, vision: 300, velocidad: 0.76, disparan: true, controles: false, furgon: false, despegar: 5 },
+  { coches: 3, vision: 345, velocidad: 0.83, disparan: true, controles: true, furgon: false, despegar: 6.5 },
+  { coches: 4, vision: 390, velocidad: 0.89, disparan: true, controles: true, furgon: true, despegar: 8.5 },
+  { coches: 5, vision: 440, velocidad: 0.95, disparan: true, controles: true, furgon: true, despegar: 11 },
+  { coches: 6, vision: 500, velocidad: 1.0, disparan: true, controles: true, furgon: true, despegar: 14 },
+];
+
+// lo que toque segun la busca de ahora mismo
+function nivel() {
+  return BUSCA[Phaser.Math.Clamp(GameState.wanted, 0, BUSCA.length - 1)];
+}
+
 const VISION_PERSIGUIENDO = 400;
 const SPAWN_MIN = 700;
 const SPAWN_MAX = 1500;
 const DESPAWN = 2400;
-const SIN_VER_PARA_BAJAR = 4;
 const DISTANCIA_QUE_TE_PIERDEN = 620;
 const DETENCION_DIST = 48;
 const TIEMPO_PARA_DETENER = 3.6;
@@ -117,7 +151,8 @@ export class PoliceSystem {
 
     if (GameState.wanted > 0) {
       this.sinVer = algunoVe ? 0 : this.sinVer + dt;
-      if (this.sinVer >= SIN_VER_PARA_BAJAR) {
+      // cuanto mas alta la busca, mas cuesta despegarselos
+      if (this.sinVer >= nivel().despegar) {
         this.sinVer = 0;
         GameState.setWanted(GameState.wanted - 1);
       }
@@ -126,15 +161,19 @@ export class PoliceSystem {
       this.lastKnown = null;
     }
 
+    // Los cortes de calle y el furgon ya no van atados a "wanted >= 3": lo
+    // dice la tabla. Los cortes entran en 3 y el furgon en 4, y ademas los
+    // dos vienen MAS SEGUIDOS cuanto mas alta es la busca.
+    const n = nivel();
     this.roadblockTimer -= dt;
-    if (GameState.wanted >= 3 && this.roadblockTimer <= 0) {
-      this.roadblockTimer = 22;
+    if (n.controles && this.roadblockTimer <= 0) {
+      this.roadblockTimer = Math.max(9, 28 - GameState.wanted * 3.5);
       this.spawnRoadblock(player, playerVehicle);
     }
 
     this.furgonTimer = (this.furgonTimer || 0) - dt;
-    if (GameState.wanted >= 3 && this.furgonTimer <= 0) {
-      this.furgonTimer = FURGON_CADA;
+    if (n.furgon && this.furgonTimer <= 0) {
+      this.furgonTimer = Math.max(14, FURGON_CADA - (GameState.wanted - 4) * 6);
       this.spawnFurgon(player);
     }
 
@@ -250,7 +289,7 @@ export class PoliceSystem {
   canSee(unit, player) {
     if (GameState.wanted === 0) return false;
     const v = unit.vehicle;
-    const range = unit.state === ESTADO.PERSIGUIENDO ? VISION_PERSIGUIENDO : VISION;
+    const range = unit.state === ESTADO.PERSIGUIENDO ? VISION_PERSIGUIENDO : nivel().vision;
     const dist = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
     if (dist > range) return false;
     return this.lineOfSight(v.x, v.y, player.x, player.y);
@@ -490,7 +529,8 @@ export class PoliceSystem {
 
     if (u.state === ESTADO.PERSIGUIENDO) {
       goal = u.lastSeen || { x: player.x, y: player.y };
-      limit = v.stats.maxSpeed * 0.76;
+      // cuanto mas alta la busca, mas caña le meten (tabla BUSCA)
+      limit = v.stats.maxSpeed * nivel().velocidad;
 
       // no van todos al mismo punto: cada unidad ataca por un lado y, si
       // huyes en coche, apuntan a donde VAS a estar, no a donde estas
@@ -653,7 +693,7 @@ export class PoliceSystem {
   // ---------- altas y bajas ----------
 
   wantedUnits() {
-    return UNIDADES_POR_BUSCA[Phaser.Math.Clamp(GameState.wanted, 0, 3)];
+    return nivel().coches;
   }
 
   cull(player) {
