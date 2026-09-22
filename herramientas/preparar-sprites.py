@@ -105,6 +105,11 @@ def quitar_fondo(img):
     entre el primero y el ultimo. Las ventanas y el capo negro quedan dentro
     del relleno, y el damero, fuera.
     """
+    # si ya viene recortada (Pablo se lo quita a mano a veces), no se toca
+    img = img.convert('RGBA')
+    if (np.array(img)[:, :, 3] < 40).mean() > 0.08:
+        return img
+
     limpia = quitar_magenta(img)
     if limpia is not None:
         return limpia

@@ -20,19 +20,14 @@ export class BootScene extends Phaser.Scene {
     super({ key: 'BootScene' });
   }
 
-  // Si hay imagenes preparadas en sprites/listos, se cargan y mandan sobre
-  // el dibujo por codigo. La lista evita pedir ficheros que no existen.
-  preload() {
-    this.load.on('loaderror', () => { /* sin sprites: se dibuja por codigo */ });
-    this.load.json('sprites-lista', 'sprites/listos/lista.json');
-    this.load.once('filecomplete-json-sprites-lista', () => {
-      const lista = this.cache.json.get('sprites-lista') || [];
-      for (const nombre of lista) {
-        const clave = nombre.replace(/\.png$/i, '');
-        this.load.image(clave, `sprites/listos/${nombre}`);
-      }
-      this.load.start();
-    });
+  // Las imagenes preparadas (sprites/listos) se cargan DESPUES de dibujar
+  // todo y sustituyen al dibujo. Antes se pedian a mitad de la carga inicial
+  // y el juego arrancaba sin esperarlas: cargaban las primeras y las ultimas
+  // se quedaban fuera, asi que unos coches salian con foto y otros no.
+  init() {
+    this.listaSprites = fetch('sprites/listos/lista.json')
+      .then((r) => (r.ok ? r.json() : []))
+      .catch(() => []);
   }
 
   create() {
@@ -44,9 +39,26 @@ export class BootScene extends Phaser.Scene {
     this.makeOfficer();
     this.makeGangs();
     this.makeProps();
-    this.scene.start('MenuScene');
+    this.cargarImagenes();
   }
 
+  cargarImagenes() {
+    this.listaSprites.then((lista) => {
+      if (!lista || lista.length === 0) {
+        this.scene.start('MenuScene');
+        return;
+      }
+      for (const nombre of lista) {
+        const clave = nombre.replace(/\.png$/i, '');
+        // la imagen manda: se quita el dibujo para que entre en su sitio
+        if (this.textures.exists(clave)) this.textures.remove(clave);
+        this.load.image(clave, `sprites/listos/${nombre}`);
+      }
+      this.load.once('complete', () => this.scene.start('MenuScene'));
+      this.load.on('loaderror', (f) => console.warn('sprite que falla:', f.key));
+      this.load.start();
+    });
+  }
   g() {
     return this.make.graphics({ x: 0, y: 0, add: false });
   }
@@ -289,6 +301,13 @@ export class BootScene extends Phaser.Scene {
   // Los iconos de la esquina: el arma que llevas en la mano, el corazon de la
   // salud y el escudo del chaleco. Se dibujan grandes (40 px) y con borde
   // oscuro para que se lean encima de cualquier calle.
+  // Los iconos dibujados aqui son el respaldo: si hay imagen cargada con esa
+  // misma clave, se deja la imagen y no se dibuja nada.
+  iconoAMano(clave, dibujar) {
+    if (this.textures.exists(clave)) return;
+    dibujar();
+  }
+
   makeIconosDeHud() {
     const ACERO = 0x9aa3ad;
     const OSCURO = 0x14161a;
@@ -296,117 +315,131 @@ export class BootScene extends Phaser.Scene {
     const PIEL = 0xd8b48c;
 
     // el puño: visto de lado, con los nudillos marcados
-    const puno = this.g();
-    puno.fillStyle(OSCURO, 1);
-    puno.fillRoundedRect(7, 9, 26, 22, 6);
-    puno.fillStyle(PIEL, 1);
-    puno.fillRoundedRect(9, 11, 22, 18, 5);
-    puno.fillStyle(0xb8916b, 1);
-    for (let i = 0; i < 4; i++) puno.fillRect(11 + i * 5, 12, 3, 6);
-    puno.fillStyle(PIEL, 1);
-    puno.fillRoundedRect(26, 15, 8, 11, 3);   // el pulgar
-    puno.generateTexture('icono-puno', 40, 40);
-    puno.destroy();
+    if (!this.textures.exists('icono-puno')) {
+      const puno = this.g();
+      puno.fillStyle(OSCURO, 1);
+      puno.fillRoundedRect(7, 9, 26, 22, 6);
+      puno.fillStyle(PIEL, 1);
+      puno.fillRoundedRect(9, 11, 22, 18, 5);
+      puno.fillStyle(0xb8916b, 1);
+      for (let i = 0; i < 4; i++) puno.fillRect(11 + i * 5, 12, 3, 6);
+      puno.fillStyle(PIEL, 1);
+      puno.fillRoundedRect(26, 15, 8, 11, 3);   // el pulgar
+      puno.generateTexture('icono-puno', 40, 40);
+      puno.destroy();
+    }
 
     // el bate, en diagonal: tumbado se perdia en la esquina del icono
-    const bate = this.g();
-    bate.translateCanvas(20, 20);
-    bate.rotateCanvas(-Math.PI / 4);
-    bate.fillStyle(OSCURO, 1);
-    bate.fillRoundedRect(-17, -6, 34, 12, 5);
-    bate.fillStyle(MADERA, 1);
-    bate.fillRoundedRect(-4, -4, 20, 8, 4);    // la pala
-    bate.fillStyle(0x6b4a28, 1);
-    bate.fillRoundedRect(-15, -3, 12, 6, 3);   // el mango
-    bate.fillStyle(0xc99a5e, 1);
-    bate.fillRect(2, -2, 12, 2);               // brillo de la madera
-    bate.generateTexture('icono-bate', 40, 40);
-    bate.destroy();
+    if (!this.textures.exists('icono-bate')) {
+      const bate = this.g();
+      bate.translateCanvas(20, 20);
+      bate.rotateCanvas(-Math.PI / 4);
+      bate.fillStyle(OSCURO, 1);
+      bate.fillRoundedRect(-17, -6, 34, 12, 5);
+      bate.fillStyle(MADERA, 1);
+      bate.fillRoundedRect(-4, -4, 20, 8, 4);    // la pala
+      bate.fillStyle(0x6b4a28, 1);
+      bate.fillRoundedRect(-15, -3, 12, 6, 3);   // el mango
+      bate.fillStyle(0xc99a5e, 1);
+      bate.fillRect(2, -2, 12, 2);               // brillo de la madera
+      bate.generateTexture('icono-bate', 40, 40);
+      bate.destroy();
+    }
 
     // La pistola mira a la derecha, con la empuñadura inclinada hacia atras:
     // de perfil plano parecia un martillo.
-    const pis = this.g();
-    pis.fillStyle(OSCURO, 1);
-    pis.fillRect(4, 12, 32, 11);                       // contorno de la corredera
-    pis.fillTriangle(10, 21, 23, 21, 17, 36);          // contorno de la culata
-    pis.fillStyle(ACERO, 1);
-    pis.fillRect(6, 14, 28, 5);                        // corredera
-    pis.fillStyle(0x6f7681, 1);
-    pis.fillRect(6, 19, 21, 3);                        // armazon
-    pis.fillStyle(0x4a5058, 1);
-    pis.fillTriangle(12, 22, 21, 22, 16, 34);          // cachas
-    pis.fillStyle(0x2a2f36, 1);
-    pis.fillRect(13, 24, 6, 8);                        // textura de las cachas
-    pis.fillStyle(OSCURO, 1);
-    pis.fillRect(21, 21, 3, 5);                        // guardamonte
-    pis.fillStyle(0xc8ced6, 1);
-    pis.fillRect(31, 14, 3, 2);                        // punto de mira
-    pis.generateTexture('icono-pistola', 40, 40);
-    pis.destroy();
+    if (!this.textures.exists('icono-pistola')) {
+      const pis = this.g();
+      pis.fillStyle(OSCURO, 1);
+      pis.fillRect(4, 12, 32, 11);                       // contorno de la corredera
+      pis.fillTriangle(10, 21, 23, 21, 17, 36);          // contorno de la culata
+      pis.fillStyle(ACERO, 1);
+      pis.fillRect(6, 14, 28, 5);                        // corredera
+      pis.fillStyle(0x6f7681, 1);
+      pis.fillRect(6, 19, 21, 3);                        // armazon
+      pis.fillStyle(0x4a5058, 1);
+      pis.fillTriangle(12, 22, 21, 22, 16, 34);          // cachas
+      pis.fillStyle(0x2a2f36, 1);
+      pis.fillRect(13, 24, 6, 8);                        // textura de las cachas
+      pis.fillStyle(OSCURO, 1);
+      pis.fillRect(21, 21, 3, 5);                        // guardamonte
+      pis.fillStyle(0xc8ced6, 1);
+      pis.fillRect(31, 14, 3, 2);                        // punto de mira
+      pis.generateTexture('icono-pistola', 40, 40);
+      pis.destroy();
+    }
 
-    const esc = this.g();
-    esc.fillStyle(OSCURO, 1);
-    esc.fillRect(3, 15, 34, 8);
-    esc.fillRect(9, 21, 8, 12);
-    esc.fillStyle(ACERO, 1);
-    esc.fillRect(4, 16, 32, 4);               // los dos cañones
-    esc.fillStyle(0x3a4047, 1);
-    esc.fillRect(4, 20, 24, 2);
-    esc.fillStyle(MADERA, 1);
-    esc.fillRect(10, 22, 6, 10);              // culata de madera
-    esc.fillRect(24, 19, 9, 4);
-    esc.generateTexture('icono-escopeta', 40, 40);
-    esc.destroy();
+    if (!this.textures.exists('icono-escopeta')) {
+      const esc = this.g();
+      esc.fillStyle(OSCURO, 1);
+      esc.fillRect(3, 15, 34, 8);
+      esc.fillRect(9, 21, 8, 12);
+      esc.fillStyle(ACERO, 1);
+      esc.fillRect(4, 16, 32, 4);               // los dos cañones
+      esc.fillStyle(0x3a4047, 1);
+      esc.fillRect(4, 20, 24, 2);
+      esc.fillStyle(MADERA, 1);
+      esc.fillRect(10, 22, 6, 10);              // culata de madera
+      esc.fillRect(24, 19, 9, 4);
+      esc.generateTexture('icono-escopeta', 40, 40);
+      esc.destroy();
+    }
 
     // el corazon de la barra de salud
-    const cor = this.g();
-    const corazon = (g, cx, cy, r, color) => {
+    if (!this.textures.exists('hud-corazon')) {
+      const cor = this.g();
+      const corazon = (g, cx, cy, r, color) => {
       g.fillStyle(color, 1);
       g.fillCircle(cx - r * 0.45, cy - r * 0.25, r * 0.55);
       g.fillCircle(cx + r * 0.45, cy - r * 0.25, r * 0.55);
       g.fillTriangle(cx - r, cy, cx + r, cy, cx, cy + r * 1.05);
-    };
-    corazon(cor, 11, 10, 9.5, 0x3a0d10);
-    corazon(cor, 11, 10, 7.6, 0xd9384a);
-    corazon(cor, 10, 9, 3.4, 0xf49aa4);
-    cor.generateTexture('hud-corazon', 22, 22);
-    cor.destroy();
+      };
+      corazon(cor, 11, 10, 9.5, 0x3a0d10);
+      corazon(cor, 11, 10, 7.6, 0xd9384a);
+      corazon(cor, 10, 9, 3.4, 0xf49aa4);
+      cor.generateTexture('hud-corazon', 22, 22);
+      cor.destroy();
+    }
 
     // el rifle de asalto: cargador curvo y cañon largo
-    const rif = this.g();
-    rif.fillStyle(OSCURO, 1);
-    rif.fillRect(2, 14, 36, 8);
-    rif.fillRect(12, 21, 8, 9);                // cargador
-    rif.fillRect(24, 21, 7, 11);               // empuñadura
-    rif.fillStyle(ACERO, 1);
-    rif.fillRect(4, 15, 33, 4);
-    rif.fillStyle(0x4a5058, 1);
-    rif.fillRect(13, 22, 6, 8);
-    rif.fillRect(25, 22, 5, 9);
-    rif.fillStyle(0x2a2f36, 1);
-    rif.fillRect(30, 13, 6, 3);                // culata
-    rif.fillStyle(0xc8ced6, 1);
-    rif.fillRect(3, 13, 3, 2);                 // punto de mira
-    rif.generateTexture('icono-rifle', 40, 40);
-    rif.destroy();
+    if (!this.textures.exists('icono-rifle')) {
+      const rif = this.g();
+      rif.fillStyle(OSCURO, 1);
+      rif.fillRect(2, 14, 36, 8);
+      rif.fillRect(12, 21, 8, 9);                // cargador
+      rif.fillRect(24, 21, 7, 11);               // empuñadura
+      rif.fillStyle(ACERO, 1);
+      rif.fillRect(4, 15, 33, 4);
+      rif.fillStyle(0x4a5058, 1);
+      rif.fillRect(13, 22, 6, 8);
+      rif.fillRect(25, 22, 5, 9);
+      rif.fillStyle(0x2a2f36, 1);
+      rif.fillRect(30, 13, 6, 3);                // culata
+      rif.fillStyle(0xc8ced6, 1);
+      rif.fillRect(3, 13, 3, 2);                 // punto de mira
+      rif.generateTexture('icono-rifle', 40, 40);
+      rif.destroy();
+    }
 
     // el de mira: cañon larguisimo y visor encima
-    const sni = this.g();
-    sni.fillStyle(OSCURO, 1);
-    sni.fillRect(1, 16, 38, 7);
-    sni.fillRect(22, 22, 7, 12);               // empuñadura
-    sni.fillRect(11, 9, 16, 6);                // visor
-    sni.fillStyle(ACERO, 1);
-    sni.fillRect(2, 17, 36, 3);
-    sni.fillStyle(0x6f7681, 1);
-    sni.fillRect(13, 10, 12, 4);
-    sni.fillStyle(0x3a4047, 1);
-    sni.fillRect(23, 23, 5, 10);
-    sni.fillRect(29, 15, 9, 5);                // culata
-    sni.fillStyle(0xc8ced6, 1);
-    sni.fillRect(11, 11, 2, 2);                // lente
-    sni.generateTexture('icono-sniper', 40, 40);
-    sni.destroy();
+    if (!this.textures.exists('icono-sniper')) {
+      const sni = this.g();
+      sni.fillStyle(OSCURO, 1);
+      sni.fillRect(1, 16, 38, 7);
+      sni.fillRect(22, 22, 7, 12);               // empuñadura
+      sni.fillRect(11, 9, 16, 6);                // visor
+      sni.fillStyle(ACERO, 1);
+      sni.fillRect(2, 17, 36, 3);
+      sni.fillStyle(0x6f7681, 1);
+      sni.fillRect(13, 10, 12, 4);
+      sni.fillStyle(0x3a4047, 1);
+      sni.fillRect(23, 23, 5, 10);
+      sni.fillRect(29, 15, 9, 5);                // culata
+      sni.fillStyle(0xc8ced6, 1);
+      sni.fillRect(11, 11, 2, 2);                // lente
+      sni.generateTexture('icono-sniper', 40, 40);
+      sni.destroy();
+    }
 
     // la estrella de la busca, de cinco puntas como las de siempre
     const est = this.g();
@@ -426,17 +459,19 @@ export class BootScene extends Phaser.Scene {
     est.destroy();
 
     // el escudo del chaleco
-    const esd = this.g();
-    esd.fillStyle(0x23272d, 1);
-    esd.fillRoundedRect(2, 2, 18, 14, 3);
-    esd.fillTriangle(2, 14, 20, 14, 11, 21);
-    esd.fillStyle(0xbfc6d0, 1);
-    esd.fillRoundedRect(4, 4, 14, 11, 2);
-    esd.fillTriangle(4, 13, 18, 13, 11, 18);
-    esd.fillStyle(0x7d848d, 1);
-    esd.fillRect(10, 5, 2, 11);
-    esd.generateTexture('hud-escudo', 22, 22);
-    esd.destroy();
+    if (!this.textures.exists('hud-escudo')) {
+      const esd = this.g();
+      esd.fillStyle(0x23272d, 1);
+      esd.fillRoundedRect(2, 2, 18, 14, 3);
+      esd.fillTriangle(2, 14, 20, 14, 11, 21);
+      esd.fillStyle(0xbfc6d0, 1);
+      esd.fillRoundedRect(4, 4, 14, 11, 2);
+      esd.fillTriangle(4, 13, 18, 13, 11, 18);
+      esd.fillStyle(0x7d848d, 1);
+      esd.fillRect(10, 5, 2, 11);
+      esd.generateTexture('hud-escudo', 22, 22);
+      esd.destroy();
+    }
   }
 
   makePedestrians() {

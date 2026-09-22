@@ -147,8 +147,11 @@ export class UIScene extends Phaser.Scene {
     this.puntosTienda = [];
     for (const t of city.shops ? city.shops.tiendas : []) {
       const q = this.toMinimap(t.x, t.y);
-      const punto = this.add.image(q.x, q.y, 'px')
-        .setDisplaySize(7, 7).setTint(0x7fd08a).setVisible(GameState.conoce(t.clave));
+      const conIcono = this.textures.exists('marca-armeria');
+      const punto = this.add.image(q.x, q.y, conIcono ? 'marca-armeria' : 'px')
+        .setDisplaySize(conIcono ? 13 : 7, conIcono ? 13 : 7)
+        .setVisible(GameState.conoce(t.clave));
+      if (!conIcono) punto.setTint(0x7fd08a);
       punto.clave = t.clave;
       this.puntosTienda.push(punto);
       this.mapaMundo.add(punto);
@@ -163,9 +166,11 @@ export class UIScene extends Phaser.Scene {
     }
     if (city.hideoutDoor) {
       const q = this.toMinimap(city.hideoutDoor.x, city.hideoutDoor.y);
-      this.mapaMundo.add(
-        this.add.image(q.x, q.y, 'px').setDisplaySize(8, 8).setTint(0xe8b54a).setAlpha(0.9)
-      );
+      const casa = this.textures.exists('marca-casa');
+      const marca = this.add.image(q.x, q.y, casa ? 'marca-casa' : 'px')
+        .setDisplaySize(casa ? 15 : 8, casa ? 15 : 8);
+      if (!casa) marca.setTint(0xe8b54a).setAlpha(0.9);
+      this.mapaMundo.add(marca);
     }
 
     this.add.text(this.mapX + this.mapaTam - 2, this.mapY - 17, 'M mapa', {
@@ -308,14 +313,18 @@ export class UIScene extends Phaser.Scene {
 
     const contactos = d.contactos || [];
     while (this.mapContactos.length < contactos.length) {
-      const punto = this.add.image(0, 0, 'px').setDisplaySize(8, 8).setTint(0xffffff);
+      const trabajo = this.textures.exists('marca-trabajo');
+      const punto = this.add.image(0, 0, trabajo ? 'marca-trabajo' : 'px')
+        .setDisplaySize(trabajo ? 13 : 8, trabajo ? 13 : 8);
+      punto.conIcono = trabajo;
       this.mapContactos.push(punto);
       this.mapaMundo.add(punto);
     }
     this.mapContactos.forEach((punto, i) => {
       if (i < contactos.length) {
         const q = this.toMinimap(contactos[i].x, contactos[i].y);
-        punto.setPosition(q.x, q.y).setTint(contactos[i].color).setVisible(true);
+        punto.setPosition(q.x, q.y).setVisible(true);
+        if (!punto.conIcono) punto.setTint(contactos[i].color);
       } else {
         punto.setVisible(false);
       }
