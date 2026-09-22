@@ -28,6 +28,23 @@ const CHALECO_ESCONDIDO = 60;   // no llena el chaleco: para eso esta la tienda
 const REAPARECE_CHALECO = 300;     // se coge al pasarle por encima
 const ALCANCE_MAQUINA = 40;     // a esta hay que acercarse y pulsar E
 
+// LAS ARMAS REPARTIDAS POR LA CIUDAD.
+//
+// Cuanto mejor es el arma, menos hay y mas separadas: el puño americano
+// aparece en cuatro callejones y el rifle en uno solo, en la otra punta. Asi
+// encontrar el rifle es un acontecimiento y no un tramite.
+//
+// La municion que traen es corta a proposito: son para salir del paso, no
+// para no volver a pisar la armeria.
+const REAPARECE_ARMA = 210;     // segundos hasta que vuelve a estar
+const ARMAS_SEMBRADAS = [
+  { clave: 'americano', balas: 0, cuantas: 5, separacion: 1400 },
+  { clave: 'bate', balas: 0, cuantas: 4, separacion: 1800 },
+  { clave: 'pistola', balas: 18, cuantas: 3, separacion: 2600 },
+  { clave: 'escopeta', balas: 8, cuantas: 2, separacion: 3400 },
+  { clave: 'rifle', balas: 30, cuantas: 1, separacion: 4000 },
+];
+
 export const CONSUMICIONES = [
   { clave: 'refresco', nombre: 'Un refresco', precio: 3, vida: 10, grasa: 0.8 },
   { clave: 'bocata', nombre: 'Un bocadillo', precio: 7, vida: 25, grasa: 2 },
@@ -43,9 +60,105 @@ export class PickupSystem {
     this.cercaDeMaquina = null;
 
     this.chalecos = [];
+    this.armasFijas = [];
     this.sembrarCorazones();
     this.esconderChalecos();
     this.plantarMaquinas();
+    this.sembrarArmas();
+  }
+
+  // ARMAS REPARTIDAS POR LA CIUDAD, en sitios fijos y que REAPARECEN.
+  //
+  // No son lo mismo que el hierro que suelta uno al caer (eso dura 40
+  // segundos y se acabo): estas son de las de toda la vida, siempre en el
+  // mismo rincon, para que merezca la pena aprenderse la ciudad y para tener
+  // por donde empezar sin dinero.
+  //
+  // Van en callejones a proposito: en mitad de la avenida las verias desde el
+  // coche y no habria que buscar nada.
+  sembrarArmas() {
+    const sitios = this.puntosDeCallejon();
+    Phaser.Utils.Array.Shuffle(sitios);
+
+    // OJO CON LA SEPARACION: es ENTRE ARMAS DEL MISMO TIPO. Midiendola contra
+    // todas las ya puestas, para cuando le tocaba a la escopeta (3.400 px de
+    // separacion) no quedaba un solo callejon libre y se quedaba fuera: la
+    // primera version sembro 5 puños, 4 bates, 2 pistolas y NINGUNA escopeta
+    // ni rifle. Dos armas distintas si pueden estar cerca, solo se les pide
+    // no pisarse.
+    const todas = [];
+    for (const { clave, balas, cuantas, separacion } of ARMAS_SEMBRADAS) {
+      const mismas = [];
+      let quedan = cuantas;
+      for (const s of sitios) {
+        if (quedan <= 0) break;
+        if (mismas.some((p) => Phaser.Math.Distance.Between(p.x, p.y, s.x, s.y) < separacion)) {
+          continue;
+        }
+        if (todas.some((p) => Phaser.Math.Distance.Between(p.x, p.y, s.x, s.y) < 90)) {
+          continue;
+        }
+        mismas.push(s);
+        todas.push(s);
+        this.armasFijas.push(this.crearArmaFija(s.x, s.y, clave, balas));
+        quedan--;
+      }
+      if (quedan > 0) {
+        // si la ciudad no da para tanta separacion, mejor ponerlas mas juntas
+        // que dejar al jugador sin escopeta en todo el mapa
+        for (const s of sitios) {
+          if (quedan <= 0) break;
+          if (todas.some((p) => Phaser.Math.Distance.Between(p.x, p.y, s.x, s.y) < separacion * 0.35)) {
+            continue;
+          }
+          todas.push(s);
+          this.armasFijas.push(this.crearArmaFija(s.x, s.y, clave, balas));
+          quedan--;
+        }
+      }
+    }
+  }
+
+  crearArmaFija(x, y, clave, balas) {
+    const icono = this.scene.add.image(x, y, `icono-${clave}`)
+      .setDisplaySize(22, 22).setDepth(y + 1);
+    const brillo = this.scene.add.image(x, y, 'lamp')
+      .setDisplaySize(52, 52).setTint(0x8fb8e8)
+      .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.28).setDepth(3);
+    this.scene.tweens.add({
+      targets: icono, scale: { from: icono.scale * 0.88, to: icono.scale * 1.12 },
+      duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+    });
+    return { x, y, clave, balas, icono, brillo, espera: 0 };
+  }
+
+  recogerArmasFijas(dt, player, enCoche) {
+    for (const a of this.armasFijas) {
+      if (a.espera > 0) {
+        a.espera -= dt;
+        if (a.espera <= 0) {
+          a.icono.setVisible(true);
+          a.brillo.setVisible(true);
+        }
+        continue;
+      }
+      if (enCoche) continue;
+      if (Phaser.Math.Distance.Between(a.x, a.y, player.x, player.y) > 26) continue;
+
+      GameState.darArma(a.clave, a.balas);
+      GameState.armaActual = a.clave;
+      Audio.pickup();
+      EventBus.emit(EVT.NOTIFY, {
+        text: a.balas > 0
+          ? `${ARMAS[a.clave].nombre} · ${a.balas} balas`
+          : ARMAS[a.clave].nombre,
+        tone: 'objective',
+      });
+      // no se borra: vuelve a estar ahi dentro de un rato
+      a.espera = REAPARECE_ARMA;
+      a.icono.setVisible(false);
+      a.brillo.setVisible(false);
+    }
   }
 
   // ---------- sembrar ----------
@@ -200,6 +313,7 @@ export class PickupSystem {
 
   update(dt, player, enCoche) {
     this.recogerArmas(dt, player, enCoche);
+    this.recogerArmasFijas(dt, player, enCoche);
     for (const c of this.corazones) {
       if (c.espera > 0) {
         c.espera -= dt;

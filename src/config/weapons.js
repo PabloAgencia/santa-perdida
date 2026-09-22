@@ -32,6 +32,23 @@ export const ARMAS = {
     municionMax: 0,
     sonido: 'golpe',
   },
+  // EL PUÑO AMERICANO: el escalon que faltaba entre los puños y el bate.
+  // Pega casi el doble que a mano limpia y casi igual de rapido, pero hay que
+  // estar igual de pegado. Es lo primero que encuentras por la calle, asi que
+  // le da sentido a rebuscar por los callejones antes de tener un hierro.
+  americano: {
+    dosManos: false,
+    clave: 'americano',
+    nombre: 'Puño americano',
+    cuerpo: true,
+    alcance: 28,
+    dano: 19,
+    cadencia: 0.38,
+    dispersion: 0,
+    precio: 60,
+    municionMax: 0,
+    sonido: 'golpe',
+  },
   bate: {
     dosManos: true,
     clave: 'bate',
@@ -120,7 +137,8 @@ export const ARMAS = {
   },
 };
 
-export const ORDEN_ARMAS = ['puno', 'bate', 'pistola', 'escopeta', 'rifle', 'sniper'];
+// El orden en que se cambia con TAB: de menos a mas, como se consiguen.
+export const ORDEN_ARMAS = ['puno', 'americano', 'bate', 'pistola', 'escopeta', 'rifle', 'sniper'];
 
 // Cuanto aguanta cada uno antes de caer. El jugador tiene su propia vida.
 export const VIDA = {

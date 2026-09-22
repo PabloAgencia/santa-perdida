@@ -357,6 +357,28 @@ export class BootScene extends Phaser.Scene {
       puno.destroy();
     }
 
+    // El puño americano: el mismo puño pero con cuatro anillas de metal en
+    // los nudillos. Se distingue del puño a pelo de un vistazo, que es lo
+    // unico que tiene que conseguir un icono de 40 px.
+    if (!this.textures.exists('icono-americano')) {
+      const am = this.g();
+      am.fillStyle(OSCURO, 1);
+      am.fillRoundedRect(7, 9, 26, 22, 6);
+      am.fillStyle(PIEL, 1);
+      am.fillRoundedRect(9, 11, 22, 18, 5);
+      // la barra de metal que cruza los nudillos
+      am.fillStyle(0x6e7480, 1);
+      am.fillRoundedRect(9, 10, 22, 9, 3);
+      am.fillStyle(0xb9c0cc, 1);
+      for (let i = 0; i < 4; i++) am.fillCircle(12.5 + i * 5.4, 14.5, 2.6);
+      am.fillStyle(0x8a919c, 1);
+      for (let i = 0; i < 4; i++) am.fillCircle(12.5 + i * 5.4, 15.4, 1.5);
+      am.fillStyle(PIEL, 1);
+      am.fillRoundedRect(26, 17, 8, 10, 3);   // el pulgar
+      am.generateTexture('icono-americano', 40, 40);
+      am.destroy();
+    }
+
     // el bate, en diagonal: tumbado se perdia en la esquina del icono
     if (!this.textures.exists('icono-bate')) {
       const bate = this.g();
