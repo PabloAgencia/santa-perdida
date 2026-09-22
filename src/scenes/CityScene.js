@@ -1381,7 +1381,9 @@ export class CityScene extends Phaser.Scene {
       EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
       return true;
     }
-    this.abrirInterior({ clave: piso.clave, nombre: piso.nombre, plazas: piso.plazas });
+    this.abrirInterior({
+      clave: piso.clave, nombre: piso.nombre, plazas: piso.plazas, lamina: piso.lamina,
+    });
     return true;
   }
 

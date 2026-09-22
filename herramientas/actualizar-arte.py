@@ -35,7 +35,13 @@ ESPERADOS = {
     'portada': 'la pantalla de inicio',
     'interior-escondite': 'el escondite',
     'interior-armeria': 'las armerias',
-    'interior-piso': 'los pisos comprados',
+    'interior-piso-altillo': 'el altillo         1.200 $',
+    'interior-piso-residencial': 'Residencial        3.500 $',
+    'interior-piso-estudio': 'el estudio         5.000 $',
+    'interior-piso-nave': 'la nave            7.500 $',
+    'interior-piso-almacen': 'el almacen        11.000 $',
+    'interior-piso-centro': 'el del Centro     16.000 $',
+    'interior-piso': 'generica de piso (opcional, de reserva)',
 }
 
 

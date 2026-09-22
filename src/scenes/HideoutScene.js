@@ -24,6 +24,7 @@ export class HideoutScene extends Phaser.Scene {
       clave: datos?.clave ?? 'escondite',
       nombre: datos?.nombre ?? 'TU ESCONDITE',
       plazas: datos?.plazas ?? 0,
+      lamina: datos?.lamina ?? null,
     };
   }
 
@@ -47,8 +48,15 @@ export class HideoutScene extends Phaser.Scene {
     // Los sitios donde se interactua (cama, guardado, puerta) NO se mueven:
     // la ilustracion se pide con los muebles en esos mismos sitios. Asi la
     // imagen no puede descolocar el juego, solo vestirlo.
-    const laminaDe = this.sitio.clave === 'escondite' ? 'interior-escondite' : 'interior-piso';
-    const conLamina = this.textures.exists(laminaDe);
+    // Se prueban por orden y se usa la primera que exista: la del sitio
+    // concreto (cada categoria de piso tiene la suya), la generica de piso, y
+    // si no hay nada, el dibujo por codigo. Asi se pueden ir metiendo de una
+    // en una sin que falte ninguna ni se rompa nada.
+    const candidatas = this.sitio.clave === 'escondite'
+      ? ['interior-escondite']
+      : [this.sitio.lamina, 'interior-piso'];
+    const laminaDe = candidatas.find((c) => c && this.textures.exists(c));
+    const conLamina = !!laminaDe;
 
     if (conLamina) {
       this.add.image(s.x, s.y, laminaDe).setOrigin(0, 0).setDisplaySize(s.w, s.h);
