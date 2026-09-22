@@ -1,0 +1,28 @@
+Santa Perdida
+Copyright (c) 2026 Pablo. Todos los derechos reservados.
+
+Este codigo, su arte, sus textos y su diseño son obra original y propiedad de
+su autor. No se concede ninguna licencia de uso, copia, modificacion,
+distribucion ni explotacion, ni total ni parcial, por el hecho de que el
+codigo sea accesible.
+
+En particular, y sin que la lista sea limitativa, NO se autoriza:
+  - copiar o reutilizar el codigo o partes de el en otro proyecto;
+  - redistribuir el juego, entero o en parte, con o sin cambios;
+  - publicarlo en tiendas, portales de juegos o agregadores;
+  - usarlo con fines comerciales de cualquier tipo.
+
+Se permite unicamente jugar a la version publicada por el autor.
+
+Para cualquier otro uso hace falta permiso por escrito del autor.
+
+--------------------------------------------------------------------------------
+NOTA SOBRE LO QUE NO ES MIO
+--------------------------------------------------------------------------------
+  - Phaser (carpeta vendor/) es de Phaser Studio Inc. y se usa bajo su
+    licencia MIT.
+  - La tipografia Pricedown es de Ray Larabie (Typodermic Fonts).
+  - Los efectos de sonido de audio/ proceden de fuentes con licencia libre
+    para uso comercial.
+  Nada de eso queda cubierto por el copyright de arriba, que se refiere a la
+  obra original: el codigo del juego, su arte, su ciudad y sus textos.
