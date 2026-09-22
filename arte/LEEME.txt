@@ -47,3 +47,5 @@ SI SE BORRA TODO ESTO
 
 DONDE ESTA EL PROMPT PARA GENERAR UNA
   En PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU".
+
+(Tocado el 22-sep-2026 para forzar que Cloudflare suba esta carpeta.)
