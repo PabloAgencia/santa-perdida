@@ -258,6 +258,102 @@ reads at a small size. Plain flat magenta background (#FF00FF), no shadow, no
 text, no watermark, no border, the figure centered and filling most of the
 image.
 
+--------------------------------------------------------------------------------
+  peaton-7.png
+--------------------------------------------------------------------------------
+Top-down sprite of a young woman walking down the street, seen from DIRECTLY
+ABOVE at a perfect 90 degree overhead angle, like a security camera on the
+ceiling looking straight down. Only the top of the head, the shoulders and the
+tips of the ankle boots are visible. NO face, NO perspective, NO tilt. This is
+NOT a front view and NOT a back view: the camera is on the ceiling pointing
+straight down at the floor. Standing still, facing RIGHT, arms loose, a small
+handbag hanging from one shoulder. Blue denim jacket, black leggings, long
+blonde ponytail seen from above. Pixel art, chunky readable pixels, dark muted
+night-time palette, strong dark outline around the silhouette so it reads at a
+small size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-8.png
+--------------------------------------------------------------------------------
+Top-down sprite of a man walking home at night, seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+trainers are visible. NO face, NO perspective, NO tilt. This is NOT a front
+view and NOT a back view: the camera is on the ceiling pointing straight down
+at the floor. Standing still, facing RIGHT, both hands in his pockets. Navy
+blue tracksuit, dark grey woollen beanie hat seen from above as a round shape.
+Pixel art, chunky readable pixels, dark muted night-time palette, strong dark
+outline around the silhouette so it reads at a small size. Plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border, the figure
+centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-9.png
+--------------------------------------------------------------------------------
+Top-down sprite of a food delivery courier on foot, seen from DIRECTLY ABOVE at
+a perfect 90 degree overhead angle, like a security camera on the ceiling
+looking straight down. Only the top of the head, the shoulders and the tips of
+the trainers are visible. NO face, NO perspective, NO tilt. This is NOT a front
+view and NOT a back view: the camera is on the ceiling pointing straight down
+at the floor. Standing still, facing RIGHT, arms forward holding the straps of
+his backpack. Black jacket and a big square insulated delivery backpack on his
+back, bright red, clearly visible from above as a large red square. Pixel art,
+chunky readable pixels, dark muted night-time palette, strong dark outline
+around the silhouette so it reads at a small size. Plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border, the figure
+centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-10.png
+--------------------------------------------------------------------------------
+Top-down sprite of a nurse coming off her shift, seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+white clogs are visible. NO face, NO perspective, NO tilt. This is NOT a front
+view and NOT a back view: the camera is on the ceiling pointing straight down
+at the floor. Standing still, facing RIGHT, one hand holding a coffee cup.
+Light blue medical scrubs under an open white coat, dark hair in a bun seen
+from above. Pixel art, chunky readable pixels, dark muted night-time palette,
+strong dark outline around the silhouette so it reads at a small size. Plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no border,
+the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-11.png
+--------------------------------------------------------------------------------
+Top-down sprite of an elderly man out for a walk, seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like a security camera on the ceiling looking
+straight down. Only the top of the head, the shoulders and the tips of the
+shoes are visible. NO face, NO perspective, NO tilt. This is NOT a front view
+and NOT a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT, one hand resting on a walking stick. Long
+beige overcoat, brown flat cap seen from above as a round shape, dark trousers.
+Pixel art, chunky readable pixels, dark muted night-time palette, strong dark
+outline around the silhouette so it reads at a small size. Plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border, the figure
+centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-12.png
+--------------------------------------------------------------------------------
+Top-down sprite of a woman on her way to a night out, seen from DIRECTLY ABOVE
+at a perfect 90 degree overhead angle, like a security camera on the ceiling
+looking straight down. Only the top of the head, the shoulders and the tips of
+the high heels are visible. NO face, NO perspective, NO tilt. This is NOT a
+front view and NOT a back view: the camera is on the ceiling pointing straight
+down at the floor. Standing still, facing RIGHT, arms loose, a tiny clutch bag
+in one hand. Short dark burgundy dress, long black hair seen from above, bare
+shoulders. Pixel art, chunky readable pixels, dark muted night-time palette,
+strong dark outline around the silhouette so it reads at a small size. Plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no border,
+the figure centered and filling most of the image.
+
 ################################################################################
 #  ICONOS
 ################################################################################

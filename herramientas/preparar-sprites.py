@@ -320,6 +320,12 @@ PERSONAJES = {
     'peaton-4': 'ped-3',
     'peaton-5': 'ped-4',
     'peaton-6': 'ped-5',
+    'peaton-7': 'ped-6',
+    'peaton-8': 'ped-7',
+    'peaton-9': 'ped-8',
+    'peaton-10': 'ped-9',
+    'peaton-11': 'ped-10',
+    'peaton-12': 'ped-11',
 }
 
 # El lienzo es de 32 px, pero la persona ocupa 23: es lo que mide la que
