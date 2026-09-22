@@ -14,6 +14,11 @@ export const EVT = {
   JOB_DONE: 'job:done',
   JOB_FAILED: 'job:failed',
 
+  // comprar algo que se queda en el mundo: pisos ahora, locales despues
+  PROPERTY_BOUGHT: 'property:bought',
+  GARAGE_STORED: 'garage:stored',
+  GARAGE_TAKEN: 'garage:taken',
+
   VEHICLE_ENTERED: 'vehicle:entered',
   VEHICLE_EXITED: 'vehicle:exited',
   VEHICLE_CRASHED: 'vehicle:crashed',

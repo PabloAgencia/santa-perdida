@@ -49,6 +49,13 @@ class GameStateClass {
     // una ciudad de la que lo sabes todo desde el minuto uno no invita a
     // recorrerla.
     this.descubiertos = {};
+    // TODO LO QUE SE COMPRA Y SE QUEDA EN EL MUNDO: pisos ahora, locales
+    // despues. Va en un solo sitio y con una sola forma a proposito. Si los
+    // pisos se guardasen aqui y los negocios en su sistema, acabariamos con
+    // dos maneras distintas de "ser dueño de algo" y dos maneras de
+    // guardarlo, que es justo como se pudren estos proyectos.
+    //   clave -> { tipo, precio, nivel, plazas, garaje: [], compradaEl }
+    this.propiedades = {};
     this.flags = {};
   }
 
@@ -62,6 +69,65 @@ class GameStateClass {
 
   conoce(clave) {
     return !!this.descubiertos[clave];
+  }
+
+  // ---------- propiedades ----------
+
+  esDueno(clave) {
+    return clave in this.propiedades;
+  }
+
+  propiedad(clave) {
+    return this.propiedades[clave] ?? null;
+  }
+
+  // todas las de un tipo, con su clave dentro para no tener que ir por pares
+  propiedadesDe(tipo) {
+    return Object.entries(this.propiedades)
+      .filter(([, p]) => p.tipo === tipo)
+      .map(([clave, p]) => ({ clave, ...p }));
+  }
+
+  // Compra. Devuelve false si ya era tuya o si no llega el dinero; el aviso
+  // de "no te llega" lo lanza spendMoney, asi que aqui no hay que repetirlo.
+  comprarPropiedad(clave, { tipo, precio, plazas = 0 }) {
+    if (this.esDueno(clave)) return false;
+    if (!this.spendMoney(precio, `propiedad:${clave}`)) return false;
+    this.propiedades[clave] = {
+      tipo, precio, plazas, nivel: 0, garaje: [], compradaEl: Date.now(),
+    };
+    EventBus.emit(EVT.PROPERTY_BOUGHT, { clave, tipo, precio });
+    return true;
+  }
+
+  // ---------- el garaje de cada propiedad ----------
+
+  plazasLibres(clave) {
+    const p = this.propiedad(clave);
+    if (!p) return 0;
+    return Math.max(0, p.plazas - p.garaje.length);
+  }
+
+  // `coche` es un objeto plano con lo que haga falta para volver a montarlo
+  // (tipo, color, vida...). Aqui no se mira que trae: el garaje guarda lo que
+  // le den y quien lo saca sabe que hacer con ello.
+  guardarCoche(clave, coche) {
+    if (this.plazasLibres(clave) <= 0) return false;
+    this.propiedades[clave].garaje.push(coche);
+    EventBus.emit(EVT.GARAGE_STORED, { clave, coche });
+    return true;
+  }
+
+  cochesEn(clave) {
+    return this.propiedad(clave)?.garaje ?? [];
+  }
+
+  sacarCoche(clave, indice) {
+    const p = this.propiedad(clave);
+    if (!p || indice < 0 || indice >= p.garaje.length) return null;
+    const [coche] = p.garaje.splice(indice, 1);
+    EventBus.emit(EVT.GARAGE_TAKEN, { clave, coche });
+    return coche;
   }
 
   // ---------- armas ----------
@@ -266,6 +332,7 @@ class GameStateClass {
       armaActual: this.armaActual,
       blindaje: this.blindaje,
       descubiertos: this.descubiertos,
+      propiedades: this.propiedades,
       flags: this.flags,
       savedAt: Date.now(),
     };
@@ -289,6 +356,14 @@ class GameStateClass {
     this.armaActual = data.armaActual ?? 'puno';
     this.blindaje = data.blindaje ?? 0;
     this.descubiertos = data.descubiertos ?? {};
+    // partidas de antes de que existieran las propiedades: sin nada comprado
+    this.propiedades = data.propiedades ?? {};
+    // y por si una partida vieja trae una propiedad a medio formar, que no
+    // reviente el primero que llame a plazasLibres()
+    for (const p of Object.values(this.propiedades)) {
+      if (!Array.isArray(p.garaje)) p.garaje = [];
+      if (typeof p.plazas !== 'number') p.plazas = 0;
+    }
     this.flags = data.flags ?? {};
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;
