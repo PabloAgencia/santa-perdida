@@ -1466,6 +1466,92 @@ VIGESIMOQUINTA TANDA (22-sep-2026): el sonido de los menus, esta vez MEDIDO
      (Entro por error en el commit 837cd30 porque se hizo `git add -A` sin
      mirar la lista. Sacado en el siguiente.)
 
+
+
+================================================================================
+VIGESIMOSEXTA TANDA (22-sep-2026): el personaje mueve los brazos de verdad
+================================================================================
+
+  LO QUE HABIA
+     Cuatro texturas con los brazos y las piernas YA DIBUJADOS en cuatro
+     posiciones. Eso da un andar decente y nada mas: no puede abrir mas el
+     brazo al correr, ni estirarlo al apuntar, ni seguir moviendose mientras
+     el cuerpo gira. Y con las imagenes de IA puestas ni siquiera eso: la
+     foto es una pose fija, asi que el personaje no movia nada.
+
+  LO QUE HAY AHORA
+     El cuerpo es un CONTENEDOR con cinco piezas, y en este orden (lo de
+     antes queda detras):
+        pierna izq · pierna der · brazo izq · brazo der · tronco
+     El tronco tapa la parte de dentro de las extremidades y por fuera asoma
+     lo que se mueve, que es el mismo orden en que lo dibujaba a mano
+     personArt.js. Las piezas se recolocan EN CADA FOTOGRAMA.
+
+     La camara sigue a `player.sprite`, que ahora es el contenedor. Un
+     contenedor tiene x e y como cualquier objeto, asi que startFollow le
+     vale igual: no hubo que tocar CityScene.
+
+  EL ERROR QUE COSTO TRES INTENTOS: GIRAR EL BRAZO
+     La primera version hacia pivotar el brazo sobre el hombro, 35 grados al
+     correr. Visto desde arriba eso NO es andar: el brazo se separa del
+     cuerpo y parece que el personaje hace aspavientos, con la mano flotando
+     suelta a un lado.
+     Desde arriba, un brazo al andar va ADELANTE Y ATRAS. Se desliza por el
+     eje del cuerpo. El giro que lleva ahora son 0,14 radianes de adorno,
+     para que no parezca una pieza corriendo por un rail.
+     Lo vio la captura, no el codigo: por eso hay que mirar las cosas.
+
+  LA MANO OCUPABA UN TERCIO DEL BRAZO
+     Un brazo aqui mide 9 x 5 PIXELES. Con la mano a radio 1,8 y su aro
+     oscuro alrededor, el mapa de la textura salia asi:
+          .#ooo####        # contorno   o manga   M mano
+          #oooooMMo
+          oooo#MMMo
+          #oooooMM#
+          .#ooo####
+     Un tercio del brazo era mano, y desde arriba se veia un cuadro de color
+     carne flotando. Ahora la mano son dos pixeles en la punta y sin aro:
+          .#ooooo#.
+          #ooooooo#
+          ooooooMMo
+          #ooooooo#
+          .#ooooo#.
+
+  EL COLOR SE SACA DEL PROPIO SPRITE
+     El cuerpo puede ser el dibujo por codigo o una de las tres fotos de IA
+     (normal, gordo, fuerte), y cada una tiene su chaqueta. Con el color
+     puesto a mano, al engordar los brazos se quedaban del color anterior.
+     `colorDelCuerpo()` muestrea la mitad delantera del tronco, ignora los
+     transparentes y los muy oscuros (el contorno), agrupa los tonos
+     parecidos y se queda con el que manda. Medido con la foto del jugador:
+     devuelve #4b5a47, y los pixeles del tronco son #4c5b48 y #4c5c49.
+     El brazo va un 28% MAS CLARO que el tronco: del mismo tono se confundia
+     con el cuerpo, y mas oscuro se lo comia el contorno.
+
+  OTRAS DOS COSAS QUE SE NOTAN
+     - El contorno de la extremidad se bajo a 0,55 px por lado. Con 0,9, en
+       una pieza de 5 px de alto el relleno se quedaba en 3 y el brazo se
+       veia casi negro: una pata de insecto, no un brazo.
+     - Al pararse el vaiven NO se corta en seco: se apaga en medio segundo y
+       el brazo vuelve al hombro. Cortandolo de golpe se quedaba tieso a
+       media zancada. COMPROBADO: tras parar, el brazo queda exactamente en
+       el hombro (-2,2) y el vaiven en 0.
+
+  A GUSTO DE PABLO (src/entities/Player.js, arriba del todo)
+     ANDANDO 2,4 y CORRIENDO 3,8 son los pixeles que recorre el brazo. Si se
+     despega del cuerpo y parece una pieza flotando, bajarlos; si no se nota
+     que anda, subirlos. Esto hay que verlo EN MOVIMIENTO: en una captura
+     quieta no se juzga.
+
+  LO QUE NO SE HA TOCADO
+     Peatones y policias siguen con las cuatro texturas de siempre. Son
+     catorce en pantalla y el jugador es uno: se empieza por donde se mira.
+     Si esto gusta, se lleva a los demas.
+
+  PENDIENTE DE ESTE BLOQUE: el brazo estirado al apuntar (ahora que las
+  piezas se mueven, es poner una pose en vez de un ciclo) y el ragdoll al
+  morir con Matter.js.
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================

@@ -14,6 +14,11 @@ export function drawPerson(g, opts, fase) {
     largo = 14,
     cx = 14,
     cy = 14,
+    // Con `soloTronco` se dibuja el cuerpo SIN brazos ni piernas. Lo usa el
+    // jugador, que desde la vigesimosexta tanda lleva las extremidades como
+    // piezas sueltas que se mueven de verdad en vez de cocidas en cuatro
+    // fotogramas. Si se dibujaran aqui tambien, tendria cuatro brazos.
+    soloTronco = false,
   } = opts;
 
   // fase va de 0 a 1; el seno da el vaiven
@@ -23,33 +28,35 @@ export function drawPerson(g, opts, fase) {
 
   const oscuro = 0x0a0c10;
 
-  // PIERNAS: salen por detras del tronco, una adelantada y otra atrasada
-  const piernaY = ancho * 0.24;
-  const piernaX = cx - largo * 0.46;
-  g.fillStyle(oscuro, 1);
-  g.fillRect(piernaX - 5 + pierna, cy - piernaY - 2.6, 9, 5.2);
-  g.fillRect(piernaX - 5 - pierna, cy + piernaY - 2.6, 9, 5.2);
-  g.fillStyle(shadeLocal(chaqueta, 0.5), 1);
-  g.fillRect(piernaX - 4.2 + pierna, cy - piernaY - 2, 8, 4);
-  g.fillRect(piernaX - 4.2 - pierna, cy + piernaY - 2, 8, 4);
-  // pies
-  g.fillStyle(0x15171c, 1);
-  g.fillRect(piernaX - 6 + pierna, cy - piernaY - 2, 2.6, 4);
-  g.fillRect(piernaX - 6 - pierna, cy + piernaY - 2, 2.6, 4);
+  if (!soloTronco) {
+    // PIERNAS: salen por detras del tronco, una adelantada y otra atrasada
+    const piernaY = ancho * 0.24;
+    const piernaX = cx - largo * 0.46;
+    g.fillStyle(oscuro, 1);
+    g.fillRect(piernaX - 5 + pierna, cy - piernaY - 2.6, 9, 5.2);
+    g.fillRect(piernaX - 5 - pierna, cy + piernaY - 2.6, 9, 5.2);
+    g.fillStyle(shadeLocal(chaqueta, 0.5), 1);
+    g.fillRect(piernaX - 4.2 + pierna, cy - piernaY - 2, 8, 4);
+    g.fillRect(piernaX - 4.2 - pierna, cy + piernaY - 2, 8, 4);
+    // pies
+    g.fillStyle(0x15171c, 1);
+    g.fillRect(piernaX - 6 + pierna, cy - piernaY - 2, 2.6, 4);
+    g.fillRect(piernaX - 6 - pierna, cy + piernaY - 2, 2.6, 4);
 
-  // BRAZOS: por fuera del tronco, se ven enteros a ambos lados
-  const brazoY = ancho * 0.66;
-  g.fillStyle(oscuro, 1);
-  g.fillRect(cx - 3 + brazo, cy - brazoY - 2.4, 10, 4.8);
-  g.fillRect(cx - 3 - brazo, cy + brazoY - 2.4, 10, 4.8);
-  g.fillStyle(shadeLocal(chaqueta, 0.86), 1);
-  g.fillRect(cx - 2.4 + brazo, cy - brazoY - 1.8, 9, 3.6);
-  g.fillRect(cx - 2.4 - brazo, cy + brazoY - 1.8, 9, 3.6);
+    // BRAZOS: por fuera del tronco, se ven enteros a ambos lados
+    const brazoY = ancho * 0.66;
+    g.fillStyle(oscuro, 1);
+    g.fillRect(cx - 3 + brazo, cy - brazoY - 2.4, 10, 4.8);
+    g.fillRect(cx - 3 - brazo, cy + brazoY - 2.4, 10, 4.8);
+    g.fillStyle(shadeLocal(chaqueta, 0.86), 1);
+    g.fillRect(cx - 2.4 + brazo, cy - brazoY - 1.8, 9, 3.6);
+    g.fillRect(cx - 2.4 - brazo, cy + brazoY - 1.8, 9, 3.6);
 
-  // manos
-  g.fillStyle(piel, 1);
-  g.fillCircle(cx + 6.4 + brazo, cy - brazoY, 2);
-  g.fillCircle(cx + 6.4 - brazo, cy + brazoY, 2);
+    // manos
+    g.fillStyle(piel, 1);
+    g.fillCircle(cx + 6.4 + brazo, cy - brazoY, 2);
+    g.fillCircle(cx + 6.4 - brazo, cy + brazoY, 2);
+  }
 
   // tronco
   g.fillStyle(oscuro, 1);

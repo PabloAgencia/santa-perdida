@@ -2,6 +2,24 @@ import { PLAYER, ENTRENAR } from '../config/balance.js';
 import { FASES, makeWalkFrames } from '../world/personArt.js';
 import { ROPA, LIENZO, CUERPO, anchoDelCuerpo, tramoDelCuerpo } from '../config/aspecto.js';
 import { GameState } from '../core/GameState.js';
+import { colorDelCuerpo, makeExtremidad, aclarar } from '../world/extremidades.js';
+
+// CUANTO SE MUEVE EL BRAZO, EN PIXELES ADELANTE Y ATRAS.
+//
+// Ojo con esto, que se hizo mal la primera vez: el brazo NO gira sobre el
+// hombro, se DESLIZA a lo largo del cuerpo. Visto desde arriba, un brazo al
+// andar va adelante y atras; si lo giras, se separa del cuerpo y parece que
+// el personaje esta haciendo aspavientos. Girando 35 grados quedaba la mano
+// flotando a un lado, suelta del brazo.
+//
+// Lo que si lleva es un GIRO PEQUEÑO, de adorno, para que no parezca una
+// pieza deslizandose por un raíl.
+// Estos dos son A GUSTO: si el brazo se despega del cuerpo y parece una
+// pieza suelta flotando al lado, bajalos; si no se nota que anda, subelos.
+const ANDANDO = 2.4;        // px de recorrido del brazo
+const CORRIENDO = 3.8;      // correr es zancada mas larga, no mas rapida
+const GIRO_ADORNO = 0.14;   // radianes
+const PIERNA = 0.85;        // la pierna recorre algo menos que el brazo
 
 export class Player {
   constructor(scene, map, x, y) {
@@ -21,8 +39,25 @@ export class Player {
     this.shadow = scene.add.image(x, y + 5, 'shadow').setScale(0.42).setAlpha(0.5);
     this.paso = 0;
     this.fase = 0;
-    this.sprite = scene.add.image(x, y, 'player-0');
-    this.sprite.setOrigin(0.5);
+
+    // EL CUERPO ES UN CONTENEDOR, no una sola imagen. Dentro, y en este
+    // orden (lo de antes queda detras):
+    //   piernas -> brazos -> tronco
+    // El tronco tapa la parte de dentro de brazos y piernas, y por fuera
+    // asoma lo que se mueve. Es el mismo orden en que lo dibujaba a mano
+    // `personArt.js`, solo que ahora las piezas giran de verdad.
+    //
+    // OJO: la camara sigue a `this.sprite`. Un contenedor tiene x e y como
+    // cualquier objeto, asi que `startFollow` le vale igual.
+    this.piernaIzq = scene.add.image(0, 0, 'px');
+    this.piernaDer = scene.add.image(0, 0, 'px');
+    this.brazoIzq = scene.add.image(0, 0, 'px');
+    this.brazoDer = scene.add.image(0, 0, 'px');
+    this.tronco = scene.add.image(0, 0, 'player-0').setOrigin(0.5);
+
+    this.sprite = scene.add.container(x, y, [
+      this.piernaIzq, this.piernaDer, this.brazoIzq, this.brazoDer, this.tronco,
+    ]);
 
     this.actualizarCuerpo(true);
   }
@@ -55,29 +90,95 @@ export class Player {
     if (!forzar && tramo === this.tramoCuerpo) return;
     this.tramoCuerpo = tramo;
 
+    const ropa = ROPA[this.ropa] || ROPA.calle;
     const conFoto = this.cuerpoDeImagen(grasa, musculo);
+
     if (conFoto) {
       this.texturaBase = conFoto;
-      if (this.sprite) this.sprite.setTexture(`${conFoto}-${this.fase}`);
-      return;
+      if (this.tronco) this.tronco.setTexture(`${conFoto}-${this.fase}`);
+    } else {
+      this.texturaBase = 'player';
+      for (let f = 0; f < FASES; f++) {
+        const clave = `player-${f}`;
+        if (this.scene.textures.exists(clave)) this.scene.textures.remove(clave);
+      }
+      // SOLO EL TRONCO: los brazos y las piernas ya no van cocidos en la
+      // textura, son piezas aparte que se mueven. Dibujarlos aqui tambien
+      // dejaria al personaje con cuatro brazos.
+      makeWalkFrames(this.scene, 'player', {
+        chaqueta: ropa.chaqueta,
+        piel: ropa.piel,
+        pelo: ropa.pelo,
+        detalle: ropa.detalle,
+        ancho: anchoDelCuerpo(grasa, musculo),
+        largo: CUERPO.largo,
+        soloTronco: true,
+      }, LIENZO);
+      if (this.tronco) this.tronco.setTexture(`player-${this.fase}`);
     }
-    this.texturaBase = 'player';
 
-    const ropa = ROPA[this.ropa] || ROPA.calle;
-    for (let f = 0; f < FASES; f++) {
-      const clave = `player-${f}`;
-      if (this.scene.textures.exists(clave)) this.scene.textures.remove(clave);
+    this.rehacerExtremidades(ropa, grasa, musculo);
+  }
+
+  // Rehace brazos y piernas para el cuerpo que toca. Solo se llama al cambiar
+  // de tramo o de ropa, no en cada fotograma: son cuatro texturas.
+  rehacerExtremidades(ropa, grasa, musculo) {
+    const ancho = anchoDelCuerpo(grasa, musculo);
+
+    // El color se saca del propio sprite del tronco, asi los brazos pegan
+    // igual con el dibujo por codigo que con cualquiera de las fotos.
+    const base = colorDelCuerpo(
+      this.scene, `${this.texturaBase}-0`, ropa.chaqueta
+    );
+
+    // El brazo va mas CLARO que el tronco, no mas oscuro. Del mismo tono se
+    // confundia con el cuerpo, y mas oscuro se comia con el contorno.
+    const largoBrazo = 8.5 + musculo * 0.012;
+    const anchoBrazo = 4.2 + musculo * 0.014;
+    makeExtremidad(this.scene, 'jug-brazo', {
+      color: aclarar(base, 1.28), largo: largoBrazo, ancho: anchoBrazo, piel: ropa.piel,
+    });
+    makeExtremidad(this.scene, 'jug-pierna', {
+      color: aclarar(base, 0.72), largo: 8, ancho: 4.6, piel: null,
+    });
+
+    // Origen cerca del extremo de dentro, que es el hombro y la cadera: el
+    // giro de adorno tiene que salir de ahi, no del centro de la pieza.
+    for (const b of [this.brazoIzq, this.brazoDer]) {
+      b.setTexture('jug-brazo').setOrigin(0.2, 0.5);
     }
-    makeWalkFrames(this.scene, 'player', {
-      chaqueta: ropa.chaqueta,
-      piel: ropa.piel,
-      pelo: ropa.pelo,
-      detalle: ropa.detalle,
-      ancho: anchoDelCuerpo(grasa, musculo),
-      largo: CUERPO.largo,
-    }, LIENZO);
+    for (const p of [this.piernaIzq, this.piernaDer]) {
+      p.setTexture('jug-pierna').setOrigin(0.25, 0.5);
+    }
 
-    if (this.sprite) this.sprite.setTexture(`player-${this.fase}`);
+    // Hombros y caderas, en las medidas del cuerpo de ahora.
+    // El hombro va DETRAS del centro: puesto delante, el brazo se adelantaba
+    // mas que la cabeza y el personaje parecia que iba braceando por encima
+    // de si mismo.
+    this.hombroX = -2.2;
+    // el hombro METIDO hacia dentro: con 0,52 el brazo salia entero por
+    // fuera del tronco y se leia como una pieza aparte flotando al lado
+    this.hombroY = ancho * 0.44;
+    this.caderaX = -CUERPO.largo * 0.3;
+    this.caderaY = ancho * 0.22;
+    this.colocarExtremidades(0);
+  }
+
+  // Coloca las cuatro piezas para un punto del ciclo de paso (-1 a 1).
+  // El brazo se desliza por el eje del cuerpo; el giro es solo un adorno.
+  colocarExtremidades(swing) {
+    const paso = this.running ? CORRIENDO : ANDANDO;
+    const d = swing * paso;
+
+    this.brazoIzq.setPosition(this.hombroX + d, -this.hombroY)
+      .setRotation(swing * GIRO_ADORNO);
+    this.brazoDer.setPosition(this.hombroX - d, this.hombroY)
+      .setRotation(-swing * GIRO_ADORNO);
+    // las piernas van al reves que los brazos, como al andar de verdad
+    this.piernaIzq.setPosition(this.caderaX - d * PIERNA, -this.caderaY)
+      .setRotation(-swing * GIRO_ADORNO * 0.6);
+    this.piernaDer.setPosition(this.caderaX + d * PIERNA, this.caderaY)
+      .setRotation(swing * GIRO_ADORNO * 0.6);
   }
 
   ponerRopa(clave) {
@@ -151,18 +252,31 @@ export class Player {
       const fase = Math.floor(this.paso) % FASES;
       if (fase !== this.fase) {
         this.fase = fase;
-        this.sprite.setTexture(`${this.texturaBase || 'player'}-${fase}`);
+        this.tronco.setTexture(`${this.texturaBase || 'player'}-${fase}`);
       }
     } else if (this.fase !== 0) {
       this.fase = 0;
-      this.paso = 0;
       // OJO: la textura de parado tiene que ser la MISMA familia que la de
       // andar. Aqui estaba puesto 'player-0' a pelo, que es el monigote que
       // dibuja el codigo, asi que con las imagenes de IA puestas el
       // personaje cambiaba de aspecto cada vez que te parabas y volvia al
       // sprite bueno al andar. Parecia que parpadeaba.
-      this.sprite.setTexture(`${this.texturaBase || 'player'}-0`);
+      this.tronco.setTexture(`${this.texturaBase || 'player'}-0`);
     }
+
+    // LOS BRAZOS SE MUEVEN SIEMPRE, no en cuatro saltos. El vaiven sale del
+    // mismo contador del paso que las texturas, pero aqui se usa entero y no
+    // redondeado, asi que el brazo va donde toca en cada fotograma.
+    //
+    // Y al pararse NO se corta en seco: el vaiven se apaga en medio segundo.
+    // Cortarlo de golpe dejaba el brazo tieso a media zancada.
+    if (moviendose) {
+      this.vaiven = Math.min(1, (this.vaiven ?? 0) + dt * 5);
+    } else {
+      this.vaiven = Math.max(0, (this.vaiven ?? 0) - dt * 2.2);
+      if (this.vaiven > 0) this.paso += dt * 1.4;   // sigue el ciclo mientras se apaga
+    }
+    this.colocarExtremidades(Math.sin(this.paso * Math.PI * 2) * this.vaiven);
 
     this.syncSprite();
   }
@@ -208,6 +322,7 @@ export class Player {
   }
 
   destroy() {
+    // el contenedor se lleva por delante a las cinco piezas de dentro
     this.sprite.destroy();
     this.shadow.destroy();
   }
