@@ -212,7 +212,10 @@ export class NPCSystem {
 
         if (hit && speed > 70) {
           const mortal = speed > 155;
-          p.knockDown(mortal);
+          // sale despedido en la direccion del coche, y cuanto mas rapido
+          // iba mas lejos vuela
+          const fuerza = Phaser.Math.Clamp(speed * 0.9, 160, 420);
+          p.knockDown(mortal, v.angle, fuerza);
           // quien lo hizo importa: antes, un coche del trafico atropellaba a
           // alguien y el marron se lo comia el jugador
           EventBus.emit(EVT.PED_HIT, {

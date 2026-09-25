@@ -243,7 +243,11 @@ export class CityScene extends Phaser.Scene {
       );
       this.cameras.main.fadeIn(420, 0, 0, 0);
     };
-    this.onDead = () => this.respawn('muerto');
+    this.onDead = () => {
+      // sale despedido hacia atras y un poco a un lado, no siempre igual
+      this.player.iniciarRagdoll(this.player.angle + Math.PI + (Math.random() - 0.5) * 0.8);
+      this.respawn('muerto');
+    };
     this.onBusted = () => this.respawn('busted');
 
     EventBus.on(EVT.PED_HIT, this.onPedHit);
@@ -340,6 +344,13 @@ export class CityScene extends Phaser.Scene {
   update(time, delta) {
     const dt = Math.min(delta / 1000, 0.05);
     const k = this.keys;
+
+    // acabas de morir: el mundo se congela un instante mientras el cuerpo
+    // cae y se desmadeja, y la pantalla se funde a negro encima (ver respawn)
+    if (this.player.ragdoll) {
+      this.player.actualizarRagdoll(dt);
+      return;
+    }
 
     const left = k.left.isDown || k.leftArrow.isDown;
     const right = k.right.isDown || k.rightArrow.isDown;
@@ -637,6 +648,7 @@ export class CityScene extends Phaser.Scene {
         this.drivingVehicle = null;
         this.cameras.main.setFollowOffset(0, 0);
       }
+      this.player.terminarRagdoll();
       this.player.setVisible(true);
 
       const spot = this.findStartSpot();

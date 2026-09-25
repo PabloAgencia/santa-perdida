@@ -1,6 +1,7 @@
 import { FASES } from '../world/personArt.js';
 import { Extremidades } from './Extremidades.js';
 import { VIDA } from '../config/weapons.js';
+import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
 
 export class Pedestrian {
   constructor(scene, map, x, y, skin, faction = null, pathfinder = null) {
@@ -32,6 +33,7 @@ export class Pedestrian {
     this.vidaMax = this.vida;
     this.down = false;
     this.downTimer = 0;
+    this.ragdoll = null;
     this.baseSpeed = 38 + Math.random() * 24;
 
     this.shadow = scene.add.image(x, y + 4, 'shadow').setScale(0.3).setAlpha(0.4);
@@ -67,7 +69,8 @@ export class Pedestrian {
     }
 
     if (this.vida <= 0) {
-      this.knockDown(true);
+      const anguloImpacto = Math.atan2(this.y - desdeY, this.x - desdeX);
+      this.knockDown(true, anguloImpacto, 150);
       return 'muerto';
     }
     if (!this.hostile) {
@@ -99,7 +102,10 @@ export class Pedestrian {
     }
   }
 
-  knockDown(fatal = false) {
+  // anguloImpacto: hacia donde sale despedido (radianes). fuerza: cuanto
+  // vuela antes de caer; un atropello a toda velocidad manda mas lejos que
+  // un puñetazo.
+  knockDown(fatal = false, anguloImpacto = this.angle, fuerza = 90) {
     if (this.down) return;
     this.down = true;
     this.dead = fatal;
@@ -109,7 +115,6 @@ export class Pedestrian {
     this.chaseTarget = null;
     this.ruta = null;
     this.sprite.setTint(fatal ? 0x6e3a34 : 0x9a5a52);
-    this.sprite.setRotation(this.angle + Math.PI / 2);
     this.shadow.setAlpha(0.15);
 
     if (fatal) {
@@ -121,6 +126,23 @@ export class Pedestrian {
       this.scene.tweens.add({ targets: charco, scaleX: 1.35, scaleY: 1.35, duration: 2200 });
       this.blood = charco;
     }
+
+    // EL RAGDOLL: el cuerpo y los dos brazos salen despedidos por separado y
+    // caen donde paran. Sustituye al giro instantaneo de 90 grados de antes.
+    this.ragdoll = new Ragdoll([
+      piezaRagdoll(
+        this.sprite, this.sprite.x, this.sprite.y, anguloImpacto, fuerza, this.sprite.rotation
+      ),
+      piezaRagdoll(
+        this.brazos.izq, this.brazos.izq.x, this.brazos.izq.y,
+        anguloImpacto, fuerza * 0.8, this.brazos.izq.rotation
+      ),
+      piezaRagdoll(
+        this.brazos.der, this.brazos.der.x, this.brazos.der.y,
+        anguloImpacto, fuerza * 0.8, this.brazos.der.rotation
+      ),
+    ]);
+    this.brazos.setVisible(true);
   }
 
   // Huir de algo. OJO: hay que BORRAR la ruta que llevaba calculada; si no,
@@ -271,7 +293,7 @@ export class Pedestrian {
 
     if (this.down) {
       this.downTimer += dt;
-      this.syncSprite();
+      if (this.ragdoll && !this.ragdoll.quieto) this.ragdoll.update(dt);
       return;
     }
 

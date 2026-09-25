@@ -2,6 +2,7 @@ import { FASES } from '../world/personArt.js';
 import { Extremidades } from './Extremidades.js';
 import { VIDA } from '../config/weapons.js';
 import { GameState } from '../core/GameState.js';
+import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
 
 const RADIO = 9;
 
@@ -58,6 +59,7 @@ export class Officer {
     this.stuck = 0;
     this.vida = c.vida;
     this.down = false;
+    this.ragdoll = null;
     // Sin estas dos marcas, cargarse a un agente contaba como cargarse a un
     // civil (dos estrellas en vez de tres) y no soltaba su arma.
     this.esPolicia = true;
@@ -91,8 +93,25 @@ export class Officer {
 
     this.down = true;
     this.sprite.setTint(0x6e3a34);
-    this.sprite.setRotation(this.angle + Math.PI / 2);
     this.shadow.setAlpha(0.15);
+
+    // el cuerpo y los dos brazos salen despedidos por separado y caen donde
+    // paran, igual que con un peaton (ver Ragdoll.js)
+    const anguloImpacto = Math.atan2(this.y - desdeY, this.x - desdeX);
+    this.ragdoll = new Ragdoll([
+      piezaRagdoll(
+        this.sprite, this.sprite.x, this.sprite.y, anguloImpacto, 150, this.sprite.rotation
+      ),
+      piezaRagdoll(
+        this.brazos.izq, this.brazos.izq.x, this.brazos.izq.y,
+        anguloImpacto, 120, this.brazos.izq.rotation
+      ),
+      piezaRagdoll(
+        this.brazos.der, this.brazos.der.x, this.brazos.der.y,
+        anguloImpacto, 120, this.brazos.der.rotation
+      ),
+    ]);
+    this.brazos.setVisible(true);
     return 'muerto';
   }
 
@@ -124,7 +143,10 @@ export class Officer {
   }
 
   update(dt, tx, ty) {
-    if (this.down) return Infinity;
+    if (this.down) {
+      if (this.ragdoll && !this.ragdoll.quieto) this.ragdoll.update(dt);
+      return Infinity;
+    }
     const dx = tx - this.x;
     const dy = ty - this.y;
     const dist = Math.hypot(dx, dy);

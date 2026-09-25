@@ -1600,11 +1600,65 @@ VIGESIMOSEPTIMA TANDA (22-sep-2026): el brazo apunta y el puño sale
   alguien detras y apuntarle mientras andas hacia delante, cambiar a rifle
   (dos manos) y soltar el objetivo. Consola limpia.
 
-  LO QUE QUEDA DE ESTE BLOQUE
-     - El ragdoll al morir o al ser atropellado, con Matter.js. Ahora que el
-       cuerpo son cinco piezas, desmadejarlas es lo suyo.
+  LO QUE QUEDA DE ESTE BLOQUE (a la hora de escribir esto)
+     - El ragdoll al morir o al ser atropellado. Ahora que el cuerpo son
+       cinco piezas, desmadejarlas es lo suyo.
      - Llevar las extremidades a peatones y policias, si a Pablo le gusta
        como ha quedado en el jugador.
+
+  NOTA (25-sep): lo segundo ya estaba hecho sin quedar registrado aqui
+  (commit 8bf078b, "Brazos para todos: peatones, pandilleros y policias").
+  Confirmado en el codigo: `Pedestrian.js` y `Officer.js` ya usan
+  `entities/Extremidades.js` y llaman a `brazos.colocar()` cada fotograma.
+  Lo unico pendiente de verdad era el ragdoll.
+
+================================================================================
+VIGESIMOCTAVA TANDA (25-sep-2026): el ragdoll, sin Matter.js
+================================================================================
+
+  El pendiente decia "con Matter.js", pero el juego no usa NINGUN motor de
+  fisicas en ningun otro sitio (todo el movimiento es a mano, contra
+  `map.isSolidBox`). Meter Matter solo para esto era desproporcionado:
+  `src/entities/Ragdoll.js` hace lo mismo con una docena de variables por
+  pieza — z, vz y gravedad de mentira, un rebote, friccion en el suelo.
+
+  QUE PASA AL MORIR O SER ATROPELLADO
+     El cuerpo y los dos brazos (peatones y policias) o las cinco piezas del
+     jugador salen despedidos por separado, con un salto, y caen donde paran.
+     La direccion depende de quien lo hizo: al recibir un disparo o un golpe,
+     sale alejandose de quien pego; al ser atropellado, sale en la direccion
+     del coche, y cuanto mas rapido iba el coche mas lejos vuela (velocidad
+     de impacto entre 160 y 420, con tope). Sustituye al giro instantaneo de
+     90 grados que hacia antes.
+
+  PEATONES Y POLICIAS (3 piezas: el cuerpo entero + los dos brazos sueltos)
+     Cada pieza ya era una imagen aparte (ver tanda de "brazos para todos"),
+     asi que sacarlas del control normal y darselo al Ragdoll fue directo.
+
+  EL JUGADOR (el caso raro: cinco piezas DENTRO de un contenedor de Phaser)
+     Sacar las piezas del contenedor para que volaran sueltas por el mundo
+     habria sido lo mas fiel, pero tocar la lista de hijos de un Container
+     de Phaser en caliente es fragil. Se hizo mas simple: el CONTENEDOR
+     ENTERO hace de pieza de ragdoll (cae, rebota y gira como un cuerpo),
+     y DENTRO de el, brazos y piernas se separan del tronco con un pequeño
+     offset local propio que se abre rapido y frena. Se ve igual de
+     desparramado sin tocar el arbol de objetos de Phaser.
+
+     Al morir, el bucle de la escena (`CityScene.update`) deja de procesar
+     inputs y NPCs durante el ragdoll (un guard al principio, como ya hacia
+     pausa o mapa) — el mundo se congela un instante mientras el cuerpo cae,
+     y la pantalla ya se funde a negro encima (fadeOut de 420 ms que existia
+     de antes). Al llegar el respawn de siempre, `terminarRagdoll()` deja
+     todo en su sitio de reposo antes de reaparecer.
+
+  COMPROBADO uno por uno, a mano en la consola del navegador (matando a un
+  peaton, a un policia recien creado, y forzando `GameState.damage(99999)`
+  sobre el jugador): las piezas se separan, caen, rebotan una vez y se
+  quedan quietas en ~1-1.5 s; el jugador vuelve a control normal tras el
+  respawn con las extremidades y el angulo reseteados. Sin excepciones en
+  consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
 
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)

@@ -3,6 +3,7 @@ import { FASES, makeWalkFrames } from '../world/personArt.js';
 import { ROPA, LIENZO, CUERPO, anchoDelCuerpo, tramoDelCuerpo } from '../config/aspecto.js';
 import { GameState } from '../core/GameState.js';
 import { colorDelCuerpo, costadosDelCuerpo, makeExtremidad, aclarar } from '../world/extremidades.js';
+import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
 
 // CUANTO SE MUEVE EL BRAZO, EN PIXELES ADELANTE Y ATRAS.
 //
@@ -47,6 +48,7 @@ export class Player {
     this.vaiven = 0;
     this.apuntando = null;    // {angulo, dosManos} cuando tienes a alguien fijado
     this.golpeando = 0;       // segundos que le quedan al brazo estirado
+    this.ragdoll = null;
 
     // EL CUERPO ES UN CONTENEDOR, no una sola imagen. Dentro, y en este
     // orden (lo de antes queda detras):
@@ -405,6 +407,64 @@ export class Player {
     this.sprite.setDepth(this.y);
     this.shadow.setPosition(this.x, this.y + 5);
     this.shadow.setDepth(this.y - 1);
+  }
+
+  // ---------- morir: el ragdoll ----------
+  //
+  // Sacar las cinco piezas del contenedor para que vuelen sueltas por el
+  // mundo seria lo mas fiel, pero tocar la lista de hijos de un Container de
+  // Phaser en caliente es fragil. En su lugar, el CONTENEDOR ENTERO hace de
+  // pieza de ragdoll (cae, rebota, gira como un solo cuerpo) y, DENTRO de
+  // el, brazos y piernas se desparraman con un pequeño offset local propio.
+  // El efecto de "las piezas se separan" se ve igual sin tocar el arbol de
+  // objetos de Phaser.
+
+  iniciarRagdoll(anguloImpacto = this.angle + Math.PI, fuerza = 140) {
+    if (this.ragdoll) return;
+    this.golpeando = 0;
+    this.apuntando = null;
+
+    this.ragdollCuerpo = piezaRagdoll(this.sprite, this.x, this.y, anguloImpacto, fuerza, this.angle);
+    this.ragdoll = new Ragdoll([this.ragdollCuerpo]);
+
+    this.extremidadesSueltas = [this.brazoIzq, this.brazoDer, this.piernaIzq, this.piernaDer]
+      .map((img) => ({
+        img,
+        x0: img.x,
+        y0: img.y,
+        dx: (Math.random() - 0.5) * 14,
+        dy: (Math.random() - 0.5) * 14,
+        rot0: img.rotation,
+        rotVel: (Math.random() - 0.5) * 6,
+        t: 0,
+      }));
+  }
+
+  actualizarRagdoll(dt) {
+    if (!this.ragdoll) return;
+    this.ragdoll.update(dt);
+    this.x = this.ragdollCuerpo.x;
+    this.y = this.ragdollCuerpo.y;
+    this.angle = this.ragdollCuerpo.rot;
+    this.shadow.setPosition(this.x, this.y + 5).setAlpha(0.15).setDepth(this.y - 1);
+
+    for (const e of this.extremidadesSueltas) {
+      e.t = Math.min(1, e.t + dt * 3.2);
+      const k = 1 - (1 - e.t) ** 2;   // se abre rapido y frena
+      e.img.setPosition(e.x0 + e.dx * k, e.y0 + e.dy * k);
+      e.img.setRotation(e.rot0 + e.rotVel * k);
+    }
+  }
+
+  // vuelve a dejar las piezas en su sitio de reposo, para el respawn
+  terminarRagdoll() {
+    if (!this.ragdoll) return;
+    this.ragdoll = null;
+    this.ragdollCuerpo = null;
+    this.extremidadesSueltas = null;
+    this.angle = 0;
+    this.shadow.setAlpha(0.5);
+    this.colocarExtremidades(0);
   }
 
   destroy() {
