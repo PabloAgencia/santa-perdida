@@ -1729,6 +1729,84 @@ VIGESIMONOVENA TANDA (26-sep-2026): hospital, comida y el taller de pintura
   con estos cuatro locales de servicio, aunque el nombre se parezca.
 
 ================================================================================
+TRIGESIMA TANDA (26-sep-2026): comprar coches y pisos, con garaje de verdad
+================================================================================
+
+  Cierra el PUNTO 1 de "LO PRIMERO": los precios de `vehicles.js` ya sirven
+  para algo, y el garaje de cada piso (que ya vivia entero en GameState,
+  `guardarCoche`/`sacarCoche`/`plazasLibres`, sin usar por nadie) se puede
+  usar de verdad desde el juego.
+
+  CONCESIONARIO (nuevo, `systems/ConcesionarioSystem.js`) — un solar con los
+  seis coches comprables en fila delante, cada uno con su cartel de precio.
+  Cada coche es un Vehicle DE VERDAD desde el principio (`enVenta: true` lo
+  saca de `nearestVehicle()`, para que no se pueda robar sin pagar) que se
+  "activa" al comprarlo en vez de crear uno nuevo. Un solo concesionario,
+  repartido con el mismo `repartirPorBarrios` de siempre.
+
+  EL GARAJE, LAS DOS PUNTAS:
+     - GUARDAR: en coche, E en la puerta de TU piso lo mete en el garaje (si
+       hay plaza) en vez de bajarte del coche como siempre — se probo primero
+       `entrarEnPisoCerca()` y solo si no aplica, `exitVehicle()`.
+     - SACAR: dentro del piso, el texto "GARAJE X/Y" paso de informativo a
+       zona con E: saca el mas antiguo a la puerta, en la calle.
+
+  DE PASO, TRES COSAS QUE ESTABAN ROTAS Y SE HAN NOTADO AL PROBAR ESTO:
+
+     1. `EventBus.emit(EVT.BIG_MESSAGE, {text, sub})` — el mensaje grande
+        ("YA ES TUYO" al comprar un piso) usaba campos que no existen;
+        `UIScene.showBigMessage` espera `{title, subtitle}`. Reventaba con
+        "Cannot read properties of undefined (reading 'split')" en cuanto se
+        compraba un piso. Estaba asi desde que se escribio PisoSystem: nadie
+        habia probado a fondo comprar un piso hasta ahora. Corregido tambien
+        en el mensaje nuevo de comprar coche.
+
+     2. Sacar un coche del garaje ponia el coche EN la puerta del edificio,
+        que es zona solida (pegada a la pared): `isSolidBox` siempre daba
+        true y el coche nunca aparecia. Se soluciono desplazando el punto 46
+        px hacia la calle, calculando el angulo contra el centro del
+        edificio — el mismo truco que ya usaba `LocalSystem.aparcar` con la
+        ambulancia.
+
+     3. `captureState()` guardaba TODOS los vehiculos salvo los del trafico
+        (`!v.ai`). Los del concesionario sin comprar y los que aparca
+        LocalSystem (ambulancia, patrulla) se estaban colando: como esos
+        sistemas los recrean solos en cada carga, se habrian ido duplicando
+        cada vez que se guardara y cargara la partida. Los dos se marcan
+        ahora (`enVenta`, `deLocal`) y se excluyen del guardado. Bug
+        introducido en la tanda anterior (LocalSystem) y capturado antes de
+        que llegara a notarse jugando.
+
+  RESPAWN EN EL SITIO MAS CERCANO: `findStartSpot()` antes solo miraba el
+  escondite del principio. Ahora, si se le da un punto (donde acabaste, al
+  morir o al detenerte), elige el mas cercano entre el escondite y todos los
+  pisos que ya son tuyos. Sin ese punto (la carga inicial de una partida
+  nueva) se comporta exactamente igual que antes.
+
+  ADEMAS: salir de un piso comprado te devolvia SIEMPRE a la puerta del
+  escondite, no a la del piso por el que habias entrado (`onHideoutExit`
+  usaba `this.hideoutDoor` a pelo). Se guarda ahora la puerta real en
+  `this.interiorDoor` al entrar a cualquier interior.
+
+  COMPROBADO a mano en la consola, con la partida guardada real: comprar un
+  coche del concesionario (cobra, dueño puede robarlo, aviso "TUYO"),
+  llevarlo a un piso propio y guardarlo (plazas libres baja, aparece en el
+  garaje con su color y vida), entrar al piso y sacarlo (aparece en la calle
+  con lo mismo que tenia), comprar un piso nuevo (cobra, mensaje "YA ES
+  TUYO" sin reventar) y morir cerca de un piso propio pero lejos del
+  escondite (reapareces junto al piso, no al otro lado del mapa). De paso
+  salio un coche "sedan" guardado de una partida vieja que ya no existe en
+  `vehicles.js`: se blindo `sacarCocheDelGaraje` para avisar y no reventar
+  en vez de perder el coche en silencio o tirar una excepcion. Cero errores
+  en consola en toda la prueba. Verificado tambien de un vistazo: el HUD
+  muestra "E para comprar Bastion · 6200 €" junto al concesionario y el
+  aviso grande se ve bien.
+
+  LO QUE QUEDA DE ESTE BLOQUE: los puntos 2 a 4 de "LO PRIMERO" siguen sin
+  tocar (locales que dan renta, la grua de import/export, la pantalla de
+  progreso).
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -1750,9 +1828,8 @@ LOS CUATRO CUADERNOS DE IDEAS (en esta misma carpeta)
 --------------------------------------------------------------------------------
 LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
 --------------------------------------------------------------------------------
-  1. COMPRAR COCHES Y PISOS. Los precios ya estan puestos en
-     `config/vehicles.js` (1.800 a 8.500) y no sirven para nada. Con garaje
-     en cada piso, y reaparecer en el piso mas cercano.
+  1. HECHO (30a tanda, 26-sep). Comprar coches y pisos, con garaje en cada
+     piso y reaparecer en el piso mas cercano.
   2. LOCALES QUE DAN RENTA, con sus propias misiones por tipo, y que las
      bandas con las que estas mal te los ataquen. Es la pieza de Vice City
      Stories y lo que le da uso de verdad a la reputacion.

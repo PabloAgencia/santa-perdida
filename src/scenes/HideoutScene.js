@@ -89,12 +89,15 @@ export class HideoutScene extends Phaser.Scene {
       fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px', color: '#c8965a',
     }).setOrigin(0.5);
 
-    // el garaje, solo si el sitio tiene plazas (el escondite no tiene)
+    // el garaje, solo si el sitio tiene plazas (el escondite no tiene). El
+    // mismo texto es la zona de E: sacar un coche guardado a la puerta.
     if (this.sitio.plazas > 0) {
-      const guardados = GameState.cochesEn(this.sitio.clave).length;
-      this.add.text(s.x + s.w / 2, s.y + 50, `GARAJE  ${guardados} / ${this.sitio.plazas}`, {
+      this.garaje = { x: s.x + s.w / 2, y: s.y + 50 };
+      this.garajeTexto = this.add.text(this.garaje.x, this.garaje.y, this.textoGaraje(), {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
       }).setOrigin(0.5);
+    } else {
+      this.garaje = null;
     }
 
     // punto de guardado
@@ -146,6 +149,7 @@ export class HideoutScene extends Phaser.Scene {
     // El cerrojo `saliendo` se quedaba puesto y la segunda salida no iba.
     this.confirmacion = 0;
     this.saliendo = false;
+    this.cocheASacar = null;
     this.cameras.main.fadeIn(420, 0, 0, 0);
     // Curarse ya NO es automatico por entrar: hay que echarse en la cama.
     // Entrar y salir dejaba la vida a 100 gratis y sin enterarte.
@@ -190,6 +194,8 @@ export class HideoutScene extends Phaser.Scene {
     const enGuardar = Phaser.Math.Distance.Between(this.px, this.py, this.save.x, this.save.y) < 42;
     const enPuerta = Phaser.Math.Distance.Between(this.px, this.py, this.puerta.x, this.puerta.y) < 46;
     const enCama = Phaser.Math.Distance.Between(this.px, this.py, this.cama.x, this.cama.y) < 54;
+    const enGaraje = this.garaje &&
+      Phaser.Math.Distance.Between(this.px, this.py, this.garaje.x, this.garaje.y) < 50;
 
     // el mensaje de confirmacion aguanta unos segundos; antes lo pisaba el
     // texto de ayuda en el fotograma siguiente y no se llegaba a ver
@@ -200,7 +206,9 @@ export class HideoutScene extends Phaser.Scene {
       this.aviso.setText(
         enGuardar ? 'E para guardar la partida'
           : enCama ? (GameState.health >= GameState.vidaMaxima ? 'Estas entero' : 'E para dormir y curarte')
-            : enPuerta ? 'E para salir a la calle' : ''
+            : enGaraje ? (GameState.cochesEn(this.sitio.clave).length > 0
+              ? 'E para sacar un coche del garaje' : 'El garaje esta vacio')
+              : enPuerta ? 'E para salir a la calle' : ''
       );
     }
 
@@ -226,10 +234,31 @@ export class HideoutScene extends Phaser.Scene {
           this.aviso.setText('HAS DORMIDO. Salud al maximo');
           this.confirmacion = 2.5;
         }
+      } else if (enGaraje) {
+        this.sacarCoche();
       } else if (enPuerta) {
         this.salir();
       }
     }
+  }
+
+  textoGaraje() {
+    const guardados = GameState.cochesEn(this.sitio.clave).length;
+    return `GARAJE  ${guardados} / ${this.sitio.plazas}`;
+  }
+
+  // saca el coche mas antiguo del garaje: se sale a la calle como con la
+  // puerta, y CityScene lo materializa en la puerta del piso (ver
+  // EVT.HIDEOUT_EXIT y CityScene.sacarCocheDelGaraje)
+  sacarCoche() {
+    if (GameState.cochesEn(this.sitio.clave).length === 0) {
+      this.aviso.setColor('#8a8578');
+      this.aviso.setText('No hay coches guardados');
+      this.confirmacion = 1.6;
+      return;
+    }
+    this.cocheASacar = this.sitio.clave;
+    this.salir();
   }
 
   destello() {
@@ -255,7 +284,7 @@ export class HideoutScene extends Phaser.Scene {
       this.scene.resume('CityScene');
       this.scene.setVisible(true, 'UIScene');
       this.scene.resume('UIScene');
-      EventBus.emit(EVT.HIDEOUT_EXIT, {});
+      EventBus.emit(EVT.HIDEOUT_EXIT, { sacarCocheDe: this.cocheASacar || null });
       this.scene.stop();
     });
   }

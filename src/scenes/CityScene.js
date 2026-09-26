@@ -17,6 +17,7 @@ import { PickupSystem } from '../systems/PickupSystem.js';
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
+import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -67,6 +68,7 @@ export class CityScene extends Phaser.Scene {
     this.shops = new ShopSystem(this, this.map);
     this.pisos = new PisoSystem(this, this.map);
     this.locales = new LocalSystem(this, this.map);
+    this.concesionario = new ConcesionarioSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -106,19 +108,40 @@ export class CityScene extends Phaser.Scene {
     this.scene.launch('UIScene');
   }
 
-  findStartSpot() {
+  // Sin `desde`, el de siempre: el escondite del principio. Con `desde`
+  // (donde acabaste, al morir o al detenerte), el edificio mas cercano de
+  // entre el escondite y los pisos que ya son tuyos, para que comprar un
+  // piso cerca de donde sueles liarla sirva de algo.
+  findStartSpot(desde = null) {
     const h = this.map.hideout;
-    if (!h) return { x: this.map.pixelWidth / 2, y: this.map.pixelHeight / 2 };
+    const candidatos = [];
+    if (h) candidatos.push({ x: h.px, y: h.py, ph: h.ph });
+    if (this.pisos) {
+      for (const p of this.pisos.pisos) {
+        if (GameState.esDueno(p.clave)) candidatos.push({ x: p.edificio.px, y: p.edificio.py });
+      }
+    }
+    if (candidatos.length === 0) return { x: this.map.pixelWidth / 2, y: this.map.pixelHeight / 2 };
+
+    let objetivo = candidatos[0];
+    if (desde) {
+      let bestD = Infinity;
+      for (const c of candidatos) {
+        const d = Phaser.Math.Distance.Between(c.x, c.y, desde.x, desde.y);
+        if (d < bestD) { bestD = d; objetivo = c; }
+      }
+    }
+
     let best = null;
     let bestDist = Infinity;
     for (const s of this.map.sidewalkSpots) {
-      const d = Phaser.Math.Distance.Between(s.x, s.y, h.px, h.py);
+      const d = Phaser.Math.Distance.Between(s.x, s.y, objetivo.x, objetivo.y);
       if (d < bestDist) {
         bestDist = d;
         best = s;
       }
     }
-    return best || { x: h.px, y: h.py + h.ph };
+    return best || { x: objetivo.x, y: objetivo.y + (objetivo.ph || 0) };
   }
 
   spawnDefaultVehicles() {
@@ -235,15 +258,18 @@ export class CityScene extends Phaser.Scene {
       });
       if (pedestrian.faction) this.factions.onMemberHurt(pedestrian.faction);
     };
-    this.onHideoutExit = () => {
-      // se sale a la puerta, y se comprueba que el sitio este libre
-      if (this.hideoutDoor) this.player.setPosition(this.hideoutDoor.x, this.hideoutDoor.y);
+    this.onHideoutExit = (datos) => {
+      // se sale a la puerta por la que se entro (el escondite o el piso que
+      // fuera), no siempre a la del escondite
+      const puerta = this.interiorDoor || this.hideoutDoor;
+      if (puerta) this.player.setPosition(puerta.x, puerta.y);
       this.player.setVisible(true);
       this.hurtCooldown = 1.5;
       this.cameras.main.startFollow(
         this.player.sprite, true, CAMERA.followLerp, CAMERA.followLerp
       );
       this.cameras.main.fadeIn(420, 0, 0, 0);
+      if (datos && datos.sacarCocheDe) this.sacarCocheDelGaraje(datos.sacarCocheDe, puerta);
     };
     this.onDead = () => {
       // sale despedido hacia atras y un poco a un lado, no siempre igual
@@ -284,8 +310,13 @@ export class CityScene extends Phaser.Scene {
       angle: +this.player.angle.toFixed(3),
     };
     GameState.inVehicleId = this.drivingVehicle ? this.drivingVehicle.id : null;
-    // el trafico se genera solo al vuelo, no tiene sentido guardarlo
-    GameState.vehicles = this.vehicles.filter((v) => !v.ai).map((v) => v.serialize());
+    // el trafico se genera solo al vuelo, no tiene sentido guardarlo; los del
+    // concesionario sin comprar y los aparcados por LocalSystem (ambulancia,
+    // patrulla de la comisaria) tampoco, que esos sistemas los recrean
+    // siempre igual al cargar (si se guardaran, se duplicarian cada carga)
+    GameState.vehicles = this.vehicles
+      .filter((v) => !v.ai && !v.enVenta && !v.deLocal)
+      .map((v) => v.serialize());
   }
 
   // ---------- entrar y salir del coche ----------
@@ -294,8 +325,9 @@ export class CityScene extends Phaser.Scene {
     let best = null;
     let bestDist = PLAYER.enterRange;
     for (const v of this.vehicles) {
-      // un chasis quemado no se conduce: es chatarra en mitad de la calle
-      if (v.quemado) continue;
+      // un chasis quemado no se conduce: es chatarra en mitad de la calle.
+      // uno "en venta" tampoco: es del concesionario hasta que se paga.
+      if (v.quemado || v.enVenta) continue;
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, v.x, v.y);
       if (d < bestDist) {
         bestDist = d;
@@ -360,13 +392,17 @@ export class CityScene extends Phaser.Scene {
     const down = k.down.isDown || k.downArrow.isDown;
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
-      if (this.drivingVehicle) this.exitVehicle();
-      else if (
+      // en coche, junto a tu piso, primero se prueba a meterlo en el garaje;
+      // solo si eso no aplica el E te baja del coche como siempre
+      if (this.drivingVehicle) {
+        if (!this.entrarEnPisoCerca()) this.exitVehicle();
+      } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
         !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
         !this.usarLocalCerca() &&
+        !this.comprarCocheCerca() &&
         !this.usarMaquinaCerca()
       ) {
         const v = this.nearestVehicle();
@@ -459,6 +495,7 @@ export class CityScene extends Phaser.Scene {
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.locales.update(this.player, !!this.drivingVehicle);
+    if (!this.drivingVehicle) this.concesionario.update(this.player);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -652,10 +689,10 @@ export class CityScene extends Phaser.Scene {
         this.drivingVehicle = null;
         this.cameras.main.setFollowOffset(0, 0);
       }
+      const spot = this.findStartSpot({ x: this.player.x, y: this.player.y });
       this.player.terminarRagdoll();
       this.player.setVisible(true);
 
-      const spot = this.findStartSpot();
       this.player.setPosition(spot.x, spot.y);
       this.hurtCooldown = 2;
       this.cameras.main.startFollow(
@@ -761,6 +798,25 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // el concesionario: E junto a uno de los coches expuestos y se compra ESE
+  comprarCocheCerca() {
+    const c = this.concesionario && this.concesionario.cerca;
+    if (!c) return false;
+
+    if (!GameState.canAfford(c.precio)) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: `${VEHICLES[c.tipo].name}: ${c.precio} €. No te llega`, tone: 'danger',
+      });
+      return true;
+    }
+    const nombre = VEHICLES[c.tipo].name;
+    this.concesionario.comprar(c);
+    Audio.notes([392, 523.25, 659.25], 0.1);
+    EventBus.emit(EVT.BIG_MESSAGE, { title: 'TUYO', subtitle: nombre });
+    EventBus.emit(EVT.NOTIFY, { text: `${nombre} comprado · ${c.precio} €`, tone: 'money' });
+    return true;
+  }
+
   // la maquina de refrescos de la acera: E al lado y a beber
   usarMaquinaCerca() {
     if (!this.pickups.cercaDeMaquina) return false;
@@ -801,14 +857,21 @@ export class CityScene extends Phaser.Scene {
       return true;
     }
 
+    // se recuerda por donde se entro, para salir a la misma puerta y no
+    // aparecer siempre en el escondite aunque hubieras entrado a otro sitio.
+    // `edificio` es para sacar coches del garaje sin que caigan en la pared.
+    this.interiorDoor = { x: this.hideoutDoor.x, y: this.hideoutDoor.y, edificio: this.map.hideout };
     this.abrirInterior({ clave: 'escondite', nombre: 'TU ESCONDITE', plazas: 0 });
     return true;
   }
 
   // TU PISO COMPRADO: E en la puerta. Si todavia no es tuyo, E lo compra.
+  // Si vas EN COCHE, E no compra ni entra: mete el coche en el garaje.
   entrarEnPisoCerca() {
     if (!this.pisos || !this.pisos.cerca) return false;
     const piso = this.pisos.cerca;
+
+    if (this.drivingVehicle) return this.guardarCocheEnGaraje(piso);
 
     if (!GameState.esDueno(piso.clave)) {
       const que = this.pisos.comprar(piso);
@@ -818,7 +881,7 @@ export class CityScene extends Phaser.Scene {
         });
       } else if (que === 'comprado') {
         Audio.notes([392, 523.25, 659.25], 0.1);
-        EventBus.emit(EVT.BIG_MESSAGE, { text: 'YA ES TUYO', sub: piso.nombre });
+        EventBus.emit(EVT.BIG_MESSAGE, { title: 'YA ES TUYO', subtitle: piso.nombre });
         EventBus.emit(EVT.NOTIFY, {
           text: `${piso.nombre} comprado. Garaje para ${piso.plazas}`, tone: 'money',
         });
@@ -830,10 +893,71 @@ export class CityScene extends Phaser.Scene {
       EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
       return true;
     }
+    this.interiorDoor = { x: piso.x, y: piso.y, edificio: piso.edificio };
     this.abrirInterior({
       clave: piso.clave, nombre: piso.nombre, plazas: piso.plazas, lamina: piso.lamina,
     });
     return true;
+  }
+
+  // meter el coche en el garaje: E en la puerta de TU piso yendo dentro de el
+  guardarCocheEnGaraje(piso) {
+    if (!GameState.esDueno(piso.clave)) return false;
+    const v = this.drivingVehicle;
+
+    if (GameState.plazasLibres(piso.clave) <= 0) {
+      EventBus.emit(EVT.NOTIFY, { text: `${piso.nombre}: el garaje esta lleno`, tone: 'danger' });
+      return true;
+    }
+
+    GameState.guardarCoche(piso.clave, { tipo: v.type, color: v.color, hp: Math.round(v.hp) });
+    const spot = v.findExitSpot();
+    const i = this.vehicles.indexOf(v);
+    if (i >= 0) this.vehicles.splice(i, 1);
+    v.destroy();
+    this.drivingVehicle = null;
+    this.player.setPosition(spot.x, spot.y);
+    this.player.setVisible(true);
+    this.cameras.main.setFollowOffset(0, 0);
+
+    Audio.notes([392, 523.25], 0.09);
+    EventBus.emit(EVT.NOTIFY, { text: `Guardado en el garaje · ${piso.nombre}`, tone: 'money' });
+    return true;
+  }
+
+  // sacar un coche del garaje a la puerta del piso, al salir de HideoutScene
+  // con `sacarCocheDe` (ver HideoutScene.sacarCoche). La puerta en si cae
+  // pegada a la pared (zona solida): se desplaza hacia la calle, igual que
+  // LocalSystem.aparcar con la ambulancia.
+  sacarCocheDelGaraje(clave, puerta) {
+    if (!puerta) return;
+    const b = puerta.edificio;
+    const lado = b ? Math.atan2(puerta.y - b.py, puerta.x - b.px) : 0;
+    const x = puerta.x + Math.cos(lado) * 46;
+    const y = puerta.y + Math.sin(lado) * 46;
+
+    if (
+      this.map.isSolidBox(x, y, 34, 34) ||
+      this.vehicles.some((v) => Phaser.Math.Distance.Between(v.x, v.y, x, y) < 70)
+    ) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: 'La puerta esta ocupada, aparta algo y prueba otra vez', tone: 'danger',
+      });
+      return;
+    }
+    const coche = GameState.sacarCoche(clave, 0);
+    if (!coche) return;
+    if (!VEHICLES[coche.tipo]) {
+      // una partida vieja puede traer un tipo que ya no existe: se avisa y
+      // se pierde ese coche en vez de reventar al crearlo
+      EventBus.emit(EVT.NOTIFY, { text: 'Ese coche ya no se puede sacar', tone: 'danger' });
+      return;
+    }
+    const v = new Vehicle(this, this.map, coche.tipo, x, y, lado + Math.PI / 2, {
+      hp: coche.hp, color: coche.color,
+    });
+    this.vehicles.push(v);
+    EventBus.emit(EVT.NOTIFY, { text: `${v.stats.name} · sacado del garaje`, tone: 'money' });
   }
 
   // El paso a cualquier interior: congelar la ciudad, fundir a negro y
@@ -900,6 +1024,9 @@ export class CityScene extends Phaser.Scene {
       blindaje: GameState.blindaje,
       tiendaCerca: !!(this.shops && this.shops.cerca),
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
+      concesionarioCerca: this.concesionario && this.concesionario.cerca
+        ? { nombre: VEHICLES[this.concesionario.cerca.tipo].name, precio: this.concesionario.cerca.precio }
+        : null,
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
       arma: this.drivingVehicle ? null : {

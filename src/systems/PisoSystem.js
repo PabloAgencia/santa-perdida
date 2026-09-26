@@ -143,7 +143,10 @@ export class PisoSystem {
         EventBus.emit(EVT.NOTIFY, { text: `Nuevo sitio: ${p.nombre}`, tone: 'objective' });
         EventBus.emit(EVT.STATS_CHANGED, { descubierto: p.clave });
       }
-      if (!enCoche && d < ALCANCE) this.cerca = p;
+      // a pie: comprar o entrar. En coche: meter el coche en el garaje (ver
+      // CityScene.guardarCocheEnGaraje). El mismo `cerca` vale para las dos,
+      // quien llama decide segun vaya o no al volante.
+      if (d < ALCANCE) this.cerca = p;
     }
   }
 }

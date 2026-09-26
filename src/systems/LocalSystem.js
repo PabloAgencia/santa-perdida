@@ -71,6 +71,9 @@ export class LocalSystem {
     if (this.scene.vehicles.some((v) => Phaser.Math.Distance.Between(v.x, v.y, x, y) < 90)) return;
 
     const v = new Vehicle(this.scene, this.map, tipo, x, y, lado + Math.PI / 2, { color: 0 });
+    // se recrea igual en cada carga (ver comprobacion de arriba), asi que no
+    // se guarda en la partida: si se guardara, se duplicaria cada vez
+    v.deLocal = true;
     this.scene.vehicles.push(v);
     local.coche = v;
   }
