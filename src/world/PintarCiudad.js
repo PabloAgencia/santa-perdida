@@ -471,6 +471,36 @@ export const PintarCiudad = {
           block(px2, filaY, 34, 10, colores[i], -1199);
           block(px2, filaY - 8, 40, 6, colores[i], -1198);
         }
+      } else if (L.type === 'carcel') {
+        block(L.px + 10, L.py + 12, L.pw + 10, L.ph + 10, 0x05060a, -1215, 0.4);
+        block(L.px, L.py, L.pw, L.ph, 0x4a4d52, -1210);              // el muro
+        block(L.px, L.py, L.pw - 40, L.ph - 40, 0x35383d, -1205);    // el patio
+        block(L.px, L.py, L.pw - 100, L.ph - 60, 0x54585f, -1200);   // las celdas
+
+        // ventanitas en rejilla, para que se lea que es una carcel
+        const filas = 3;
+        const cols = 6;
+        const edW = L.pw - 100;
+        const edH = L.ph - 60;
+        for (let f = 0; f < filas; f++) {
+          for (let c = 0; c < cols; c++) {
+            const vx = L.px - edW / 2 + 20 + c * ((edW - 40) / (cols - 1));
+            const vy = L.py - edH / 2 + 16 + f * ((edH - 32) / (filas - 1));
+            block(vx, vy, 8, 8, 0x1a1c20, -1199);
+          }
+        }
+
+        // torres de vigilancia en las esquinas, con foco parpadeante
+        for (const [ex, ey] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          const tx = L.px + ex * (L.pw / 2 - 16);
+          const ty = L.py + ey * (L.ph / 2 - 16);
+          block(tx, ty, 20, 20, 0x2a2d32, -1206);
+          const foco = this.add.circle(tx, ty, 7, 0xf2efc0, 0.9).setDepth(-1204);
+          this.tweens.add({
+            targets: foco, alpha: { from: 0.9, to: 0.3 },
+            duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+          });
+        }
       }
 
       this.add

@@ -130,4 +130,6 @@ export const CITY = {
     { type: 'estadio', label: 'Estadio Municipal', x: 224, y: 170, w: 20, h: 14 },
     // una manzana comercial normal (comprobado: solo seis tiendas pequeñas)
     { type: 'mercado', label: 'Mercado Cubierto', x: 58, y: 100, w: 17, h: 11 },
+    // otra manzana industrial (comprobado: solo dos naves, distinta a la del estadio)
+    { type: 'carcel', label: 'Correccional Santa Perdida', x: 104, y: 188, w: 22, h: 15 },
   ],};

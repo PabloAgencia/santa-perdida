@@ -2280,6 +2280,30 @@ CUADRAGESIMA TANDA (26-sep-2026): el mercado cubierto, tercer landmark
   LO QUE QUEDA DE ESTE BLOQUE: diez landmarks mas.
 
 ================================================================================
+CUADRAGESIMOPRIMERA TANDA (26-sep-2026): la carcel, cuarto landmark
+================================================================================
+
+  Cuarto de los trece. Otra manzana industrial (comprobado antes: solo dos
+  naves, distinta de la del estadio). `{ type: 'carcel', x: 104, y: 188,
+  w: 22, h: 15 }`.
+
+     · `CityMap._placeLandmarks()`: a diferencia del estadio y el mercado,
+       aqui TODO el rectangulo es solido (igual que la torre): es un
+       landmark que se ve desde fuera, no un interior explorable — una
+       carcel cerrada, no se entra caminando sin mas.
+     · `PintarCiudad.drawLandmarks()`: muro exterior, patio y edificio de
+       celdas en tres capas de gris; ventanitas pequeñas en rejilla (3x6)
+       para que se lea que es una carcel; cuatro torres de vigilancia en
+       las esquinas con foco parpadeante.
+
+  COMPROBADO a mano en la consola y visualmente: el centro es solido de
+  verdad (no se puede entrar caminando); se ve el muro, las dos torres con
+  su foco, las ventanitas en fila, y el nombre "CORRECCIONAL SANTA
+  PERDIDA". Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nueve landmarks mas.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2349,13 +2373,13 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Playa con paseo maritimo — 38a tanda, 26-sep.
        [x] Estadio — 39a tanda, 26-sep.
        [x] Mercado cubierto — 40a tanda, 26-sep.
+       [x] Carcel — 41a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
        [ ] Casino o sala de juegos
        [ ] Poligono industrial de verdad
        [ ] Hospital y comisaria como edificios de uso (mejora visual sobre
            los locales genericos que ya existen)
-       [ ] Carcel
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
        [ ] Tuneles

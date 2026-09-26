@@ -233,6 +233,11 @@ export class CityMap {
         lm.pabellon = {
           px: (mx + mw / 2) * TILE, py: (my + mh / 2) * TILE, pw: mw * TILE, ph: mh * TILE,
         };
+      } else if (L.type === 'carcel') {
+        // cerrada del todo: es un landmark que se ve desde fuera, no un
+        // interior explorable (igual que la torre)
+        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        this.markSolidRect(L.x, L.y, L.w, L.h);
       }
 
       this.landmarks.push(lm);
