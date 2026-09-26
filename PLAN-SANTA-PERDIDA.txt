@@ -2256,6 +2256,30 @@ TRIGESIMONOVENA TANDA (26-sep-2026): el estadio, segundo landmark
   LO QUE QUEDA DE ESTE BLOQUE: once landmarks mas.
 
 ================================================================================
+CUADRAGESIMA TANDA (26-sep-2026): el mercado cubierto, tercer landmark
+================================================================================
+
+  Tercero de los trece. Una manzana comercial normal (comprobado antes en
+  el navegador: solo seis tiendas pequeñas, nada especial). El landmark:
+  `{ type: 'mercado', x: 58, y: 100, w: 17, h: 11 }`.
+
+     · `CityMap._placeLandmarks()`: la explanada alrededor es transitable
+       (SIDEWALK); el pabellon en si es UN edificio grande y solido, con
+       margen alrededor para los puestos de fuera.
+     · `PintarCiudad.drawLandmarks()`: el tejado en dientes de sierra
+       (franjas marrones alternas, como los mercados y naves de verdad, se
+       lee bien desde arriba); cinco puestos con toldo de colores en fila,
+       junto a la entrada sur.
+
+  COMPROBADO a mano en la consola y visualmente: el pabellon se genera sin
+  errores; se ve el edificio marron con el tejado a rayas, los cinco toldos
+  de colores en fila (rojo, amarillo, azul, verde, rosa), y el nombre
+  "MERCADO CUBIERTO". El minimapa lo distingue con claridad del resto de
+  la ciudad. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: diez landmarks mas.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2324,10 +2348,10 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
 
        [x] Playa con paseo maritimo — 38a tanda, 26-sep.
        [x] Estadio — 39a tanda, 26-sep.
+       [x] Mercado cubierto — 40a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
        [ ] Casino o sala de juegos
-       [ ] Mercado cubierto
        [ ] Poligono industrial de verdad
        [ ] Hospital y comisaria como edificios de uso (mejora visual sobre
            los locales genericos que ya existen)

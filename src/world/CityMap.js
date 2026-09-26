@@ -220,6 +220,19 @@ export class CityMap {
           entrada + 4, L.y + L.h - borde, L.x + L.w - (entrada + 4), borde
         );
         lm.campo = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+      } else if (L.type === 'mercado') {
+        // la explanada alrededor es transitable (SIDEWALK); el pabellon en
+        // si es un solo edificio grande y solido, con margen para los
+        // puestos de fuera
+        this.fillRect(L.x, L.y, L.w, L.h, T.SIDEWALK);
+        const mx = L.x + 3;
+        const my = L.y + 2;
+        const mw = L.w - 6;
+        const mh = L.h - 4;
+        this.markSolidRect(mx, my, mw, mh);
+        lm.pabellon = {
+          px: (mx + mw / 2) * TILE, py: (my + mh / 2) * TILE, pw: mw * TILE, ph: mh * TILE,
+        };
       }
 
       this.landmarks.push(lm);

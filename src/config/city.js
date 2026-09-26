@@ -128,4 +128,6 @@ export const CITY = {
     // una manzana entera de la zona industrial (comprobado en el navegador
     // que solo tenia dos naves ahi, sin nada mas importante)
     { type: 'estadio', label: 'Estadio Municipal', x: 224, y: 170, w: 20, h: 14 },
+    // una manzana comercial normal (comprobado: solo seis tiendas pequeñas)
+    { type: 'mercado', label: 'Mercado Cubierto', x: 58, y: 100, w: 17, h: 11 },
   ],};

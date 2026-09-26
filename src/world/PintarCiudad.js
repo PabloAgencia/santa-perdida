@@ -445,6 +445,32 @@ export const PintarCiudad = {
             duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
           });
         }
+      } else if (L.type === 'mercado') {
+        const p = L.pabellon;
+        block(p.px + 10, p.py + 12, p.pw + 10, p.ph + 10, 0x05060a, -1215, 0.4);
+        block(p.px, p.py, p.pw, p.ph, 0x5a4c3a, -1210);   // el pabellon
+
+        // el tejado en dientes de sierra, como los mercados y naves de
+        // verdad: franjas alternas para que se lea el techo desde arriba
+        const franjas = 5;
+        const anchoFranja = p.pw / franjas;
+        for (let i = 0; i < franjas; i++) {
+          const fx = p.px - p.pw / 2 + (i + 0.5) * anchoFranja;
+          block(
+            fx, p.py - p.ph / 2 + 14, anchoFranja - 6, 24,
+            i % 2 === 0 ? 0x8a7452 : 0x7a6446, -1205
+          );
+        }
+
+        // puestos con toldo de colores, en fila junto a la entrada (sur)
+        const colores = [0xd9584a, 0xe8b54a, 0x4a8fd0, 0x6bb374, 0xc86ab0];
+        const filaY = p.py + p.ph / 2 + 30;
+        for (let i = 0; i < colores.length; i++) {
+          const px2 = p.px - p.pw / 2 + (i + 0.5) * (p.pw / colores.length);
+          block(px2 + 3, filaY + 5, 34, 12, 0x05060a, -1200, 0.35);
+          block(px2, filaY, 34, 10, colores[i], -1199);
+          block(px2, filaY - 8, 40, 6, colores[i], -1198);
+        }
       }
 
       this.add
