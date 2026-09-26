@@ -96,6 +96,27 @@ export const ARMAS = {
     sonido: 'escopeta',
     ruido: 800,
   },
+  // El subfusil: rafaga cerrada y cadencia altisima, pero a media distancia
+  // y sin apenas puntaria. Es el escalon entre la escopeta (solo de cerca) y
+  // el rifle (preciso y de largo alcance): de cerca es una sierra, de lejos
+  // no da ni una. El sonido reusa la muestra del rifle, que suena parecido.
+  subfusil: {
+    dosManos: true,
+    clave: 'subfusil',
+    nombre: 'Subfusil',
+    cuerpo: false,
+    alcance: 380,
+    dano: 15,
+    cadencia: 0.09,
+    dispersion: 8,
+    balasPorDisparo: 1,
+    precio: 3200,
+    municionMax: 280,
+    municionPorCompra: 40,
+    precioMunicion: 65,
+    sonido: 'rifle',
+    ruido: 850,
+  },
   // El rifle: la de las broncas gordas. Llega el doble que la pistola, va
   // casi al doble de rapido y el cargador es grande, pero moverse la
   // descoloca mucho mas y las balas cuestan un dineral.
@@ -138,7 +159,7 @@ export const ARMAS = {
 };
 
 // El orden en que se cambia con TAB: de menos a mas, como se consiguen.
-export const ORDEN_ARMAS = ['puno', 'americano', 'bate', 'pistola', 'escopeta', 'rifle', 'sniper'];
+export const ORDEN_ARMAS = ['puno', 'americano', 'bate', 'pistola', 'escopeta', 'subfusil', 'rifle', 'sniper'];
 
 // Cuanto aguanta cada uno antes de caer. El jugador tiene su propia vida.
 export const VIDA = {

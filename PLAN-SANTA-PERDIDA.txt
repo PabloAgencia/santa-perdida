@@ -2135,6 +2135,50 @@ REPASO (26-sep-2026): textos superpuestos en el mundo — carteles en el mismo e
   consola.
 
 ================================================================================
+TRIGESIMOSEPTIMA TANDA (26-sep-2026): el subfusil — "EL SALTO GRANDE" completo
+================================================================================
+
+  Cierra lo que quedaba del punto 6, y con ello, LOS SEIS PUNTOS DE "EL
+  SALTO GRANDE" (5 a 10) estan hechos del todo.
+
+  EL SUBFUSIL: el escalon que faltaba entre la escopeta (2.400 €, solo de
+  cerca) y el rifle (4.200 €, preciso y de largo alcance). 3.200 €, alcance
+  380 (media distancia), cadencia 0.09 s — MAS RAPIDA que el rifle, es la
+  mas rapida de las seis armas de fuego — pero con dispersion 8 (el rifle
+  tiene 5.5) y menos alcance: de cerca es una sierra, de lejos no da ni
+  una. Es su propia identidad, no una version floja del rifle.
+
+     · `config/weapons.js`: la entrada nueva, y añadido a `ORDEN_ARMAS`
+       (para el TAB) entre escopeta y rifle.
+     · `scenes/ShopScene.js`: añadido a la lista de claves que arma el
+       catalogo de la armeria (era una lista a mano, no automatica desde
+       ARMAS).
+     · `scenes/BootScene.js`: icono nuevo dibujado por codigo, igual que el
+       resto de armas — compacto, cargador recto, culata corta plegada
+       (un subfusil real no tiene el cañon largo del rifle).
+     · Sonido: reusa la muestra grabada de 'rifle' (`sonido: 'rifle'` en la
+       config), que suena parecido y evita depender de un fichero de audio
+       nuevo que no existe.
+
+  SORPRESA AL REVISAR LA SEGUNDA MITAD DEL PUNTO 6 ("que el chaleco tambien
+  se pueda encontrar por la calle"): YA ESTABA HECHO. `PickupSystem.js`
+  tiene dos chalecos escondidos en callejones (uno al norte de la ciudad,
+  otro al sur, siempre en el mismo sitio), SIN marcar en el mapa a
+  proposito ("o te los aprendes, o no existen"), que dan 60 de blindaje
+  (no llenan del todo, para eso esta la tienda) y reaparecen cada 300 s.
+  Se ve que se hizo en una tanda anterior sin que quedara anotado contra
+  este punto concreto del pendiente. Comprobado que funciona de verdad
+  (blindaje de 0 a 60 al pasar por encima, el icono desaparece y programa
+  su reaparicion).
+
+  COMPROBADO a mano en la consola, con la partida guardada real: comprar el
+  subfusil (cobra 3.200), cambiar a el con TAB en la secuencia normal de
+  armas, disparar (gasta una bala de las 40), y el icono se ve bien en el
+  HUD (zoom sobre la esquina). Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado. "EL SALTO GRANDE" completo.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2174,9 +2218,10 @@ que quedaba del encargo original
 EL SALTO GRANDE
 --------------------------------------------------------------------------------
   5. HECHO (16a tanda). Armas y pelea con fijacion automatica.
-  6. HECHO (17a tanda). Armeria, chaleco (400) y enemigos que disparan.
-     LO QUE QUEDA DE ESTE PUNTO: el subfusil, y que el chaleco tambien se
-     pueda encontrar por la calle y no solo comprarse.
+  6. HECHO DEL TODO (17a tanda + 37a, 26-sep). Armeria, chaleco (400),
+     enemigos que disparan, el subfusil, y el chaleco encontrable por la
+     calle (esto ultimo YA estaba hecho de antes sin que quedara marcado
+     aqui: dos chalecos escondidos en callejones, ver PickupSystem.js).
   7. HECHO (29a tanda, 26-sep). Taller de pintura: entras con el coche,
      pagas, sale de otro color, con la chapa arreglada y SIN policia detras
      si no te estan viendo. -> ERA PEDIDO EXPRESAMENTE POR PABLO.

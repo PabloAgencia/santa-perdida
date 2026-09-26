@@ -152,7 +152,7 @@ export class ShopScene extends Phaser.Scene {
   // te ofrece son balas, no otra pistola.
   catalogo() {
     const lista = [];
-    for (const clave of ['americano', 'bate', 'pistola', 'escopeta', 'rifle', 'sniper']) {
+    for (const clave of ['americano', 'bate', 'pistola', 'escopeta', 'subfusil', 'rifle', 'sniper']) {
       const a = ARMAS[clave];
       if (!GameState.tieneArma(clave)) {
         lista.push({

@@ -451,6 +451,26 @@ export class BootScene extends Phaser.Scene {
       cor.destroy();
     }
 
+    // el subfusil: compacto, cargador recto y culata corta plegada
+    if (!this.textures.exists('icono-subfusil')) {
+      const sub = this.g();
+      sub.fillStyle(OSCURO, 1);
+      sub.fillRect(5, 14, 27, 7);                // cuerpo corto
+      sub.fillRect(10, 20, 6, 11);                // cargador recto
+      sub.fillRect(21, 20, 6, 10);                // empuñadura
+      sub.fillStyle(ACERO, 1);
+      sub.fillRect(7, 15, 24, 3);
+      sub.fillStyle(0x4a5058, 1);
+      sub.fillRect(11, 21, 4, 9);
+      sub.fillRect(22, 21, 4, 8);
+      sub.fillStyle(0x2a2f36, 1);
+      sub.fillRect(27, 12, 5, 4);                 // culata corta, pegada al cuerpo
+      sub.fillStyle(0xc8ced6, 1);
+      sub.fillRect(4, 13, 2, 2);                  // punto de mira
+      sub.generateTexture('icono-subfusil', 40, 40);
+      sub.destroy();
+    }
+
     // el rifle de asalto: cargador curvo y cañon largo
     if (!this.textures.exists('icono-rifle')) {
       const rif = this.g();
