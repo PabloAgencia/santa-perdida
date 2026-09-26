@@ -146,11 +146,15 @@ export class UIScene extends Phaser.Scene {
 
     this.mapTarget = this.add.image(0, 0, 'px')
       .setDisplaySize(9, 9).setTint(0xe8b54a).setRotation(Math.PI / 4).setVisible(false);
+    // en las carreras, el punto de control de despues del que toca: mas
+    // pequeño y apagado, para ver por donde sigue la ruta (como en San Andreas)
+    this.mapSiguiente = this.add.image(0, 0, 'px')
+      .setDisplaySize(6, 6).setTint(0xe8b54a).setAlpha(0.5).setRotation(Math.PI / 4).setVisible(false);
     this.mapPolice = [];
     this.mapContactos = [];
     this.mapPlayer = this.add.image(0, 0, 'arrow')
       .setDisplaySize(13, 13).setTint(0xf2efe6);
-    this.mapaMundo.add([this.mapTarget, this.mapPlayer]);
+    this.mapaMundo.add([this.mapSiguiente, this.mapTarget, this.mapPlayer]);
 
     // Las armerias salen en el mapa solo cuando las has descubierto. Se
     // crean todas y se enseñan o no: asi no hay que rehacer nada al
@@ -347,6 +351,12 @@ export class UIScene extends Phaser.Scene {
       this.mapTarget.setPosition(t.x, t.y).setVisible(true);
     } else {
       this.mapTarget.setVisible(false);
+    }
+    if (d.siguiente) {
+      const s = this.toMinimap(d.siguiente.x, d.siguiente.y);
+      this.mapSiguiente.setPosition(s.x, s.y).setVisible(true);
+    } else {
+      this.mapSiguiente.setVisible(false);
     }
 
     const contactos = d.contactos || [];

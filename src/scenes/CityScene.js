@@ -1394,6 +1394,7 @@ export class CityScene extends Phaser.Scene {
       chasing: this.police.chasing,
       territory: this.factions.currentInfo(),
       mission: this.missions.estado() || this.carreras.estado(),
+      siguiente: this.carreras.siguientePunto(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
       contactos: this.missions.puntos().concat(this.encuentros.puntos()),
       diaNoche: this.diaNoche.velo(),

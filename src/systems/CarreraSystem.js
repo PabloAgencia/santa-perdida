@@ -46,6 +46,8 @@ export class CarreraSystem {
       targets: this.aro, scale: { from: 0.85, to: 1.15 },
       duration: 850, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
+    this.flecha = scene.add.image(0, 0, 'arrow').setVisible(false).setDepth(7)
+      .setTint(0xf2d06b).setAlpha(0.9).setDisplaySize(30, 26);
     this.generar();
   }
 
@@ -109,8 +111,7 @@ export class CarreraSystem {
         if (this.activa.checkpoint >= this.activa.puntos.length) {
           this.completar();
         } else {
-          const p2 = this.activa.puntos[this.activa.checkpoint];
-          this.aro.setPosition(p2.x, p2.y);
+          this.colocarMarcas();
           EventBus.emit(EVT.NOTIFY, {
             text: `Punto de control ${this.activa.checkpoint}/${this.activa.puntos.length}`, tone: 'objective',
           });
@@ -129,9 +130,28 @@ export class CarreraSystem {
     }
   }
 
+  // El aro en el punto de control que toca y, encima, una flecha que apunta
+  // al SIGUIENTE, como las de San Andreas: asi se sabe hacia donde girar
+  // antes de llegar. En el ultimo no hay flecha, es la meta.
+  colocarMarcas() {
+    const a = this.activa;
+    const p = a.puntos[a.checkpoint];
+    this.aro.setPosition(p.x, p.y).setVisible(true);
+    const sig = a.puntos[a.checkpoint + 1];
+    if (!sig) { this.flecha.setVisible(false); return; }
+    const ang = Math.atan2(sig.y - p.y, sig.x - p.x);
+    this.flecha.setPosition(p.x, p.y).setRotation(ang + Math.PI / 2).setVisible(true);
+  }
+
+  // el de despues del que toca, para el radar (null si el que toca es la meta)
+  siguientePunto() {
+    if (!this.activa) return null;
+    return this.activa.puntos[this.activa.checkpoint + 1] || null;
+  }
+
   empezar(carrera) {
     this.activa = { def: carrera, checkpoint: 0, tiempo: 0, puntos: carrera.puntos };
-    this.aro.setPosition(carrera.puntos[0].x, carrera.puntos[0].y).setVisible(true);
+    this.colocarMarcas();
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: 'CARRERA',
       subtitle: `${CHECKPOINTS} puntos de control · sin pasajero, solo tu contra el reloj`,
@@ -154,6 +174,7 @@ export class CarreraSystem {
 
     GameState.addMoney(pago, 'carrera');
     this.aro.setVisible(false);
+    this.flecha.setVisible(false);
     this.activa = null;
 
     EventBus.emit(EVT.BIG_MESSAGE, {
@@ -166,6 +187,7 @@ export class CarreraSystem {
   abortar() {
     if (!this.activa) return;
     this.aro.setVisible(false);
+    this.flecha.setVisible(false);
     this.activa = null;
     EventBus.emit(EVT.NOTIFY, { text: 'Carrera abandonada', tone: 'dim' });
   }

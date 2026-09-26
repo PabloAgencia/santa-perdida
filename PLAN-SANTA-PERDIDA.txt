@@ -2753,23 +2753,30 @@ esa noche, primera hecha ya:
     Con cuatro repetidos por el mapa se nota mas que en un sitio unico.
  C. PENDIENTE. La grua del puerto sigue siendo solo un cartel de texto
     ("SE COMPRAN X, Y, Z") sobre el landmark, sin mas elaboracion.
- D. PENDIENTE. El puenteo de coches (punto 18) es solo una barra que se
-    llena sola, sin ninguna habilidad real (podria ser un minijuego de
-    verdad, tipo aguja que hay que parar en una zona).
- E. PENDIENTE. Las carreras (punto 16-17) no enseñan la ruta completa en
-    ningun sitio, solo el siguiente punto de control uno a uno.
- F. PENDIENTE. Medir fps otra vez: van cuatro sistemas nuevos hoy (dia y
-    noche, encuentros, mercado, carreras) sin volver a comprobar
-    rendimiento, como si se hizo al agrandar el mapa (tandas 19-20).
- G. PENDIENTE. El minimapa tiene ya muchos tipos de marcador (armeria,
-    locales, concesionario, desguaces, carreras, pisos, negocios, guerra
-    de territorio): revisar si sigue leyendose bien de un vistazo.
- H. PENDIENTE. Taxista/ambulancia/justiciero piden estar YA conduciendo
-    ese vehiculo; si esta aparcado y vacio, ahora hay que puentearlo
-    primero para ni siquiera poder empezar el trabajo. Decidir si esos
-    coches deberian librarse del puenteo.
- I. PENDIENTE. No hay forma de vender un coche desde el propio garaje sin
-    sacarlo primero y llevarlo a un desguace o la grua.
+ D. PENDIENTE DE PABLO. El puenteo de coches (punto 18) es solo una barra
+    que se llena sola, sin ninguna habilidad real. En Chinatown Wars (la
+    referencia) es un minijuego de verdad (girar el destornillador, unir
+    cables). Hay que decidir cual y como con teclado: NO se inventa.
+ E. HECHO (57a tanda, 27-sep). Como en San Andreas: cada punto de control
+    lleva una flecha que apunta al SIGUIENTE (el ultimo, la meta, no), y el
+    radar enseña tambien el de despues del que toca, mas pequeño y apagado.
+    Probado en el navegador: flecha bien orientada y el segundo punto en el
+    radar en su sitio.
+ F. HECHO (57a tanda, 27-sep). MEDIDO contra la version de antes de todo
+    lo del 26-sep (b7bb3bf), las dos con el mismo metodo y en la misma
+    pestaña (ms por fotograma, actualizar + pintar): centro 19,2 -> 19,3 ms,
+    puerto 16,1 -> 15,4, escondite 12,9 -> 11,9; 7.077 -> 7.121 objetos.
+    NO HA EMPEORADO NADA (las diferencias son ruido). Los ms salen altos
+    porque la pestaña de pruebas esta en segundo plano y Chrome la frena:
+    sirve para comparar, no como numero absoluto.
+ G. REVISADO, NO HACE FALTA (27-sep). Al mirarlo: el radar pequeño NO
+    enseña locales, desguaces, carreras ni concesionario (eso solo va en el
+    mapa grande, M, desde la 56a). Sigue con lo mismo de antes.
+ H. REVISADO, SE DEJA (27-sep). En Chinatown Wars un taxi o una
+    ambulancia aparcados tambien se puentean como cualquier coche; con
+    conductor dentro se roban al momento. Son 1,6 s: no estorba.
+ I. DESCARTADO (27-sep). En ningun GTA se vende un coche desde el garaje:
+    se lleva a vender. Lo propuse yo y no era fiel a la referencia.
 
  J. HECHO (56a tanda, 26-sep, ya con Opus). TODO CON ARTE DE IA, y los
     landmarks fuera de la calzada. Pablo: "todo o casi todo debe llevar
