@@ -2178,6 +2178,55 @@ TRIGESIMOSEPTIMA TANDA (26-sep-2026): el subfusil — "EL SALTO GRANDE" completo
 
   LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado. "EL SALTO GRANDE" completo.
 
+  AL RATO: Pablo genero el icono de verdad con IA (mismo prompt y estilo que
+  el resto de armas) y lo dejo en `sprites/originales/iconos/icono-subfusil
+  .png`. Procesado con `herramientas/preparar-sprites.py` y publicado: el
+  dibujo por codigo que hice de repuesto ya no se usa, sale la imagen real.
+
+================================================================================
+TRIGESIMOCTAVA TANDA (26-sep-2026): playa con paseo maritimo — primer landmark
+================================================================================
+
+  Empieza "LA CIUDAD MAS GRANDE": el primero de los trece landmarks nuevos
+  que quedaban (el tamaño del mapa ya estaba hecho de antes, tandas 19-20).
+  Pablo: "TODO, paso a paso pero TODO" — se van a ir haciendo uno por tanda,
+  en el orden que se ve mas razonable (de mas simple a mas complejo), sin
+  preguntar cual toca cada vez.
+
+  Se aprovecha la franja de arena que YA EXISTIA entre el puerto y el mar
+  (`portTop` a `seaTop`, config/city.js) — no hizo falta tocar el tamaño
+  del mapa ni el mar. Un rectangulo de 70x19 casillas, lejos de la grua
+  (x 56-72) y del faro (x 299-305): `{ type: 'playa', x: 140, y: 234, w: 70,
+  h: 19 }` en `config/city.js`, mismo patron que los landmarks ya existentes
+  (plaza, torre, faro, grua).
+
+     · `CityMap._placeLandmarks()`: el rectangulo YA es arena (SAND se pinta
+       antes, en `generate()`); solo hizo falta pintar el PASEO, una acera
+       de 4 casillas de ancho pegada al lado de la ciudad. El resto se
+       queda de arena sola, nada solido: se anda por toda la playa.
+     · `PintarCiudad.drawLandmarks()`: palmeras (tronco + tres circulos
+       verdes) pegadas al paseo, del lado de la ciudad; sombrillas de
+       cuatro colores en zigzag pegadas al agua, al sur.
+
+  OJO CON LAS CALLES QUE YA CRUZABAN LA ZONA: la calle del puerto
+  (`portRoad`) atraviesa TODA la franja de arena horizontalmente, y varias
+  calles verticales (`roadsV`) la cruzan tambien de norte a sur — se
+  comprobo con el `x` del landmark que la sombrillas y el paseo no cayeran
+  justo encima de ninguna, pero un punto de prueba en la consola SI cayo
+  sobre una calle vertical sin querer (confundio la primera verificacion
+  visual: parecia un cruce normal de la ciudad). Con una columna limpia
+  (comprobado por tile antes de mover al jugador, `map.getTile`) se
+  confirmo que todo esta donde debia.
+
+  COMPROBADO a mano en la consola y visualmente: el landmark se genera sin
+  tocar nada mas del mapa; el paseo es SIDEWALK de verdad (tile 3);
+  visualmente se ve el paseo, la arena, cuatro sombrillas de colores en
+  zigzag, el mar, y el nombre "PLAYA BUENAVISTA"; zoom sobre una palmera
+  confirma el tronco y las tres hojas del diseño. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: doce landmarks mas, ver la lista del punto
+  11 en PENDIENTE.
+
 ================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
@@ -2240,16 +2289,25 @@ EL SALTO GRANDE
 --------------------------------------------------------------------------------
 LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
 --------------------------------------------------------------------------------
- 11. AMPLIAR EL MAPA. Ahora son 124 x 104 casillas (unos 4.000 x 3.300 px) con
-     seis barrios. Hay que hacerlo "bastante mas grande", con mas cosas
-     sacadas de los otros GTA.
+ 11. EL TAMAÑO YA ESTA HECHO (tandas 19-20, antes de esta lista de sesiones):
+     325 x 262 casillas, seis veces y media la original, medido a 83 fps.
+     Lo que quedaba de verdad de este punto es la lista de landmarks nuevos,
+     que se ataca UNO POR TANDA (Pablo: "todo, paso a paso pero todo"):
 
-     QUE AÑADIR (ideas): aeropuerto pequeño o aerodromo · playa con paseo
-     maritimo · un monte o mirador con carretera de curvas · casino o sala
-     de juegos · mercado cubierto · poligono industrial de verdad · estadio ·
-     hospital y comisaria como edificios de uso · carcel · dos o tres puentes
-     que separen zonas (y que sirvan para abrir la ciudad poco a poco) ·
-     una isla pequeña · tuneles · aparcamiento de varias plantas.
+       [x] Playa con paseo maritimo — 38a tanda, 26-sep.
+       [ ] Aeropuerto pequeño o aerodromo
+       [ ] Un monte o mirador con carretera de curvas
+       [ ] Casino o sala de juegos
+       [ ] Mercado cubierto
+       [ ] Poligono industrial de verdad
+       [ ] Estadio
+       [ ] Hospital y comisaria como edificios de uso (mejora visual sobre
+           los locales genericos que ya existen)
+       [ ] Carcel
+       [ ] Dos o tres puentes que separen zonas
+       [ ] Una isla pequeña
+       [ ] Tuneles
+       [ ] Aparcamiento de varias plantas
 
      QUE VIGILAR AL AMPLIAR (esto es lo importante):
        · `config/city.js` es donde vive el tamaño y las calles: casi todo se

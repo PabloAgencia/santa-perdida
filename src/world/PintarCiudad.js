@@ -395,6 +395,33 @@ export const PintarCiudad = {
         block(L.px + L.pw / 2 - 30, armY - 34, 44, 44, 0x4a4238, -1188);
         block(L.px + L.pw / 2 - 30, armY + 24, 8, 70, 0x3a352e, -1187);
         block(L.px + L.pw / 2 - 30, armY + 66, 26, 20, 0x6d6257, -1186);
+      } else if (L.type === 'playa') {
+        const norte = L.py - L.ph / 2;
+        const sur = L.py + L.ph / 2;
+
+        // palmeras pegadas al paseo, del lado de la ciudad
+        const np = Math.max(2, Math.floor(L.pw / 340));
+        for (let i = 0; i < np; i++) {
+          const px = L.px - L.pw / 2 + (i + 0.5) * (L.pw / np);
+          const py = norte + 16;
+          block(px + 3, py + 20, 6, 24, 0x05060a, -1196, 0.4);
+          block(px, py + 10, 6, 28, 0x6b5238, -1195);
+          this.add.circle(px - 7, py - 6, 13, 0x3d7a3f).setDepth(-1194);
+          this.add.circle(px + 8, py - 8, 13, 0x4a8f4d).setDepth(-1194);
+          this.add.circle(px, py - 16, 13, 0x3d7a3f).setDepth(-1194);
+        }
+
+        // sombrillas de colores pegadas al agua
+        const n = Math.max(3, Math.floor(L.pw / 220));
+        for (let i = 0; i < n; i++) {
+          const sx = L.px - L.pw / 2 + (i + 0.5) * (L.pw / n);
+          const sy = sur - 26 + (i % 2 === 0 ? -14 : 14);
+          const color = [0xd9584a, 0xe8b54a, 0x4a8fd0, 0x6bb374][i % 4];
+          block(sx + 4, sy + 6, 46, 18, 0x05060a, -1200, 0.35);
+          block(sx, sy + 10, 5, 24, 0x6b5a45, -1199);
+          this.add.circle(sx, sy, 22, color).setDepth(-1198);
+          this.add.circle(sx, sy, 22).setStrokeStyle(2, 0x05060a, 0.5).setDepth(-1197);
+        }
       }
 
       this.add

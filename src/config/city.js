@@ -122,4 +122,7 @@ export const CITY = {
     { type: 'torre', label: 'Torre Sombra', x: 156, y: 107, w: 11, h: 9 },
     { type: 'faro', label: 'El Faro', x: 299, y: 247, w: 6, h: 6 },
     { type: 'grua', label: 'Grua del Puerto', x: 56, y: 247, w: 16, h: 4 },
+    // en la franja de arena entre el puerto y el mar (portTop-seaTop), lejos
+    // de la grua (x 56-72) y del faro (x 299-305)
+    { type: 'playa', label: 'Playa Buenavista', x: 140, y: 234, w: 70, h: 19 },
   ],};

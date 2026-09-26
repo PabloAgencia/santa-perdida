@@ -199,6 +199,13 @@ export class CityMap {
         // solo la base estorba; el brazo pasa por encima
         this.markSolidRect(L.x, L.y, 3, L.h);
         lm.base = { px: (L.x + 1.5) * TILE, py: (L.y + L.h / 2) * TILE };
+      } else if (L.type === 'playa') {
+        // el rectangulo ya es arena (SAND se pinta antes, en generate()):
+        // solo hace falta el paseo, una acera pegada al lado de la ciudad
+        // para que la gente camine y el resto se queda de arena para las
+        // sombrillas. Nada solido: se anda por toda la playa.
+        this.fillRect(L.x, L.y, L.w, 4, T.SIDEWALK);
+        lm.paseo = { px: (L.x + L.w / 2) * TILE, py: (L.y + 2) * TILE };
       }
 
       this.landmarks.push(lm);
