@@ -2667,12 +2667,36 @@ LA CIUDAD MAS VIVA
      en el navegador: los cuatro colocados, libreta legible sin
      solapes, "E para vender" con el precio correcto, venta real (paga,
      borra el coche, te baja).
- 16. DESAFIOS CRONOMETRADOS con medalla de bronce, plata y oro.
- 17. TRABAJOS: taxi, ambulancia y justiciero YA EXISTEN (36a tanda, para la
-     mejora permanente del punto 10) — recoger y llevar dentro de un tiempo,
-     o dar caza a un fugitivo. Lo que queda de este punto: CARRERAS
-     (contrarreloj, sin pasajero ni fugitivo, solo llegar rapido de un sitio
-     a otro).
+ 16. HECHO (53a tanda, 26-sep). Desafios cronometrados con medalla de
+     bronce, plata y oro — junto con el punto 17 (carreras), porque son
+     la misma cosa.
+ 17. HECHO DEL TODO (53a tanda, 26-sep). Taxi, ambulancia y justiciero YA
+     EXISTIAN (36a tanda). Lo que quedaba, CARRERAS, hecho: CarreraSystem.js
+     nuevo. Nada de circuito dibujado a mano: la ruta sale sola siguiendo
+     la red de calles de verdad (RoadNetwork, la misma que usa el
+     trafico), un cruce detras de otro con nextEdge() — seis puntos de
+     control por carrera, cuatro carreras repartidas por la ciudad
+     (separadas 2000 px). Se entra en coche, E en la bandera.
+     Las medallas NO salieron de un numero inventado: se midio de
+     verdad, simulando un coche solo (con steerTo, la misma IA del
+     trafico) corriendo rutas reales generadas por este mismo sistema.
+     Con las rectas largas que favorece nextEdge(), un coche cualquiera
+     hace de media el 85% de su propia velocidad maxima sin ayuda de
+     nadie. De ahi salen los tres cortes: cualquier coche saca bronce
+     sin esfuerzo, uno de gama media saca plata conduciendo igual que el
+     trafico, y el oro pide o un coche rapido (velagt, avispa) o cortar
+     las curvas mejor que la IA (que frena mucho antes de cada una).
+     600/300/150/60 € segun la medalla, se puede repetir sin tope (como
+     las entregas), y se guarda la mejor marca por carrera en
+     GameState.flags.carreras. Reutiliza el hueco de HUD de las
+     misiones de MissionSystem (mismo formato "nombre + paso X/Y"), asi
+     que no hizo falta tocar UIScene para el marcador de arriba. Si te
+     bajas del coche a medias, la carrera se abandona sola. Probado en
+     el navegador: las cuatro generadas con sus seis puntos cada una,
+     una carrera completa de principio a fin (medalla de oro, pago
+     correcto, guardado en flags), el HUD "CARRERA 2/6 · punto de
+     control 2/6 · 2,0 s · 24 m" legible sin solapes, y el abandono al
+     bajarse del coche a mitad de carrera.
  18. ROBAR COCHES CON SU GRACIA (barra de puenteo) y ALARMAS en los caros.
 
 --------------------------------------------------------------------------------

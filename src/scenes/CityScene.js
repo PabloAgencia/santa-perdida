@@ -36,6 +36,7 @@ import { DanoVehiculos } from '../systems/DanoVehiculos.js';
 import { DiaNocheSystem } from '../systems/DiaNocheSystem.js';
 import { EncuentroSystem } from '../systems/EncuentroSystem.js';
 import { MercadoSystem } from '../systems/MercadoSystem.js';
+import { CarreraSystem } from '../systems/CarreraSystem.js';
 
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
@@ -91,6 +92,7 @@ export class CityScene extends Phaser.Scene {
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
     this.mercado = new MercadoSystem(this, this.map);
+    this.carreras = new CarreraSystem(this, this.map, this.net);
     this.taxista = new TrabajoVehiculoSystem(this, this.map, {
       tipo: 'taxista', vehiculo: 'taxi', nombre: 'Taxista',
       pagoBase: 55, pagoPorTile: 1.1, tiempoPorTile: 0.32, bonusATiempo: 70,
@@ -428,7 +430,10 @@ export class CityScene extends Phaser.Scene {
       // en coche: primero se prueba a meterlo en el garaje de tu piso o a
       // entregarlo en la grua; solo si ninguno aplica el E te baja como siempre
       if (this.drivingVehicle) {
-        if (!this.entrarEnPisoCerca() && !this.entregarEnGruaCerca() && !this.venderEnDesguaceCerca()) this.exitVehicle();
+        if (
+          !this.entrarEnPisoCerca() && !this.entregarEnGruaCerca() &&
+          !this.venderEnDesguaceCerca() && !this.empezarCarreraCerca()
+        ) this.exitVehicle();
       } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.encuentros.intentarHablar(this.player.x, this.player.y) &&
@@ -549,6 +554,7 @@ export class CityScene extends Phaser.Scene {
     this.negocios.update(dt, this.player);
     this.grua.update(this.player, this.drivingVehicle);
     this.mercado.update(dt, this.player, this.drivingVehicle);
+    this.carreras.update(dt, this.player, this.drivingVehicle);
     this.guerra.update(dt, this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
@@ -1096,6 +1102,16 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // el punto de salida de una carrera (CarreraSystem): E en coche, y solo si
+  // no hay ya otro trabajo o mision en marcha, para no liarla con el HUD
+  empezarCarreraCerca() {
+    if (!this.carreras || !this.carreras.cerca || this.carreras.activa) return false;
+    if (this.missions.activa || this.jobs.active || this.taxista.carrera ||
+        this.ambulanciaJob.carrera || this.justiciero.fugitivo) return false;
+    this.carreras.empezar(this.carreras.cerca);
+    return true;
+  }
+
   // sacar un coche del garaje a la puerta del piso, al salir de HideoutScene
   // con `sacarCocheDe` (ver HideoutScene.sacarCoche). La puerta en si cae
   // pegada a la pared (zona solida): se desplaza hacia la calle, igual que
@@ -1247,6 +1263,11 @@ export class CityScene extends Phaser.Scene {
       desguaceCerca: this.mercado && this.mercado.cerca
         ? { pago: this.mercado.estimar(this.mercado.cerca, this.drivingVehicle) }
         : null,
+      carreraCerca: !!(
+        this.carreras && this.carreras.cerca && !this.carreras.activa &&
+        !this.missions.activa && !this.jobs.active && !this.taxista.carrera &&
+        !this.ambulanciaJob.carrera && !this.justiciero.fugitivo
+      ),
       negocioCerca: this.negocios && this.negocios.cerca
         ? {
           nombre: this.negocios.cerca.cfg.nombre,
@@ -1265,7 +1286,7 @@ export class CityScene extends Phaser.Scene {
       },
       chasing: this.police.chasing,
       territory: this.factions.currentInfo(),
-      mission: this.missions.estado(),
+      mission: this.missions.estado() || this.carreras.estado(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
       contactos: this.missions.puntos().concat(this.encuentros.puntos()),
       diaNoche: this.diaNoche.velo(),

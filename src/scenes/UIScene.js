@@ -489,6 +489,7 @@ export class UIScene extends Phaser.Scene {
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
         : d.gruaCerca ? `E para entregar el ${d.gruaCerca.nombre} en la grua · ${d.gruaCerca.pago} €`
         : d.desguaceCerca ? `E para vender el coche aqui · ${d.desguaceCerca.pago} €`
+        : d.carreraCerca ? 'E para empezar la carrera'
         : d.guerraCerca ? `E para desafiar a ${d.guerraCerca}`
         : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
