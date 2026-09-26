@@ -551,6 +551,29 @@ export const PintarCiudad = {
         this.add.text(L.px, L.py - L.ph / 2 - 20, 'P', {
           fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '28px', color: '#f2efe6',
         }).setOrigin(0.5).setDepth(-1205);
+      } else if (L.type === 'poligono') {
+        block(L.px, L.py, L.pw, L.ph, 0x3a3a35, -1215);   // el patio, tierra y asfalto
+
+        // contenedores apilados, en pilas de 1 a 3 (determinista por columna)
+        const colores = [0xb0582a, 0x4a7a8f, 0xc84a3a, 0x5a8f4a, 0xd0a52a];
+        const columnas = 5;
+        for (let c = 0; c < columnas; c++) {
+          const cx = L.px - L.pw / 2 + 60 + c * ((L.pw - 120) / (columnas - 1));
+          const alturaPila = 1 + ((c * 37) % 3);
+          for (let piso = 0; piso < alturaPila; piso++) {
+            const cy = L.py + L.ph / 2 - 60 - piso * 22;
+            const color = colores[(c + piso) % colores.length];
+            block(cx + 3, cy + 4, 50, 22, 0x05060a, -1210, 0.3);
+            block(cx, cy, 48, 20, color, -1209 - piso);
+          }
+        }
+
+        // la grua de carga, un simple portico en H
+        const gx = L.px;
+        const gy = L.py - L.ph / 2 + 44;
+        block(gx - 60, gy, 10, 60, 0x3a3f47, -1206);
+        block(gx + 60, gy, 10, 60, 0x3a3f47, -1206);
+        block(gx, gy - 30, 130, 10, 0x4a5058, -1205);
       }
 
       this.add

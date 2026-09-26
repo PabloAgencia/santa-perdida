@@ -2373,6 +2373,26 @@ CUADRAGESIMOCUARTA TANDA (26-sep-2026): hospital y comisaria, edificios de uso
   puentes, la isla y los tuneles).
 
 ================================================================================
+CUADRAGESIMOQUINTA TANDA (26-sep-2026): el poligono industrial, octavo landmark
+================================================================================
+
+  Octavo de los trece. Otra manzana industrial, distinta del estadio y la
+  carcel (comprobado: solo dos naves). `{ type: 'poligono', x: 80, y: 188,
+  w: 22, h: 15 }`. Mismo patron de solidez que el aparcamiento (muro bajo
+  perimetral con hueco de entrada al sur, el patio en si se anda entero).
+
+  `PintarCiudad.drawLandmarks()`: pilas de contenedores de colores (1 a 3
+  de altura, determinista por columna para que no salgan todas iguales), y
+  un portico de grua simple en forma de H.
+
+  COMPROBADO a mano en la consola y visualmente: se ve el patio con las
+  pilas de contenedores en varios colores y alturas, y el portico de la
+  grua. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: cinco landmarks mas — los mas grandes que
+  quedan: aeropuerto, monte/mirador, puentes, isla y tuneles.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2446,9 +2466,9 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Casino — 42a tanda, 26-sep.
        [x] Aparcamiento — 43a tanda, 26-sep.
        [x] Hospital y comisaria como edificios de uso — 44a tanda, 26-sep.
+       [x] Poligono industrial de verdad — 45a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
-       [ ] Poligono industrial de verdad
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
        [ ] Tuneles

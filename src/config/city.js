@@ -138,4 +138,7 @@ export const CITY = {
     // otra manzana comercial, distinta de la del mercado (comprobado: solo
     // cinco edificios normales)
     { type: 'aparcamiento', label: 'Aparcamiento Central', x: 33, y: 134, w: 19, h: 14 },
+    // otra manzana industrial, distinta del estadio y la carcel (comprobado:
+    // solo dos naves)
+    { type: 'poligono', label: 'Poligono Industrial', x: 80, y: 188, w: 22, h: 15 },
   ],};

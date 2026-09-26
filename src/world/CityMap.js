@@ -264,6 +264,20 @@ export class CityMap {
           entrada2 + 6, L.y + L.h - borde2, L.x + L.w - (entrada2 + 6), borde2
         );
         lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+      } else if (L.type === 'poligono') {
+        // el patio de contenedores se anda entero; mismo muro bajo con
+        // entrada al sur que el aparcamiento
+        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        const borde3 = 2;
+        this.markSolidRect(L.x, L.y, L.w, borde3);
+        this.markSolidRect(L.x, L.y, borde3, L.h);
+        this.markSolidRect(L.x + L.w - borde3, L.y, borde3, L.h);
+        const entrada3 = L.x + Math.floor(L.w / 2) - 3;
+        this.markSolidRect(L.x, L.y + L.h - borde3, entrada3 - L.x, borde3);
+        this.markSolidRect(
+          entrada3 + 6, L.y + L.h - borde3, L.x + L.w - (entrada3 + 6), borde3
+        );
+        lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       }
 
       this.landmarks.push(lm);
