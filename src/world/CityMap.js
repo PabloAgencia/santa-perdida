@@ -313,6 +313,11 @@ export class CityMap {
         const px = ix + Math.floor(anchoIsla / 2) - 1;
         this.fillRect(px, L.y, puenteAncho, iy - L.y, T.ALLEY);
         lm.isla = { px: (ix + anchoIsla / 2) * TILE, py: (iy + altoIsla / 2) * TILE };
+      } else if (L.type === 'tunel') {
+        // no se toca el terreno: el tramo YA es la calle de siempre
+        // (roadsH), elegido a proposito entre dos cruces sin ninguno en
+        // medio. Solo hace falta guardar el centro para PintarCiudad.
+        lm.tramo = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE, pw: L.w * TILE, ph: L.h * TILE };
       }
 
       this.landmarks.push(lm);

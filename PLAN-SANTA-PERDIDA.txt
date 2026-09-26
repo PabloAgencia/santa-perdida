@@ -2480,6 +2480,36 @@ CUADRAGESIMOCTAVA TANDA (26-sep-2026): una isla con su puente, undecimo landmark
   el patron de las diez anteriores. Los tuneles quedan igual.
 
 ================================================================================
+CUADRAGESIMONOVENA TANDA (26-sep-2026): tuneles — LOS TRECE LANDMARKS HECHOS
+================================================================================
+
+  Ultimo de los trece. NO se toco el terreno para nada: se eligio un tramo
+  de calle YA EXISTENTE (`roadsH[6]`, y=112-116) que cae entero entre dos
+  cruces SIN ninguno en medio (`roadsV` en x=76 y x=100), para que el tunel
+  no tenga un semaforo a mitad. `{ type: 'tunel', x: 81, y: 112, w: 18,
+  h: 5 }`.
+
+  `PintarCiudad.drawLandmarks()`: el tramo se oscurece por encima con un
+  rectangulo semitransparente (los coches y el jugador se siguen viendo,
+  pero apagados, como si estuvieran dentro), y dos "bocas" bien oscuras en
+  los extremos.
+
+  COMPROBADO a mano en la consola y visualmente: el tramo sigue siendo
+  calle de verdad (`isRoadPoint` da true, no es solido); se ve claramente
+  mas oscuro que el asfalto de alrededor, con las dos bocas negras y el
+  nombre "TUNEL DE LA RONDA". Cero errores en consola.
+
+  CON ESTO, LOS TRECE LANDMARKS DE "LA CIUDAD MAS GRANDE" ESTAN HECHOS:
+  playa, estadio, mercado, carcel, casino, aparcamiento, hospital/comisaria
+  de uso, poligono industrial, aerodromo, monte/mirador, isla+puente y
+  tunel. Trece tandas seguidas (38a a 49a), cada una probada visualmente
+  en el navegador antes de publicarse. Lo unico que queda suelto de este
+  bloque, apuntado en el registro de la 48a: "dos o tres puentes que
+  separen ZONAS URBANAS" en el sentido completo (varias partes de la
+  ciudad en islas separadas por agua) es un cambio de geografia mayor,
+  distinto al patron de "hueco libre + landmark" de las trece anteriores.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2539,12 +2569,12 @@ EL SALTO GRANDE
      las carreras contrarreloj; lo que hacia falta de el para esto ya esta).
 
 --------------------------------------------------------------------------------
-LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
+LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep) — HECHO DEL TODO 26-sep
 --------------------------------------------------------------------------------
- 11. EL TAMAÑO YA ESTA HECHO (tandas 19-20, antes de esta lista de sesiones):
-     325 x 262 casillas, seis veces y media la original, medido a 83 fps.
-     Lo que quedaba de verdad de este punto es la lista de landmarks nuevos,
-     que se ataca UNO POR TANDA (Pablo: "todo, paso a paso pero todo"):
+ 11. HECHO DEL TODO (tandas 38a a 49a, 26-sep-2026). El tamaño ya estaba
+     hecho de antes (tandas 19-20: 325 x 262 casillas, seis veces y media
+     la original, medido a 83 fps). Los trece landmarks nuevos, uno por
+     tanda (Pablo: "todo, paso a paso pero todo"), tambien:
 
        [x] Playa con paseo maritimo — 38a tanda, 26-sep.
        [x] Estadio — 39a tanda, 26-sep.
@@ -2559,7 +2589,7 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Una isla pequeña, con su puente de acceso — 48a tanda, 26-sep
            (cubre UN puente de verdad; "dos o tres que separen zonas
            urbanas" queda pendiente, ver el registro de la 48a).
-       [ ] Tuneles
+       [x] Tuneles — 49a tanda, 26-sep. LOS TRECE LANDMARKS HECHOS.
 
      QUE VIGILAR AL AMPLIAR (esto es lo importante):
        · `config/city.js` es donde vive el tamaño y las calles: casi todo se

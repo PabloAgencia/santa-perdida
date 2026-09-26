@@ -151,4 +151,8 @@ export const CITY = {
     // 246 — asi la bahia no la tapa): una isla pequeña con puente de
     // acceso, fundida con el mar de verdad que empieza justo debajo (253)
     { type: 'isla', label: 'Isla del Pescador', x: 90, y: 247, w: 18, h: 6 },
+    // un tramo de calle YA EXISTENTE (roadsH[6], y=112-116), entre dos
+    // cruces sin ninguno en medio (roadsV en x=76 y x=100): no hace falta
+    // tocar el terreno, solo oscurecerlo
+    { type: 'tunel', label: 'Tunel de la Ronda', x: 81, y: 112, w: 18, h: 5 },
   ],};

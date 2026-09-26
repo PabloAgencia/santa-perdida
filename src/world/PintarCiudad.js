@@ -658,6 +658,17 @@ export const PintarCiudad = {
         this.add.circle(p.px - 14, p.py - 18, 12, 0x4a8f4d).setDepth(-1204);
         block(p.px + 18, p.py, 34, 24, 0x8a7452, -1205);
         block(p.px + 18, p.py - 16, 40, 8, 0x5a4a38, -1204);
+      } else if (L.type === 'tunel') {
+        // no se toca la calle: solo se oscurece por encima (los coches y
+        // el jugador se siguen viendo, mas apagados, como si estuvieran
+        // dentro) y se pintan las dos bocas en los extremos
+        const t2 = L.tramo;
+        block(t2.px, t2.py, t2.pw - 50, t2.ph, 0x0a0b0d, -1150, 0.55);
+        for (const lado of [-1, 1]) {
+          const bx = t2.px + lado * (t2.pw / 2 - 25);
+          block(bx, t2.py, 50, t2.ph + 16, 0x1a1c20, -1140);
+          block(bx, t2.py, 34, t2.ph, 0x05060a, -1139);
+        }
       }
 
       this.add
