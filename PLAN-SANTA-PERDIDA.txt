@@ -2771,6 +2771,49 @@ esa noche, primera hecha ya:
  I. PENDIENTE. No hay forma de vender un coche desde el propio garaje sin
     sacarlo primero y llevarlo a un desguace o la grua.
 
+ J. HECHO (56a tanda, 26-sep, ya con Opus). TODO CON ARTE DE IA, y los
+    landmarks fuera de la calzada. Pablo: "todo o casi todo debe llevar
+    imagenes con IA". Se reviso sistematicamente que seguia dibujado por
+    codigo y se preparo la tanda entera (30 prompts en
+    PROMPTS-AI-STUDIO.txt, por orden): interior del concesionario, la
+    ambulancia (el UNICO vehiculo sin foto), 8 marcas del mapa, 16 laminas
+    de landmarks (playa y aerodromo en dos mitades, que la IA no los saca
+    tan anchos sin deformar) y 4 objetos de la calle. Y el codigo para que
+    cada una entre sola en cuanto exista:
+      · PintarCiudad.pintarLaminaLandmark: estira la lamina sobre la
+        huella exacta del landmark y la RECORTA alrededor de las casillas
+        de calle que la cruzan (la calle del puerto por playa, aerodromo y
+        monte; la bajada al puerto por el aerodromo), asi se ve la calle de
+        verdad. 2 px de margen en esos bordes: sin el, el filtrado de la
+        textura dejaba una raya del color recortado en el bordillo.
+      · La luz de la torre y el haz del faro se sacaron a efectosVivos(),
+        que va encima haya lamina o no.
+      · preparar-interiores.py tambien prepara landmark-*; actualizar-arte
+        los conoce todos; preparar-sprites.py sabe de la ambulancia (sin
+        teñir, lleva librea) y de una carpeta nueva `objetos/`.
+      · El mapa grande (M) no enseñaba NADA de lo montado el 26-sep:
+        locales, negocios, concesionario, desguaces y carreras salen ahora,
+        con su marca (o un cuadradito de color mientras no la haya).
+    AL CALCULAR LOS PROMPTS SALIERON BUGS DE VERDAD: un script cruzo cada
+    landmark con las calles y la carcel, el poligono, el estadio, el casino,
+    el aparcamiento y la torre tenian muro SOLIDO encima de carriles (la
+    torre, entera encima de una calle desde que se agrando la ciudad); la
+    plaza se comia media calle pintandola de acera; la terminal del
+    aerodromo tapaba una de las dos bajadas al puerto; el monte borraba la
+    calle del puerto; una nave del puerto se quedaba encima de la otra
+    bajada (el relleno de naves iba de punta a punta sin mirar las calles).
+    Todo corregido: los landmarks de manzana van en 17x11 con una casilla de
+    acera, como el mercado; la terminal se aparto; monte y naves respetan
+    las calles; el faro tenia su parte solida media casilla desplazada del
+    dibujo. Comprobado en el navegador: CERO casillas solidas sobre calle en
+    todo el mapa y ninguna calle pintada de otra cosa. Las laminas se
+    probaron con imagenes falsas de colores (estadio, playa y aerodromo):
+    el hueco de la entrada del estadio y la terminal caen exactamente en el
+    porcentaje que dicen los prompts, y la calle se ve por el recorte.
+    EFECTO SECUNDARIO: al moverse torre, plaza y casino, el piso y el
+    negocio del Centro (y los del puerto, por las naves) pueden salir en
+    otro edificio la proxima vez que se cargue; lo comprado no se pierde.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

@@ -17,8 +17,7 @@ YA HECHO (no hace falta volver a generarlo)
    8 vehiculos    con sus colores
    6 tejados
    1 portada      la pantalla de inicio
-   8 interiores   escondite, armeria y los seis pisos (altillo, residencial,
-                  estudio, nave, almacen, Centro)
+   8 interiores   escondite, armeria y los seis pisos
 
   Sus prompts estaban aqui y se han quitado: si algun dia hay que repetir
   alguno, siguen en el historial:
@@ -32,27 +31,41 @@ YA HECHO (no hace falta volver a generarlo)
      Lo vio Pablo y es lo que mas ha ahorrado.
    · Para los SPRITES se pide fondo magenta plano (#FF00FF): el damero que
      pinta el Playground se confunde con los grises del dibujo y cuesta
-     recortarlo. Los interiores NO llevan magenta: son cuadros enteros.
+     recortarlo. Las LAMINAS (interiores y landmarks) NO llevan magenta: son
+     cuadros enteros.
+
 
 ################################################################################
-#  EL CONCESIONARIO POR DENTRO (26-sep-2026)                     ES 1 PROMPT
+#  LA TANDA DE AHORA (26-sep-2026)                              SON 30 PROMPTS
 ################################################################################
 
-Nuevo desde esta noche: el concesionario dejo de ser coches aparcados en la
-acera y ahora se entra, como un piso. La sala YA esta montada en el juego
-(seis plazas en fila con nombre y precio debajo, puerta abajo en el centro);
-solo falta el suelo del salon.
+POR ORDEN, lo que mas se nota primero:
 
-OJO CON ESTA, es distinta a las ocho de arriba: NO lleva ni un mueble
-dibujado, y TAMPOCO coches. El juego pone el sprite de cada coche de verdad
-encima de cada plaza (el mismo dibujo del concesionario de antes, ahora aqui
-dentro) — si el cuadro trae coches pintados, se ven dos superpuestos, como
-pasaria con gente si el dibujo trajera gente.
+   1. interior-concesionario    1   la sala ya existe y esta vacia
+   2. ambulancia                1   el UNICO vehiculo que sigue sin foto
+   3. marcas del mapa           8   el mapa (M) ya los enseña desde hoy
+   4. landmarks                16   los sitios grandes de la ciudad
+   5. objetos de la calle       4   maquina, corazon, arma, paquete
+
+DONDE SE DEJA CADA COSA (con el nombre EXACTO que pone encima de cada prompt)
+   interior-concesionario y landmark-*  ->  sprites\originales\edificios\
+   ambulancia                           ->  sprites\originales\coches\
+   marca-*                              ->  sprites\originales\iconos\
+   maquina, corazon, arma, caja         ->  sprites\originales\objetos\
+   Valen .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+LA PROPORCION: en AI Studio, antes de darle a generar, elige en el
+desplegable de "aspect ratio" la que pone cada prompt. Si no, la IA saca un
+cuadrado y el juego lo tiene que estirar. Pedirla solo con palabras en el
+texto no basta: casi siempre la ignora.
+
 
 --------------------------------------------------------------------------------
-  9.  interior-concesionario.png
+  1.  interior-concesionario.png                         proporcion 21:9
 --------------------------------------------------------------------------------
-Un salon de coches: un solo espacio diafano y ancho, sin muebles.
+OJO CON ESTA, es distinta a los otros interiores: NO lleva muebles ni
+COCHES. El juego pone encima de cada plaza el coche de verdad; si el cuadro
+trae coches pintados se ven dos superpuestos.
 
 Top-down interior of a wide car dealership showroom floor, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a floor-plan view,
@@ -60,11 +73,11 @@ like the interiors in GTA Chinatown Wars. The camera is mounted on the
 ceiling looking straight down at the floor. NO walls seen from the front,
 NO perspective, NO tilt, NO vanishing point.
 
-FORMAT: landscape, 1600 x 720 pixels, wide and shallow (roughly 2.2:1). The
-floor fills the entire image edge to edge, no border, no margin.
+FORMAT: wide landscape 21:9. The floor fills the entire image edge to edge,
+no border, no margin.
 
 THE FLOOR: polished glossy showroom concrete or pale tile, reflective,
-almost empty on purpose — this is a car salon, not a room to furnish.
+almost empty on purpose - this is a car salon, not a room to furnish.
 
 LAYOUT - this part matters, the game places six car sprites and a door on
 top at these exact spots, and nothing else should be drawn there:
@@ -72,21 +85,19 @@ top at these exact spots, and nothing else should be drawn there:
 - A ROW OF SIX EMPTY DISPLAY BAYS evenly spaced left to right, centred
   roughly 44% of the way down from the top edge. Each bay is a distinct
   circular or rounded-square lit platform / showroom spotlight pool on the
-  floor (like a spotlit parking spot), clearly separate from its neighbours,
-  but EMPTY - no car, no shape resembling a vehicle, nothing standing on it.
+  floor, clearly separate from its neighbours, but EMPTY - no car, no shape
+  resembling a vehicle, nothing standing on it.
 - BOTTOM CENTRE EDGE: a stretch of floor left completely clear and open,
   that is the door to the street.
 - The rest of the floor (top band above the bays, the gaps between them,
   the corners) can carry dealership atmosphere: floor reflections, subtle
-  directional light streaks, maybe a distant reception counter or a neon
-  sign shape against the very top edge - but nothing blocking the six
-  bays or the bottom-centre doorway, and no vehicles anywhere.
+  light streaks, a distant reception counter against the very top edge -
+  but nothing blocking the six bays or the bottom-centre doorway.
 
 LIGHT: bright, cool showroom lighting, a spotlight glow over each of the six
 bays, reflections on the glossy floor.
-COLOUR: cool grey and white floor, blue-white spotlights, maybe one accent
-colour (amber or cyan) in the distant signage. Clean and commercial, not
-grimy like the hideouts.
+COLOUR: cool grey and white floor, blue-white spotlights, one warm accent
+colour (amber) at the reception. Clean and commercial, not grimy.
 STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
 photorealistic, NOT a 3D render, NOT isometric.
 MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
@@ -94,8 +105,675 @@ readable writing or watermark. NO people. NO cars, motorbikes or any vehicle
 shape anywhere, not even in the background. Nothing on top of the six bays.
 
 
-LO QUE VENGA DESPUES
-  Cada sitio nuevo en el que se pueda entrar (el taller de pintura, los
-  locales que se compren) lleva su lamina aqui, con el mismo esquema: vista
-  cenital, el plano descrito zona a zona, sin letras y sin gente. Las
-  medidas de cada sala te las doy yo cuando la montemos.
+--------------------------------------------------------------------------------
+  2.  ambulancia.png                                      proporcion 16:9
+--------------------------------------------------------------------------------
+Top-down sprite of a white ambulance van seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like the cars in GTA Chinatown Wars - like
+a map or a blueprint. Only the roof and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front of the van points
+RIGHT. White boxy body, a red stripe along both roof edges, a blue light bar
+across the roof near the front, a plain red cross painted on the middle of
+the roof (just the cross shape, NO letters). Pixel art, chunky readable
+pixels, muted palette, strong dark outline around the silhouette. Plain flat
+magenta background (#FF00FF), no shadow, no text, no watermark, no border,
+the vehicle centered and filling most of the image.
+
+
+################################################################################
+#  3.  LAS MARCAS DEL MAPA                          8 PROMPTS, proporcion 1:1
+################################################################################
+Desde hoy el mapa grande (M) enseña los locales, los negocios, el
+concesionario, los desguaces y las carreras. Mientras no tengan su marca
+salen como un cuadradito de color; con ella, como la armeria o tu casa.
+Van al mismo tamaño diminuto que las que ya hay, por eso son tan simples.
+
+
+--------------------------------------------------------------------------------
+  marca-concesionario.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a car dealership: a light blue rounded square badge
+with a small white car silhouette seen from the side inside it. Simple
+shapes, thick dark outline, flat colours, no gradients, no shading detail, no
+3D. It has to be readable when shown at 16 pixels wide. Centered, filling
+almost the whole image, plain flat magenta background (#FF00FF), no shadow,
+no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-desguace.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a scrapyard: a rust orange rounded square badge with
+a small white spanner (wrench) silhouette inside it, placed diagonally.
+Simple shapes, thick dark outline, flat colours, no gradients, no shading
+detail, no 3D. It has to be readable when shown at 16 pixels wide. Centered,
+filling almost the whole image, plain flat magenta background (#FF00FF), no
+shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-carrera.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a street race: a golden yellow rounded square badge
+with a small black and white checkered flag inside it. Simple shapes, thick
+dark outline, flat colours, no gradients, no shading detail, no 3D. It has to
+be readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-hospital.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a hospital: a white rounded square badge with a bold
+red cross inside it. Simple shapes, thick dark outline, flat colours, no
+gradients, no shading detail, no 3D. It has to be readable when shown at 16
+pixels wide. Centered, filling almost the whole image, plain flat magenta
+background (#FF00FF), no shadow, no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-comisaria.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a police station: a dark navy blue rounded square
+badge with a small white police star badge silhouette inside it. Simple
+shapes, thick dark outline, flat colours, no gradients, no shading detail, no
+3D. It has to be readable when shown at 16 pixels wide. Centered, filling
+almost the whole image, plain flat magenta background (#FF00FF), no shadow,
+no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-taller.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a car paint shop: a purple rounded square badge with
+a small white spray paint can silhouette inside it. Simple shapes, thick dark
+outline, flat colours, no gradients, no shading detail, no 3D. It has to be
+readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-comida.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a fried chicken takeaway: a red rounded square badge
+with a small white chicken drumstick silhouette inside it. Simple shapes,
+thick dark outline, flat colours, no gradients, no shading detail, no 3D. It
+has to be readable when shown at 16 pixels wide. Centered, filling almost the
+whole image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  marca-negocio.png
+--------------------------------------------------------------------------------
+Flat map marker icon for a business you can buy: a green rounded square badge
+with a small white briefcase silhouette inside it. Simple shapes, thick dark
+outline, flat colours, no gradients, no shading detail, no 3D. It has to be
+readable when shown at 16 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
+
+
+################################################################################
+#  4.  LOS LANDMARKS                                            16 PROMPTS
+################################################################################
+Los sitios grandes de la ciudad (la playa, el estadio, la carcel...) ahora
+son rectangulos y circulos dibujados por codigo. Cada lamina se estira sobre
+el trozo exacto de ciudad que ocupa ese sitio en el juego.
+
+POR QUE LOS PORCENTAJES SON TAN CONCRETOS
+  Lo que en el dibujo es un muro o un edificio, en el juego es solido y no se
+  atraviesa; lo que es suelo, se anda. Si el dibujo pone el muro de la
+  carcel donde el juego no lo tiene, se ve al personaje atravesando paredes.
+  Por eso cada prompt dice en que franja va cada cosa.
+
+LA CALLE QUE LOS CRUZA
+  La playa, el aerodromo y el monte estan en la franja de arena del puerto,
+  y la calle del puerto pasa por en medio. El prompt pide que se pinte ahi
+  una carretera sencilla, pero el juego NO la usa: recorta la lamina por ese
+  hueco y deja ver la calle de verdad, la de los coches. Asi que da igual
+  como salga esa carretera; lo que importa es lo de arriba y lo de abajo.
+
+LAS DOS MITADES
+  La playa y el aerodromo son tan largos que la IA no los saca sin
+  deformarlos, asi que van en dos mitades (-a la de la izquierda, -b la de la
+  derecha) que el juego pone una al lado de la otra.
+
+COMO SABER SI UNA VALE
+  · Se ven las PAREDES de los edificios, o una esquina con perspectiva? ->
+    repite. Tiene que ser como un plano, solo tejados y suelo.
+  · Trae LETRAS en algun cartel? -> repite.
+  · El resto (si los porcentajes cuadran) lo compruebo yo al meterla.
+
+EL TUNEL NO TIENE LAMINA a proposito: es la propia calle por la que van los
+coches, y una imagen encima la taparia.
+
+
+--------------------------------------------------------------------------------
+  landmark-playa-a.png           Playa Buenavista, mitad OESTE    16:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a city beach, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, NO isometric angle, NO horizon.
+
+FORMAT: landscape 16:9. The strip of land fills the whole image edge to
+edge, no border, no frame, no margin.
+
+LAYOUT IN HORIZONTAL BANDS, from the top edge down - this matters:
+- TOP 21%: a seaside promenade, a paved walkway running the full width, with
+  palm trees and lamp posts along its upper edge.
+- 21% TO 42%: dry pale sand.
+- 42% TO 68%: a plain straight two-lane asphalt road crossing the whole
+  image from left to right.
+- 68% TO 100%: sand with colourful beach umbrellas, towels and a lifeguard
+  tower, getting darker and wetter towards the very bottom edge (the sea
+  begins right below the image).
+- The promenade, the road and the sand continue straight off the LEFT and
+  RIGHT edges, because another image continues this one on the right side.
+  No object cut in half at the side edges.
+
+COLOUR: warm sand, turquoise-grey where the sand is wet, faded colourful
+umbrellas, muted and slightly desaturated like the rest of the city.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos, signs with writing or
+watermark. NO people. NO cars or vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-playa-b.png           Playa Buenavista, mitad ESTE     16:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a city beach, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, NO isometric angle, NO horizon.
+
+FORMAT: landscape 16:9. The strip of land fills the whole image edge to
+edge, no border, no frame, no margin.
+
+LAYOUT IN HORIZONTAL BANDS, from the top edge down - this matters:
+- TOP 21%: a seaside promenade, a paved walkway running the full width, with
+  palm trees and lamp posts along its upper edge.
+- 21% TO 42%: dry pale sand.
+- 42% TO 68%: a plain straight two-lane asphalt road crossing the whole
+  image from left to right.
+- 68% TO 100%: sand with colourful beach umbrellas, towels, a volleyball net
+  and a small beach bar kiosk with a thatched roof, getting darker and
+  wetter towards the very bottom edge (the sea begins right below).
+- The promenade, the road and the sand continue straight off the LEFT and
+  RIGHT edges, because another image continues this one on the left side.
+  No object cut in half at the side edges.
+
+COLOUR: warm sand, turquoise-grey where the sand is wet, faded colourful
+umbrellas, muted and slightly desaturated like the rest of the city.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos, signs with writing or
+watermark. NO people. NO cars or vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-estadio.png           Estadio Municipal                 3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of a small football stadium, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle, the stands are seen only from
+above.
+
+FORMAT: landscape 3:2. The stadium fills the whole image edge to edge, no
+border, no margin, nothing around it.
+
+LAYOUT - this matters, the stands are solid walls in the game:
+- The grandstands form a frame along all four edges: 12% of the width on
+  the left and on the right, 18% of the height at the top and at the
+  bottom. Rows of seats seen from above, in two team colours.
+- In the BOTTOM stand there is ONE gap, centred, from 35% to 65% of the
+  width: the entrance, plain open ground with no seats.
+- Inside the frame: a football pitch, bright green grass with white lines,
+  a centre circle and a goal at each short end.
+- A floodlight tower in each of the four corners.
+
+COLOUR: vivid but slightly muted green grass, grey concrete, faded seat
+colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos, scoreboards with
+writing or watermark. NO people, NO crowd. NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-casino.png            Casino Fortuna                    3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of a flashy casino, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle, the walls of the building are NOT
+visible, only its roof.
+
+FORMAT: landscape 3:2. The plot fills the whole image edge to edge, no
+border, no margin.
+
+LAYOUT - this matters, the building is solid in the game:
+- THE BUILDING: one big casino roof in the centre, from 12% to 88% of the
+  width and from 18% to 82% of the height. Gold and deep purple, a large
+  glass dome in the middle, rows of rooftop lights along its edges.
+- AROUND IT, on all four sides, a band of open paved forecourt: a red carpet
+  running from the bottom edge up to the building, two round fountains on
+  either side of it, potted palm trees. This band has nothing tall on it.
+
+COLOUR: gold, deep purple, warm light, pale paving.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos, neon words or watermark.
+NO people. NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-torre.png             Torre Sombra                      5:4
+--------------------------------------------------------------------------------
+Top-down aerial view of the roof of a very tall modern skyscraper, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the sides of the tower are NOT visible.
+
+FORMAT: landscape 5:4. The roof fills the WHOLE image edge to edge, no
+ground around it, no border, no margin.
+
+LAYOUT:
+- Stepped roof levels getting smaller towards the centre, like a wedding
+  cake seen from above, dark glass and steel.
+- Air-conditioning units, pipes and a window-cleaning crane on the outer
+  levels.
+- A round helipad on one side, marked only with a painted circle - NO
+  letter H.
+- A thin antenna mast EXACTLY in the centre of the image (the game puts a
+  blinking red light on top of it).
+
+COLOUR: dark blue-grey glass, steel, a few warm lights.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO helicopter.
+
+
+--------------------------------------------------------------------------------
+  landmark-plaza.png             Plaza del Farol                  16:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a paved city square, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle.
+
+FORMAT: landscape 16:9. The square fills the whole image edge to edge, no
+border, no margin, no streets around it.
+
+LAYOUT - this matters:
+- EXACTLY in the centre, taking about one eighth of the width: a round stone
+  fountain with a bronze statue standing in its middle. This is the only
+  solid thing.
+- Everything else is open walkable paving: patterned stone in a radial
+  design around the fountain, four small round planters with trees, a ring
+  of benches, old-fashioned lamp posts. Keep the paving continuous right up
+  to all four edges.
+
+COLOUR: warm grey and ochre stone, green planters, bronze, water blue.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-mercado.png           Mercado Cubierto                  3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of a covered city market, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the market hall are NOT visible, only
+its roof.
+
+FORMAT: landscape 3:2. The plot fills the whole image edge to edge, no
+border, no margin.
+
+LAYOUT - this matters, the hall is solid in the game:
+- THE HALL: one big market hall roof in the centre, from 18% to 82% of the
+  width and from 18% to 82% of the height. A long sawtooth roof of metal
+  and glass panels, with skylights.
+- AROUND IT, on all four sides, a band of open paved square with colourful
+  market stalls under striped awnings, crates of fruit and vegetables. The
+  stalls stay inside this band and never touch the hall.
+
+COLOUR: weathered metal, glass, faded colourful awnings, fresh produce.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos, price signs or
+watermark. NO people. NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-carcel.png            Correccional Santa Perdida        3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of a walled prison compound, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls are seen only from above.
+
+FORMAT: landscape 3:2. The compound fills the WHOLE image edge to edge, no
+border, no margin, nothing outside it.
+
+LAYOUT (all of it is solid in the game, nobody walks in):
+- A thick grey perimeter wall running along all four edges, with a round
+  watchtower in each corner and coils of razor wire along the top.
+- Inside: two long cell-block roofs, a small administration building, and
+  an exercise yard with a basketball court.
+
+COLOUR: cold concrete grey, rust, faded orange court, a few harsh
+floodlights.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-aparcamiento.png      Aparcamiento Central              3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of an open-air car park, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle.
+
+FORMAT: landscape 3:2. The car park fills the whole image edge to edge, no
+border, no margin.
+
+LAYOUT - this matters, the wall is solid in the game:
+- A low wall topped with a strip of hedge forms a frame along all four
+  edges: 12% of the width on the left and on the right, 18% of the height
+  at the top and at the bottom.
+- In the BOTTOM wall there is ONE gap, from 29% to 65% of the width: the
+  entrance, plain asphalt.
+- Inside the frame: dark asphalt with white painted parking bays in rows. A
+  few parked cars ONLY in the bays that touch the inner side of the wall;
+  the middle lanes and the entrance stay empty.
+
+COLOUR: dark grey asphalt, white lines, green hedge, a few faded car
+colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers (not even on the bays), a big
+letter P, logos or watermark. NO people.
+
+
+--------------------------------------------------------------------------------
+  landmark-poligono.png          Poligono Industrial               3:2
+--------------------------------------------------------------------------------
+Top-down aerial view of an industrial container yard, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle.
+
+FORMAT: landscape 3:2. The yard fills the whole image edge to edge, no
+border, no margin.
+
+LAYOUT - this matters, the wall is solid in the game:
+- A low concrete wall with a chain-link fence forms a frame along all four
+  edges: 12% of the width on the left and on the right, 18% of the height
+  at the top and at the bottom.
+- In the BOTTOM wall there is ONE gap, from 29% to 65% of the width: the
+  gate, plain concrete.
+- Inside the frame: stacks of shipping containers along the inner side of
+  the walls, a yellow gantry crane at the top, a forklift, oil drums and
+  pallets. A clear lane of bare concrete runs from the gate straight up the
+  middle of the yard.
+
+COLOUR: concrete grey, rust, faded red, blue, green and yellow containers,
+safety yellow markings.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, company logos or watermark. NO
+people. NO trucks or cars.
+
+
+--------------------------------------------------------------------------------
+  landmark-aeropuerto-a.png      Aerodromo, mitad OESTE           21:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a small coastal airfield, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the building are NOT visible.
+
+FORMAT: wide landscape 21:9. The strip of land fills the whole image edge to
+edge, no border, no margin.
+
+LAYOUT IN HORIZONTAL BANDS, from the top edge down - this matters:
+- TOP 42%: the apron.
+    · The terminal building roof sits against the TOP edge, from 38% to 85%
+      of the width and 21% of the height tall: flat roof with skylights and
+      a small round control tower cab at its right end. It is the only
+      building.
+    · A narrow vertical road comes down from the top edge between 24% and
+      35% of the width and meets the horizontal road below.
+    · The rest of the band is grey tarmac with painted yellow taxi lines and
+      two small propeller planes parked.
+- 42% TO 68%: a plain straight two-lane asphalt road crossing the whole
+  image from left to right.
+- 68% TO 95%: the runway, dark asphalt with a white dashed centre line and
+  white threshold stripes at the LEFT end, running off the right edge.
+- 95% TO 100%: a thin strip of sand.
+- The apron, the road, the runway and the sand continue straight off the
+  RIGHT edge, because another image continues this one on the right side.
+
+COLOUR: grey tarmac, white and yellow markings, pale sand.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, runway numbers, logos or watermark. NO
+people. NO cars or trucks.
+
+
+--------------------------------------------------------------------------------
+  landmark-aeropuerto-b.png      Aerodromo, mitad ESTE            21:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a small coastal airfield, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO isometric angle.
+
+FORMAT: wide landscape 21:9. The strip of land fills the whole image edge to
+edge, no border, no margin.
+
+LAYOUT IN HORIZONTAL BANDS, from the top edge down - this matters:
+- TOP 42%: open grass and grey tarmac with a windsock and a row of small
+  runway lights. NO buildings at all in this image.
+- 42% TO 68%: a plain straight two-lane asphalt road crossing the whole
+  image from left to right.
+- 68% TO 95%: the runway, dark asphalt with a white dashed centre line,
+  coming in from the LEFT edge and ENDING at 76% of the width with white
+  threshold stripes; from there to the right edge, dry grass and sand.
+- 95% TO 100%: a thin strip of sand.
+- The apron, the road, the runway and the sand continue straight off the
+  LEFT edge, because another image continues this one on the left side.
+
+COLOUR: grey tarmac, green-brown grass, white markings, pale sand.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, runway numbers, logos or watermark. NO
+people. NO vehicles, NO planes in this half.
+
+
+--------------------------------------------------------------------------------
+  landmark-monte.png             Mirador del Farallon             21:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a rocky coastal hill, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, NO horizon. The height of the hill is shown only by
+contour-like terraces and shadows, never from the side.
+
+FORMAT: wide landscape 21:9. The hill fills the whole image edge to edge, no
+border, no margin.
+
+LAYOUT - this matters:
+- A plain straight two-lane asphalt road crosses the hill horizontally
+  between 42% and 68% of the height. It starts 11% in from the LEFT edge
+  (the left 11% of that band is rock, not road) and runs off the RIGHT edge.
+- Above the road (TOP 42%): the summit. A stone viewpoint terrace with a
+  railing and two benches, centred horizontally, around 20% from the top
+  edge. Rocky terraces, scrub and pine trees around it.
+- Below the road (68% TO 100%): the lower slopes, rocks and pines going
+  down to bare rock along the bottom edge, where the sea begins.
+- A narrow zig-zag footpath climbs from the bottom edge up to the terrace,
+  crossing the road.
+
+COLOUR: dark green pines, ochre and grey rock, dusty path.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-isla.png              Isla del Pescador                21:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a tiny island in a calm bay, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, NO horizon.
+
+FORMAT: wide landscape 21:9. The image is a rectangle of sea with the island
+in it, edge to edge, no border, no margin.
+
+LAYOUT - this matters, the water can't be walked on in the game:
+- Calm sea water fills everything EXCEPT the two things below.
+- THE ISLAND: a small sandy island along the BOTTOM edge, from 22% to 78%
+  of the width, from 33% of the height down to the bottom edge. On it: a
+  small fisherman's wooden hut, one palm tree, drying nets and a rowing
+  boat pulled up on the sand.
+- THE BRIDGE: a narrow wooden footbridge on posts running straight down
+  from the TOP edge to the island, between 44% and 61% of the width.
+
+COLOUR: deep blue-green water with lighter shallows around the island, warm
+sand, weathered wood.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO cars.
+
+
+--------------------------------------------------------------------------------
+  landmark-faro.png              El Faro                           1:1
+--------------------------------------------------------------------------------
+Top-down aerial view of a lighthouse on a harbour pier, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the tower is seen only as a circle from above.
+
+FORMAT: square 1:1. The pier platform fills the whole image edge to edge,
+no water around it, no border, no margin.
+
+LAYOUT - this matters:
+- EXACTLY in the centre, filling the middle third of the image both ways:
+  the round lighthouse tower seen from above, red and white, with the round
+  glass lantern room at the very centre.
+- Around it, the rest is a walkable stone and concrete platform: mooring
+  bollards, a coiled rope, a small bench, rust and salt stains.
+
+COLOUR: red and white tower, weathered grey stone, warm lantern glow.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO boats, NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  landmark-grua.png              Grua del Puerto                  21:9
+--------------------------------------------------------------------------------
+Top-down aerial view of a harbour container crane on a quay, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the crane is seen only from above.
+
+FORMAT: wide landscape 21:9. The quay fills the whole image edge to edge, no
+water around it, no border, no margin.
+
+LAYOUT - this matters, only the base is solid in the game:
+- THE BASE: the heavy base and legs of the crane at the LEFT end, filling
+  the left 19% of the image from top to bottom.
+- THE BOOM: the long lattice jib of the crane reaching from the base all the
+  way to the right edge, along the middle of the image.
+- Under the boom, the rest is bare concrete quay with faded yellow painted
+  lines and mooring bollards. NO containers or crates on the quay: people
+  walk there.
+
+COLOUR: faded industrial yellow crane, rust, concrete grey, yellow lines.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO ships.
+
+
+################################################################################
+#  5.  LOS OBJETOS DE LA CALLE                      4 PROMPTS, proporcion 1:1
+################################################################################
+Pequeños: en el juego miden como un dedo. Por eso los prompts piden formas
+simples y un borde oscuro gordo; el detalle fino se pierde al encogerlos.
+
+
+--------------------------------------------------------------------------------
+  maquina.png                    la maquina de refrescos
+--------------------------------------------------------------------------------
+Game sprite of a street drinks vending machine, seen from above and slightly
+in front like the objects in GTA Chinatown Wars, so its glowing front with
+rows of drink cans is visible. Tall and narrow, dark body, lit blue-white
+glass front, a yellow coin slot. Simple readable shapes, thick dark outline,
+flat colours, no fine detail - it will be shown very small. Centered, filling
+most of the image, plain flat magenta background (#FF00FF), no shadow, no
+text, no brand logo, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  corazon.png                    el corazon de vida
+--------------------------------------------------------------------------------
+Game pickup sprite of a glowing red heart floating above the ground, the
+classic video game health item, seen from above. Bright red with a lighter
+shine on the upper left and a soft red glow around it. Simple readable
+shape, thick dark outline, flat colours - it will be shown very small.
+Centered, filling most of the image, plain flat magenta background
+(#FF00FF), no text, no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  arma.png                       el arma tirada en el suelo
+--------------------------------------------------------------------------------
+Game pickup sprite of a black handgun lying flat on the ground, seen from
+DIRECTLY ABOVE like in GTA Chinatown Wars, the barrel pointing RIGHT. Dark
+grey metal with a lighter edge highlight. Simple readable shape, thick dark
+outline, flat colours - it will be shown very small. Centered, filling most
+of the image, plain flat magenta background (#FF00FF), no shadow, no text,
+no watermark, no border.
+
+
+--------------------------------------------------------------------------------
+  caja.png                       el paquete de los repartos
+--------------------------------------------------------------------------------
+Game sprite of a cardboard delivery box seen from DIRECTLY ABOVE like in GTA
+Chinatown Wars: a square brown box top with a strip of darker packing tape
+across it in a cross. Simple readable shape, thick dark outline, flat
+colours - it will be shown very small. Centered, filling most of the image,
+plain flat magenta background (#FF00FF), no shadow, no text, no label, no
+watermark, no border.
+
+
+################################################################################
+#  LO QUE VIENE DESPUES DE ESTA TANDA
+################################################################################
+  · RETRATOS de los contactos de banda (punto 26 del plan). Primero hay que
+    decidir DONDE salen en pantalla (la propuesta: en el cartel grande que
+    sale al aceptar una mision); cuando este montado, van sus prompts.
+  · Cada sitio nuevo en el que se pueda entrar lleva su lamina aqui, con el
+    mismo esquema: vista cenital, el plano descrito zona a zona, sin letras
+    y sin gente. Las medidas de cada sala te las doy yo EN LA MISMA TANDA en
+    la que la monte (el del concesionario se me paso y no volvera a pasar).

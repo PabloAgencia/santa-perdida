@@ -140,6 +140,35 @@ export class MapaScene extends Phaser.Scene {
       );
     }
 
+    // Todo lo que se monto el 26-sep (locales, negocios, concesionario,
+    // desguaces, carreras) existia en la calle pero no aqui: comprabas un
+    // negocio y no habia forma de encontrarlo luego. Los que tienen "sitio
+    // descubierto" salen cuando los has visto; desguaces y carreras, que no
+    // lo tienen, salen siempre (son cuatro de cada, como los landmarks).
+    const ICONO_LOCAL = {
+      hospital: 'marca-hospital', comisaria: 'marca-comisaria',
+      taller: 'marca-taller', comida: 'marca-comida',
+    };
+    for (const l of city.locales ? city.locales.locales : []) {
+      if (!GameState.conoce(l.clave)) continue;
+      this.marca(l.x, l.y, l.cfg.color, l.cfg.nombre, 9, ICONO_LOCAL[l.cfg.clave]);
+    }
+    for (const n of city.negocios ? city.negocios.negocios : []) {
+      if (!GameState.conoce(n.clave)) continue;
+      const tuyo = GameState.esDueno(n.clave);
+      this.marca(n.x, n.y, tuyo ? 0xe8b54a : 0x8fd694, n.cfg.nombre, tuyo ? 11 : 9, 'marca-negocio');
+    }
+    const puertaConcesionario = city.concesionario && city.concesionario.puerta;
+    if (puertaConcesionario && GameState.conoce('concesionario')) {
+      this.marca(puertaConcesionario.x, puertaConcesionario.y, 0x7fa8d0, 'Concesionario', 10, 'marca-concesionario');
+    }
+    for (const d of city.mercado ? city.mercado.puntos : []) {
+      this.marca(d.x, d.y, 0xc87f4a, 'Desguace', 9, 'marca-desguace');
+    }
+    for (const c of city.carreras ? city.carreras.carreras : []) {
+      this.marca(c.x, c.y, 0xe8b54a, 'Carrera', 9, 'marca-carrera');
+    }
+
     // los sitios que se ven desde lejos si salen desde el principio: son
     // justo para orientarse
     for (const L of city.map.cfg.landmarks || []) {

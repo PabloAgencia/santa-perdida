@@ -117,30 +117,33 @@ export const CITY = {
 
   // sitios reconocibles para poder orientarse: sin esto todas las manzanas
   // se parecen y no hay forma de saber donde estas
+  //
+  // LA REGLA DE LAS MANZANAS: entre dos calles quedan 19 x 13 casillas. Un
+  // landmark que ocupa una manzana va en 17 x 11 con una casilla de acera
+  // alrededor, como el mercado. Varios se pasaban de la manzana y dejaban
+  // muro solido encima de los carriles (los coches se estampaban en mitad de
+  // la calle): se comprobo con un script que cruza cada landmark con las
+  // calles, y ninguno de los de manzana puede pisar ninguna.
   landmarks: [
-    { type: 'plaza', label: 'Plaza del Farol', x: 154, y: 125, w: 15, h: 9 },
-    { type: 'torre', label: 'Torre Sombra', x: 156, y: 107, w: 11, h: 9 },
+    { type: 'plaza', label: 'Plaza del Farol', x: 155, y: 119, w: 15, h: 9 },
+    { type: 'torre', label: 'Torre Sombra', x: 157, y: 101, w: 11, h: 9 },
     { type: 'faro', label: 'El Faro', x: 299, y: 247, w: 6, h: 6 },
     { type: 'grua', label: 'Grua del Puerto', x: 56, y: 247, w: 16, h: 4 },
     // en la franja de arena entre el puerto y el mar (portTop-seaTop), lejos
     // de la grua (x 56-72) y del faro (x 299-305)
     { type: 'playa', label: 'Playa Buenavista', x: 140, y: 234, w: 70, h: 19 },
-    // una manzana entera de la zona industrial (comprobado en el navegador
-    // que solo tenia dos naves ahi, sin nada mas importante)
-    { type: 'estadio', label: 'Estadio Municipal', x: 224, y: 170, w: 20, h: 14 },
-    // una manzana comercial normal (comprobado: solo seis tiendas pequeñas)
+    // una manzana entera de la zona industrial
+    { type: 'estadio', label: 'Estadio Municipal', x: 226, y: 172, w: 17, h: 11 },
+    // una manzana comercial normal
     { type: 'mercado', label: 'Mercado Cubierto', x: 58, y: 100, w: 17, h: 11 },
-    // otra manzana industrial (comprobado: solo dos naves, distinta a la del estadio)
-    { type: 'carcel', label: 'Correccional Santa Perdida', x: 104, y: 188, w: 22, h: 15 },
-    // una manzana de centro, lejos de la plaza y la torre (comprobado: solo
-    // seis edificios normales)
-    { type: 'casino', label: 'Casino Fortuna', x: 153, y: 80, w: 20, h: 14 },
-    // otra manzana comercial, distinta de la del mercado (comprobado: solo
-    // cinco edificios normales)
-    { type: 'aparcamiento', label: 'Aparcamiento Central', x: 33, y: 134, w: 19, h: 14 },
-    // otra manzana industrial, distinta del estadio y la carcel (comprobado:
-    // solo dos naves)
-    { type: 'poligono', label: 'Poligono Industrial', x: 80, y: 188, w: 22, h: 15 },
+    // otra manzana industrial, distinta a la del estadio
+    { type: 'carcel', label: 'Correccional Santa Perdida', x: 106, y: 190, w: 17, h: 11 },
+    // una manzana de centro
+    { type: 'casino', label: 'Casino Fortuna', x: 154, y: 82, w: 17, h: 11 },
+    // otra manzana comercial, distinta de la del mercado
+    { type: 'aparcamiento', label: 'Aparcamiento Central', x: 34, y: 136, w: 17, h: 11 },
+    // otra manzana industrial, distinta del estadio y la carcel
+    { type: 'poligono', label: 'Poligono Industrial', x: 82, y: 190, w: 17, h: 11 },
     // otro tramo de la franja de arena/puerto, al este de la playa y antes
     // del faro (comprobado: solo naves del puerto, nada especial)
     { type: 'aeropuerto', label: 'Aerodromo Santa Perdida', x: 210, y: 234, w: 85, h: 19 },

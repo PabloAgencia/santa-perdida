@@ -192,7 +192,9 @@ export class CityMap {
         this.fillRect(L.x, L.y, L.w, L.h, T.DOCK);
         const cx = L.x + Math.floor(L.w / 2);
         const cy = L.y + Math.floor(L.h / 2);
-        this.markSolidRect(cx - 1, cy - 1, 3, 3);
+        // 2x2 centrado de verdad: el 3x3 de antes quedaba media casilla a
+        // la derecha y abajo del dibujo (en un 6x6 no hay centro impar)
+        this.markSolidRect(cx - 1, cy - 1, 2, 2);
         lm.tower = { px: cx * TILE, py: cy * TILE };
       } else if (L.type === 'grua') {
         this.fillRect(L.x, L.y, L.w, L.h, T.DOCK);
@@ -208,17 +210,18 @@ export class CityMap {
         lm.paseo = { px: (L.x + L.w / 2) * TILE, py: (L.y + 2) * TILE };
       } else if (L.type === 'estadio') {
         // las gradas son un marco solido; el campo, en medio, se anda. Un
-        // hueco de 4 casillas en la grada sur hace de entrada.
+        // hueco de 5 casillas en la grada sur, centrado, hace de entrada.
         this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
-        const borde = 3;
+        const borde = 2;
         this.markSolidRect(L.x, L.y, L.w, borde); // norte
         this.markSolidRect(L.x, L.y, borde, L.h); // oeste
         this.markSolidRect(L.x + L.w - borde, L.y, borde, L.h); // este
         const entrada = L.x + Math.floor(L.w / 2) - 2;
         this.markSolidRect(L.x, L.y + L.h - borde, entrada - L.x, borde);
         this.markSolidRect(
-          entrada + 4, L.y + L.h - borde, L.x + L.w - (entrada + 4), borde
+          entrada + 5, L.y + L.h - borde, L.x + L.w - (entrada + 5), borde
         );
+        lm.borde = borde;
         lm.campo = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       } else if (L.type === 'mercado') {
         // la explanada alrededor es transitable (SIDEWALK); el pabellon en
@@ -281,10 +284,12 @@ export class CityMap {
       } else if (L.type === 'aeropuerto') {
         // la pista va al sur (cerca del mar), evitando la calle del puerto
         // que cruza por el medio de la franja de arena. La terminal, al
-        // norte, es un edificio pequeño y solido.
+        // norte, es un edificio pequeño y solido. Va a partir de la casilla
+        // 16 porque en la 10-14 baja una de las dos calles al puerto: antes
+        // empezaba en la 5 y la terminal tapaba esa calle entera.
         const anchoPista = L.w - 10;
         this.fillRect(L.x, L.y + L.h - 6, anchoPista, 5, T.ALLEY);
-        const tx = L.x + 5;
+        const tx = L.x + 16;
         const ty = L.y;
         const tw = 20;
         const th = 4;
@@ -295,8 +300,14 @@ export class CityMap {
         };
       } else if (L.type === 'monte') {
         // toda la ladera se anda: no hay altura de colision de verdad en
-        // este juego, la elevacion es solo dibujo (PintarCiudad)
-        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        // este juego, la elevacion es solo dibujo (PintarCiudad). La calle
+        // del puerto la cruza por el medio: esas casillas se respetan (antes
+        // se pintaban de callejon y la calle desaparecia bajo el monte).
+        for (let y = L.y; y < L.y + L.h; y++) {
+          for (let x = L.x; x < L.x + L.w; x++) {
+            if (this.inBounds(x, y) && this.roadMask[this.idx(x, y)] !== 1) this.setTile(x, y, T.ALLEY);
+          }
+        }
         lm.cima = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       } else if (L.type === 'isla') {
         // una bahia pequeña con una isla en medio, cerca del mar de
@@ -574,8 +585,17 @@ export class CityMap {
     const c = this.cfg;
     const pr = c.portRoad;
     this.paintZone(0, c.portTop, this.w, c.seaTop - c.portTop, 'puerto', 0);
-    // naves entre la ronda sur y la calle del puerto
-    this._fillBlock({ x: 12, y: c.portTop, x2: pr.x1 - 4, y2: pr.y - 3 }, 'puerto');
+    // naves entre la ronda sur y la calle del puerto, en tramos que dejan
+    // libres las dos bajadas al puerto (y su acera, 2 casillas a cada lado).
+    // Antes se rellenaba de punta a punta: las bajadas se quedaban pintadas
+    // de callejon y una nave caia encima de un carril.
+    const bajadas = [...c.portLinks].sort((a, b) => a.x - b.x);
+    let desde = 12;
+    for (const l of bajadas) {
+      this._fillBlock({ x: desde, y: c.portTop, x2: l.x - 3, y2: pr.y - 3 }, 'puerto');
+      desde = l.x + l.w + 2;
+    }
+    this._fillBlock({ x: desde, y: c.portTop, x2: pr.x1 - 4, y2: pr.y - 3 }, 'puerto');
     // la explanada entre la calle del puerto y los muelles se deja libre:
     // sirve de zona abierta para conducir y aparcar
   }

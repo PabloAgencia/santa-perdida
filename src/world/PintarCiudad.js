@@ -327,7 +327,10 @@ export const PintarCiudad = {
         .setDepth(depth);
 
     for (const L of this.map.landmarks) {
-      if (L.type === 'plaza') {
+      const conLamina = this.pintarLaminaLandmark(L);
+      if (conLamina) {
+        // la lamina de IA ya esta puesta: el dibujo por codigo sobra
+      } else if (L.type === 'plaza') {
         // Antes era un circulo azul plano que parecia una piscina. Ahora es
         // una plaza empedrada con una fuente y una estatua en medio.
         this.add.circle(L.monument.px, L.monument.py, 108, 0x474b52).setDepth(-1222);
@@ -370,17 +373,7 @@ export const PintarCiudad = {
         block(L.px, L.py, L.pw - 46, L.ph - 46, 0x333a4a, -1195);
         block(L.px, L.py, L.pw - 96, L.ph - 96, 0x414a5e, -1190);
         block(L.px, L.py, L.pw - 140, L.ph - 140, 0x515b72, -1185);
-        const light = this.add.circle(L.px, L.py, 9, 0xff4a3a).setDepth(-1180);
-        this.tweens.add({
-          targets: light, alpha: { from: 1, to: 0.15 },
-          duration: 850, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-        });
       } else if (L.type === 'faro') {
-        const glow = this.add.circle(L.tower.px, L.tower.py, 120, 0xe8d08a, 0.13).setDepth(-1230);
-        this.tweens.add({
-          targets: glow, scale: { from: 0.75, to: 1.25 }, alpha: { from: 0.2, to: 0.05 },
-          duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-        });
         this.add.circle(L.tower.px + 5, L.tower.py + 5, 46, 0x05060a, 0.5).setDepth(-1215);
         this.add.circle(L.tower.px, L.tower.py, 44, 0x6d6a63).setDepth(-1210);
         this.add.circle(L.tower.px, L.tower.py, 34, 0xd8d2c4).setDepth(-1205);
@@ -426,8 +419,8 @@ export const PintarCiudad = {
         block(L.px + 10, L.py + 12, L.pw + 10, L.ph + 10, 0x05060a, -1215, 0.4);
         block(L.px, L.py, L.pw, L.ph, 0x2e323a, -1210);   // las gradas
 
-        const campoW = L.pw - 192;
-        const campoH = L.ph - 192;
+        const campoW = L.pw - L.borde * 64;
+        const campoH = L.ph - L.borde * 64;
         block(L.px, L.py, campoW, campoH, 0x2f5a34, -1200);        // el cesped
         this.add.rectangle(L.px, L.py, campoW - 20, campoH - 20)
           .setStrokeStyle(2, 0xe8e4d8, 0.7).setDepth(-1198);
@@ -671,6 +664,8 @@ export const PintarCiudad = {
         }
       }
 
+      this.efectosVivos(L);
+
       this.add
         .text(L.px, L.py + L.ph / 2 + 22, L.label.toUpperCase(), {
           fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2,
@@ -680,6 +675,115 @@ export const PintarCiudad = {
         .setOrigin(0.5, 0)
         .setAlpha(0.55)
         .setDepth(-900);
+    }
+  },
+
+  // LA LAMINA DE IA DE UN LANDMARK, si existe (arte/landmark-<tipo>.jpg, o
+  // en dos mitades -a y -b para los muy alargados, que la IA no saca tan
+  // anchos sin deformarlos). Se estira sobre la huella exacta del landmark,
+  // asi que lo solido del dibujo cae donde es solido en el juego.
+  //
+  // Las casillas de calle que cruzan la huella (la calle del puerto por la
+  // playa, el aerodromo y el monte; la bajada al puerto por el aerodromo)
+  // NO se tapan: la lamina se recorta alrededor y por ahi se ve la calle de
+  // verdad por la que van los coches. Se agrupan las filas con la misma
+  // forma de calle y se pinta un recorte por cada tramo sin calle.
+  pintarLaminaLandmark(L) {
+    if (L.type === 'tunel') return false;   // el tunel ES la calle
+    const unica = `landmark-${L.type}`;
+    const mitadA = `landmark-${L.type}-a`;
+    const mitadB = `landmark-${L.type}-b`;
+    let trozos;
+    if (this.textures.exists(unica)) {
+      trozos = [{ clave: unica, x0: 0, x1: L.w }];
+    } else if (this.textures.exists(mitadA) && this.textures.exists(mitadB)) {
+      trozos = [{ clave: mitadA, x0: 0, x1: L.w / 2 }, { clave: mitadB, x0: L.w / 2, x1: L.w }];
+    } else {
+      return false;
+    }
+
+    const map = this.map;
+    const esCalle = (c, r) => {
+      const x = L.x + c;
+      const y = L.y + r;
+      return map.inBounds(x, y) && map.roadMask[map.idx(x, y)] === 1;
+    };
+
+    for (const t of trozos) {
+      const c0 = Math.floor(t.x0);
+      const c1 = Math.ceil(t.x1);
+      const frame = this.textures.get(t.clave).get();
+      const escX = frame.realWidth / (t.x1 - t.x0);
+      const escY = frame.realHeight / L.h;
+      const cx = (L.x + (t.x0 + t.x1) / 2) * TILE;
+
+      // filas seguidas con la misma forma de calle forman una franja
+      let r = 0;
+      while (r < L.h) {
+        const forma = (fila) => {
+          let s = '';
+          for (let c = c0; c < c1; c++) s += esCalle(c, fila) ? '1' : '0';
+          return s;
+        };
+        const patron = forma(r);
+        let r2 = r + 1;
+        while (r2 < L.h && forma(r2) === patron) r2++;
+
+        // cada tramo seguido sin calle dentro de la franja, un recorte. Donde
+        // el recorte linda con calle se mete 2 px: el filtrado de la textura
+        // coge el pixel de al lado y dejaba una raya del color de la franja
+        // recortada justo en el bordillo.
+        const MARGEN = 2;
+        const hayCalle = (ca, cb, ra, rb) => {
+          for (let rr = ra; rr < rb; rr++) {
+            for (let cc = ca; cc < cb; cc++) if (esCalle(cc, rr)) return true;
+          }
+          return false;
+        };
+        let c = c0;
+        while (c < c1) {
+          if (patron[c - c0] === '1') { c++; continue; }
+          let fin = c;
+          while (fin < c1 && patron[fin - c0] === '0') fin++;
+          const desde = Math.max(c, t.x0);
+          const hasta = Math.min(fin, t.x1);
+          if (hasta > desde) {
+            const arriba = r > 0 && hayCalle(c, fin, r - 1, r) ? MARGEN : 0;
+            const abajo = r2 < L.h && hayCalle(c, fin, r2, r2 + 1) ? MARGEN : 0;
+            const izq = c > 0 && hayCalle(c - 1, c, r, r2) ? MARGEN : 0;
+            const der = fin < L.w && hayCalle(fin, fin + 1, r, r2) ? MARGEN : 0;
+            this.add.image(cx, L.py, t.clave)
+              .setDisplaySize((t.x1 - t.x0) * TILE, L.ph)
+              .setCrop(
+                (desde - t.x0) * escX + izq, r * escY + arriba,
+                (hasta - desde) * escX - izq - der, (r2 - r) * escY - arriba - abajo
+              )
+              .setDepth(-1215);
+          }
+          c = fin;
+        }
+        r = r2;
+      }
+    }
+    return true;
+  },
+
+  // lo que se mueve encima del landmark, haya lamina o no: la luz roja de
+  // la antena de la torre y el haz del faro, los dos en el centro exacto
+  // (las laminas piden la antena y la linterna ahi mismo)
+  efectosVivos(L) {
+    if (L.type === 'torre') {
+      const luz = this.add.circle(L.px, L.py, 9, 0xff4a3a).setDepth(-1180);
+      this.tweens.add({
+        targets: luz, alpha: { from: 1, to: 0.15 },
+        duration: 850, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+      });
+    } else if (L.type === 'faro') {
+      const haz = this.add.circle(L.tower.px, L.tower.py, 120, 0xe8d08a, 0.13).setDepth(-1230);
+      this.tweens.add({
+        targets: haz, scale: { from: 0.75, to: 1.25 }, alpha: { from: 0.2, to: 0.05 },
+        duration: 2200, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+      });
     }
   },
 

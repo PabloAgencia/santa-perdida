@@ -36,9 +36,16 @@ CALIDAD = 86
 # a cuantos pixeles de ancho se dibuja cada sala en el juego
 EN_PANTALLA = {
     'interior-armeria': 660,        # ShopScene.sala
+    'interior-concesionario': 760,  # ConcesionarioScene.sala
 }
 POR_DEFECTO = 600                   # HideoutScene.sala
 FACTOR = 2                          # el doble, para pantallas finas
+
+# Las laminas de los landmarks (landmark-*) no son salas: se estiran sobre
+# un trozo de ciudad que mide entre 200 y 1.400 px de ancho, y la camara las
+# ve de cerca. Con 1.600 de ancho sobra y pesan poco.
+ANCHO_LANDMARK = 1600
+PREFIJOS = ('interior-', 'landmark-')
 
 
 def main():
@@ -51,7 +58,7 @@ def main():
     despues = 0
     for nombre in sorted(os.listdir(ORIGENES)):
         base, ext = os.path.splitext(nombre)
-        if not base.startswith('interior-'):
+        if not base.startswith(PREFIJOS):
             continue
         if ext.lower() not in ('.png', '.jpg', '.jpeg', '.webp'):
             continue
@@ -60,7 +67,10 @@ def main():
         destino = os.path.join(ARTE, base + '.jpg')
 
         im = Image.open(origen).convert('RGB')
-        ancho = EN_PANTALLA.get(base, POR_DEFECTO) * FACTOR
+        if base.startswith('landmark-'):
+            ancho = ANCHO_LANDMARK
+        else:
+            ancho = EN_PANTALLA.get(base, POR_DEFECTO) * FACTOR
         if im.width > ancho:
             alto = round(im.height * ancho / im.width)
             im = im.resize((ancho, alto), Image.LANCZOS)
@@ -76,7 +86,7 @@ def main():
               % (base, a, d, im.width, im.height))
 
     if not hechos:
-        print('No he encontrado ninguna lamina interior-* en %s' % ORIGENES)
+        print('No he encontrado ninguna lamina interior-* ni landmark-* en %s' % ORIGENES)
         return
     print('\n%d laminas: %.1f MB -> %.1f MB' % (hechos, antes / 1024, despues / 1024))
     print('Ahora:  python herramientas/actualizar-arte.py')

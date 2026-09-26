@@ -43,7 +43,7 @@ VOLTEAR = {'avispa'}
 
 # Los que llevan librea no se tiñen: un coche de policia pintado de verde deja
 # de ser un coche de policia, y un taxi que no es amarillo tampoco es un taxi.
-SIN_TENIR = {'patrulla', 'furgon', 'taxi'}
+SIN_TENIR = {'patrulla', 'furgon', 'taxi', 'ambulancia'}
 
 ALIAS = {
     'coche 1970s': 'bastion',
@@ -392,6 +392,38 @@ def preparar_iconos(hechos):
         print(f'  {fichero}: {clave} a {lado}x{lado} px')
 
 
+# Los objetos de la calle: nombre del fichero -> (clave en el juego, ancho,
+# alto). Salen algo mas grandes que el dibujo por codigo de antes (la maquina
+# era de 14x20): a ese tamaño una imagen de verdad se queda en un borron.
+OBJETOS = {
+    'maquina': ('maquina', 20, 28),
+    'corazon': ('corazon', 28, 28),
+    'arma': ('arma-suelo', 24, 20),
+    'caja': ('crate', 24, 24),
+}
+
+
+def preparar_objetos(hechos):
+    carpeta = os.path.join(ORIGEN, 'objetos')
+    if not os.path.isdir(carpeta):
+        return
+    for fichero in sorted(os.listdir(carpeta)):
+        if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            continue
+        clave = os.path.splitext(fichero)[0].lower().strip()
+        if clave not in OBJETOS:
+            print(f'  ! "{fichero}" no cuadra con ningun objeto '
+                  f'({", ".join(sorted(OBJETOS))})')
+            continue
+        nombre_juego, an, al = OBJETOS[clave]
+        img = mancha_principal(quitar_fondo(Image.open(os.path.join(carpeta, fichero))))
+        img = encajar(recortar(img), an, al)
+        nombre = f'{nombre_juego}.png'
+        img.save(os.path.join(DESTINO, nombre))
+        hechos.append(nombre)
+        print(f'  {fichero}: {nombre_juego} a {an}x{al} px')
+
+
 def main():
     os.makedirs(DESTINO, exist_ok=True)
     vehiculos = leer_vehiculos()
@@ -405,6 +437,8 @@ def main():
     preparar_personajes(hechos)
     print('Iconos:')
     preparar_iconos(hechos)
+    print('Objetos:')
+    preparar_objetos(hechos)
 
     with open(os.path.join(DESTINO, 'lista.json'), 'w', encoding='utf-8') as f:
         json.dump(sorted(hechos), f)

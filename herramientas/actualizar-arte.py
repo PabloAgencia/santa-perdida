@@ -42,6 +42,23 @@ ESPERADOS = {
     'interior-piso-almacen': 'el almacen        11.000 $',
     'interior-piso-centro': 'el del Centro     16.000 $',
     'interior-piso': 'generica de piso (opcional, de reserva)',
+    'interior-concesionario': 'el concesionario por dentro',
+    'landmark-plaza': 'Plaza del Farol',
+    'landmark-torre': 'Torre Sombra',
+    'landmark-faro': 'El Faro',
+    'landmark-grua': 'Grua del Puerto',
+    'landmark-playa-a': 'Playa Buenavista, mitad oeste',
+    'landmark-playa-b': 'Playa Buenavista, mitad este',
+    'landmark-estadio': 'Estadio Municipal',
+    'landmark-mercado': 'Mercado Cubierto',
+    'landmark-carcel': 'Correccional Santa Perdida',
+    'landmark-casino': 'Casino Fortuna',
+    'landmark-aparcamiento': 'Aparcamiento Central',
+    'landmark-poligono': 'Poligono Industrial',
+    'landmark-aeropuerto-a': 'Aerodromo, mitad oeste',
+    'landmark-aeropuerto-b': 'Aerodromo, mitad este',
+    'landmark-monte': 'Mirador del Farallon',
+    'landmark-isla': 'Isla del Pescador',
 }
 
 
