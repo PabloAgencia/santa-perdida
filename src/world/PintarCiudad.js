@@ -422,6 +422,29 @@ export const PintarCiudad = {
           this.add.circle(sx, sy, 22, color).setDepth(-1198);
           this.add.circle(sx, sy, 22).setStrokeStyle(2, 0x05060a, 0.5).setDepth(-1197);
         }
+      } else if (L.type === 'estadio') {
+        block(L.px + 10, L.py + 12, L.pw + 10, L.ph + 10, 0x05060a, -1215, 0.4);
+        block(L.px, L.py, L.pw, L.ph, 0x2e323a, -1210);   // las gradas
+
+        const campoW = L.pw - 192;
+        const campoH = L.ph - 192;
+        block(L.px, L.py, campoW, campoH, 0x2f5a34, -1200);        // el cesped
+        this.add.rectangle(L.px, L.py, campoW - 20, campoH - 20)
+          .setStrokeStyle(2, 0xe8e4d8, 0.7).setDepth(-1198);
+        block(L.px, L.py, 3, campoH - 20, 0xe8e4d8, -1197, 0.7);   // linea de medio campo
+        this.add.circle(L.px, L.py, 34).setStrokeStyle(2, 0xe8e4d8, 0.7).setDepth(-1197);
+
+        // cuatro torres de luz, una por esquina, parpadeando
+        for (const [ex, ey] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          const lx = L.px + ex * (L.pw / 2 - 20);
+          const ly = L.py + ey * (L.ph / 2 - 20);
+          block(lx, ly, 8, 40, 0x3a3f47, -1205);
+          const luz = this.add.circle(lx, ly - 24, 10, 0xf2efc0, 0.9).setDepth(-1204);
+          this.tweens.add({
+            targets: luz, alpha: { from: 0.9, to: 0.5 },
+            duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+          });
+        }
       }
 
       this.add

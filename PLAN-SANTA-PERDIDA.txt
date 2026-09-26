@@ -2228,6 +2228,34 @@ TRIGESIMOCTAVA TANDA (26-sep-2026): playa con paseo maritimo — primer landmark
   11 en PENDIENTE.
 
 ================================================================================
+TRIGESIMONOVENA TANDA (26-sep-2026): el estadio, segundo landmark
+================================================================================
+
+  Segundo de los trece. Se busco primero un hueco grande sin nada
+  importante (comprobado en la consola del navegador con
+  `city.map.buildings.filter`, no a ojo): una manzana entera de la zona
+  industrial, x=224-243, y=170-183, que solo tenia dos naves. El landmark
+  ocupa esa manzana completa: `{ type: 'estadio', x: 224, y: 170, w: 20,
+  h: 14 }`.
+
+     · `CityMap._placeLandmarks()`: las gradas son un marco SOLIDO de 3
+       casillas de grosor por los cuatro lados; el campo, en medio, se
+       anda sin problema. Un hueco de 4 casillas en la grada sur hace de
+       entrada — sin eso, el estadio habria quedado cerrado del todo y
+       nadie podria entrar caminando.
+     · `PintarCiudad.drawLandmarks()`: cesped verde con linea de medio
+       campo y circulo central (en blanco), y cuatro torres de luz en las
+       esquinas que parpadean.
+
+  COMPROBADO a mano en la consola: el centro (el campo) no es solido, el
+  borde norte si lo es (las gradas), la entrada sur no lo es (el hueco).
+  Visualmente: el campo verde con las lineas blancas, el jugador de pie en
+  el circulo central, las cuatro luces en las esquinas, y el minimapa
+  marcando el rectangulo verde con claridad. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: once landmarks mas.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2295,12 +2323,12 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
      que se ataca UNO POR TANDA (Pablo: "todo, paso a paso pero todo"):
 
        [x] Playa con paseo maritimo — 38a tanda, 26-sep.
+       [x] Estadio — 39a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
        [ ] Casino o sala de juegos
        [ ] Mercado cubierto
        [ ] Poligono industrial de verdad
-       [ ] Estadio
        [ ] Hospital y comisaria como edificios de uso (mejora visual sobre
            los locales genericos que ya existen)
        [ ] Carcel

@@ -206,6 +206,20 @@ export class CityMap {
         // sombrillas. Nada solido: se anda por toda la playa.
         this.fillRect(L.x, L.y, L.w, 4, T.SIDEWALK);
         lm.paseo = { px: (L.x + L.w / 2) * TILE, py: (L.y + 2) * TILE };
+      } else if (L.type === 'estadio') {
+        // las gradas son un marco solido; el campo, en medio, se anda. Un
+        // hueco de 4 casillas en la grada sur hace de entrada.
+        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        const borde = 3;
+        this.markSolidRect(L.x, L.y, L.w, borde); // norte
+        this.markSolidRect(L.x, L.y, borde, L.h); // oeste
+        this.markSolidRect(L.x + L.w - borde, L.y, borde, L.h); // este
+        const entrada = L.x + Math.floor(L.w / 2) - 2;
+        this.markSolidRect(L.x, L.y + L.h - borde, entrada - L.x, borde);
+        this.markSolidRect(
+          entrada + 4, L.y + L.h - borde, L.x + L.w - (entrada + 4), borde
+        );
+        lm.campo = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       }
 
       this.landmarks.push(lm);

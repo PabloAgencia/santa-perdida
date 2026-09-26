@@ -125,4 +125,7 @@ export const CITY = {
     // en la franja de arena entre el puerto y el mar (portTop-seaTop), lejos
     // de la grua (x 56-72) y del faro (x 299-305)
     { type: 'playa', label: 'Playa Buenavista', x: 140, y: 234, w: 70, h: 19 },
+    // una manzana entera de la zona industrial (comprobado en el navegador
+    // que solo tenia dos naves ahi, sin nada mas importante)
+    { type: 'estadio', label: 'Estadio Municipal', x: 224, y: 170, w: 20, h: 14 },
   ],};
