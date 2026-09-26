@@ -141,4 +141,7 @@ export const CITY = {
     // otra manzana industrial, distinta del estadio y la carcel (comprobado:
     // solo dos naves)
     { type: 'poligono', label: 'Poligono Industrial', x: 80, y: 188, w: 22, h: 15 },
+    // otro tramo de la franja de arena/puerto, al este de la playa y antes
+    // del faro (comprobado: solo naves del puerto, nada especial)
+    { type: 'aeropuerto', label: 'Aerodromo Santa Perdida', x: 210, y: 234, w: 85, h: 19 },
   ],};

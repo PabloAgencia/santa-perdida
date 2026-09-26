@@ -278,6 +278,21 @@ export class CityMap {
           entrada3 + 6, L.y + L.h - borde3, L.x + L.w - (entrada3 + 6), borde3
         );
         lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+      } else if (L.type === 'aeropuerto') {
+        // la pista va al sur (cerca del mar), evitando la calle del puerto
+        // que cruza por el medio de la franja de arena. La terminal, al
+        // norte, es un edificio pequeño y solido.
+        const anchoPista = L.w - 10;
+        this.fillRect(L.x, L.y + L.h - 6, anchoPista, 5, T.ALLEY);
+        const tx = L.x + 5;
+        const ty = L.y;
+        const tw = 20;
+        const th = 4;
+        this.markSolidRect(tx, ty, tw, th);
+        lm.pista = { px: (L.x + anchoPista / 2) * TILE, py: (L.y + L.h - 3) * TILE, pw: anchoPista * TILE };
+        lm.terminal = {
+          px: (tx + tw / 2) * TILE, py: (ty + th / 2) * TILE, pw: tw * TILE, ph: th * TILE,
+        };
       }
 
       this.landmarks.push(lm);

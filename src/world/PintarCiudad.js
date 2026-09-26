@@ -574,6 +574,30 @@ export const PintarCiudad = {
         block(gx - 60, gy, 10, 60, 0x3a3f47, -1206);
         block(gx + 60, gy, 10, 60, 0x3a3f47, -1206);
         block(gx, gy - 30, 130, 10, 0x4a5058, -1205);
+      } else if (L.type === 'aeropuerto') {
+        const pista = L.pista;
+        block(pista.px, pista.py, pista.pw, 160, 0x2a2d33, -1215);   // el asfalto
+
+        // linea central discontinua
+        const n = Math.max(2, Math.floor(pista.pw / 60));
+        for (let i = 0; i < n; i++) {
+          const lx = pista.px - pista.pw / 2 + 30 + i * (pista.pw / n);
+          block(lx, pista.py, 30, 4, 0xe8e4d8, -1210, 0.7);
+        }
+
+        const term = L.terminal;
+        block(term.px + 8, term.py + 10, term.pw + 8, term.ph + 8, 0x05060a, -1216, 0.4);
+        block(term.px, term.py, term.pw, term.ph, 0xc8c4b8, -1210);
+
+        // la torre de control, con luz roja parpadeante en lo alto
+        const torreX = term.px + term.pw / 2 - 10;
+        const torreY = term.py - 20;
+        block(torreX, torreY, 16, 40, 0x9aa3ad, -1205);
+        const luz = this.add.circle(torreX, torreY - 24, 6, 0xff4a3a).setDepth(-1204);
+        this.tweens.add({
+          targets: luz, alpha: { from: 1, to: 0.15 },
+          duration: 850, yoyo: true, repeat: -1, ease: 'Sine.inOut',
+        });
       }
 
       this.add

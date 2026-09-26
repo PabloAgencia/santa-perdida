@@ -2393,6 +2393,28 @@ CUADRAGESIMOQUINTA TANDA (26-sep-2026): el poligono industrial, octavo landmark
   quedan: aeropuerto, monte/mirador, puentes, isla y tuneles.
 
 ================================================================================
+CUADRAGESIMOSEXTA TANDA (26-sep-2026): el aerodromo, noveno landmark
+================================================================================
+
+  Noveno de los trece. Se aprovecho otro tramo de la franja de arena/puerto
+  (entre la playa y el faro, comprobado: solo naves del puerto, nada
+  especial). `{ type: 'aeropuerto', x: 210, y: 234, w: 85, h: 19 }`.
+
+  Igual que con la playa, la calle del puerto cruza por el medio de esa
+  franja: la PISTA va al sur (cerca del mar, evitando la calle), y la
+  TERMINAL (un edificio pequeño y solido con una torre de control con luz
+  roja parpadeante) al norte, pegada al lado de la ciudad.
+
+  COMPROBADO a mano en la consola y visualmente: la pista no es solida (se
+  puede andar/conducir por ella), se ve el asfalto oscuro con la linea
+  central discontinua y el nombre "AERODROMO SANTA PERDIDA"; la terminal se
+  ve con la torre y la luz roja parpadeando. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: cuatro landmarks mas — monte/mirador,
+  puentes, isla y tuneles (los que dependen mas de la geografia del mapa,
+  no solo de encontrar un hueco de edificios libre).
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2467,7 +2489,7 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Aparcamiento — 43a tanda, 26-sep.
        [x] Hospital y comisaria como edificios de uso — 44a tanda, 26-sep.
        [x] Poligono industrial de verdad — 45a tanda, 26-sep.
-       [ ] Aeropuerto pequeño o aerodromo
+       [x] Aeropuerto o aerodromo — 46a tanda, 26-sep.
        [ ] Un monte o mirador con carretera de curvas
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
