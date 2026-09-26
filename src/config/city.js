@@ -135,4 +135,7 @@ export const CITY = {
     // una manzana de centro, lejos de la plaza y la torre (comprobado: solo
     // seis edificios normales)
     { type: 'casino', label: 'Casino Fortuna', x: 153, y: 80, w: 20, h: 14 },
+    // otra manzana comercial, distinta de la del mercado (comprobado: solo
+    // cinco edificios normales)
+    { type: 'aparcamiento', label: 'Aparcamiento Central', x: 33, y: 134, w: 19, h: 14 },
   ],};

@@ -526,6 +526,31 @@ export const PintarCiudad = {
             });
           }
         }
+      } else if (L.type === 'aparcamiento') {
+        block(L.px, L.py, L.pw, L.ph, 0x3a3d42, -1215);   // el asfalto
+
+        const filas = 4;
+        const plazasPorFila = 8;
+        const colores = [0xd9584a, 0xe8b54a, 0x4a8fd0, 0x6bb374, 0xc86ab0, 0x9aa3ad];
+        for (let f = 0; f < filas; f++) {
+          const fy = L.py - L.ph / 2 + 60 + f * ((L.ph - 120) / (filas - 1));
+          for (let c = 0; c < plazasPorFila; c++) {
+            const cx = L.px - L.pw / 2 + 40 + c * ((L.pw - 80) / (plazasPorFila - 1));
+            block(cx, fy, 3, 40, 0xc8c4b8, -1210, 0.5);   // raya de la plaza
+            // no todas las plazas tienen coche, para que no parezca lleno
+            if ((f + c) % 3 !== 0) {
+              const color = colores[(f * plazasPorFila + c) % colores.length];
+              block(cx + 10, fy, 24, 34, 0x05060a, -1206, 0.3);
+              block(cx + 9, fy, 22, 32, color, -1205);
+            }
+          }
+        }
+
+        // el letrero grande de la "P"
+        block(L.px, L.py - L.ph / 2 - 20, 40, 40, 0x1a2a4a, -1206);
+        this.add.text(L.px, L.py - L.ph / 2 - 20, 'P', {
+          fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '28px', color: '#f2efe6',
+        }).setOrigin(0.5).setDepth(-1205);
       }
 
       this.add

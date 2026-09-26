@@ -250,6 +250,20 @@ export class CityMap {
           px: (mx2 + mw2 / 2) * TILE, py: (my2 + mh2 / 2) * TILE,
           pw: mw2 * TILE, ph: mh2 * TILE,
         };
+      } else if (L.type === 'aparcamiento') {
+        // el patio entero se anda (ALLEY); solo el muro bajo del perimetro
+        // es solido, con un hueco de entrada en el lado sur
+        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        const borde2 = 2;
+        this.markSolidRect(L.x, L.y, L.w, borde2);
+        this.markSolidRect(L.x, L.y, borde2, L.h);
+        this.markSolidRect(L.x + L.w - borde2, L.y, borde2, L.h);
+        const entrada2 = L.x + Math.floor(L.w / 2) - 3;
+        this.markSolidRect(L.x, L.y + L.h - borde2, entrada2 - L.x, borde2);
+        this.markSolidRect(
+          entrada2 + 6, L.y + L.h - borde2, L.x + L.w - (entrada2 + 6), borde2
+        );
+        lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       }
 
       this.landmarks.push(lm);

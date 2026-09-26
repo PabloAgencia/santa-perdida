@@ -2324,6 +2324,29 @@ CUADRAGESIMOSEGUNDA TANDA (26-sep-2026): el casino, quinto landmark
   LO QUE QUEDA DE ESTE BLOQUE: ocho landmarks mas.
 
 ================================================================================
+CUADRAGESIMOTERCERA TANDA (26-sep-2026): el aparcamiento, sexto landmark
+================================================================================
+
+  Sexto de los trece. Otra manzana comercial, distinta de la del mercado
+  (comprobado: solo cinco edificios normales). `{ type: 'aparcamiento',
+  x: 33, y: 134, w: 19, h: 14 }`.
+
+  "VARIAS PLANTAS" no se puede representar literalmente en un juego
+  cenital 2D (no hay altura real en ningun otro sitio del juego). Se hizo
+  un aparcamiento a cielo abierto grande en su lugar, que cumple la misma
+  funcion visual y de espacio: muro bajo con un hueco de entrada al sur
+  (mismo patron que el estadio), y dentro, coches de colores DECORATIVOS
+  (no vehiculos de verdad, solo dibujo) en filas de plazas marcadas —
+  algunas plazas vacias, para que no parezca un aparcamiento lleno del
+  todo. Un letrero azul con una "P" grande.
+
+  COMPROBADO a mano en la consola y visualmente: el centro no es solido (se
+  anda entre los coches); se ven las cuatro filas de plazas con coches de
+  seis colores distintos y el letrero de la "P". Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: siete landmarks mas.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2395,6 +2418,7 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Mercado cubierto — 40a tanda, 26-sep.
        [x] Carcel — 41a tanda, 26-sep.
        [x] Casino — 42a tanda, 26-sep.
+       [x] Aparcamiento — 43a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
        [ ] Poligono industrial de verdad
@@ -2403,7 +2427,6 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
        [ ] Tuneles
-       [ ] Aparcamiento de varias plantas
 
      QUE VIGILAR AL AMPLIAR (esto es lo importante):
        · `config/city.js` es donde vive el tamaño y las calles: casi todo se
