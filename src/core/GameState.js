@@ -217,7 +217,8 @@ class GameStateClass {
   //   reparto     mas tiempo para entregar         JobSystem.offerNew
   //   taxista     coches mas rapidos, siempre       Vehicle.update (input.atajos)
   //   ambulancia  mas vida maxima                   el getter de aqui arriba
-  //   justiciero  la policia te ve desde mas cerca   PoliceSystem.canSee
+  //   justiciero  la policia necesita estar mas cerca para verte (su radio
+  //               de deteccion se reduce)                PoliceSystem.canSee
   sumarTrabajo(tipo) {
     if (!this.flags.trabajos) this.flags.trabajos = {};
     this.flags.trabajos[tipo] = (this.flags.trabajos[tipo] || 0) + 1;

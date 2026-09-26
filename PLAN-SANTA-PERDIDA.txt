@@ -2045,8 +2045,9 @@ TRIGESIMOSEXTA TANDA (26-sep-2026): que cada trabajo deje una mejora permanente
      · JUSTICIERO (nuevo, `JusticieroSystem`) — solo conduciendo una
        'patrulla'. Un fugitivo huye por la red de calles (mismo patron que
        los "blancos" de MissionSystem, pero sin acoplar los dos sistemas);
-       le das caza embistiendolo hasta que revienta. Mejora: la policia te
-       ve desde un 4% menos de distancia por nivel (hasta -20%).
+       le das caza embistiendolo hasta que revienta. Mejora: el radio en el
+       que una patrulla puede verte se reduce un 4% por nivel (hasta -20%):
+       tienen que estar mas cerca para ficharte.
 
   LA TECLA J decide cual segun lo que conduzcas: taxi, ambulancia o patrulla
   ofrecen SU trabajo; cualquier otra cosa (o a pie) sigue dando el reparto
@@ -2125,8 +2126,9 @@ EL SALTO GRANDE
   9. HECHO (35a tanda, 26-sep). Guerra por el territorio de las bandas, con
      oleadas.
  10. HECHO (36a tanda, 26-sep). Que cada trabajo deje una mejora permanente:
-     ambulancia = mas vida, justiciero = la policia te ve desde mas cerca,
-     taxi = atajos (coches mas rapidos), reparto = mas tiempo de entrega.
+     ambulancia = mas vida, justiciero = la policia necesita estar mas cerca
+     para verte (menos radio de deteccion), taxi = atajos (coches mas
+     rapidos), reparto = mas tiempo de entrega.
      Taxista, ambulancia y justiciero no existian como trabajos: se crearon
      de cero en esta tanda (el punto 17, "TRABAJOS", sigue pendiente para
      las carreras contrarreloj; lo que hacia falta de el para esto ya esta).

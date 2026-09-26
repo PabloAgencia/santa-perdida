@@ -290,7 +290,9 @@ export class PoliceSystem {
     if (GameState.wanted === 0) return false;
     const v = unit.vehicle;
     const base = unit.state === ESTADO.PERSIGUIENDO ? VISION_PERSIGUIENDO : nivel().vision;
-    // la mejora del justiciero: la poli te conoce, te ve desde mas cerca
+    // la mejora del justiciero: reduce el radio de deteccion de la patrulla,
+    // asi que necesita estar mas CERCA de ti para poder verte (mas facil
+    // pasar sin que te fichen)
     const range = base * (1 - GameState.nivelTrabajo('justiciero') * 0.04);
     const dist = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
     if (dist > range) return false;
