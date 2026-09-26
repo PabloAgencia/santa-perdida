@@ -45,7 +45,33 @@ export class LocalSystem {
     }
   }
 
+  // hospital y comisaria se ven como edificios de uso de verdad, no un
+  // edificio cualquiera con un marcador flotando encima: se repinta el
+  // tejado del propio edificio (`local.edificio`, ver repartirPorBarrios)
+  // por encima del dibujo normal de CityScene.drawBuildings.
+  pintarEdificioDeUso(local) {
+    const b = local.edificio;
+    if (!b) return;
+    const lado = Math.min(b.pw, b.ph);
+
+    if (local.cfg.clave === 'hospital') {
+      this.scene.add.image(b.px, b.py, 'px')
+        .setDisplaySize(b.pw - 4, b.ph - 4).setTint(0xe8e4dc).setDepth(-900);
+      const cruz = lado * 0.4;
+      this.scene.add.image(b.px, b.py, 'px')
+        .setDisplaySize(cruz, cruz * 0.3).setTint(0xd9384a).setDepth(-895);
+      this.scene.add.image(b.px, b.py, 'px')
+        .setDisplaySize(cruz * 0.3, cruz).setTint(0xd9384a).setDepth(-895);
+    } else if (local.cfg.clave === 'comisaria') {
+      this.scene.add.image(b.px, b.py, 'px')
+        .setDisplaySize(b.pw - 4, b.ph - 4).setTint(0x2a3550).setDepth(-900);
+      this.scene.add.circle(b.px, b.py, lado * 0.22, 0x5a8fd0).setDepth(-895);
+      this.scene.add.circle(b.px, b.py, lado * 0.13, 0x1a2a4a).setDepth(-894);
+    }
+  }
+
   pintar(local) {
+    this.pintarEdificioDeUso(local);
     const aro = this.scene.add.image(local.x, local.y, 'ring')
       .setDisplaySize(58, 58).setTint(local.cfg.color).setDepth(6);
     this.scene.tweens.add({

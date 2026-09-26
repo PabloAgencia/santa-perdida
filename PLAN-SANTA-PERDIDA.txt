@@ -2347,6 +2347,32 @@ CUADRAGESIMOTERCERA TANDA (26-sep-2026): el aparcamiento, sexto landmark
   LO QUE QUEDA DE ESTE BLOQUE: siete landmarks mas.
 
 ================================================================================
+CUADRAGESIMOCUARTA TANDA (26-sep-2026): hospital y comisaria, edificios de uso
+================================================================================
+
+  Septimo de los trece — pero este no fue un landmark nuevo: hospital y
+  comisaria (LocalSystem, tandas de antes) ya vivian en un edificio
+  cualquiera de la ciudad con solo un marcador flotando encima. Se les dio
+  el tejado que les toca, sin tocar el reparto ni la mecanica.
+
+     · `LocalSystem.pintarEdificioDeUso()` (nuevo): repinta el TEJADO del
+       edificio real (`local.edificio`, de `repartirPorBarrios`) por
+       encima del dibujo normal de `CityScene.drawBuildings` — profundidad
+       -900/-895, muy por encima de las -1250 a -1175 que usan los
+       edificios normales, pero por debajo de personajes y coches.
+       Hospital: tejado blanco con una cruz roja grande. Comisaria: tejado
+       azul oscuro con un escudo (dos circulos, azul claro sobre azul
+       oscuro).
+
+  COMPROBADO visualmente: el hospital se distingue de un vistazo entre los
+  edificios de alrededor (tejado blanco, cruz roja bien grande); la
+  comisaria igual (fondo azul, escudo). Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: seis landmarks mas (los mas grandes: el
+  aeropuerto, el monte/mirador, el poligono industrial "de verdad", los
+  puentes, la isla y los tuneles).
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2419,11 +2445,10 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Carcel — 41a tanda, 26-sep.
        [x] Casino — 42a tanda, 26-sep.
        [x] Aparcamiento — 43a tanda, 26-sep.
+       [x] Hospital y comisaria como edificios de uso — 44a tanda, 26-sep.
        [ ] Aeropuerto pequeño o aerodromo
        [ ] Un monte o mirador con carretera de curvas
        [ ] Poligono industrial de verdad
-       [ ] Hospital y comisaria como edificios de uso (mejora visual sobre
-           los locales genericos que ya existen)
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
        [ ] Tuneles
