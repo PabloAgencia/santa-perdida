@@ -39,13 +39,17 @@ export class GuerraTerritorioSystem {
       const candidatos = this.map.buildings
         .filter((b) => b.zone === zona && !b.isHideout && b.pw >= 64 && b.ph >= 64)
         .sort((a, b) => a.px - b.px || a.py - b.py);
-      if (candidatos.length === 0) continue;
 
-      const b = candidatos[0];
+      // el primero libre: saltar los que ya tienen el cartel de otro
+      // sistema (un piso, un negocio...), que si no se leen uno encima del otro
+      const b = candidatos.find((c) => !this.scene.edificiosOcupados || !this.scene.edificiosOcupados.has(c));
+      if (!b) continue;
+
       const puerta = puertaDe(this.map, b) || { x: b.px, y: b.py };
       const punto = { faction: key, x: puerta.x, y: puerta.y };
       this.puntos.push(punto);
       this.pintar(punto);
+      if (this.scene.edificiosOcupados) this.scene.edificiosOcupados.add(b);
     }
   }
 

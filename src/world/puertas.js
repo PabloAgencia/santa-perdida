@@ -28,9 +28,17 @@ export function puertaDe(map, b) {
 // falten, respetando una separacion minima. Es el reparto que ya hacia la
 // armeria: primero una por barrio, porque si no salian tres seguidas en el
 // centro y ninguna en media ciudad.
-export function repartirPorBarrios(map, { cuantos, separacion, minTile = 2, sirve = null }) {
+//
+// `ocupados`, si se pasa, es el Set compartido de edificios que YA tiene un
+// cartel de otro sistema (CityScene.edificiosOcupados): se saltan al elegir,
+// y el que se acaba usando se añade. Sin esto, dos sistemas deterministas
+// (piso y negocio de un mismo barrio, por ejemplo) elegian el MISMO
+// edificio con el MISMO criterio y sus carteles quedaban uno encima del
+// otro, ilegibles.
+export function repartirPorBarrios(map, { cuantos, separacion, minTile = 2, sirve = null, ocupados = null }) {
   const candidatos = map.buildings.filter(
-    (b) => !b.isHideout && b.pw >= minTile * 32 && b.ph >= minTile * 32 && (!sirve || sirve(b))
+    (b) => !b.isHideout && b.pw >= minTile * 32 && b.ph >= minTile * 32 &&
+      (!sirve || sirve(b)) && (!ocupados || !ocupados.has(b))
   );
   Phaser.Utils.Array.Shuffle(candidatos);
 
@@ -47,6 +55,7 @@ export function repartirPorBarrios(map, { cuantos, separacion, minTile = 2, sirv
       if (!puerta) continue;
       barrios.add(b.zone);
       puestos.push({ x: puerta.x, y: puerta.y, edificio: b, zona: b.zone });
+      if (ocupados) ocupados.add(b);
     }
   }
   return puestos;

@@ -43,8 +43,9 @@ export class ShopSystem {
   }
 
   abrir() {
+    const ocupados = this.scene.edificiosOcupados;
     const candidatos = this.map.buildings.filter(
-      (b) => !b.isHideout && b.pw >= TILE * 2 && b.ph >= TILE * 2
+      (b) => !b.isHideout && b.pw >= TILE * 2 && b.ph >= TILE * 2 && (!ocupados || !ocupados.has(b))
     );
     Phaser.Utils.Array.Shuffle(candidatos);
 
@@ -62,6 +63,7 @@ export class ShopSystem {
         barriosPuestos.add(b.zone);
         const clave = `armeria-${Math.round(puerta.x)}-${Math.round(puerta.y)}`;
         this.tiendas.push({ x: puerta.x, y: puerta.y, edificio: b, clave, zona: b.zone });
+        if (ocupados) ocupados.add(b);
         this.pintar(puerta);
       }
     }

@@ -71,6 +71,9 @@ export class PisoSystem {
       });
 
       for (const b of candidatos) {
+        // saltar el edificio si ya tiene el cartel de otro sistema (un
+        // negocio, la armeria...): dos carteles en el mismo sitio no se leen
+        if (this.scene.edificiosOcupados && this.scene.edificiosOcupados.has(b)) continue;
         const puerta = this.puertaDe(b);
         if (!puerta) continue;
         const datos = PISOS[zona];
@@ -84,6 +87,7 @@ export class PisoSystem {
         };
         this.pisos.push(piso);
         this.pintar(piso);
+        if (this.scene.edificiosOcupados) this.scene.edificiosOcupados.add(b);
         break;
       }
     }

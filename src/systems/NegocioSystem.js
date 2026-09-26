@@ -50,6 +50,9 @@ export class NegocioSystem {
       });
 
       for (const b of candidatos) {
+        // saltar si ya tiene el cartel de otro sistema (un piso, la
+        // armeria...): dos carteles en el mismo sitio no se leen
+        if (this.scene.edificiosOcupados && this.scene.edificiosOcupados.has(b)) continue;
         const puerta = puertaDe(this.map, b);
         if (!puerta) continue;
         const negocio = {
@@ -59,6 +62,7 @@ export class NegocioSystem {
         };
         this.negocios.push(negocio);
         this.pintar(negocio);
+        if (this.scene.edificiosOcupados) this.scene.edificiosOcupados.add(b);
         break;
       }
     }

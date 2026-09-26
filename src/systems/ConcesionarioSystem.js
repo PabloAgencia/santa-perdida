@@ -24,19 +24,28 @@ export class ConcesionarioSystem {
   }
 
   colocar() {
-    const sitios = repartirPorBarrios(this.map, { cuantos: 1, separacion: 99999, minTile: 3 });
+    const sitios = repartirPorBarrios(this.map, {
+      cuantos: 1, separacion: 99999, minTile: 3, ocupados: this.scene.edificiosOcupados,
+    });
     if (sitios.length === 0) return;
     const sitio = sitios[0];
-
-    this.scene.add.text(sitio.x, sitio.y - 78, 'CONCESIONARIO', {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '15px',
-      color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(6);
 
     // en fila, pegados a la puerta y perpendiculares a ella
     const lado = Math.atan2(sitio.y - sitio.edificio.py, sitio.x - sitio.edificio.px);
     const perp = lado + Math.PI / 2;
     const n = VEHICLE_KEYS.length;
+
+    // el titulo se ancla al mismo punto base que la fila de coches (no al
+    // `sitio` original), y bastante mas arriba que sus carteles: `lado`
+    // puede apuntar en cualquier angulo segun donde caiga la puerta, asi
+    // que un offset fijo desde `sitio.y` se solapaba con el coche del medio
+    // en algunos edificios (el que caia mas cerca del centro de la fila)
+    const baseX = sitio.x + Math.cos(lado) * 50;
+    const baseY = sitio.y + Math.sin(lado) * 50;
+    this.scene.add.text(baseX, baseY - 60, 'CONCESIONARIO', {
+      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '15px',
+      color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(6);
 
     VEHICLE_KEYS.forEach((tipo, i) => {
       const offset = (i - (n - 1) / 2) * SEPARACION_EN_FILA;

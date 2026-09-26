@@ -2083,6 +2083,58 @@ TRIGESIMOSEXTA TANDA (26-sep-2026): que cada trabajo deje una mejora permanente
   ya pendiente el subfusil y el chaleco por la calle (resto del punto 6).
 
 ================================================================================
+REPASO (26-sep-2026): textos superpuestos en el mundo — carteles en el mismo edificio
+================================================================================
+
+  Pablo pidio "que se lea todo bien, que no haya textos superpuestos".
+  Comprobado con un script en la consola (distancia entre TODOS los puntos
+  del mundo — pisos, negocios, locales, concesionario, grua, guerra,
+  armeria — y cuales caen a menos de 140 px). Encontrados DOS problemas de
+  verdad, los dos arreglados:
+
+  1. CADA PISO Y SU NEGOCIO, EN EL MISMO BARRIO, CAIAN EN EL MISMISIMO
+     EDIFICIO (distancia 0, sus dos carteles exactamente uno encima del
+     otro). Causa: `PisoSystem` y `NegocioSystem` eligen "el edificio mas
+     centrado del barrio" con el MISMO criterio determinista, cada uno sin
+     saber del otro — asi que siempre coincidian. Mismo riesgo, aunque no
+     se llegara a dar en esta partida, en `ShopSystem` (armeria),
+     `LocalSystem` (hospital/comisaria/taller/comida), `ConcesionarioSystem`
+     y `GuerraTerritorioSystem`: los seis reparten por el mismo mecanismo.
+
+     ARREGLADO con un registro compartido, `CityScene.edificiosOcupados`
+     (un Set de edificios), que se pasa a los seis sistemas: cada uno,
+     al elegir su edificio, salta los que ya tiene otro y se apunta el
+     suyo. El ORDEN DE CREACION en `CityScene.create()` importa: los TRES
+     deterministas (piso, negocio, guerra — "el mismo edificio siempre
+     entre cargas") van PRIMERO, y los TRES aleatorios (armeria, locales,
+     concesionario — cambian de sitio en cada carga, no pasa nada) van
+     despues y ceden el paso. Asi lo determinista sigue siendolo.
+
+     `world/puertas.js`, `repartirPorBarrios()` (que ya usaban LocalSystem
+     y ConcesionarioSystem) acepta ahora `ocupados` como parametro. Los
+     otros cuatro (ShopSystem, PisoSystem, NegocioSystem,
+     GuerraTerritorioSystem) tienen su propia logica de reparto: se les
+     añadio el mismo filtro a mano.
+
+  2. EN EL CONCESIONARIO, el cartel "CONCESIONARIO" (el titulo del solar)
+     se solapaba con el cartel del coche del medio de la fila. Causa: el
+     titulo se colocaba a un offset FIJO desde `sitio.y` (el punto del
+     edificio), pero los coches se reparten en la direccion `lado` (hacia
+     donde cae la puerta, que puede ser cualquier angulo) — en algunos
+     edificios el coche del medio de la fila acababa muy cerca de donde se
+     ponia el titulo. Arreglado ancladolo al mismo punto base que usa la
+     fila de coches, 60 px por encima, en vez de un offset fijo desde el
+     edificio.
+
+  COMPROBADO visualmente tras cada arreglo (no solo por distancia): el
+  concesionario con los seis carteles y el titulo, todos legibles; el HUD
+  con cuatro notificaciones seguidas + guerra de territorio activa +
+  territorio a la vez, sin que se toquen; y el texto de accion mas largo
+  que existe ("E para entregar el Vela GT en la grua · 3570 €"), que cabe
+  entero sobre el minimapa sin cortarse ni solaparse. Cero errores en
+  consola.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 

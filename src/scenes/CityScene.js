@@ -71,13 +71,22 @@ export class CityScene extends Phaser.Scene {
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
-    this.shops = new ShopSystem(this, this.map);
+
+    // Los que "son tuyos" y tienen que salir SIEMPRE en el mismo edificio
+    // entre cargas (piso, negocio, guerra de territorio) van primero, y cada
+    // uno registra el suyo en `edificiosOcupados`. Los que se reparten al
+    // azar en cada carga (armeria, locales, concesionario) van despues y
+    // evitan lo ya ocupado: asi nunca hay dos carteles en el mismo sitio,
+    // y lo determinista sigue siendolo (lo aleatorio es lo unico que cede).
+    this.edificiosOcupados = new Set();
     this.pisos = new PisoSystem(this, this.map);
+    this.negocios = new NegocioSystem(this, this.map);
+    this.guerra = new GuerraTerritorioSystem(this, this.map);
+
+    this.shops = new ShopSystem(this, this.map);
     this.locales = new LocalSystem(this, this.map);
     this.concesionario = new ConcesionarioSystem(this, this.map);
-    this.negocios = new NegocioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
-    this.guerra = new GuerraTerritorioSystem(this, this.map);
     this.taxista = new TrabajoVehiculoSystem(this, this.map, {
       tipo: 'taxista', vehiculo: 'taxi', nombre: 'Taxista',
       pagoBase: 55, pagoPorTile: 1.1, tiempoPorTile: 0.32, bonusATiempo: 70,

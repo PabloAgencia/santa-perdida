@@ -30,6 +30,7 @@ export class LocalSystem {
       const sitios = repartirPorBarrios(this.map, {
         cuantos: cfg.cuantos,
         separacion: cfg.separacion,
+        ocupados: this.scene.edificiosOcupados,
       });
       for (const s of sitios) {
         const local = {
