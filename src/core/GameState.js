@@ -202,9 +202,33 @@ class GameStateClass {
 
   // ---------- atributos ----------
 
-  // el musculo da vida de mas: de 100 a 150 puntos
+  // el musculo da vida de mas: de 100 a 150 puntos, y la ambulancia suma
+  // hasta 30 mas encima (ver nivelTrabajo)
   get vidaMaxima() {
-    return Math.round(100 + (this.atributos.musculo / 100) * 50);
+    return Math.round(100 + (this.atributos.musculo / 100) * 50) + this.nivelTrabajo('ambulancia') * 6;
+  }
+
+  // ---------- trabajos secundarios: cada uno deja una mejora permanente ----------
+  //
+  // Reparto (JobSystem), taxista y ambulancia (TrabajoVehiculoSystem) y
+  // justiciero (JusticieroSystem) suman aqui cada uno que completas. Cada 5
+  // sube un nivel, hasta 5 (25 completados). QUE HACE CADA NIVEL, y donde
+  // vive el efecto:
+  //   reparto     mas tiempo para entregar         JobSystem.offerNew
+  //   taxista     coches mas rapidos, siempre       Vehicle.update (input.atajos)
+  //   ambulancia  mas vida maxima                   el getter de aqui arriba
+  //   justiciero  la policia te ve desde mas cerca   PoliceSystem.canSee
+  sumarTrabajo(tipo) {
+    if (!this.flags.trabajos) this.flags.trabajos = {};
+    this.flags.trabajos[tipo] = (this.flags.trabajos[tipo] || 0) + 1;
+    const antes = this.nivelTrabajo(tipo, this.flags.trabajos[tipo] - 1);
+    const ahora = this.nivelTrabajo(tipo);
+    return { hechos: this.flags.trabajos[tipo], subioNivel: ahora > antes, nivel: ahora };
+  }
+
+  nivelTrabajo(tipo, hechosForzado = null) {
+    const hechos = hechosForzado ?? (this.flags.trabajos?.[tipo] || 0);
+    return Math.min(5, Math.floor(hechos / 5));
   }
 
   atributo(clave) {

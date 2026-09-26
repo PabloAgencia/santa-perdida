@@ -115,7 +115,9 @@ export class Vehicle {
     // embestir acababas conduciendo un carro y sin poder ni dar marcha atras.
     const salud = Phaser.Math.Clamp(this.hp / s.maxHp, 0, 1);
     const power = this.wrecked ? 0.62 : 0.78 + 0.22 * salud;
-    const topSpeed = s.maxSpeed * power;
+    // la mejora del taxista: conoces la ciudad, coches mas rapidos siempre
+    // (input.atajos llega calculado desde fuera, igual que input.pericia)
+    const topSpeed = s.maxSpeed * power * (1 + (input.atajos || 0));
 
     this.frenando = !!input.brake && vf > 1;
 

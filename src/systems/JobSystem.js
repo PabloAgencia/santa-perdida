@@ -62,7 +62,8 @@ export class JobSystem {
       dropoff: { x: dropoff.x, y: dropoff.y },
       tiles,
       pay: Math.round(ECONOMY.deliveryBase + tiles * ECONOMY.deliveryPerTile),
-      limit: Math.round(tiles * ECONOMY.deliveryTimePerTile),
+      // la mejora del repartidor: mas tiempo para entregar, 5% por nivel
+      limit: Math.round(tiles * ECONOMY.deliveryTimePerTile * (1 + GameState.nivelTrabajo('reparto') * 0.05)),
       elapsed: 0,
     };
     GameState.setJob(this.job);
@@ -132,6 +133,7 @@ export class JobSystem {
     GameState.addMoney(total, 'reparto');
     GameState.bumpStat('deliveries', 1);
     GameState.addReputation(1);
+    const resultado = GameState.sumarTrabajo('reparto');
 
     this.job = null;
     GameState.clearJob();
@@ -139,6 +141,11 @@ export class JobSystem {
     this.crate.setVisible(false);
 
     EventBus.emit(EVT.JOB_DONE, { pay: job.pay, bonus, total, onTime });
+    if (resultado.subioNivel) {
+      EventBus.emit(EVT.BIG_MESSAGE, {
+        title: `REPARTIDOR NIVEL ${resultado.nivel}`, subtitle: 'mejora permanente',
+      });
+    }
     EventBus.emit(EVT.NOTIFY, {
       text: onTime
         ? `Entregado a tiempo. +${total} € (${bonus} de prima)`

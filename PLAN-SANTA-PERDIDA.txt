@@ -2018,6 +2018,63 @@ TRIGESIMOQUINTA TANDA (26-sep-2026): guerra por el territorio
   del punto 6), y la mejora permanente por trabajo (punto 10).
 
 ================================================================================
+TRIGESIMOSEXTA TANDA (26-sep-2026): que cada trabajo deje una mejora permanente
+================================================================================
+
+  Cierra el punto 10 de "EL SALTO GRANDE", y con el, todo ese bloque.
+
+  DECISION DE ALCANCE, hablada antes de tocar codigo: el punto 10 da tres
+  ejemplos (ambulancia, justiciero, taxi) que EN REALIDAD NO EXISTIAN — solo
+  hay un trabajo, el reparto generico de JobSystem. Taxista, ambulancia y
+  justiciero son del punto 17 ("la ciudad mas viva", tampoco hecho). Pablo
+  pidio crearlos de cero: "tienes una lista inmensa de cosas que
+  implementar, taxista, policia, bombero, repartidor, etc". Con esto, el
+  punto 17 queda a medias hecho (falta solo CARRERAS, contrarreloj).
+
+  CUATRO TRABAJOS, CADA UNO CON SU MEJORA (`GameState.sumarTrabajo`/
+  `nivelTrabajo`, cada 5 completados sube un nivel, hasta 5):
+     · REPARTO (JobSystem, ya existia) — mas tiempo para entregar, 5% por
+       nivel.
+     · TAXISTA (nuevo, `TrabajoVehiculoSystem`) — solo conduciendo el 'taxi'.
+       Recoge un pasajero, llevalo, cobra. Mejora: coches un 3% mas rapidos
+       por nivel, SIEMPRE (no solo en el taxi) — "conoces la ciudad,
+       atajos".
+     · AMBULANCIA (nuevo, misma clase `TrabajoVehiculoSystem` parametrizada)
+       — solo conduciendo la 'ambulancia'. Recoge un herido, llevalo, cobra.
+       Mejora: +6 de vida maxima por nivel (hasta +30).
+     · JUSTICIERO (nuevo, `JusticieroSystem`) — solo conduciendo una
+       'patrulla'. Un fugitivo huye por la red de calles (mismo patron que
+       los "blancos" de MissionSystem, pero sin acoplar los dos sistemas);
+       le das caza embistiendolo hasta que revienta. Mejora: la policia te
+       ve desde un 4% menos de distancia por nivel (hasta -20%).
+
+  LA TECLA J decide cual segun lo que conduzcas: taxi, ambulancia o patrulla
+  ofrecen SU trabajo; cualquier otra cosa (o a pie) sigue dando el reparto
+  de siempre. Solo uno activo a la vez. El HUD (objetivo, tiempo, marcador)
+  se unifico en `CityScene.trabajoActual()`, que mira cual esta en marcha y
+  si no hay ninguno, que conduces ahora mismo.
+
+  UN DETALLE QUE HIZO FALTA CUIDAR: cuando el justiciero "detiene" al
+  fugitivo (hp a 0), NO se destruye el vehiculo a mano — se suelta la
+  referencia nada mas y se deja que `DanoVehiculos` lo queme solo, como a
+  cualquier otro coche reventado (chasis de monumento en la calle). Solo
+  cuando el jugador PIERDE al fugitivo (se aleja) se destruye de verdad, que
+  ahi sigue sano y no pinta nada mas en el mundo.
+
+  COMPROBADO a mano en la consola, con la partida guardada real: taxista
+  (5 carreras completadas, nivel 1, coche un 3% mas rapido medido de
+  verdad acelerando a fondo), ambulancia (5 avisos, vida maxima de 110 a
+  116), justiciero (fugitivo localizado, detenido con pago, y probado
+  tambien "perdido" al alejarse — el vehiculo se destruye ahi si, que sigue
+  sano), y que bajarte del taxi a mitad de carrera la cancela sola.
+  Visualmente: "J para taxista" en el objetivo al subir al taxi sin
+  carrera, y "AMBULANCIA NIVEL 1 · MEJORA PERMANENTE" en grande al subir de
+  nivel. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado. "EL SALTO GRANDE" solo tiene
+  ya pendiente el subfusil y el chaleco por la calle (resto del punto 6).
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2067,9 +2124,12 @@ EL SALTO GRANDE
      estrella se quita destrozando un coche de policia.
   9. HECHO (35a tanda, 26-sep). Guerra por el territorio de las bandas, con
      oleadas.
- 10. QUE CADA TRABAJO DEJE UNA MEJORA PERMANENTE (ambulancia = mas vida,
-     justiciero = la policia tarda mas en fichar tu coche, taxi = atajos...).
-     Es lo que hace que la gente juegue lo secundario.
+ 10. HECHO (36a tanda, 26-sep). Que cada trabajo deje una mejora permanente:
+     ambulancia = mas vida, justiciero = la policia te ve desde mas cerca,
+     taxi = atajos (coches mas rapidos), reparto = mas tiempo de entrega.
+     Taxista, ambulancia y justiciero no existian como trabajos: se crearon
+     de cero en esta tanda (el punto 17, "TRABAJOS", sigue pendiente para
+     las carreras contrarreloj; lo que hacia falta de el para esto ya esta).
 
 --------------------------------------------------------------------------------
 LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
@@ -2111,7 +2171,11 @@ LA CIUDAD MAS VIVA
      busca alta, como en San Andreas).
  15. MERCADO POR BARRIOS con precios que se mueven y una libreta para verlos.
  16. DESAFIOS CRONOMETRADOS con medalla de bronce, plata y oro.
- 17. TRABAJOS: taxi, ambulancia, justiciero, carreras.
+ 17. TRABAJOS: taxi, ambulancia y justiciero YA EXISTEN (36a tanda, para la
+     mejora permanente del punto 10) — recoger y llevar dentro de un tiempo,
+     o dar caza a un fugitivo. Lo que queda de este punto: CARRERAS
+     (contrarreloj, sin pasajero ni fugitivo, solo llegar rapido de un sitio
+     a otro).
  18. ROBAR COCHES CON SU GRACIA (barra de puenteo) y ALARMAS en los caros.
 
 --------------------------------------------------------------------------------

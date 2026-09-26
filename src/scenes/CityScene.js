@@ -21,6 +21,8 @@ import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
 import { GruaSystem } from '../systems/GruaSystem.js';
 import { GuerraTerritorioSystem } from '../systems/GuerraTerritorioSystem.js';
+import { TrabajoVehiculoSystem } from '../systems/TrabajoVehiculoSystem.js';
+import { JusticieroSystem } from '../systems/JusticieroSystem.js';
 import { FACTIONS } from '../config/factions.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
@@ -76,6 +78,15 @@ export class CityScene extends Phaser.Scene {
     this.negocios = new NegocioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
     this.guerra = new GuerraTerritorioSystem(this, this.map);
+    this.taxista = new TrabajoVehiculoSystem(this, this.map, {
+      tipo: 'taxista', vehiculo: 'taxi', nombre: 'Taxista',
+      pagoBase: 55, pagoPorTile: 1.1, tiempoPorTile: 0.32, bonusATiempo: 70,
+    });
+    this.ambulanciaJob = new TrabajoVehiculoSystem(this, this.map, {
+      tipo: 'ambulancia', vehiculo: 'ambulancia', nombre: 'Ambulancia',
+      pagoBase: 70, pagoPorTile: 1.3, tiempoPorTile: 0.36, bonusATiempo: 90,
+    });
+    this.justiciero = new JusticieroSystem(this, this.map, this.net);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -466,6 +477,8 @@ export class CityScene extends Phaser.Scene {
         handbrake: k.handbrake.isDown,
         // cuanto mejor conduces, mejor agarra el coche
         pericia: GameState.atributo('volante') / 100,
+        // la mejora del taxista: 3% de velocidad extra por nivel, siempre
+        atajos: GameState.nivelTrabajo('taxista') * 0.03,
       });
       const metros = (this.drivingVehicle.speed * dt) / 10;
       GameState.bumpStat('metersDriven', metros);
@@ -533,9 +546,25 @@ export class CityScene extends Phaser.Scene {
     Audio.siren(this.police.nivelSirena(this.player.x, this.player.y));
 
     this.jobs.update(dt, this.player.x, this.player.y);
+    this.taxista.update(dt, this.player, this.drivingVehicle);
+    this.ambulanciaJob.update(dt, this.player, this.drivingVehicle);
+    this.justiciero.update(dt, this.player);
 
-    if (!this.jobs.active && Phaser.Input.Keyboard.JustDown(k.newJob)) {
-      this.jobs.offerNew({ x: this.player.x, y: this.player.y });
+    // J ofrece un trabajo: cual, segun lo que conduzcas ahora mismo (taxi,
+    // ambulancia o patrulla), y si no, el reparto generico de siempre. Solo
+    // uno activo a la vez.
+    const hayTrabajoActivo = this.jobs.active || this.taxista.carrera ||
+      this.ambulanciaJob.carrera || !!this.justiciero.fugitivo;
+    if (!hayTrabajoActivo && Phaser.Input.Keyboard.JustDown(k.newJob)) {
+      if (this.taxista.disponible(this.drivingVehicle)) {
+        this.taxista.ofrecer({ x: this.player.x, y: this.player.y });
+      } else if (this.ambulanciaJob.disponible(this.drivingVehicle)) {
+        this.ambulanciaJob.ofrecer({ x: this.player.x, y: this.player.y });
+      } else if (this.justiciero.disponible(this.drivingVehicle)) {
+        this.justiciero.ofrecer({ x: this.player.x, y: this.player.y });
+      } else {
+        this.jobs.offerNew({ x: this.player.x, y: this.player.y });
+      }
     }
 
     this.updateCamera(dt);
@@ -1090,16 +1119,49 @@ export class CityScene extends Phaser.Scene {
     cam.setFollowOffset(-this.camAhead.x, -this.camAhead.y);
   }
 
+  // cual de los cuatro trabajos manda en el HUD: el que este en marcha, o si
+  // ninguno lo esta, el que conduzcas ahora mismo (taxi, ambulancia,
+  // patrulla), o si no, el reparto de siempre
+  trabajoActual() {
+    if (this.jobs.active) {
+      return { objective: this.jobs.objectiveText(), remaining: this.jobs.remainingTime(), target: this.jobs.target };
+    }
+    if (this.taxista.carrera) {
+      return { objective: this.taxista.objectiveText(), remaining: this.taxista.remainingTime(), target: this.taxista.target };
+    }
+    if (this.ambulanciaJob.carrera) {
+      return {
+        objective: this.ambulanciaJob.objectiveText(), remaining: this.ambulanciaJob.remainingTime(),
+        target: this.ambulanciaJob.target,
+      };
+    }
+    if (this.justiciero.fugitivo) {
+      return {
+        objective: this.justiciero.objectiveText(), remaining: null,
+        target: { x: this.justiciero.fugitivo.vehicle.x, y: this.justiciero.fugitivo.vehicle.y },
+      };
+    }
+    if (this.taxista.disponible(this.drivingVehicle)) return { objective: this.taxista.objectiveText(), remaining: null, target: null };
+    if (this.ambulanciaJob.disponible(this.drivingVehicle)) {
+      return { objective: this.ambulanciaJob.objectiveText(), remaining: null, target: null };
+    }
+    if (this.justiciero.disponible(this.drivingVehicle)) {
+      return { objective: this.justiciero.objectiveText(), remaining: null, target: null };
+    }
+    return { objective: this.jobs.objectiveText(), remaining: this.jobs.remainingTime(), target: this.jobs.target };
+  }
+
   emitHud() {
+    const trabajo = this.trabajoActual();
     EventBus.emit(EVT.HUD_TICK, {
       money: GameState.money,
-      objective: this.jobs.objectiveText(),
-      remaining: this.jobs.remainingTime(),
+      objective: trabajo.objective,
+      remaining: trabajo.remaining,
       driving: !!this.drivingVehicle,
       speed: this.drivingVehicle ? this.drivingVehicle.speedKmh : 0,
       vehicleName: this.drivingVehicle ? this.drivingVehicle.stats.name : '',
       hp: this.drivingVehicle ? this.drivingVehicle.hp / this.drivingVehicle.stats.maxHp : 1,
-      target: this.jobs.target,
+      target: trabajo.target,
       // el angulo es para la flecha del mapa: si vas en coche, manda el coche
       player: {
         x: this.player.x, y: this.player.y,
