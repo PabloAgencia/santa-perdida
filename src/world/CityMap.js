@@ -293,6 +293,11 @@ export class CityMap {
         lm.terminal = {
           px: (tx + tw / 2) * TILE, py: (ty + th / 2) * TILE, pw: tw * TILE, ph: th * TILE,
         };
+      } else if (L.type === 'monte') {
+        // toda la ladera se anda: no hay altura de colision de verdad en
+        // este juego, la elevacion es solo dibujo (PintarCiudad)
+        this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
+        lm.cima = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       }
 
       this.landmarks.push(lm);

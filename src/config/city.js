@@ -144,4 +144,6 @@ export const CITY = {
     // otro tramo de la franja de arena/puerto, al este de la playa y antes
     // del faro (comprobado: solo naves del puerto, nada especial)
     { type: 'aeropuerto', label: 'Aerodromo Santa Perdida', x: 210, y: 234, w: 85, h: 19 },
+    // otro tramo de la franja de arena/puerto, antes de la grua
+    { type: 'monte', label: 'Mirador del Farallon', x: 5, y: 234, w: 45, h: 19 },
   ],};

@@ -593,11 +593,52 @@ export const PintarCiudad = {
         const torreX = term.px + term.pw / 2 - 10;
         const torreY = term.py - 20;
         block(torreX, torreY, 16, 40, 0x9aa3ad, -1205);
-        const luz = this.add.circle(torreX, torreY - 24, 6, 0xff4a3a).setDepth(-1204);
+        const luzTorre = this.add.circle(torreX, torreY - 24, 6, 0xff4a3a).setDepth(-1204);
         this.tweens.add({
-          targets: luz, alpha: { from: 1, to: 0.15 },
+          targets: luzTorre, alpha: { from: 1, to: 0.15 },
           duration: 850, yoyo: true, repeat: -1, ease: 'Sine.inOut',
         });
+      } else if (L.type === 'monte') {
+        const cx = L.cima.px;
+        const cy = L.cima.py;
+        const radio = Math.min(L.pw, L.ph) / 2;
+
+        // terrazas concentricas, de la base (verde oscuro) a la cima (roca)
+        const capas = [
+          { r: radio, color: 0x3d4a2f },
+          { r: radio * 0.75, color: 0x4a5a38 },
+          { r: radio * 0.5, color: 0x5a6a42 },
+          { r: radio * 0.28, color: 0x8a8272 },
+        ];
+        for (const capa of capas) {
+          this.add.ellipse(cx, cy, capa.r * 2, capa.r * 1.3, capa.color).setDepth(-1215);
+        }
+
+        // el camino en zigzag, de la base (sur) a la cima. Los extremos
+        // (i=0 e i=tramos) van centrados; los del medio alternan de lado.
+        const tramos = 5;
+        const puntos = [];
+        for (let i = 0; i <= tramos; i++) {
+          const t = i / tramos;
+          const factor = i === 0 || i === tramos ? 0 : (i % 2 === 0 ? 1 : -1);
+          puntos.push({
+            x: cx + factor * radio * 0.5 * (1 - t * 0.6),
+            y: cy + radio * 1.3 * (0.5 - t),
+          });
+        }
+        for (let i = 0; i < puntos.length - 1; i++) {
+          const a = puntos[i];
+          const b = puntos[i + 1];
+          const largo = Math.hypot(b.x - a.x, b.y - a.y);
+          const angulo = Math.atan2(b.y - a.y, b.x - a.x);
+          this.add.image((a.x + b.x) / 2, (a.y + b.y) / 2, 'px')
+            .setDisplaySize(largo + 4, 14).setTint(0x5a4c3a).setDepth(-1205)
+            .setRotation(angulo);
+        }
+
+        // el mirador, en la cima
+        block(cx, cy - radio * 0.15, 50, 30, 0x6b6257, -1200);
+        block(cx, cy - radio * 0.15 - 18, 50, 6, 0x3a352e, -1199);
       }
 
       this.add

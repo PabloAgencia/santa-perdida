@@ -2415,6 +2415,35 @@ CUADRAGESIMOSEXTA TANDA (26-sep-2026): el aerodromo, noveno landmark
   no solo de encontrar un hueco de edificios libre).
 
 ================================================================================
+CUADRAGESIMOSEPTIMA TANDA (26-sep-2026): el monte con mirador, decimo landmark
+================================================================================
+
+  Decimo de los trece. El ultimo tramo libre de la franja de arena/puerto,
+  antes de la grua. `{ type: 'monte', x: 5, y: 234, w: 45, h: 19 }`. Todo
+  se anda: no hay altura de colision de verdad en ningun otro sitio del
+  juego, la "elevacion" es solo el dibujo.
+
+  `PintarCiudad.drawLandmarks()`: cuatro terrazas concentricas (elipses),
+  de verde oscuro en la base a un tono rocoso claro en la cima; un camino
+  en ZIGZAG desde la base hasta un mirador arriba (una plataforma con
+  baranda).
+
+  BUG ENCONTRADO Y CORREGIDO EN LA MISMA TANDA: la primera version del
+  zigzag usaba `Math.sin(i * Math.PI)` para alternar de lado en cada
+  tramo — pero el seno de CUALQUIER multiplo entero de π es 0, asi que el
+  camino salia recto en vez de zigzagueante (se vio en la primera captura:
+  una linea marron perfectamente vertical). Cambiado a alternar signo a
+  mano (`i % 2 === 0 ? 1 : -1`), con los dos extremos centrados.
+
+  COMPROBADO a mano en la consola y visualmente, dos veces (antes y
+  despues del arreglo): la segunda captura muestra el camino en zigzag de
+  verdad, subiendo hasta el mirador en la cima rocosa. Cero errores en
+  consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: tres landmarks mas — puentes, isla y
+  tuneles.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2490,7 +2519,7 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Hospital y comisaria como edificios de uso — 44a tanda, 26-sep.
        [x] Poligono industrial de verdad — 45a tanda, 26-sep.
        [x] Aeropuerto o aerodromo — 46a tanda, 26-sep.
-       [ ] Un monte o mirador con carretera de curvas
+       [x] Monte con mirador — 47a tanda, 26-sep.
        [ ] Dos o tres puentes que separen zonas
        [ ] Una isla pequeña
        [ ] Tuneles
