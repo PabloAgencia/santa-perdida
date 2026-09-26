@@ -132,4 +132,7 @@ export const CITY = {
     { type: 'mercado', label: 'Mercado Cubierto', x: 58, y: 100, w: 17, h: 11 },
     // otra manzana industrial (comprobado: solo dos naves, distinta a la del estadio)
     { type: 'carcel', label: 'Correccional Santa Perdida', x: 104, y: 188, w: 22, h: 15 },
+    // una manzana de centro, lejos de la plaza y la torre (comprobado: solo
+    // seis edificios normales)
+    { type: 'casino', label: 'Casino Fortuna', x: 153, y: 80, w: 20, h: 14 },
   ],};

@@ -501,6 +501,31 @@ export const PintarCiudad = {
             duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
           });
         }
+      } else if (L.type === 'casino') {
+        const p = L.fachada;
+        block(p.px + 10, p.py + 12, p.pw + 10, p.ph + 10, 0x05060a, -1215, 0.4);
+        block(p.px, p.py, p.pw, p.ph, 0x2a1f38, -1210);           // fachada morada
+        block(p.px, p.py, p.pw - 60, p.ph - 60, 0x3a2a4a, -1205);
+
+        // el cartel grande, arriba
+        block(p.px, p.py - p.ph / 2 - 20, 150, 26, 0x1a1420, -1206);
+        block(p.px, p.py - p.ph / 2 - 20, 138, 16, 0xc86ab0, -1205, 0.85);
+
+        // luces de neon parpadeantes, dos filas (arriba y abajo de la
+        // fachada), cada una a su ritmo para que no titilen a la vez
+        const colores = [0xd9584a, 0xe8b54a, 0x4a8fd0, 0x6bb374, 0xc86ab0, 0xf2e2ae];
+        const nLuces = 7;
+        for (const fila of [-1, 1]) {
+          const ly = p.py + fila * (p.ph / 2 - 12);
+          for (let i = 0; i < nLuces; i++) {
+            const lx = p.px - p.pw / 2 + 20 + i * ((p.pw - 40) / (nLuces - 1));
+            const luz = this.add.circle(lx, ly, 6, colores[i % colores.length], 0.9).setDepth(-1204);
+            this.tweens.add({
+              targets: luz, alpha: { from: 0.35, to: 1 },
+              duration: 500 + ((i * 80) % 600), yoyo: true, repeat: -1, ease: 'Sine.inOut',
+            });
+          }
+        }
       }
 
       this.add

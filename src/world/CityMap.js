@@ -238,6 +238,18 @@ export class CityMap {
         // interior explorable (igual que la torre)
         this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
         this.markSolidRect(L.x, L.y, L.w, L.h);
+      } else if (L.type === 'casino') {
+        // la acera de entrada alrededor es transitable; la fachada, solida
+        this.fillRect(L.x, L.y, L.w, L.h, T.SIDEWALK);
+        const mx2 = L.x + 2;
+        const my2 = L.y + 2;
+        const mw2 = L.w - 4;
+        const mh2 = L.h - 4;
+        this.markSolidRect(mx2, my2, mw2, mh2);
+        lm.fachada = {
+          px: (mx2 + mw2 / 2) * TILE, py: (my2 + mh2 / 2) * TILE,
+          pw: mw2 * TILE, ph: mh2 * TILE,
+        };
       }
 
       this.landmarks.push(lm);
