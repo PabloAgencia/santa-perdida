@@ -17,11 +17,14 @@ YA HECHO (no hace falta volver a generarlo)
    8 vehiculos    con sus colores
    6 tejados
    1 portada      la pantalla de inicio
+   8 interiores   escondite, armeria y los seis pisos (altillo, residencial,
+                  estudio, nave, almacen, Centro)
 
-  Sus prompts estaban aqui y se han quitado: eran 600 lineas tapando lo que
-  falta. Si algun dia hay que repetir uno, siguen en el historial:
+  Sus prompts estaban aqui y se han quitado: si algun dia hay que repetir
+  alguno, siguen en el historial:
 
-      git show 8149a10:PROMPTS-AI-STUDIO.txt
+      git show 8149a10:PROMPTS-AI-STUDIO.txt   (los 33 de antes)
+      git show edd194a:PROMPTS-AI-STUDIO.txt   (los 8 interiores)
 
   DOS COSAS DE AQUELLOS PROMPTS QUE CONVIENE NO OLVIDAR
    · Nombrar un juego que el modelo conozca ("top-down view like in GTA
@@ -31,385 +34,68 @@ YA HECHO (no hace falta volver a generarlo)
      pinta el Playground se confunde con los grises del dibujo y cuesta
      recortarlo. Los interiores NO llevan magenta: son cuadros enteros.
 
-
 ################################################################################
-#  LOS INTERIORES (las habitaciones en las que entras)          SON 8 PROMPTS
+#  EL CONCESIONARIO POR DENTRO (26-sep-2026)                     ES 1 PROMPT
 ################################################################################
 
-     1. interior-escondite.png    tu escondite del principio
-     2. interior-armeria.png      las siete armerias
-     3. interior-piso-altillo.png      el altillo,      1.200 $
-     4. interior-piso-residencial.png  Residencial,     3.500 $
-     5. interior-piso-estudio.png      el estudio,      5.000 $
-     6. interior-piso-nave.png         la nave,         7.500 $
-     7. interior-piso-almacen.png      el almacen,     11.000 $
-     8. interior-piso-centro.png       el del Centro,  16.000 $
+Nuevo desde esta noche: el concesionario dejo de ser coches aparcados en la
+acera y ahora se entra, como un piso. La sala YA esta montada en el juego
+(seis plazas en fila con nombre y precio debajo, puerta abajo en el centro);
+solo falta el suelo del salon.
 
-DONDE SE DEJAN Y COMO SE LLAMAN
-  Carpeta:  arte\          (NO en sprites\, que eso lo recorta el preparador)
-  Nombres:  los de arriba, LITERALES, en minusculas y con guion.
-            Valen .png o .jpg.
-            Si el fichero se llama de otra forma, el juego no lo busca y se
-            queda con el dibujo por codigo: no se rompe nada, pero no se ve.
-
-  Y DESPUES:   python herramientas/actualizar-arte.py
-  El juego no mira la carpeta: se baja arte/lista.json y pide solo lo que
-  ponga ahi. Dejar el fichero NO basta. Ese script lo apunta solo, y ademas
-  te dice cual falta todavia.
-
-TRES COSAS QUE VALEN PARA LOS TRES
-  · SON VISTAS DESDE ARRIBA. El juego es cenital: se ve como un plano de
-    piso, con la camara en el techo. No es una foto de la habitacion tomada
-    desde la puerta. Ninguna pared se ve de frente.
-  · NI UNA LETRA. El nombre del sitio lo escribe el juego por encima. Si el
-    dibujo trae carteles, se ve doble.
-  · SIN GENTE. Tu personaje y el tendero son sprites que se mueven por
-    encima. Si el dibujo trae gente, habria dos.
-  Si sale con letras, REPITE la tirada: borrar un cartel grande deja un
-  parche que se nota. Y si sale oscura, mejor: el juego le pone su propia luz
-  encima y las claras se lavan.
-
+OJO CON ESTA, es distinta a las ocho de arriba: NO lleva ni un mueble
+dibujado, y TAMPOCO coches. El juego pone el sprite de cada coche de verdad
+encima de cada plaza (el mismo dibujo del concesionario de antes, ahora aqui
+dentro) — si el cuadro trae coches pintados, se ven dos superpuestos, como
+pasaria con gente si el dibujo trajera gente.
 
 --------------------------------------------------------------------------------
-  1.  interior-escondite.png
+  9.  interior-concesionario.png
 --------------------------------------------------------------------------------
-Top-down interior of a small, run-down hideout room, seen from DIRECTLY
-ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
-interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
-looking straight down at the floor. NO walls seen from the front, NO
-perspective, NO tilt, NO vanishing point.
+Un salon de coches: un solo espacio diafano y ancho, sin muebles.
 
-FORMAT: landscape, 1200 x 760 pixels, 16:10. The room fills the entire
-image edge to edge, with no border and no margin.
-
-THE ROOM: a wide rectangular room with dark, scuffed wooden floorboards
-running horizontally from left to right. Scratched, stained, lived in for
-too long by someone who never unpacked.
-
-LAYOUT - this part matters, the game puts the interactions at these exact
-spots:
-- TOP-LEFT corner: a single unmade bed with a rumpled brown blanket, seen
-  from above. Pillow at the top end.
-- LEFT SIDE, directly below the bed: a small square bedside table with a
-  dirty mug and a folded newspaper on it.
-- TOP-RIGHT corner: a cheap desk against the wall, with scattered papers, a
-  cold cup of coffee and an ashtray.
-- BOTTOM CENTRE-LEFT: a worn two-seater sofa seen from above, cushions
-  sagging, facing into the room.
-- BOTTOM-RIGHT quarter: EMPTY floor. Nothing there at all.
-- BOTTOM CENTRE EDGE: leave completely clear. That is the doorway.
-
-LIGHT: one bare bulb hanging in the middle of the room. Warm dim pool of
-light in the centre, corners falling into deep shadow. Nothing is brightly
-lit.
-
-COLOUR: muted browns, dirty ochre, faded olive, deep black shadow. Low
-saturation. It should feel cheap and temporary.
-
-STYLE: hand-painted 2D game art with bold dark outlines and flat shading.
-NOT photorealistic. NOT a 3D render. NOT isometric.
-
-MUST NOT CONTAIN:
-- NO text, NO letters, NO numbers, NO signs, NO labels, NO watermark,
-  NO signature, NO logo.
-- NO people, NO characters, NO figures, NO silhouettes of anyone.
-- NO furniture in the bottom-right quarter.
-
-
---------------------------------------------------------------------------------
-  2.  interior-armeria.png
---------------------------------------------------------------------------------
-Top-down interior of a cramped back-street gun shop, seen from DIRECTLY
-ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
-interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
-looking straight down at the floor. NO walls seen from the front, NO
-perspective, NO tilt, NO vanishing point.
-
-FORMAT: 1320 x 1000 pixels, almost square. The room fills the entire image
-edge to edge, no border, no margin.
-
-LAYOUT IN THREE HORIZONTAL BANDS - this matters, the game draws its own
-elements on top at these exact heights:
-
-  TOP THIRD - the back wall and the rack. A long weapon rack running the
-  full width, with five dark weapon shapes laid out FLAT and seen from
-  above, evenly spaced left to right. Dark gunmetal on dark scratched wood.
-  Shelves either side with cardboard ammunition boxes.
-
-  MIDDLE, about two fifths down - the counter. A long wooden shop counter
-  running almost the full width, seen from above. Worn, scratched, with a
-  scuffed edge. A small till at the left end.
-
-  BOTTOM HALF - the customer side. Plain grey tiled floor with visible grout
-  lines, a little dirty, scuff marks. Leave it CLEAR AND EMPTY.
-
-LIGHT: cold greenish strip lighting from the ceiling. Flat, unflattering,
-slightly flickering feel. Claustrophobic.
-
-COLOUR: dark greys, gunmetal, worn brown wood, a sickly green tint over
-everything. No warm colours.
-
-STYLE: hand-painted 2D game art with bold dark outlines and flat shading.
-NOT photorealistic. NOT a 3D render. NOT isometric.
-
-MUST NOT CONTAIN:
-- NO text, NO letters, NO numbers, NO price tags, NO signs, NO labels,
-  NO watermark, NO logo.
-- NO people, NO shopkeeper, NO customers, NO figures behind the counter.
-- NO clutter on the bottom half of the floor.
-
-
---------------------------------------------------------------------------------
-  LOS SEIS PISOS: UNO POR CASA, Y SUBEN DE LUJO CON EL PRECIO
---------------------------------------------------------------------------------
-Cada piso tiene SU habitacion. Que el del Centro de 16.000 fuera el mismo
-cuartucho que el altillo de 1.200 se cargaria media gracia de ahorrar.
-
-  interior-piso-altillo.png       1.200 $   1 plaza    un agujero
-  interior-piso-residencial.png   3.500 $   2 plazas   una casa normal
-  interior-piso-estudio.png       5.000 $   2 plazas   pequeño pero decente
-  interior-piso-nave.png          7.500 $   3 plazas   hormigon frio
-  interior-piso-almacen.png      11.000 $   4 plazas   enorme y portuario
-  interior-piso-centro.png       16.000 $   4 plazas   caro de verdad
-
-SE PUEDEN METER DE UNA EN UNA. El juego prueba la del piso, luego una
-generica `interior-piso.png` si la hubiera, y si no hay ninguna tira del
-dibujo por codigo. Que falten no rompe nada.
-POR ORDEN: el altillo es el primero que veras (es lo que te puedes permitir
-al empezar) y el del Centro el que mas ilusion hace. Los cuatro de en medio,
-cuando quieras.
-
-LOS SEIS COMPARTEN EL MISMO PLANO, que es donde el juego pone las cosas:
-  arriba izquierda   la cama
-  izquierda debajo   la mesilla
-  arriba derecha     una mesa
-  abajo centro-izq   el sofa
-  abajo derecha      VACIO, sin nada
-  abajo en el borde  la puerta, despejada
-Y las tres reglas de siempre: vista cenital, ni una letra, sin gente.
-Formato: 1200 x 760, apaisada, llenando la imagen de borde a borde.
-
-
---------------------------------------------------------------------------------
-  3.  interior-piso-altillo.png          1.200 $  ·  Los Rompientes
---------------------------------------------------------------------------------
-El agujero del principio. Tiene que dar pena.
-
-Top-down interior of a filthy rented attic room above a bar, seen from
+Top-down interior of a wide car dealership showroom floor, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a floor-plan view,
-like the interiors in GTA Chinatown Wars. The camera is on the ceiling
-looking straight down at the floor. NO walls seen from the front, NO
-perspective, NO tilt, NO vanishing point.
+like the interiors in GTA Chinatown Wars. The camera is mounted on the
+ceiling looking straight down at the floor. NO walls seen from the front,
+NO perspective, NO tilt, NO vanishing point.
 
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
+FORMAT: landscape, 1600 x 720 pixels, wide and shallow (roughly 2.2:1). The
+floor fills the entire image edge to edge, no border, no margin.
 
-THE ROOM: bare warped floorboards, water stains, cigarette burns. A damp
-patch spreading from one corner. Nothing matches, nothing is clean, nobody
-ever unpacked here.
+THE FLOOR: polished glossy showroom concrete or pale tile, reflective,
+almost empty on purpose — this is a car salon, not a room to furnish.
 
-LAYOUT:
-- TOP-LEFT: a bare mattress straight on the floor, no bed frame, a thin grey
-  blanket thrown across it.
-- LEFT, below it: an upturned plastic crate used as a bedside table, with an
-  overflowing ashtray on top.
-- TOP-RIGHT: a wobbly folding card table with takeaway boxes and empty
-  bottles.
-- BOTTOM CENTRE-LEFT: a sagging armchair with a tear in the seat and stuffing
-  showing.
-- BOTTOM-RIGHT quarter: EMPTY floor, nothing at all.
-- BOTTOM CENTRE EDGE: completely clear, that is the doorway.
+LAYOUT - this part matters, the game places six car sprites and a door on
+top at these exact spots, and nothing else should be drawn there:
 
-LIGHT: one bare bulb, harsh and yellow, hard shadows, the corners nearly
-black.
-COLOUR: dirty brown, nicotine yellow, grey damp. Very low saturation.
+- A ROW OF SIX EMPTY DISPLAY BAYS evenly spaced left to right, centred
+  roughly 44% of the way down from the top edge. Each bay is a distinct
+  circular or rounded-square lit platform / showroom spotlight pool on the
+  floor (like a spotlit parking spot), clearly separate from its neighbours,
+  but EMPTY - no car, no shape resembling a vehicle, nothing standing on it.
+- BOTTOM CENTRE EDGE: a stretch of floor left completely clear and open,
+  that is the door to the street.
+- The rest of the floor (top band above the bays, the gaps between them,
+  the corners) can carry dealership atmosphere: floor reflections, subtle
+  directional light streaks, maybe a distant reception counter or a neon
+  sign shape against the very top edge - but nothing blocking the six
+  bays or the bottom-centre doorway, and no vehicles anywhere.
+
+LIGHT: bright, cool showroom lighting, a spotlight glow over each of the six
+bays, reflections on the glossy floor.
+COLOUR: cool grey and white floor, blue-white spotlights, maybe one accent
+colour (amber or cyan) in the distant signage. Clean and commercial, not
+grimy like the hideouts.
 STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
 photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, signs, labels or watermark.
-NO people or figures. NO furniture in the bottom-right quarter.
-
-
---------------------------------------------------------------------------------
-  4.  interior-piso-residencial.png      3.500 $  ·  barrio Residencial
---------------------------------------------------------------------------------
-La primera casa de verdad. Modesta, pero se ve que alguien la cuida.
-
-Top-down interior of a modest, tidy apartment bedroom in an ordinary
-residential block, seen from DIRECTLY ABOVE at a perfect 90-degree overhead
-angle - a floor-plan view, like the interiors in GTA Chinatown Wars. The
-camera is on the ceiling looking straight down. NO walls seen from the front,
-NO perspective, NO tilt.
-
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
-
-THE ROOM: clean pale wooden flooring with a faded patterned rug in the
-centre. Slightly dated furniture, all of it looked after. Homely.
-
-LAYOUT:
-- TOP-LEFT: a made single bed with a dark blue blanket and one pillow.
-- LEFT, below it: a small wooden bedside table with a lamp and an alarm clock.
-- TOP-RIGHT: a plain desk with neatly stacked books and a small potted plant.
-- BOTTOM CENTRE-LEFT: a two-seater fabric sofa with a low wooden coffee table
-  in front of it.
-- BOTTOM-RIGHT quarter: EMPTY floor, nothing at all.
-- BOTTOM CENTRE EDGE: completely clear, that is the doorway.
-
-LIGHT: warm evening light coming in from one side, calm, soft shadows.
-COLOUR: muted warm greys, soft browns, deep blue. Low saturation.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, signs or watermark. NO people.
-NO furniture in the bottom-right quarter.
-
-
---------------------------------------------------------------------------------
-  5.  interior-piso-estudio.png          5.000 $  ·  encima de la tienda
---------------------------------------------------------------------------------
-Un estudio pequeño y aprovechado. Mas cuidado que el de Residencial, pero se
-nota que es un solo cuarto y que debajo hay un comercio.
-
-Top-down interior of a small, well-kept studio flat above a shop, seen from
-DIRECTLY ABOVE at a perfect 90-degree overhead angle - a floor-plan view,
-like the interiors in GTA Chinatown Wars. The camera is on the ceiling
-looking straight down. NO walls seen from the front, NO perspective, NO tilt.
-
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
-
-THE ROOM: warm honey-coloured floorboards, well swept, with a narrow woven
-runner rug. Everything is compact and deliberately arranged, the way you
-arrange a room when there is only one of them.
-
-LAYOUT:
-- TOP-LEFT: a neatly made single bed with a warm ochre blanket and two
-  cushions, a folded throw at the foot.
-- LEFT, below it: a slim bedside shelf unit with a small radio and a mug.
-- TOP-RIGHT: a compact kitchenette counter with a kettle, a chopping board
-  and two hanging pans above it.
-- BOTTOM CENTRE-LEFT: a small loveseat with a round side table.
-- BOTTOM-RIGHT quarter: EMPTY floor, nothing at all.
-- BOTTOM CENTRE EDGE: completely clear, that is the doorway.
-
-LIGHT: soft daylight from one side plus a warm pendant lamp over the middle.
-Cosy rather than grand.
-COLOUR: honey wood, warm ochre, cream, muted terracotta. Low saturation.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, signs, shop signage or
-watermark. NO people. NO furniture in the bottom-right quarter.
-
-
---------------------------------------------------------------------------------
-  6.  interior-piso-nave.png             7.500 $  ·  el poligono
---------------------------------------------------------------------------------
-OJO: esto no es una casa, es un sitio de trabajo donde ademas duermes. Se
-nota en que hay MUCHO suelo vacio: ahi es donde caben los coches.
-
-Top-down interior of a small industrial warehouse unit used as a hideout,
-seen from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a floor-plan
-view, like the interiors in GTA Chinatown Wars. The camera is on the ceiling
-looking straight down. NO walls seen from the front, NO perspective, NO tilt.
-
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
-
-THE ROOM: bare polished concrete floor with faded yellow painted lane
-markings and dark oil stains. Cold, echoing, mostly EMPTY on purpose.
-
-LAYOUT:
-- TOP-LEFT: a folding camp bed with a rough grey army blanket, pushed against
-  the wall.
-- LEFT, below it: a battered metal toolbox standing in for a bedside table.
-- TOP-RIGHT: a steel workbench with scattered spanners, a vice and a coiled
-  cable.
-- BOTTOM CENTRE-LEFT: a stack of wooden pallets and two rusted oil drums.
-- BOTTOM-RIGHT quarter: EMPTY concrete, completely bare.
-- BOTTOM CENTRE EDGE: completely clear, that is the roller door.
-
-LIGHT: cold overhead industrial strip lamps, flat and bluish, long hard
-shadows.
-COLOUR: concrete grey, rust orange, faded safety yellow, cold blue.
-Desaturated.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs or
-watermark. NO people. NO vehicles. NO clutter in the bottom-right quarter.
-
-
---------------------------------------------------------------------------------
-  7.  interior-piso-almacen.png         11.000 $  ·  el puerto
---------------------------------------------------------------------------------
-Como la nave pero MAS GRANDE y con el mar al lado. Mas alto, mas vacio, y se
-nota el agua: humedad, sal, cuerda.
-
-Top-down interior of a large dockside storage warehouse converted into a
-hideout, seen from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a
-floor-plan view, like the interiors in GTA Chinatown Wars. The camera is on
-the ceiling looking straight down. NO walls seen from the front, NO
-perspective, NO tilt.
-
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
-
-THE ROOM: wide, worn concrete floor with salt bloom and damp patches near
-one edge, faded loading marks. Much bigger and emptier than a normal room.
-
-LAYOUT:
-- TOP-LEFT: a proper metal-framed bed with a heavy navy blanket, against the
-  wall.
-- LEFT, below it: a small sea chest used as a bedside table, with a storm
-  lantern on it.
-- TOP-RIGHT: a long trestle table with charts rolled up, coils of rope and a
-  crate of tools.
-- BOTTOM CENTRE-LEFT: a worn leather sofa beside two large shipping crates.
-- BOTTOM-RIGHT quarter: EMPTY concrete, completely bare.
-- BOTTOM CENTRE EDGE: completely clear, that is the cargo door.
-
-LIGHT: cold daylight spilling in from one side as if a big door were open,
-plus one hanging bulb. Damp, grey-blue, maritime.
-COLOUR: weathered concrete, damp grey-green, rope beige, navy, rust.
-Desaturated.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, stencilled words, signs or
-watermark. NO people. NO boats or vehicles. NO clutter in the bottom-right
-quarter.
-
-
---------------------------------------------------------------------------------
-  8.  interior-piso-centro.png          16.000 $  ·  el Centro
---------------------------------------------------------------------------------
-Este tiene que dar envidia nada mas entrar: es la recompensa de ahorrar toda
-la partida. Todo hace juego y todo es caro.
-
-Top-down interior of an expensive modern city apartment, seen from DIRECTLY
-ABOVE at a perfect 90-degree overhead angle - a floor-plan view, like the
-interiors in GTA Chinatown Wars. The camera is on the ceiling looking
-straight down. NO walls seen from the front, NO perspective, NO tilt.
-
-FORMAT: landscape 1200 x 760. The room fills the image edge to edge.
-
-THE ROOM: dark polished hardwood floor with a large thick cream rug in the
-centre. Everything matches. Everything was chosen, not inherited.
-
-LAYOUT:
-- TOP-LEFT: a wide made double bed with a deep charcoal quilt and four
-  pillows, a low upholstered bench at its foot.
-- LEFT, below it: a lacquered bedside cabinet with a designer lamp.
-- TOP-RIGHT: a glass and steel desk with a closed laptop, and a tray with a
-  bottle and two glasses.
-- BOTTOM CENTRE-LEFT: a long leather sofa with a marble coffee table.
-- BOTTOM-RIGHT quarter: EMPTY floor, nothing at all.
-- BOTTOM CENTRE EDGE: completely clear, that is the doorway.
-
-LIGHT: warm low lamplight plus a cool city glow spilling in from one side.
-Rich and moody.
-COLOUR: charcoal, warm walnut, cream, brushed gold accents. Deeper and richer
-than the other rooms, but still muted.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, signs or watermark. NO people.
-NO furniture in the bottom-right quarter.
+MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
+readable writing or watermark. NO people. NO cars, motorbikes or any vehicle
+shape anywhere, not even in the background. Nothing on top of the six bays.
 
 
 LO QUE VENGA DESPUES
-  Cada sitio nuevo en el que se pueda entrar (el taller de pintura, el
-  concesionario, los locales que se compren) lleva su lamina aqui, con el
-  mismo esquema: vista cenital, el plano descrito zona a zona, sin letras y
-  sin gente. Las medidas de cada sala te las doy yo cuando la montemos.
+  Cada sitio nuevo en el que se pueda entrar (el taller de pintura, los
+  locales que se compren) lleva su lamina aqui, con el mismo esquema: vista
+  cenital, el plano descrito zona a zona, sin letras y sin gente. Las
+  medidas de cada sala te las doy yo cuando la montemos.
