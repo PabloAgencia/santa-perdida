@@ -75,6 +75,15 @@ export class NPCSystem {
         continue;
       }
 
+      // la guerra por el territorio: hostil mientras dure, da igual la
+      // reputacion (te la has buscado tu solo entrando ahi a montarla)
+      if (p.guerraTerritorio) {
+        const cercaGuerra = Phaser.Math.Distance.Between(p.x, p.y, px, py) < HOSTILE_RANGE;
+        p.hostile = cercaGuerra && onFoot;
+        p.chaseTarget = p.hostile && !p.plantado ? { x: px, y: py } : null;
+        continue;
+      }
+
       if (!p.faction) continue;
       const enemigo = GameState.isHostile(p.faction);
       const cerca = Phaser.Math.Distance.Between(p.x, p.y, px, py) < HOSTILE_RANGE;

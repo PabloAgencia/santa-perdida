@@ -1971,6 +1971,53 @@ TRIGESIMOCUARTA TANDA (26-sep-2026): la grua del puerto (import/export)
   estan hechos.
 
 ================================================================================
+TRIGESIMOQUINTA TANDA (26-sep-2026): guerra por el territorio
+================================================================================
+
+  Cierra el punto 9 de "EL SALTO GRANDE" (elegida entre las tres piezas que
+  quedaban de ese bloque: esta, el subfusil/chaleco por la calle, y la
+  mejora permanente por trabajo — Pablo eligio esta).
+
+  DECISION DE ALCANCE, hablada antes de tocar codigo: el cuaderno original
+  (`IDEAS-DE-LOS-GTA.txt`, punto 5.1) dice "si aguantas, el barrio pasa a
+  ser tuyo". Cambiar de verdad quien manda en el barrio (`ZONE_OWNER`) mueve
+  a la vez NPCSystem (que pandilleros salen), NegocioSystem (quien ataca tus
+  negocios ahi) y FactionSystem por una sola mecanica — demasiado riesgo
+  para una tanda. Se opto por: ganar la guerra da un PAGO grande (4.000 €) y
+  sube la reputacion con esa banda al MAXIMO de golpe. El barrio sigue
+  siendo oficialmente suyo, pero te respetan.
+
+  UN PUNTO POR BANDA (tres, uno de cada), en su propio barrio, calcado del
+  reparto determinista de pisos y negocios. Te acercas A PIE y E desafia.
+  CUATRO oleadas de tres pandilleros cada una, con 4 s de respiro entre una
+  y la siguiente. Si te alejas mas de 900 px o mueres, se cancela sin pago
+  (se puede reintentar cuando quieras).
+
+  EL DETALLE QUE HIZO FALTA TOCAR FUERA DEL SISTEMA NUEVO: los pandilleros
+  de la guerra tienen que ser hostiles SIEMPRE mientras dura, aunque tu
+  reputacion real con esa banda sea buena — si no, `NPCSystem.updateHostility`
+  los habria puesto pacificos (calcula la hostilidad segun `isHostile`, que
+  mira la reputacion de verdad). Se añadio un flag, `p.guerraTerritorio`,
+  con el mismo patron que ya usaba `p.rencor` (el conductor al que le robas
+  el coche): hostil sin mirar la reputacion mientras dure. Al cancelar la
+  guerra, a los supervivientes se les quita el flag: vuelven a depender de
+  la reputacion real, como cualquier otro de su banda, en vez de perseguirte
+  para siempre por algo que ya no esta pasando.
+
+  COMPROBADO a mano en la consola, con la partida guardada real: los tres
+  puntos salen en el barrio de cada banda; desafiar arranca la oleada 1 de
+  4 (algunos intentos de colocar un atacante caen en zona solida — parte
+  normal del sistema, la oleada sale con menos si pasa, no rompe nada);
+  aguantar las cuatro sube el dinero y la reputacion salta de -100 a 100 de
+  golpe; alejarse a mitad cancela sin pago y los supervivientes dejan de
+  ser hostiles "porque si". Visualmente: el indicador persistente "GUERRA ·
+  VERDIAL · OLEADA 1/4" junto al minimapa, y "TERRITORIO GANADO" en grande
+  al terminar. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: el subfusil y el chaleco por la calle (resto
+  del punto 6), y la mejora permanente por trabajo (punto 10).
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2018,7 +2065,8 @@ EL SALTO GRANDE
      si no te estan viendo. -> ERA PEDIDO EXPRESAMENTE POR PABLO.
   8. HECHO (31a tanda, 26-sep). Quitarse la busca cargandose patrullas: cada
      estrella se quita destrozando un coche de policia.
-  9. GUERRA POR EL TERRITORIO de las bandas, con oleadas.
+  9. HECHO (35a tanda, 26-sep). Guerra por el territorio de las bandas, con
+     oleadas.
  10. QUE CADA TRABAJO DEJE UNA MEJORA PERMANENTE (ambulancia = mas vida,
      justiciero = la policia tarda mas en fichar tu coche, taxi = atajos...).
      Es lo que hace que la gente juegue lo secundario.

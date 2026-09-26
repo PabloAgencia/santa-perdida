@@ -20,6 +20,8 @@ import { LocalSystem } from '../systems/LocalSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
 import { GruaSystem } from '../systems/GruaSystem.js';
+import { GuerraTerritorioSystem } from '../systems/GuerraTerritorioSystem.js';
+import { FACTIONS } from '../config/factions.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -73,6 +75,7 @@ export class CityScene extends Phaser.Scene {
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.negocios = new NegocioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
+    this.guerra = new GuerraTerritorioSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -407,6 +410,7 @@ export class CityScene extends Phaser.Scene {
         !this.entrarEnLaArmeria() &&
         !this.usarLocalCerca() &&
         !this.usarNegocioCerca() &&
+        !this.iniciarGuerraCerca() &&
         !this.comprarCocheCerca() &&
         !this.usarMaquinaCerca()
       ) {
@@ -508,6 +512,7 @@ export class CityScene extends Phaser.Scene {
     if (!this.drivingVehicle) this.concesionario.update(this.player);
     this.negocios.update(dt, this.player);
     this.grua.update(this.player, this.drivingVehicle);
+    this.guerra.update(dt, this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -673,6 +678,7 @@ export class CityScene extends Phaser.Scene {
     if (this.respawning) return;
     this.respawning = true;
     this.missions.abortar(reason === 'busted' ? 'Te han detenido' : 'Has muerto');
+    if (this.guerra && this.guerra.activo) this.guerra.cancelar();
 
     // se llevan una parte, nunca todo: quedarte a cero no deja jugar
     const fee = Math.min(300, Math.round(GameState.money * 0.25));
@@ -832,6 +838,17 @@ export class CityScene extends Phaser.Scene {
 
     const resultado = this.negocios.cobrar(n);
     if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+    return true;
+  }
+
+  // guerra por el territorio: E en el punto de una banda y empiezan las oleadas
+  iniciarGuerraCerca() {
+    if (!this.guerra || !this.guerra.cerca) return false;
+    if (GameState.wanted > 0) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no es buen momento', tone: 'danger' });
+      return true;
+    }
+    this.guerra.iniciar(this.guerra.cerca);
     return true;
   }
 
@@ -1097,6 +1114,10 @@ export class CityScene extends Phaser.Scene {
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
       concesionarioCerca: this.concesionario && this.concesionario.cerca
         ? { nombre: VEHICLES[this.concesionario.cerca.tipo].name, precio: this.concesionario.cerca.precio }
+        : null,
+      guerraCerca: this.guerra && this.guerra.cerca ? FACTIONS[this.guerra.cerca.faction].name : null,
+      guerraActiva: this.guerra && this.guerra.activo
+        ? { faccion: FACTIONS[this.guerra.activo.faction].short, oleada: this.guerra.activo.oleada }
         : null,
       gruaCerca: this.grua && this.grua.cerca
         ? { nombre: VEHICLES[this.drivingVehicle.type].name, pago: this.grua.estimarPago(this.drivingVehicle) }

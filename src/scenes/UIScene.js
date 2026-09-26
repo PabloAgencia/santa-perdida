@@ -220,6 +220,13 @@ export class UIScene extends Phaser.Scene {
     this.territoryText = this.add.text(this.mapX, this.mapY - 17, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0, 0);
+    this.guerraText = this.add.text(this.mapX, this.mapY - 34, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '14px', color: COLORS.danger,
+    }).setOrigin(0, 0);
+  }
+
+  updateGuerra(g) {
+    this.guerraText.setText(g ? `GUERRA · ${g.faccion} · OLEADA ${g.oleada}/4` : '');
   }
 
   // el texto de "E para..." de hospital, taller y comida (la comisaria no
@@ -462,6 +469,7 @@ export class UIScene extends Phaser.Scene {
         : d.localCerca ? this.textoLocal(d.localCerca)
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
         : d.gruaCerca ? `E para entregar el ${d.gruaCerca.nombre} en la grua · ${d.gruaCerca.pago} €`
+        : d.guerraCerca ? `E para desafiar a ${d.guerraCerca}`
         : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );
@@ -475,6 +483,7 @@ export class UIScene extends Phaser.Scene {
       this.armaTexto.setText('');
     }
     this.updateTerritory(d.territory);
+    this.updateGuerra(d.guerraActiva);
 
     this.vehiclePanel.setVisible(d.driving);
     if (d.driving) {
