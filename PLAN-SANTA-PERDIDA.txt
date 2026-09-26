@@ -2444,6 +2444,42 @@ CUADRAGESIMOSEPTIMA TANDA (26-sep-2026): el monte con mirador, decimo landmark
   tuneles.
 
 ================================================================================
+CUADRAGESIMOCTAVA TANDA (26-sep-2026): una isla con su puente, undecimo landmark
+================================================================================
+
+  Undecimo de los trece. Junta DOS pendientes en uno (una isla pequeña, y
+  el primero de los puentes), porque un puente sin agua real que cruzar no
+  tiene sentido, y el mar de verdad (al sur del mapa) solo mide 9 casillas
+  de alto — muy poco para nada.
+
+  SE CAVA una bahia pequeña dentro de la franja de arena/puerto, entre la
+  grua y la playa, pero SOLO en la mitad sur (`y: 247`, DESPUES de la calle
+  del puerto que va de 242 a 246 — para no taparla de agua, que la habria
+  roto de verdad para el trafico). `{ type: 'isla', x: 90, y: 247, w: 18,
+  h: 6 }`. Dentro: la bahia entera en WATER (ya se marca solida sola, via
+  `_computeSolids`), una isla de arena en el sur (pegada al mar real que
+  empieza justo debajo), y un puente de tres casillas de ancho que la une
+  con la ciudad.
+
+  `PintarCiudad.drawLandmarks()`: el puente con tablones y baranda a los
+  dos lados; la isla con una palmera y un cobertizo de pescador.
+
+  COMPROBADO a mano en la consola y visualmente: la calle del puerto SIGUE
+  siendo calle de verdad (se comprobo tile a tile, no se tapo con agua); la
+  isla no es solida (se anda); visualmente se ve la bahia azul, el puente
+  con barandillas, y la isla con la palmera y el cobertizo. Cero errores en
+  consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE, DE VERDAD: "dos o tres puentes que separen
+  ZONAS URBANAS" (varias partes de la ciudad divididas por agua, como en
+  los GTA reales) es un cambio de geografia mucho mas grande que añadir un
+  puente de acceso a una isla — tocaria repartir el mapa en islas separadas
+  por canales, que afecta al trafico, al pathfinding y a como se reparten
+  los barrios enteros. Se deja para una tanda propia si Pablo la pide,
+  distinta de "encontrar un hueco libre y poner un landmark" que ha sido
+  el patron de las diez anteriores. Los tuneles quedan igual.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -2520,8 +2556,9 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep)
        [x] Poligono industrial de verdad — 45a tanda, 26-sep.
        [x] Aeropuerto o aerodromo — 46a tanda, 26-sep.
        [x] Monte con mirador — 47a tanda, 26-sep.
-       [ ] Dos o tres puentes que separen zonas
-       [ ] Una isla pequeña
+       [x] Una isla pequeña, con su puente de acceso — 48a tanda, 26-sep
+           (cubre UN puente de verdad; "dos o tres que separen zonas
+           urbanas" queda pendiente, ver el registro de la 48a).
        [ ] Tuneles
 
      QUE VIGILAR AL AMPLIAR (esto es lo importante):

@@ -146,4 +146,9 @@ export const CITY = {
     { type: 'aeropuerto', label: 'Aerodromo Santa Perdida', x: 210, y: 234, w: 85, h: 19 },
     // otro tramo de la franja de arena/puerto, antes de la grua
     { type: 'monte', label: 'Mirador del Farallon', x: 5, y: 234, w: 45, h: 19 },
+    // entre la grua y la playa, SOLO en la mitad sur de la franja de arena
+    // (y=247 en adelante, DESPUES de la calle del puerto que va de 242 a
+    // 246 — asi la bahia no la tapa): una isla pequeña con puente de
+    // acceso, fundida con el mar de verdad que empieza justo debajo (253)
+    { type: 'isla', label: 'Isla del Pescador', x: 90, y: 247, w: 18, h: 6 },
   ],};

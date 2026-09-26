@@ -298,6 +298,21 @@ export class CityMap {
         // este juego, la elevacion es solo dibujo (PintarCiudad)
         this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
         lm.cima = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+      } else if (L.type === 'isla') {
+        // una bahia pequeña con una isla en medio, cerca del mar de
+        // verdad, y un puente de tres casillas de ancho que la une con la
+        // ciudad. WATER ya se marca solido solo con estar en la rejilla
+        // (_computeSolids), no hace falta nada mas para que no se cruce a pie.
+        this.fillRect(L.x, L.y, L.w, L.h, T.WATER);
+        const anchoIsla = 10;
+        const altoIsla = 4;
+        const ix = L.x + Math.floor((L.w - anchoIsla) / 2);
+        const iy = L.y + L.h - altoIsla;
+        this.fillRect(ix, iy, anchoIsla, altoIsla, T.SAND);
+        const puenteAncho = 3;
+        const px = ix + Math.floor(anchoIsla / 2) - 1;
+        this.fillRect(px, L.y, puenteAncho, iy - L.y, T.ALLEY);
+        lm.isla = { px: (ix + anchoIsla / 2) * TILE, py: (iy + altoIsla / 2) * TILE };
       }
 
       this.landmarks.push(lm);

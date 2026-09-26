@@ -639,6 +639,25 @@ export const PintarCiudad = {
         // el mirador, en la cima
         block(cx, cy - radio * 0.15, 50, 30, 0x6b6257, -1200);
         block(cx, cy - radio * 0.15 - 18, 50, 6, 0x3a352e, -1199);
+      } else if (L.type === 'isla') {
+        const p = L.isla;
+        const norteY = L.py - L.ph / 2;
+        const puenteLargo = p.py - 64 - norteY;
+        const puenteY = norteY + puenteLargo / 2;
+        const puenteAncho = 100;
+
+        // el puente: tablones y baranda a los dos lados
+        block(L.px, puenteY, puenteAncho, puenteLargo, 0x6b5a45, -1210);
+        block(L.px - puenteAncho / 2, puenteY, 6, puenteLargo, 0x3a352e, -1209);
+        block(L.px + puenteAncho / 2, puenteY, 6, puenteLargo, 0x3a352e, -1209);
+
+        // la isla: arena, una palmera y un cobertizo de pescador
+        block(p.px, p.py, 140, 60, 0xd9c896, -1210, 0.6);
+        block(p.px - 22, p.py + 4, 10, 30, 0x6b5238, -1206);
+        this.add.circle(p.px - 28, p.py - 16, 12, 0x3d7a3f).setDepth(-1204);
+        this.add.circle(p.px - 14, p.py - 18, 12, 0x4a8f4d).setDepth(-1204);
+        block(p.px + 18, p.py, 34, 24, 0x8a7452, -1205);
+        block(p.px + 18, p.py - 16, 40, 8, 0x5a4a38, -1204);
       }
 
       this.add
