@@ -34,6 +34,7 @@ import { Audio } from '../core/Audio.js';
 import { PintarCiudad } from '../world/PintarCiudad.js';
 import { DanoVehiculos } from '../systems/DanoVehiculos.js';
 import { DiaNocheSystem } from '../systems/DiaNocheSystem.js';
+import { EncuentroSystem } from '../systems/EncuentroSystem.js';
 
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
@@ -98,6 +99,7 @@ export class CityScene extends Phaser.Scene {
     });
     this.justiciero = new JusticieroSystem(this, this.map, this.net);
     this.diaNoche = new DiaNocheSystem();
+    this.encuentros = new EncuentroSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -427,6 +429,7 @@ export class CityScene extends Phaser.Scene {
         if (!this.entrarEnPisoCerca() && !this.entregarEnGruaCerca()) this.exitVehicle();
       } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
+        !this.encuentros.intentarHablar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
         !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
@@ -527,6 +530,7 @@ export class CityScene extends Phaser.Scene {
     this.police.update(dt, this.player, this.drivingVehicle);
     this.factions.update(dt, this.player.x, this.player.y);
     this.missions.update(dt, this.player, this.drivingVehicle);
+    this.encuentros.update(dt, this.player, !!this.drivingVehicle);
     this.resolvePlayerVsVehicles();
     this.updateLamps();
     this.checkPlayerHarm(dt);
@@ -1135,6 +1139,12 @@ export class CityScene extends Phaser.Scene {
   // ninguno lo esta, el que conduzcas ahora mismo (taxi, ambulancia,
   // patrulla), o si no, el reparto de siempre
   trabajoActual() {
+    if (this.encuentros.activo) {
+      return {
+        objective: this.encuentros.objectiveText(), remaining: this.encuentros.remainingTime(),
+        target: this.encuentros.target,
+      };
+    }
     if (this.jobs.active) {
       return { objective: this.jobs.objectiveText(), remaining: this.jobs.remainingTime(), target: this.jobs.target };
     }
@@ -1216,7 +1226,7 @@ export class CityScene extends Phaser.Scene {
       territory: this.factions.currentInfo(),
       mission: this.missions.estado(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
-      contactos: this.missions.puntos(),
+      contactos: this.missions.puntos().concat(this.encuentros.puntos()),
       diaNoche: this.diaNoche.velo(),
     });
   }

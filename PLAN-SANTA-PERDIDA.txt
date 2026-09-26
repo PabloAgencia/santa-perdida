@@ -2626,8 +2626,23 @@ LA CIUDAD MAS VIVA
      las 01:00 (velo azul), 06:45 (velo ambar de amanecer) y con el ciclo
      completo de dormir con y sin necesitar curarse; guardado y cargado
      comprobado con datos sueltos.
- 13. ENCUENTROS POR LA CALLE: gente con un icono que te da encargos cortos.
-     Reaprovecha entero el sistema de contactos que ya funciona.
+ 13. HECHO (51a tanda, 26-sep). Encuentros por la calle: gente con un icono
+     que te da encargos cortos.
+     EncuentroSystem.js nuevo, con el mismo lenguaje visual que los
+     dadores de mision de MissionSystem (persona plantada, sombra, marker
+     sobre la cabeza) pero SIN texto flotante fijo al sitio: como aparece
+     en cualquier acera al azar (no en un hueco ya comprobado a mano como
+     los landmarks), un rotulo ahi podria acabar encima de un portal o un
+     coche aparcado. Aparece cada 20-55 segundos a 500-950 px del
+     jugador (para descubrirlo andando, no encima), se va solo si no le
+     hablas en 65 segundos. Al hablarle (E, solo a pie) da un recado de
+     un paso: ir a un punto a 250-550 px, con premio y tiempo segun la
+     distancia (50 € + 4 €/casilla, limite 10 s + 0,9 s/casilla), cinco
+     textos de sabor distintos al azar. Entra en el marcador de mision
+     (arriba al centro) con la misma prioridad que reparto/taxi/ambulancia,
+     y en el minimapa mientras espera. Probado end-to-end en el
+     navegador: aparicion, aviso "E para hablar", aceptar, cumplir (paga
+     de verdad), fallar por tiempo y desaparecer por no acercarse.
  14. LA CIUDAD SE ABRE POR ZONAS conforme avanzas (si entras donde no debes,
      busca alta, como en San Andreas).
  15. MERCADO POR BARRIOS con precios que se mueven y una libreta para verlos.
