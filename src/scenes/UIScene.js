@@ -461,6 +461,7 @@ export class UIScene extends Phaser.Scene {
       d.tiendaCerca ? 'E para entrar en la armeria'
         : d.localCerca ? this.textoLocal(d.localCerca)
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
+        : d.gruaCerca ? `E para entregar el ${d.gruaCerca.nombre} en la grua · ${d.gruaCerca.pago} €`
         : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );

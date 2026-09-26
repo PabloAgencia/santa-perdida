@@ -1933,6 +1933,44 @@ TRIGESIMOTERCERA TANDA (26-sep-2026): la pantalla de progreso
   LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
 
 ================================================================================
+TRIGESIMOCUARTA TANDA (26-sep-2026): la grua del puerto (import/export)
+================================================================================
+
+  Cierra el PUNTO 3 de "LO PRIMERO", y con el, LOS CUATRO PUNTOS QUE
+  QUEDABAN DEL ENCARGO ORIGINAL. La fase 3 esta completa.
+
+  El landmark de la grua ya estaba dibujado (`world/CityMap.js` y
+  `world/PintarCiudad.js`, `type: 'grua'` en `config/city.js`) pero sin
+  ningun mecanismo detras. Nuevo `GruaSystem.js`:
+
+     · Pide TRES modelos a la vez, de los seis que se compran en el
+       concesionario. Un cartel sobre la grua los enseña por nombre.
+     · Se entrega EN COCHE, acercandose a la grua y pulsando E — el mismo
+       hueco de la cadena de Enter que ya usaba guardar en el garaje: en
+       coche, primero se prueba el garaje, luego la grua, y solo si ninguno
+       aplica el E baja del coche como siempre.
+     · PAGA SEGUN EL ESTADO: una fraccion del precio de venta del coche
+       (14% hecho polvo, 42% como nuevo), NUNCA el precio entero — si no,
+       comprarlo en el concesionario y traerlo de vuelta saldria gratis.
+       Cuidar el coche antes de entregarlo importa de verdad.
+     · Al entregar, ese modelo sale de la lista y entra otro que no se
+       repita: la lista nunca se vacia.
+
+  COMPROBADO a mano en la consola, con la partida guardada real: el cartel
+  sale con los tres modelos correctos; un coche de la lista en perfecto
+  estado paga el 42% justo de su precio (probado con el Taxi: 2.600 · 42% =
+  1.092 €, cobrado exacto); el mismo modelo casi destrozado paga bastante
+  menos (la Avispa, de 1.428 € a 497 €); un modelo que NO esta en la lista
+  no se entrega (el E simplemente te baja del coche, como si no hubiera
+  grua); tras entregar, la lista se renueva sin repetir. Visualmente: "E
+  para entregar el Avispa en la grua · 1428 €" en el HUD, tal cual. Cero
+  errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado. Con esto, los cuatro puntos
+  de "LO PRIMERO" (comprar coches y pisos, negocios, la grua, progreso)
+  estan hechos.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -1952,7 +1990,8 @@ LOS CUATRO CUADERNOS DE IDEAS (en esta misma carpeta)
 
 
 --------------------------------------------------------------------------------
-LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
+LO PRIMERO — LOS CUATRO HECHOS (26-sep-2026): cierra la fase 3, que era lo
+que quedaba del encargo original
 --------------------------------------------------------------------------------
   1. HECHO (30a tanda, 26-sep). Comprar coches y pisos, con garaje en cada
      piso y reaparecer en el piso mas cercano.
@@ -1961,8 +2000,8 @@ LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
      ataquen. QUEDA: las 15 misiones por tipo de Vice City Stories (cobros,
      recuperar vehiculos, contrabando, golpes) — se decidio a proposito
      dejarlas para otra tanda, ver el registro de la 32a.
-  3. LA LISTA DE COCHES ENCARGADOS en la grua del puerto (import/export).
-     El puerto y la grua ya estan dibujados; pagan segun el estado del coche.
+  3. HECHO (34a tanda, 26-sep). La lista de coches encargados en la grua
+     del puerto (import/export), pagando segun el estado del coche.
   4. HECHO (33a tanda, 26-sep). Pantalla de progreso con porcentaje, tipo
      "100%": misiones, pisos, negocios, coches, entregas. Las medallas no
      entran todavia porque los desafios cronometrados (punto 16) no existen.

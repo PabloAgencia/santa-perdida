@@ -19,6 +19,7 @@ import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
+import { GruaSystem } from '../systems/GruaSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -71,6 +72,7 @@ export class CityScene extends Phaser.Scene {
     this.locales = new LocalSystem(this, this.map);
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.negocios = new NegocioSystem(this, this.map);
+    this.grua = new GruaSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -394,10 +396,10 @@ export class CityScene extends Phaser.Scene {
     const down = k.down.isDown || k.downArrow.isDown;
 
     if (Phaser.Input.Keyboard.JustDown(k.enter)) {
-      // en coche, junto a tu piso, primero se prueba a meterlo en el garaje;
-      // solo si eso no aplica el E te baja del coche como siempre
+      // en coche: primero se prueba a meterlo en el garaje de tu piso o a
+      // entregarlo en la grua; solo si ninguno aplica el E te baja como siempre
       if (this.drivingVehicle) {
-        if (!this.entrarEnPisoCerca()) this.exitVehicle();
+        if (!this.entrarEnPisoCerca() && !this.entregarEnGruaCerca()) this.exitVehicle();
       } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
@@ -505,6 +507,7 @@ export class CityScene extends Phaser.Scene {
     this.locales.update(this.player, !!this.drivingVehicle);
     if (!this.drivingVehicle) this.concesionario.update(this.player);
     this.negocios.update(dt, this.player);
+    this.grua.update(this.player, this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -968,6 +971,31 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // import/export: E en coche junto a la grua del puerto, con un modelo que
+  // piden ahora mismo. Se lo lleva la grua (el coche desaparece, como el
+  // piso vendido) y paga segun lo entero que llegue.
+  entregarEnGruaCerca() {
+    if (!this.grua || !this.grua.cerca) return false;
+    const v = this.drivingVehicle;
+    const resultado = this.grua.entregar(v);
+    if (!resultado) return false;
+
+    const spot = v.findExitSpot();
+    const i = this.vehicles.indexOf(v);
+    if (i >= 0) this.vehicles.splice(i, 1);
+    v.destroy();
+    this.drivingVehicle = null;
+    this.player.setPosition(spot.x, spot.y);
+    this.player.setVisible(true);
+    this.cameras.main.setFollowOffset(0, 0);
+
+    Audio.notes([392, 523.25, 659.25, 783.99], 0.09);
+    EventBus.emit(EVT.NOTIFY, {
+      text: `${resultado.nombre} entregado · ${resultado.pago} €`, tone: 'money',
+    });
+    return true;
+  }
+
   // sacar un coche del garaje a la puerta del piso, al salir de HideoutScene
   // con `sacarCocheDe` (ver HideoutScene.sacarCoche). La puerta en si cae
   // pegada a la pared (zona solida): se desplaza hacia la calle, igual que
@@ -1069,6 +1097,9 @@ export class CityScene extends Phaser.Scene {
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
       concesionarioCerca: this.concesionario && this.concesionario.cerca
         ? { nombre: VEHICLES[this.concesionario.cerca.tipo].name, precio: this.concesionario.cerca.precio }
+        : null,
+      gruaCerca: this.grua && this.grua.cerca
+        ? { nombre: VEHICLES[this.drivingVehicle.type].name, pago: this.grua.estimarPago(this.drivingVehicle) }
         : null,
       negocioCerca: this.negocios && this.negocios.cerca
         ? {
