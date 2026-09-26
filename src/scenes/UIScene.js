@@ -74,7 +74,7 @@ export class UIScene extends Phaser.Scene {
     }).setOrigin(1, 1);
     this.helpText.setText([
       'WASD mover · SHIFT correr · E entrar · F pegar · Q objetivo',
-      'TAB arma · M mapa · J encargo · ESPACIO freno · K guardar',
+      'TAB arma · M mapa · P progreso · J encargo · ESPACIO freno · K guardar',
     ]);
     this.tweens.add({
       targets: [this.helpText, this.helpBg], alpha: 0.4, delay: 16000, duration: 2500,

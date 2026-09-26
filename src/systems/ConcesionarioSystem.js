@@ -79,6 +79,12 @@ export class ConcesionarioSystem {
     if (!GameState.canAfford(c.precio)) return null;
     GameState.spendMoney(c.precio, 'concesionario');
 
+    // que modelos ha comprado alguna vez, para la pantalla de progreso: si
+    // se vive en `vehicles` se pierde al vender/destruir el coche, y el
+    // merito de haberlo comprado no deberia perderse con el
+    if (!GameState.flags.cochesComprados) GameState.flags.cochesComprados = {};
+    GameState.flags.cochesComprados[c.tipo] = true;
+
     c.vehicle.enVenta = false;
     c.vehicle.hp = c.vehicle.stats.maxHp;
     c.cartel.destroy();

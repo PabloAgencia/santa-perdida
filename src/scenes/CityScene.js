@@ -186,10 +186,10 @@ export class CityScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D',
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
-      mapa: 'M', mute: 'N', pausa: 'ESC',
+      mapa: 'M', mute: 'N', pausa: 'ESC', progreso: 'P',
       atacar: 'F', objetivo: 'Q', arma: 'TAB',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,SHIFT,ESC,F,Q,TAB');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,P,SHIFT,ESC,F,Q,TAB');
 
     // el raton tambien pega, y al volante tambien dispara
     this.input.on('pointerdown', (p) => {
@@ -435,6 +435,11 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.mapa)) {
       this.abrirMapa();
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(k.progreso)) {
+      this.abrirProgreso();
       return;
     }
 
@@ -860,6 +865,15 @@ export class CityScene extends Phaser.Scene {
     this.scene.pause();
     this.scene.pause('UIScene');
     this.scene.launch('MapaScene');
+  }
+
+  // el "100%" al estilo San Andreas: P congela la ciudad y enseña cuanto
+  // falta
+  abrirProgreso() {
+    this.captureState();
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('ProgresoScene');
   }
 
   // menu de pausa: la ciudad se congela y se abre por encima

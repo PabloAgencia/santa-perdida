@@ -1896,6 +1896,43 @@ TRIGESIMOSEGUNDA TANDA (26-sep-2026): negocios que dan renta, el armazon
   recuperar vehiculos, contrabando, golpes) — se dejaron fuera a proposito.
 
 ================================================================================
+TRIGESIMOTERCERA TANDA (26-sep-2026): la pantalla de progreso
+================================================================================
+
+  Cierra el PUNTO 4 de "LO PRIMERO", y con el, los cuatro puntos que
+  quedaban del encargo original quedan hechos.
+
+  P congela la ciudad (igual que el mapa o la pausa) y abre `ProgresoScene`:
+  un porcentaje grande arriba y cinco barras debajo, cada una pesando lo
+  mismo en el total — Misiones, Pisos, Negocios, Coches, Entregas. No
+  guarda nada nuevo, solo LEE lo que ya vive en GameState:
+     · Misiones: cuantas de `MISSIONS` (10) tienen `flags.misiones[id]`.
+     · Pisos y Negocios: cuantos de los 6 barrios de cada uno son tuyos
+       (`esDueno`, ya existia).
+     · Coches: aqui hacia falta algo nuevo. `GameState.vehicles` es lo que
+       tienes AHORA, no un historico — si vendes o destrozas un coche, el
+       merito de haberlo comprado no deberia perderse. Nuevo flag,
+       `flags.cochesComprados[tipo]`, que pone `ConcesionarioSystem.comprar`
+       la primera vez que compras cada modelo.
+     · Entregas: `stats.deliveries`, que ya existia; como los encargos son
+       infinitos, cuentan el 100% a partir de las primeras 20 (numero a
+       ojo, se ajusta sin tocar nada mas).
+
+  Las MEDALLAS que menciona el punto original no entran: son de los
+  desafios cronometrados (punto 16 de la lista), que no existen todavia.
+
+  Tecla nueva: P (estaba libre). Se abre con `CityScene.abrirProgreso()`,
+  calcado de `abrirMapa()`.
+
+  COMPROBADO a mano en la consola y visualmente con la partida guardada
+  real (que ya tenia 1 piso y 1 negocio comprados de tandas anteriores): se
+  abre, muestra "6% COMPLETADO" con Misiones 0/10, Pisos 1/6, Negocios 1/6,
+  Coches 0/6, Entregas 0/20+, cada barra con el ancho que le toca, y cierra
+  bien volviendo a CityScene y UIScene. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -1926,8 +1963,9 @@ LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
      dejarlas para otra tanda, ver el registro de la 32a.
   3. LA LISTA DE COCHES ENCARGADOS en la grua del puerto (import/export).
      El puerto y la grua ya estan dibujados; pagan segun el estado del coche.
-  4. PANTALLA DE PROGRESO con porcentaje, tipo "100%": misiones, locales,
-     coches, encargos, medallas. Es lo que da rumbo cuando acaba la historia.
+  4. HECHO (33a tanda, 26-sep). Pantalla de progreso con porcentaje, tipo
+     "100%": misiones, pisos, negocios, coches, entregas. Las medallas no
+     entran todavia porque los desafios cronometrados (punto 16) no existen.
 
 --------------------------------------------------------------------------------
 EL SALTO GRANDE
