@@ -1,0 +1,257 @@
+================================================================================
+SANTA PERDIDA — LO QUE FALTA DE LA LISTA COMPLETA DE SAN ANDREAS   25-sep-2026
+================================================================================
+
+Pablo paso dos listas largas (pegadas de otra conversacion) con TODO lo que
+tiene San Andreas: las 37 actividades secundarias con sus recompensas, y un
+repaso de 21 puntos con matices de las mismas. Esto compara esas dos listas
+con el codigo real (no con lo que dicen los otros documentos, que ya tienen
+dias) y con IDEAS-DE-LOS-GTA.txt e IDEAS-DE-LOS-GTA-2-LO-GORDO.txt, para no
+apuntar dos veces lo mismo.
+
+COMO LEER ESTO: igual que los otros dos ficheros, coste [B]/[M]/[C], y se
+copian mecanicas con nombres propios nuevos, nunca contenido de San Andreas
+tal cual.
+
+
+================================================================================
+YA APUNTADO EN OTRO SITIO — no repetir, solo referencia
+================================================================================
+De las 37 + 21 cosas de las listas, esto ya estaba en algun documento o ya
+esta programado:
+
+  · Import/export de coches (punto 14 / punto 6)
+    = IDEAS-DE-LOS-GTA-2-LO-GORDO.txt, bloque 3 "LA LISTA DE COCHES
+      ENCARGADOS". Descrito casi igual: grua del puerto, listas de coches,
+      pagar segun estado. Pendiente de programar, pero el apunte ya existe.
+
+  · Saltos unicos con camara lenta (punto 34 / punto 17)
+    = IDEAS-DE-LOS-GTA.txt, 9.2 "SALTOS: rampas por la ciudad, camara
+      lenta al volar". Mismo concepto.
+
+  · Guerra de territorios (punto 36)
+    = IDEAS-DE-LOS-GTA.txt 5.1 y IDEAS-2 FASE B punto 8. Es LA pieza que ya
+      estaba senalada como "la gorda de San Andreas, para cuando todo lo
+      demas este".
+
+  · Desafios cronometrados / rampages (punto 37)
+    = IDEAS-DE-LOS-GTA-2-LO-GORDO.txt, bloque 5 "DESAFIOS CRONOMETRADOS".
+      Es literalmente la misma mecanica (arma, objetivo, tiempo, medalla).
+
+  · Paquetes/coleccionables geenricos (herraduras, ostras — puntos 29-30)
+    = IDEAS-DE-LOS-GTA.txt 9.1 "PAQUETES ESCONDIDOS", ya cubre el patron
+      generico de "recoge N por la ciudad y cada tanto hay recompensa".
+
+  · Tuneo de coches / lowrider como mecanica de taller (parte del punto 15
+    de la lista 2)
+    = IDEAS-DE-LOS-GTA.txt 3.4 "TUNEO DE VERDAD".
+
+  · Trabajos con recompensa permanente, taxi, ambulancia, justiciero
+    (puntos 1-4 / punto 1)
+    = ya senalados como pendientes: IDEAS-1 bloque 8, IDEAS-2 bloque 2 y
+      FASE C punto 11, y el PLAN-SANTA-PERDIDA.txt punto 17 "TRABAJOS: taxi,
+      ambulancia, justiciero, carreras". Comprobado en el codigo: taxi y
+      ambulancia solo existen como TIPO DE VEHICULO robable
+      (`config/vehicles.js`), no como trabajo jugable con niveles.
+
+  · Negocios que dan renta / propiedades (puntos 6-13, gran parte)
+    = IDEAS-1 bloque 1 y 2, IDEAS-2 bloque 6 y FASE A. El concepto general
+      de "comprar un negocio, hacer sus misiones, que suba la renta" ya
+      esta descrito a fondo. Lo que anado mas abajo son EJEMPLOS CONCRETOS
+      de negocios (concesionario, cantera, RC, aeropuerto) que no estaban
+      nombrados uno por uno.
+
+
+================================================================================
+NUEVO — no estaba apuntado en ningun sitio
+================================================================================
+
+1. ROBOS DE CASAS  (punto 6 / punto 9 — Pablo ya habia preguntado por esto)
+--------------------------------------------------------------------------------
+[M] Es de lo mas rentable de la lista y no estaba ni mencionado. En San
+    Andreas: furgoneta especial de noche, entras en casas, coges objetos y
+    los llevas a la furgoneta sin hacer ruido.
+
+    Para Santa Perdida: una furgoneta (ya hay tipos de vehiculo con `police:
+    true` como marca especial, se puede hacer lo mismo con un flag propio)
+    que solo aparece de noche cerca de las zonas residenciales. Dentro de
+    una casa marcada, objetos que brillan un poco; acercarse y mantener E
+    los recoge, hacer ruido (correr, chocar) sube una barra de alerta local.
+    Sacarlos y meterlos en la furgoneta antes de que un vecino llame.
+
+    Recompensa real de San Andreas: acumular botin sube el aguante hasta que
+    se vuelve infinito (no te cansas nunca corriendo/nadando). Aqui: podria
+    ser lo mismo aplicado al `aliento` del jugador, o bajar lo que gasta
+    correr por cada 10.000 € robados. Encaja con `PLAYER.alientoBase` en
+    `config/balance.js`.
+
+    No hace falta que cuente para nada oficial, es dinero + la mejora.
+
+
+2. CAMPO DE TIRO  (punto 19 de ambas listas)
+--------------------------------------------------------------------------------
+[B] Ya existe la armeria (`ShopScene.js`) y las armas (`config/weapons.js`),
+    asi que esto es barato: una sala dentro o al lado de la armeria con
+    dianas que aparecen y desaparecen, contrarreloj, una ronda por arma que
+    ya lleves comprada. Acertar todas dentro del tiempo sube directamente el
+    atributo `punteria` (o, si se hace el punto 3 de mas abajo, la
+    habilidad de ESA arma en concreto).
+
+    Es de las cosas mas baratas de toda la lista para lo que da: usa
+    sistemas que ya existen enteros (armas, disparo, atributos).
+
+
+3. HABILIDAD POR ARMA, NO SOLO PUNTERIA GENERAL  (punto 3 de la lista 2)
+--------------------------------------------------------------------------------
+[M] Matiz importante sobre algo que YA EXISTE: hoy `punteria` es UN SOLO
+    numero que sirve para todas las armas por igual (`CombatSystem.js`,
+    `GameState.atributo('punteria')`). En San Andreas cada arma tiene su
+    propio nivel (Poor -> Gangster -> Hitman) que sube solo con usarla, y al
+    llegar arriba mejora de verdad esa arma en concreto (menos dispersion,
+    recarga mas rapida, alguna a dos manos).
+
+    Para Santa Perdida, sin tener que rehacer nada: un objeto
+    `habilidadArma` en `GameState` con un contador por clave de arma
+    (`weapons.js` ya las tiene con clave), que sube al acertar con ESA arma
+    y da un pequeño bonus de dispersion propio de esa arma al pasar de
+    nivel. No hace falta tocar la pose ni el daño base.
+
+
+4. NEGOCIOS ESPECIALES CON NOMBRE PROPIO Y SU CADENA CORTA
+   (Wang Cars, Zero RC, Hunter Quarry, Verdant Meadows — puntos 10-13 y 8)
+--------------------------------------------------------------------------------
+[C] Esto ya estaba cubierto como CONCEPTO ("negocios que se compran y dan
+    renta"), pero San Andreas no tiene un solo tipo de negocio generico:
+    tiene 4-5 negocios UNICOS, cada uno con su propia cadena de 4-8
+    misiones y su propio tipo de juego, no solo "cobros" o "recuperar
+    coches" en generico. Ejemplos que se podrian montar aqui, con nombre
+    propio de Santa Perdida (nunca los de San Andreas):
+
+    · UN CONCESIONARIO propio, comprable, con una cadena corta de 3-4
+      encargos (probar coches, dejar uno a punto contrarreloj, entregar uno
+      tuneado) y que al acabarla aparezcan coches especiales en su patio.
+    · UNA CANTERA O CHATARRERIA en el barrio industrial: maquinaria pesada
+      (una grua, una excavadora) para 3-4 encargos de mover cosas o
+      desguazar coches robados, y que se convierta en un negocio fijo.
+    · UN AERODROMO ABANDONADO en las afueras (si algun dia hay avionetas o
+      helicopteros), comprable barato, que abre la puerta a encargos
+      aereos.
+
+    Esto es CARO y de lo ultimo de la lista: son 3-4 mini-sistemas de
+    juego distintos, no uno. Mejor dejarlo para cuando el armazon generico
+    de negocios (lo que aporto el encargo de ChatGPT, ya en el PLAN) este
+    hecho y sobren ganas de contenido.
+
+
+5. TREN DE MERCANCIAS  (punto 7 / punto 10)
+--------------------------------------------------------------------------------
+[C] No hay rieles ni trenes en el juego, es la unica de la lista que pide
+    infraestructura nueva de verdad (una via que cruce la ciudad, un
+    vehiculo que no se controla como un coche). Cara y de dudoso encaje en
+    una ciudad de este tamaño. La dejaria fuera salvo que a Pablo le tire
+    mucho la idea.
+
+
+6. TRIATLON / NADAR  (punto 33 / punto 18)
+--------------------------------------------------------------------------------
+[C] Comprobado: el jugador HOY NO PUEDE NADAR, ni entrar en el agua se
+    trata de forma especial (`map.isSolidBox` probablemente bloquea el
+    agua como si fuera un muro, o ni eso). Nadar es una mecanica de
+    movimiento nueva (mas lenta, con su propia barra de aire) antes de
+    poder hacer nada de esto. Caro para lo que da un triatlon en un juego
+    que no es de deportes. Lo dejaria fuera del todo.
+
+
+7. NOVIAS / RELACIONES  (punto 31 / puntos 12-13)
+--------------------------------------------------------------------------------
+[C] Sistema entero nuevo: NPCs con nombre propio, un medidor de relacion
+    por cada uno, citas (llevarlos a un sitio, hacer algo que les guste),
+    y que cada uno prefiera cosas distintas (unos conducir rapido, otros
+    despacio, otros un tipo de sitio). Es mucho contenido de personajes y
+    de dialogo para un juego que ahora mismo no tiene NPCs con nombre.
+    No lo pondria en la lista de trabajo salvo que Pablo quiera meterle
+    personajes recurrentes al juego, que ahora mismo no tiene ninguno.
+
+
+8. AMPLIAR EL CASINO (blackjack, craps, apuestas de caballos, billar,
+   baloncesto)  (parte del punto 32 / punto 14 y 20)
+--------------------------------------------------------------------------------
+[M-C] Ya existe un casino con tragaperras (`SlotsScene.js`). Anadir mas
+    mesas es coste medio POR JUEGO (blackjack y craps son reglas simples,
+    la ruleta tambien; apuestas de caballos necesitaria una carrera
+    simulada aparte, mas cara). Billar y baloncesto son minijuegos de
+    habilidad, no de casino, y no reaprovechan nada de lo que ya existe:
+    mas caros de lo que parecen para lo que aportan.
+
+    Si se quiere ampliar el casino, el orden mas barato es: blackjack,
+    despues craps, despues ruleta. Billar/baloncesto/caballos, al final o
+    fuera.
+
+
+9. GRAFITIS COMO COLECCIONABLE ESPECIFICO  (punto 27)
+--------------------------------------------------------------------------------
+[B] Matiz sobre algo que ya existe a medias: IDEAS-1 5.4 tiene "PINTADAS"
+    pero como mecanica de TERRITORIO entre bandas (tapar la de un rival),
+    no como coleccionable fijo de un barrio. Si se quiere el coleccionable
+    de San Andreas (100 tags repartidos, recompensa al completar todos),
+    es una variante barata del sistema de "paquetes escondidos" (9.1 de
+    IDEAS-1) pintando sobre fachadas en vez de recoger un objeto. Barato
+    SI ya existe el sistema generico de coleccionables; si no, hacer ese
+    primero.
+
+
+10. CAMARA DE FOTOS  (punto 28 / punto 16)
+--------------------------------------------------------------------------------
+[M] Mecanica nueva y pequeña: una tecla que "hace foto" desde donde mira el
+    jugador, y puntos del mapa (marcados o escondidos) que hay que
+    fotografiar desde el angulo correcto. No reaprovecha nada existente,
+    pero es autoconclusivo y barato de probar.
+
+
+11. VALET PARKING Y CANTERA COMO TRABAJOS SUELTOS  (puntos 10-11)
+--------------------------------------------------------------------------------
+[B-M] Dos trabajos cortos que San Andreas trata como actividades aparte
+    (no como negocio comprable): aparcar coches que llegan en cadena antes
+    de que se acumulen (valet) y maniobrar maquinaria pesada en tareas
+    cortas (cantera). Encajan en el mismo patron que taxi/ambulancia/
+    justiciero: coger un vehiculo especial en un sitio fijo y activar la
+    mision. Baratos si se hacen DESPUES de que exista el patron generico de
+    "trabajo con niveles" (ver bloque 2 de IDEAS-2).
+
+
+================================================================================
+LO QUE YO DEJARIA FUERA DEL TODO
+================================================================================
+  · Pimping (punto 5): mismo motivo que las novias, mas el contenido en si.
+  · Bombero / incendios (punto 2): pide un sistema de fuego que se propaga,
+    apagar, gente ardiendo... mucho para una sola recompensa (inmunidad al
+    fuego, que hoy no es una amenaza real en Santa Perdida).
+  · Zero RC (punto 13): minijuego de conducir un coche a control remoto en
+    una camara aparte. Divertido en San Andreas porque ya tenias todo lo
+    demas; aqui seria construir un juego dentro del juego para una sola
+    actividad.
+  · Escuelas de conducion/moto/barco/vuelo como PANTALLA APARTE (puntos
+    15-18): el CONTENIDO (pruebas de manejo, medalla, coche de premio) ya
+    esta cubierto por los "desafios cronometrados" que se pueden hacer en
+    la calle. Meterlo ademas en una pantalla de escuela separada, con
+    circuito cerrado y camara distinta, es duplicar trabajo para el mismo
+    resultado.
+  · Estadios (punto 20): mismo motivo, y ademas piden una arena cerrada
+    que Santa Perdida no tiene en el mapa.
+  · Tren de mercancias (bloque 5 de arriba): ya explicado, pide via ferrea.
+  · Triatlon/nadar (bloque 6 de arriba): pide nadar, que no existe.
+
+
+================================================================================
+RESUMEN: SI SOLO SE HICIERAN TRES COSAS DE ESTE DOCUMENTO
+================================================================================
+  1. Robos de casas — la mejor relacion coste/recompensa de toda la lista,
+     y Pablo ya habia preguntado por ella antes.
+  2. Campo de tiro — carisimo de barato, reaprovecha armeria y armas enteras.
+  3. Habilidad por arma en vez de puntERIA generica — es tocar un sistema
+     que ya existe, no crear uno nuevo, y da mas sentido a usar cada arma.
+
+  El resto (negocios con nombre propio, camara de fotos, ampliar el casino,
+  valet/cantera) son buenos PERO grandes o menores; se dejan para cuando el
+  armazon generico de negocios y trabajos (lo que ya viene del encargo de
+  ChatGPT) este hecho.

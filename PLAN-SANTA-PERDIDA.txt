@@ -1661,17 +1661,90 @@ VIGESIMOCTAVA TANDA (25-sep-2026): el ragdoll, sin Matter.js
   LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
 
 ================================================================================
+VIGESIMONOVENA TANDA (26-sep-2026): hospital, comida y el taller de pintura
+================================================================================
+
+  Al retomar esta tanda ya estaba medio hecha y sin commitear: quedaba de una
+  sesion anterior interrumpida `src/systems/LocalSystem.js`,
+  `src/config/locales.js` y `src/world/puertas.js` (la funcion que ya
+  compartian ShopSystem y PisoSystem para encontrar la puerta de un edificio,
+  sacada a un sitio comun), mas la ambulancia en `vehicles.js`. Ninguno de los
+  tres ficheros estaba importado en ningun sitio: era logica completa sin
+  conectar al juego. Se termino de enchufar y se cerro el PUNTO 7 de "EL
+  SALTO GRANDE" (el taller de pintura, pedido expresamente por Pablo).
+
+  QUE HACE LocalSystem: un sistema generico para los sitios donde te acercas,
+  pulsas E, pagas y pasa algo — hospital, taller de pintura y sitios de
+  comida. La comisaria tambien vive aqui como marcador (accion: 'ninguna'),
+  aunque no hace nada al pulsar E, para no duplicar el reparto por la ciudad.
+  Añadir un quinto tipo es añadir diez lineas a `config/locales.js`.
+
+     · HOSPITAL (3, uno por barrio antes que repetir) — 150 €, te deja a
+       vida maxima Y repone el chaleco al 100% (`GameState.darBlindaje(100)`,
+       la unica pieza que faltaba: ya estaba escrito en el comentario del
+       config pero el codigo no lo hacia todavia). Ambulancia aparcada en la
+       puerta, robable como cualquier coche.
+     · TALLER DE PINTURA (3) — 200 €, entrando CON el coche: cambia de color,
+       deja la chapa como nueva, y quita la busca SOLO si no hay ningun
+       policia persiguiendote a menos de 320 px en ese momento. Con policia
+       cerca, pinta y cobra igual pero no te quita las estrellas.
+     · COMIDA (7, Pollos Cluck) — 18 €, cura poco (22) y engorda (grasa
+       +1.6): el barato de andar por casa, contrapeso del hospital.
+     · COMISARIA (2) — solo marcador por ahora; sirve para saber donde
+       reapareces si te detienen.
+
+  COMO SE ENCHUFO (CityScene.js y UIScene.js):
+     - `this.locales = new LocalSystem(this, this.map)` en create(), junto a
+       shops y pisos.
+     - `this.locales.update(...)` en el bucle, mismo patron que shops/pisos.
+     - `usarLocalCerca()`, nuevo metodo de CityScene, entra en la cadena de
+       comprobaciones de la tecla E (mision > escondite > piso > armeria >
+       LOCAL > maquina). Si el local es la comisaria (accion 'ninguna'),
+       devuelve false sin consumir el E, para que la cadena siga probando lo
+       siguiente.
+     - El HUD manda `localCerca: cfg` y UIScene tiene `textoLocal(cfg)`, que
+       compone "E para curarte · 150 €" / "E para comer algo · 18 €" / "E
+       para pintar el coche · 200 €" segun la accion.
+
+  COMPROBADO a mano en la consola del navegador, jugando con la partida
+  guardada real (no una nueva): los 15 locales salen repartidos como manda
+  la config (3+2+3+7), el hospital cura y repone blindaje y cobra 150, la
+  comida cura 22 y engorda 1.6 y cobra 18, el taller cambia de color y
+  repara la chapa y cobra 200, quita la busca sin policia cerca y NO la
+  quita con un policia simulado a 20 px persiguiendo, y la comisaria se
+  detecta cerca pero no consume el E. Cero errores en consola.
+
+  AVISO para la proxima vez que se pruebe en el navegador con las
+  herramientas: la pestaña en segundo plano congela el bucle de Phaser
+  (`document.visibilityState` sale "hidden" y ahi se queda clavado en
+  BootScene aunque el loader ya vaya al 100%). La salida que funciono fue
+  forzar el paso a mano con `window.SantaPerdida.game.loop.step(t)` en vez
+  de esperar a que el rAF corra solo, tal y como ya avisaba el aviso de la
+  tanda del ragdoll.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada de lo que estaba a medias. Sigue
+  pendiente el resto del punto 6 (subfusil, chaleco tambien por la calle) y
+  el punto 2 de "LO PRIMERO", que es otra cosa — LOCALES QUE DAN RENTA
+  (negocios que se compran y generan ingresos pasivos) no tiene nada que ver
+  con estos cuatro locales de servicio, aunque el nombre se parezca.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
-LOS TRES CUADERNOS DE IDEAS (en esta misma carpeta)
+LOS CUATRO CUADERNOS DE IDEAS (en esta misma carpeta)
   · IDEAS-DE-LOS-GTA.txt ............ 66 ideas de San Andreas, Vice City
     Stories y Chinatown Wars, cada una con su coste [B]/[M]/[C].
   · IDEAS-DE-LOS-GTA-2-LO-GORDO.txt . las 11 piezas que sostienen el juego,
     explicadas por dentro y con el fichero de aqui donde toca cada una.
+  · IDEAS-DE-LOS-GTA-3-SAN-ANDREAS-COMPLETISTA.txt (25-sep) .... comparada
+    contra la lista COMPLETA de actividades secundarias de San Andreas que
+    trajo Pablo: que ya estaba apuntado (no repetido) y que es nuevo de
+    verdad (robos de casas, campo de tiro, habilidad por arma, y una lista
+    de lo que mejor se deja fuera, con el motivo).
   · IDEAS-ARTE-CON-IA.txt ........... donde ayudaria generar arte con Google
     AI Studio y donde NO conviene tocarlo.
-  Todo lo de esos tres cuadernos esta pendiente. Esta lista es el resumen.
+  Todo lo de esos cuatro cuadernos esta pendiente. Esta lista es el resumen.
 
 
 --------------------------------------------------------------------------------
@@ -1695,9 +1768,9 @@ EL SALTO GRANDE
   6. HECHO (17a tanda). Armeria, chaleco (400) y enemigos que disparan.
      LO QUE QUEDA DE ESTE PUNTO: el subfusil, y que el chaleco tambien se
      pueda encontrar por la calle y no solo comprarse.
-  7. TALLER DE PINTURA (el "pay'n'spray" de toda la vida): entras con el
-     coche, pagas, sale de otro color, con la chapa arreglada y SIN policia
-     detras si no te estan viendo. -> PEDIDO EXPRESAMENTE POR PABLO.
+  7. HECHO (29a tanda, 26-sep). Taller de pintura: entras con el coche,
+     pagas, sale de otro color, con la chapa arreglada y SIN policia detras
+     si no te estan viendo. -> ERA PEDIDO EXPRESAMENTE POR PABLO.
   8. QUITARSE LA BUSCA CARGANDOSE PATRULLAS: cada estrella se quita
      destrozando un coche de policia embistiendolo.
   9. GUERRA POR EL TERRITORIO de las bandas, con oleadas.

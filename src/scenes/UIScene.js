@@ -222,6 +222,15 @@ export class UIScene extends Phaser.Scene {
     }).setOrigin(0, 0);
   }
 
+  // el texto de "E para..." de hospital, taller y comida (la comisaria no
+  // tiene accion, asi que ni entra aqui: ver CityScene.usarLocalCerca)
+  textoLocal(cfg) {
+    if (cfg.accion === 'curar') return `E para curarte · ${cfg.precio} €`;
+    if (cfg.accion === 'comer') return `E para comer algo · ${cfg.precio} €`;
+    if (cfg.accion === 'pintar') return `E para pintar el coche · ${cfg.precio} €`;
+    return '';
+  }
+
   updateTerritory(info) {
     if (!info) {
       this.territoryText.setText('');
@@ -442,6 +451,7 @@ export class UIScene extends Phaser.Scene {
     this.updateAliento(d.aliento ?? 1);
     this.accionTexto.setText(
       d.tiendaCerca ? 'E para entrar en la armeria'
+        : d.localCerca ? this.textoLocal(d.localCerca)
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );
     if (d.arma) {

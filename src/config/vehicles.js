@@ -120,6 +120,22 @@ export const VEHICLES = {
     maxHp: 300, price: 0,
     palette: [0x23262b, 0x2f3a45],
   },
+  // LA AMBULANCIA, aparcada en la puerta del hospital. Lleva `police: true`
+  // NO porque sea de la policia, sino porque esa marca es la que hace que un
+  // vehiculo no salga como trafico normal ni aparcado por ahi: una ambulancia
+  // suelta en cualquier esquina no tendria sentido. La pone LocalSystem en su
+  // sitio, y de ahi se roba como cualquier otro coche.
+  // Un paso de blanco, pesada y lenta, pero aguanta mucho.
+  ambulancia: {
+    name: 'Ambulancia',
+    clase: 'furgoneta',
+    police: true,
+    length: 60, width: 26,
+    maxSpeed: 305, accel: 130, brake: 340, reverseSpeed: 88,
+    turnRate: 1.75, lateralRetention: 0.895,
+    maxHp: 240, price: 0,
+    palette: [0xe8e4dc, 0xdcd6c8],
+  },
 };
 
 // el coche patrulla no sale como trafico ni aparcado: lo saca la policia

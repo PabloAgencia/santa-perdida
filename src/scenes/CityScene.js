@@ -16,6 +16,7 @@ import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
+import { LocalSystem } from '../systems/LocalSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -65,6 +66,7 @@ export class CityScene extends Phaser.Scene {
     this.pickups = new PickupSystem(this, this.map);
     this.shops = new ShopSystem(this, this.map);
     this.pisos = new PisoSystem(this, this.map);
+    this.locales = new LocalSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -364,6 +366,7 @@ export class CityScene extends Phaser.Scene {
         !this.enterHideout() &&
         !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
+        !this.usarLocalCerca() &&
         !this.usarMaquinaCerca()
       ) {
         const v = this.nearestVehicle();
@@ -455,6 +458,7 @@ export class CityScene extends Phaser.Scene {
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
+    this.locales.update(this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -745,6 +749,18 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // hospital, taller de pintura y sitios de comida: E en la puerta (o dentro
+  // del coche, en el taller) y LocalSystem resuelve que pasa. La comisaria
+  // no tiene accion (accion: 'ninguna'), asi que no consume el E.
+  usarLocalCerca() {
+    const local = this.locales && this.locales.cerca;
+    if (!local || local.cfg.accion === 'ninguna') return false;
+
+    const resultado = this.locales.usar(local, this.drivingVehicle);
+    if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+    return true;
+  }
+
   // la maquina de refrescos de la acera: E al lado y a beber
   usarMaquinaCerca() {
     if (!this.pickups.cercaDeMaquina) return false;
@@ -883,6 +899,7 @@ export class CityScene extends Phaser.Scene {
       healthMax: GameState.vidaMaxima,
       blindaje: GameState.blindaje,
       tiendaCerca: !!(this.shops && this.shops.cerca),
+      localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
       arma: this.drivingVehicle ? null : {
