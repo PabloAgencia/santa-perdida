@@ -104,14 +104,13 @@ export class LocalSystem {
     }
 
     if (cfg.accion === 'curar') {
-      if (GameState.health >= GameState.vidaMaxima && GameState.blindaje <= 0) {
+      // solo salud, como en los demas GTA: el chaleco se compra aparte, en
+      // la armeria (o se encuentra por la calle)
+      if (GameState.health >= GameState.vidaMaxima) {
         return { texto: 'Estas entero', tono: 'dim' };
       }
       GameState.spendMoney(cfg.precio, 'hospital');
       GameState.heal(GameState.vidaMaxima);
-      // sumar el tope entero, no un 100 fijo: con el nivel de justiciero el
-      // chaleco aguanta mas de 100, y el hospital te lo deja al maximo real
-      GameState.darBlindaje(GameState.blindajeMaximo);
       Audio.notes([392, 523.25, 659.25], 0.1);
       return { texto: `Curado · ${cfg.precio} €`, tono: 'money' };
     }

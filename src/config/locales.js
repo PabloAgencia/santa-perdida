@@ -22,7 +22,7 @@ export const LOCALES = {
     precio: 150,
     enCoche: false,
     color: 0xe8625a,
-    // te deja como nuevo, y ademas quita el chaleco roto
+    // solo la salud, como en los demas GTA: el chaleco no se cura aqui
     accion: 'curar',
     // aparcada fuera: una ambulancia que se puede robar como cualquier coche
     vehiculo: 'ambulancia',

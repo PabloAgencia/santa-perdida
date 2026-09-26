@@ -1680,10 +1680,13 @@ VIGESIMONOVENA TANDA (26-sep-2026): hospital, comida y el taller de pintura
   Añadir un quinto tipo es añadir diez lineas a `config/locales.js`.
 
      · HOSPITAL (3, uno por barrio antes que repetir) — 150 €, te deja a
-       vida maxima Y repone el chaleco al 100% (`GameState.darBlindaje(100)`,
-       la unica pieza que faltaba: ya estaba escrito en el comentario del
-       config pero el codigo no lo hacia todavia). Ambulancia aparcada en la
-       puerta, robable como cualquier coche.
+       vida maxima. CORREGIDO el 26-sep tras publicar: esta tanda le añadio
+       tambien reponer el chaleco, leyendo de mas un comentario ambiguo del
+       config ("ademas quita el chaleco roto"); Pablo corto por lo sano —
+       "el hospital tiene que curar solo salud, no blindaje... quieres que
+       sea como los demas GTA" — y quedo revertido: solo salud, el chaleco
+       se compra aparte en la armeria o se encuentra por la calle. Ambulancia
+       aparcada en la puerta, robable como cualquier coche.
      · TALLER DE PINTURA (3) — 200 €, entrando CON el coche: cambia de color,
        deja la chapa como nueva, y quita la busca SOLO si no hay ningun
        policia persiguiendote a menos de 320 px en ese momento. Con policia
