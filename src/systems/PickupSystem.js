@@ -234,7 +234,7 @@ export class PickupSystem {
   }
 
   cogerChaleco(c) {
-    if (GameState.blindaje >= 100) return;
+    if (GameState.blindaje >= GameState.blindajeMaximo) return;
     const antes = GameState.blindaje;
     GameState.darBlindaje(CHALECO_ESCONDIDO);
     c.espera = REAPARECE_CHALECO;

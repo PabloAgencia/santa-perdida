@@ -172,8 +172,8 @@ export class ShopScene extends Phaser.Scene {
     }
     lista.push({
       nombre: 'Chaleco', precio: BLINDAJE.precio,
-      detalle: `llevas ${Math.round(GameState.blindaje)} de 100`,
-      lleno: GameState.blindaje >= 100,
+      detalle: `llevas ${Math.round(GameState.blindaje)} de ${GameState.blindajeMaximo}`,
+      lleno: GameState.blindaje >= GameState.blindajeMaximo,
       comprar: () => GameState.darBlindaje(BLINDAJE.cantidad),
     });
     lista.push({ nombre: 'Salir de la tienda', precio: 0, salir: true });

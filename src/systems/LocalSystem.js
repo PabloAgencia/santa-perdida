@@ -109,7 +109,9 @@ export class LocalSystem {
       }
       GameState.spendMoney(cfg.precio, 'hospital');
       GameState.heal(GameState.vidaMaxima);
-      GameState.darBlindaje(100);
+      // sumar el tope entero, no un 100 fijo: con el nivel de justiciero el
+      // chaleco aguanta mas de 100, y el hospital te lo deja al maximo real
+      GameState.darBlindaje(GameState.blindajeMaximo);
       Audio.notes([392, 523.25, 659.25], 0.1);
       return { texto: `Curado · ${cfg.precio} €`, tono: 'money' };
     }

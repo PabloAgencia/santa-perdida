@@ -216,9 +216,10 @@ class GameStateClass {
   // vive el efecto:
   //   reparto     mas tiempo para entregar         JobSystem.offerNew
   //   taxista     coches mas rapidos, siempre       Vehicle.update (input.atajos)
-  //   ambulancia  mas vida maxima                   el getter de aqui arriba
-  //   justiciero  la policia necesita estar mas cerca para verte (su radio
-  //               de deteccion se reduce)                PoliceSystem.canSee
+  //   ambulancia  mas vida maxima                   el getter de vidaMaxima
+  //   justiciero  el chaleco aguanta mas (a lo San  el getter de blindajeMaximo,
+  //               Andreas: nivel de Vigilante alto   unas lineas mas abajo
+  //               = mas blindaje al equiparte)
   sumarTrabajo(tipo) {
     if (!this.flags.trabajos) this.flags.trabajos = {};
     this.flags.trabajos[tipo] = (this.flags.trabajos[tipo] || 0) + 1;
@@ -281,8 +282,14 @@ class GameStateClass {
     return this.money >= Math.round(amount);
   }
 
+  // la mejora del justiciero, a lo San Andreas: el chaleco aguanta mas.
+  // Base 100, +10 por nivel (hasta 150 en nivel 5).
+  get blindajeMaximo() {
+    return 100 + this.nivelTrabajo('justiciero') * 10;
+  }
+
   darBlindaje(cantidad) {
-    this.blindaje = Phaser.Math.Clamp(this.blindaje + cantidad, 0, 100);
+    this.blindaje = Phaser.Math.Clamp(this.blindaje + cantidad, 0, this.blindajeMaximo);
     return this.blindaje;
   }
 
