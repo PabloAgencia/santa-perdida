@@ -42,6 +42,10 @@ const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
 };
 
+// a partir de este precio un coche lleva alarma (punto 18): Bastion y Vela
+// GT la llevan, el resto de la gama comprable no
+const UMBRAL_ALARMA = 5000;
+
 export class CityScene extends Phaser.Scene {
   constructor() {
     super({ key: 'CityScene', active: false });
@@ -53,6 +57,7 @@ export class CityScene extends Phaser.Scene {
     this.drivingVehicle = null;
     this.autosaveTimer = 0;
     this.hudTimer = 0;
+    this.puenteando = null;
     this.jobCooldown = 0;
     this.camAhead = new Phaser.Math.Vector2(0, 0);
     this.respawning = false;
@@ -113,7 +118,7 @@ export class CityScene extends Phaser.Scene {
       for (const v of GameState.vehicles) {
         this.vehicles.push(
           new Vehicle(this, this.map, v.type, v.x, v.y, v.angle, {
-            id: v.id, hp: v.hp, color: v.color,
+            id: v.id, hp: v.hp, color: v.color, deTuyo: v.deTuyo,
           })
         );
       }
@@ -372,6 +377,81 @@ export class CityScene extends Phaser.Scene {
     return best;
   }
 
+  // Decide si se entra sin mas (coche ocupado: se saca a quien lleve dentro,
+  // o coche ya tuyo) o si hace falta puentearlo primero (punto 18: "robar
+  // coches con su gracia, barra de puenteo", a lo Chinatown Wars).
+  intentarEntrarEnVehiculo(v) {
+    const ocupado = v.ai || v.police;
+    if (ocupado || v.deTuyo || v.puenteado) {
+      this.enterVehicle(v);
+      return;
+    }
+    this.empezarPuenteo(v);
+  }
+
+  // Los caros llevan alarma: saltar la puenteas igual, pero suena y sube la
+  // busca en el acto. Cuanto mas caro, mas tarda en arrancar.
+  empezarPuenteo(v) {
+    const caro = v.stats.price >= UMBRAL_ALARMA;
+    this.puenteando = { vehicle: v, tiempo: 0, duracion: caro ? 2.6 : 1.6 };
+
+    const barW = 46;
+    this.puenteoBarraFondo = this.add.image(v.x, v.y - 34, 'px')
+      .setDisplaySize(barW, 7).setTint(0x05060a).setAlpha(0.75).setDepth(9999);
+    this.puenteoBarra = this.add.image(v.x - barW / 2, v.y - 34, 'px')
+      .setOrigin(0, 0.5).setDisplaySize(1, 5).setTint(0xe8b54a).setDepth(9999);
+    EventBus.emit(EVT.NOTIFY, { text: 'Puenteando el coche...', tone: 'dim' });
+  }
+
+  updatePuenteo(dt) {
+    const p = this.puenteando;
+    // si el coche desaparece de debajo (lo destroza otra cosa, se lo lleva
+    // la grua de otro sistema...) se corta sin mas
+    if (!this.vehicles.includes(p.vehicle) || p.vehicle.quemado) {
+      this.cancelarPuenteo();
+      return;
+    }
+    // moverte lo cancela: no estas ya pendiente del coche
+    const k = this.keys;
+    if (k.left.isDown || k.right.isDown || k.up.isDown || k.down.isDown ||
+        k.leftArrow.isDown || k.rightArrow.isDown || k.upArrow.isDown || k.downArrow.isDown) {
+      this.cancelarPuenteo();
+      return;
+    }
+
+    p.tiempo += dt;
+    const barW = 46;
+    // el coche se puede desplazar si otro le da un golpe mientras puenteas:
+    // la barra le sigue para no quedarse flotando en el sitio equivocado
+    this.puenteoBarraFondo.setPosition(p.vehicle.x, p.vehicle.y - 34);
+    this.puenteoBarra.setPosition(p.vehicle.x - barW / 2, p.vehicle.y - 34);
+    this.puenteoBarra.setDisplaySize(Math.max(1, barW * (p.tiempo / p.duracion)), 5);
+
+    if (p.tiempo >= p.duracion) {
+      const v = p.vehicle;
+      const caro = v.stats.price >= UMBRAL_ALARMA;
+      this.puenteoBarraFondo.destroy();
+      this.puenteoBarra.destroy();
+      this.puenteando = null;
+      v.puenteado = true;
+      if (caro) this.dispararAlarma();
+      this.enterVehicle(v);
+    }
+  }
+
+  cancelarPuenteo() {
+    if (!this.puenteando) return;
+    this.puenteoBarraFondo.destroy();
+    this.puenteoBarra.destroy();
+    this.puenteando = null;
+  }
+
+  dispararAlarma() {
+    Audio.notes([880, 587, 880, 587, 880], 0.08, 'square', 0.16);
+    GameState.raiseWanted(1);
+    EventBus.emit(EVT.NOTIFY, { text: 'La alarma ha saltado', tone: 'danger' });
+  }
+
   enterVehicle(v) {
     // si el coche llevaba a alguien dentro, se baja: unos huyen y otros se
     // encaran, como en un robo de coche de verdad
@@ -421,6 +501,13 @@ export class CityScene extends Phaser.Scene {
       return;
     }
 
+    // puenteando un coche que no es tuyo: quieto ahi hasta que arranque
+    // (o se cancela solo si intentas moverte, ver updatePuenteo)
+    if (this.puenteando) {
+      this.updatePuenteo(dt);
+      return;
+    }
+
     const left = k.left.isDown || k.leftArrow.isDown;
     const right = k.right.isDown || k.rightArrow.isDown;
     const up = k.up.isDown || k.upArrow.isDown;
@@ -447,7 +534,7 @@ export class CityScene extends Phaser.Scene {
         !this.usarMaquinaCerca()
       ) {
         const v = this.nearestVehicle();
-        if (v) this.enterVehicle(v);
+        if (v) this.intentarEntrarEnVehiculo(v);
       }
     }
 
@@ -1141,7 +1228,7 @@ export class CityScene extends Phaser.Scene {
       return;
     }
     const v = new Vehicle(this, this.map, coche.tipo, x, y, lado + Math.PI / 2, {
-      hp: coche.hp, color: coche.color,
+      hp: coche.hp, color: coche.color, deTuyo: true,
     });
     this.vehicles.push(v);
     EventBus.emit(EVT.NOTIFY, { text: `${v.stats.name} · sacado del garaje`, tone: 'money' });

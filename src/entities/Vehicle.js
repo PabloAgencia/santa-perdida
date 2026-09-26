@@ -23,6 +23,11 @@ export class Vehicle {
     this.occupied = false;
     // un coche aparcado y vacio no lleva los faros puestos
     this.encendido = opts.encendido ?? false;
+    // si es tuyo de verdad (comprado o sacado del garaje) no hace falta
+    // puentearlo; `puenteado` es solo de esta partida en marcha, no se
+    // guarda, para no tener que arrastrar aun mas datos en cada coche
+    this.deTuyo = !!opts.deTuyo;
+    this.puenteado = false;
     this.frenando = false;
     this.color = opts.color ?? Math.floor(Math.random() * this.stats.palette.length);
     this.mass = (this.stats.length * this.stats.width) / 900;
@@ -290,6 +295,7 @@ export class Vehicle {
       angle: +this.angle.toFixed(3),
       hp: Math.round(this.hp),
       color: this.color,
+      deTuyo: this.deTuyo,
     };
   }
 

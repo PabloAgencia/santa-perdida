@@ -2608,7 +2608,8 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep) — HECHO DEL TODO 26-sep
          hace enorme y vacia.
 
 --------------------------------------------------------------------------------
-LA CIUDAD MAS VIVA
+LA CIUDAD MAS VIVA — HECHO DEL TODO 26-sep (salvo el punto 14, aparcado a
+proposito, ver mas abajo)
 --------------------------------------------------------------------------------
  12. HECHO (50a tanda, 26-sep). Dia y noche, y que dormir en el escondite
      adelante 6 horas del reloj.
@@ -2697,7 +2698,28 @@ LA CIUDAD MAS VIVA
      correcto, guardado en flags), el HUD "CARRERA 2/6 · punto de
      control 2/6 · 2,0 s · 24 m" legible sin solapes, y el abandono al
      bajarse del coche a mitad de carrera.
- 18. ROBAR COCHES CON SU GRACIA (barra de puenteo) y ALARMAS en los caros.
+ 18. HECHO (54a tanda, 26-sep). Robar coches con su gracia (barra de
+     puenteo) y alarmas en los caros. Cierra "LA CIUDAD MAS VIVA" del
+     todo.
+     A lo Chinatown Wars, la referencia que dio Pablo: un coche vacio
+     que no es tuyo ya no se entra de golpe, hay que puentearlo primero
+     (E, te quedas quieto 1,6 s, o 2,6 s si es caro, con una barrita
+     encima del coche). Coche OCUPADO (con conductor, con policia
+     dentro) sigue siendo instantaneo, como siempre: se lo arrebatas a
+     quien lleve, no hace falta puentear nada. Coches DE VERDAD tuyos
+     (recien comprados en el concesionario, sacados de tu garaje) tienen
+     `deTuyo = true` y tambien entran sin puentear — la grua y el
+     mercado no se tocaron, siguen igual. Los coches de mas de 5.000 €
+     (Bastion, Vela GT) llevan alarma: al terminar el puenteo salta un
+     pitido y sube la busca un punto en el acto, antes incluso de
+     arrancar. Moverte a mitad de puenteo lo cancela sin mas. El
+     `puenteado` de un coche concreto no se guarda entre partidas (si no,
+     habria que arrastrar aun mas datos); `deTuyo` si se guarda.
+     Probado en el navegador: coche normal de la calle dispara el
+     puenteo con la barra creciendo y destruyendose al terminar, coche
+     `deTuyo` entra instantaneo, coche caro dispara alarma (busca 0→1),
+     y moverte a mitad lo cancela sin entrar y sin marcar el coche como
+     puenteado.
 
 --------------------------------------------------------------------------------
 ARTE

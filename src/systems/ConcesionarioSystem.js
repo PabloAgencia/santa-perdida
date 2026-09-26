@@ -95,6 +95,7 @@ export class ConcesionarioSystem {
     GameState.flags.cochesComprados[c.tipo] = true;
 
     c.vehicle.enVenta = false;
+    c.vehicle.deTuyo = true;
     c.vehicle.hp = c.vehicle.stats.maxHp;
     c.cartel.destroy();
     c.cartel = null;
