@@ -9,6 +9,7 @@ import { MapaScene } from './scenes/MapaScene.js';
 import { SlotsScene } from './scenes/SlotsScene.js';
 import { ProgresoScene } from './scenes/ProgresoScene.js';
 import { MercadoScene } from './scenes/MercadoScene.js';
+import { ConcesionarioScene } from './scenes/ConcesionarioScene.js';
 
 // Phaser dibuja el texto sobre el lienzo una sola vez: si la fuente no esta
 // cargada antes de arrancar, los titulos salen con la de repuesto y ya no se
@@ -36,7 +37,10 @@ const game = new Phaser.Game({
     antialias: true,
     powerPreference: 'high-performance',
   },
-  scene: [BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene, ShopScene, MapaScene, ProgresoScene, MercadoScene],
+  scene: [
+    BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene,
+    ShopScene, MapaScene, ProgresoScene, MercadoScene, ConcesionarioScene,
+  ],
 });
 
 window.SantaPerdida = { game };

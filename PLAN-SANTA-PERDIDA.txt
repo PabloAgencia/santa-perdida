@@ -2722,6 +2722,56 @@ proposito, ver mas abajo)
      puenteado.
 
 --------------------------------------------------------------------------------
+PULIDO PROPUESTO POR CLAUDE, NO DEL ENCARGO ORIGINAL (26-sep-2026)
+--------------------------------------------------------------------------------
+Pablo pidio explicitamente que se le sugirieran mejoras sin esperar a que
+las pidiera ("son cosas que deberias sugerirme tu tambien"). Lista dada
+esa noche, primera hecha ya:
+
+ A. HECHO (55a tanda, 26-sep). El concesionario, edificio de verdad.
+    Antes: seis coches aparcados en la acera con un cartel de precio cada
+    uno, se compraba desde fuera con E. Ahora: un edificio con puerta
+    (`ConcesionarioSystem.js`, igual que un piso), se entra y dentro
+    (`ConcesionarioScene.js` nueva) esta la gama entera en fila, con su
+    sprite, nombre y precio. Comprar es andar hasta el que se quiera y
+    pulsar E: se cobra, y el coche sale a la puerta cuando sales tu
+    (mismo patron que sacar un coche del garaje — `entregarCocheComprado`,
+    reusa el evento HIDEOUT_EXIT con un dato `cocheComprado` nuevo). Solo
+    se puede tener un coche esperando fuera a la vez: si compras otro sin
+    haber salido, avisa y no cobra dos veces. El coche que sale por la
+    puerta es `deTuyo = true` (no hace falta puentearlo). `abrirInterior`
+    se generalizo para aceptar que escena abrir (antes solo sabia abrir
+    HideoutScene). Sin arte todavia: la sala se dibuja por codigo, igual
+    que los pisos sin lamina — funciona igual, mejora sola si algun dia
+    se genera una ilustracion `interior-concesionario` con IA.
+    Probado en el navegador: se entra por la puerta, se compra un taxi
+    (cobra, bloquea comprar un segundo), se sale y aparece en la calle
+    con `deTuyo`, se guarda en la partida.
+
+ B. PENDIENTE. Los cuatro desguaces del mercado (MercadoSystem, 52a
+    tanda) son un cartel "DESGUACE" y un anillo, los cuatro identicos.
+    Con cuatro repetidos por el mapa se nota mas que en un sitio unico.
+ C. PENDIENTE. La grua del puerto sigue siendo solo un cartel de texto
+    ("SE COMPRAN X, Y, Z") sobre el landmark, sin mas elaboracion.
+ D. PENDIENTE. El puenteo de coches (punto 18) es solo una barra que se
+    llena sola, sin ninguna habilidad real (podria ser un minijuego de
+    verdad, tipo aguja que hay que parar en una zona).
+ E. PENDIENTE. Las carreras (punto 16-17) no enseñan la ruta completa en
+    ningun sitio, solo el siguiente punto de control uno a uno.
+ F. PENDIENTE. Medir fps otra vez: van cuatro sistemas nuevos hoy (dia y
+    noche, encuentros, mercado, carreras) sin volver a comprobar
+    rendimiento, como si se hizo al agrandar el mapa (tandas 19-20).
+ G. PENDIENTE. El minimapa tiene ya muchos tipos de marcador (armeria,
+    locales, concesionario, desguaces, carreras, pisos, negocios, guerra
+    de territorio): revisar si sigue leyendose bien de un vistazo.
+ H. PENDIENTE. Taxista/ambulancia/justiciero piden estar YA conduciendo
+    ese vehiculo; si esta aparcado y vacio, ahora hay que puentearlo
+    primero para ni siquiera poder empezar el trabajo. Decidir si esos
+    coches deberian librarse del puenteo.
+ I. PENDIENTE. No hay forma de vender un coche desde el propio garaje sin
+    sacarlo primero y llevarlo a un desguace o la grua.
+
+--------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------

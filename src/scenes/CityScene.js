@@ -310,6 +310,7 @@ export class CityScene extends Phaser.Scene {
       );
       this.cameras.main.fadeIn(420, 0, 0, 0);
       if (datos && datos.sacarCocheDe) this.sacarCocheDelGaraje(datos.sacarCocheDe, puerta);
+      if (datos && datos.cocheComprado) this.entregarCocheComprado(datos.cocheComprado, puerta);
     };
     this.onDead = () => {
       // sale despedido hacia atras y un poco a un lado, no siempre igual
@@ -350,12 +351,12 @@ export class CityScene extends Phaser.Scene {
       angle: +this.player.angle.toFixed(3),
     };
     GameState.inVehicleId = this.drivingVehicle ? this.drivingVehicle.id : null;
-    // el trafico se genera solo al vuelo, no tiene sentido guardarlo; los del
-    // concesionario sin comprar y los aparcados por LocalSystem (ambulancia,
-    // patrulla de la comisaria) tampoco, que esos sistemas los recrean
-    // siempre igual al cargar (si se guardaran, se duplicarian cada carga)
+    // el trafico se genera solo al vuelo, no tiene sentido guardarlo; los
+    // aparcados por LocalSystem (ambulancia, patrulla de la comisaria)
+    // tampoco, que ese sistema los recrea siempre igual al cargar (si se
+    // guardaran, se duplicarian cada carga)
     GameState.vehicles = this.vehicles
-      .filter((v) => !v.ai && !v.enVenta && !v.deLocal)
+      .filter((v) => !v.ai && !v.deLocal)
       .map((v) => v.serialize());
   }
 
@@ -365,9 +366,8 @@ export class CityScene extends Phaser.Scene {
     let best = null;
     let bestDist = PLAYER.enterRange;
     for (const v of this.vehicles) {
-      // un chasis quemado no se conduce: es chatarra en mitad de la calle.
-      // uno "en venta" tampoco: es del concesionario hasta que se paga.
-      if (v.quemado || v.enVenta) continue;
+      // un chasis quemado no se conduce: es chatarra en mitad de la calle
+      if (v.quemado) continue;
       const d = Phaser.Math.Distance.Between(this.player.x, this.player.y, v.x, v.y);
       if (d < bestDist) {
         bestDist = d;
@@ -530,7 +530,7 @@ export class CityScene extends Phaser.Scene {
         !this.usarLocalCerca() &&
         !this.usarNegocioCerca() &&
         !this.iniciarGuerraCerca() &&
-        !this.comprarCocheCerca() &&
+        !this.entrarEnConcesionarioCerca() &&
         !this.usarMaquinaCerca()
       ) {
         const v = this.nearestVehicle();
@@ -998,22 +998,17 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
-  // el concesionario: E junto a uno de los coches expuestos y se compra ESE
-  comprarCocheCerca() {
-    const c = this.concesionario && this.concesionario.cerca;
-    if (!c) return false;
+  // el concesionario: E en la puerta y se entra, como un piso. Lo que se
+  // compra dentro (ConcesionarioScene) sale a esta misma puerta al salir.
+  entrarEnConcesionarioCerca() {
+    if (!this.concesionario || !this.concesionario.cerca) return false;
 
-    if (!GameState.canAfford(c.precio)) {
-      EventBus.emit(EVT.NOTIFY, {
-        text: `${VEHICLES[c.tipo].name}: ${c.precio} €. No te llega`, tone: 'danger',
-      });
+    if (GameState.wanted > 0) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
       return true;
     }
-    const nombre = VEHICLES[c.tipo].name;
-    this.concesionario.comprar(c);
-    Audio.notes([392, 523.25, 659.25], 0.1);
-    EventBus.emit(EVT.BIG_MESSAGE, { title: 'TUYO', subtitle: nombre });
-    EventBus.emit(EVT.NOTIFY, { text: `${nombre} comprado · ${c.precio} €`, tone: 'money' });
+    this.interiorDoor = { x: this.concesionario.puerta.x, y: this.concesionario.puerta.y, edificio: this.concesionario.puerta.edificio };
+    this.abrirInterior({}, 'ConcesionarioScene');
     return true;
   }
 
@@ -1234,10 +1229,37 @@ export class CityScene extends Phaser.Scene {
     EventBus.emit(EVT.NOTIFY, { text: `${v.stats.name} · sacado del garaje`, tone: 'money' });
   }
 
+  // el coche recien comprado en ConcesionarioScene, esperando en la puerta
+  // del concesionario (ya esta pagado: aqui solo se materializa, `deTuyo`
+  // para que no haga falta puentearlo)
+  entregarCocheComprado(compra, puerta) {
+    if (!puerta) return;
+    const b = puerta.edificio;
+    const lado = b ? Math.atan2(puerta.y - b.py, puerta.x - b.px) : 0;
+    const x = puerta.x + Math.cos(lado) * 46;
+    const y = puerta.y + Math.sin(lado) * 46;
+
+    if (
+      this.map.isSolidBox(x, y, 34, 34) ||
+      this.vehicles.some((v) => Phaser.Math.Distance.Between(v.x, v.y, x, y) < 70)
+    ) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: 'La puerta esta ocupada, aparta algo y prueba otra vez', tone: 'danger',
+      });
+      return;
+    }
+    const v = new Vehicle(this, this.map, compra.tipo, x, y, lado + Math.PI / 2, {
+      color: compra.color, deTuyo: true,
+    });
+    this.vehicles.push(v);
+    EventBus.emit(EVT.BIG_MESSAGE, { title: 'TUYO', subtitle: v.stats.name });
+    EventBus.emit(EVT.NOTIFY, { text: `${v.stats.name} te espera en la puerta`, tone: 'money' });
+  }
+
   // El paso a cualquier interior: congelar la ciudad, fundir a negro y
   // levantar la escena de dentro. Antes esto vivia dentro de enterHideout;
   // se saco aqui al haber mas de un sitio donde entrar.
-  abrirInterior(datos) {
+  abrirInterior(datos, sceneKey = 'HideoutScene') {
     Audio.engine(false, 0, false);
     Audio.skid(0);
     this.captureState();
@@ -1247,7 +1269,7 @@ export class CityScene extends Phaser.Scene {
       this.scene.setVisible(false);
       this.scene.pause('UIScene');
       this.scene.setVisible(false, 'UIScene');
-      this.scene.launch('HideoutScene', datos);
+      this.scene.launch(sceneKey, datos);
       this.cameras.main.fadeIn(1, 0, 0, 0);
     });
   }
@@ -1337,9 +1359,7 @@ export class CityScene extends Phaser.Scene {
       blindaje: GameState.blindaje,
       tiendaCerca: !!(this.shops && this.shops.cerca),
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
-      concesionarioCerca: this.concesionario && this.concesionario.cerca
-        ? { nombre: VEHICLES[this.concesionario.cerca.tipo].name, precio: this.concesionario.cerca.precio }
-        : null,
+      concesionarioCerca: !!(this.concesionario && this.concesionario.cerca),
       guerraCerca: this.guerra && this.guerra.cerca ? FACTIONS[this.guerra.cerca.faction].name : null,
       guerraActiva: this.guerra && this.guerra.activo
         ? { faccion: FACTIONS[this.guerra.activo.faction].short, oleada: this.guerra.activo.oleada }

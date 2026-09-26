@@ -491,7 +491,7 @@ export class UIScene extends Phaser.Scene {
         : d.desguaceCerca ? `E para vender el coche aqui · ${d.desguaceCerca.pago} €`
         : d.carreraCerca ? 'E para empezar la carrera'
         : d.guerraCerca ? `E para desafiar a ${d.guerraCerca}`
-        : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
+        : d.concesionarioCerca ? 'E para entrar en el concesionario'
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );
     if (d.arma) {
