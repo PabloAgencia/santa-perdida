@@ -231,6 +231,14 @@ export class UIScene extends Phaser.Scene {
     return '';
   }
 
+  // el texto de "E para..." de los negocios
+  textoNegocio(n) {
+    if (!n.esTuyo) return `E para comprar ${n.nombre} · ${n.precio} €`;
+    if (n.enAtaque) return `${n.nombre}: ¡te lo estan atacando!`;
+    if (n.caja <= 0) return `${n.nombre}: la caja esta vacia`;
+    return `E para cobrar ${n.nombre} · ${n.caja} €`;
+  }
+
   updateTerritory(info) {
     if (!info) {
       this.territoryText.setText('');
@@ -452,6 +460,7 @@ export class UIScene extends Phaser.Scene {
     this.accionTexto.setText(
       d.tiendaCerca ? 'E para entrar en la armeria'
         : d.localCerca ? this.textoLocal(d.localCerca)
+        : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
         : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''
     );

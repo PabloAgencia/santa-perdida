@@ -1844,6 +1844,58 @@ TRIGESIMOPRIMERA TANDA (26-sep-2026): quitarse la busca cargandose patrullas
   LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
 
 ================================================================================
+TRIGESIMOSEGUNDA TANDA (26-sep-2026): negocios que dan renta, el armazon
+================================================================================
+
+  El punto 2 de "LO PRIMERO" completo (comprar, renta pasiva, cobrar, y que
+  las bandas hostiles ataquen) era demasiado para una tanda: el diseño
+  original trae 15 misiones por negocio en 4 categorias (Vice City Stories).
+  Pablo eligio EL ARMAZON + LOS ATAQUES DE BANDA, sin las misiones todavia
+  — es la misma logica que ya aporto ChatGPT el 22-sep: arquitectura antes
+  que contenido, y 1-2 negocios completos antes de abrir la mano.
+
+  SEIS NEGOCIOS, uno por barrio (`config/negocios.js`, reparto DETERMINISTA
+  como los pisos: la clave es el barrio, no el edificio). Cada uno con el
+  "negocio" tematico de la banda que manda ahi (ya estaba escrito en
+  `config/factions.js` sin que nadie lo usara: contrabando en Amarres, calle
+  en Rompiente, proteccion en Verdial). Residencial no tiene banda, asi que
+  ahi no hay ataques nunca — es el unico sitio tranquilo para empezar:
+     Locutorio Los Rompientes (2.200, calle) · Lavanderia Buenavista (3.200,
+     neutral) · Boutique Verdial (5.200, proteccion) · Almacen del Poligono
+     (7.000, contrabando) · Lonja del Muelle (9.200, contrabando) · Joyeria
+     del Centro (12.000, proteccion).
+
+  LA RENTA no ingresa sola en el bolsillo: se acumula en una caja (€ por
+  segundo hasta un tope) y hay que ir a cobrarla en persona con E, igual que
+  el resto de locales de la ciudad. Nuevos metodos en GameState:
+  `acumularRenta`, `caja`, `cobrarRenta`, `robarCaja` — el mismo patron que
+  ya tenia el garaje (`guardarCoche`/`sacarCoche`), nada se guarda fuera de
+  GameState.
+
+  LOS ATAQUES DE BANDA le dan uso de verdad a la reputacion, que es lo que
+  pedia el punto 2 original. Si la banda dueña de la zona esta hostil
+  contigo (`GameState.isHostile`), cada 22 s se tira un dado (22%): si sale,
+  aparecen dos de esa banda armados junto al negocio (nuevo
+  `NPCSystem.crearPandillero`, que los mete en la lista normal de gente —
+  los combate el mismo camino que a cualquier otro pandillero hostil, nada
+  nuevo que aprender). Mientras dura el ataque el negocio NO da renta y el
+  cartel avisa "¡EN PELIGRO!". Si los derrotas antes de 26 s, a salvo. Si no,
+  se llevan el 55% de lo que hubiera en la caja.
+
+  COMPROBADO a mano en la consola, con la partida guardada real: comprar
+  (cobra, cartel cambia a dorado), la caja sube sola con el tiempo hasta el
+  tope y no mas, cobrar la vacia y suma el dinero exacto, iniciar un ataque
+  mete a los dos pandilleros de verdad en la lista de NPCSystem, cobrar
+  mientras dura el ataque se niega con aviso, derrotarlos lo resuelve como
+  "a salvo" sin tocar la caja, y dejar pasar el tiempo sin derrotarlos se
+  lleva el 55% exacto. Visualmente: el cartel dice "SE VENDE" o el nombre
+  con la caja segun toque, y las notificaciones del ataque y del robo se ven
+  bien. Cero errores en consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: las 15 misiones por tipo de negocio (cobros,
+  recuperar vehiculos, contrabando, golpes) — se dejaron fuera a proposito.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -1867,9 +1919,11 @@ LO PRIMERO (cierra la fase 3, que es lo que quedaba del encargo)
 --------------------------------------------------------------------------------
   1. HECHO (30a tanda, 26-sep). Comprar coches y pisos, con garaje en cada
      piso y reaparecer en el piso mas cercano.
-  2. LOCALES QUE DAN RENTA, con sus propias misiones por tipo, y que las
-     bandas con las que estas mal te los ataquen. Es la pieza de Vice City
-     Stories y lo que le da uso de verdad a la reputacion.
+  2. HECHO EL ARMAZON (32a tanda, 26-sep): comprar negocios, renta pasiva
+     que se cobra en persona, y que las bandas con las que estas mal te los
+     ataquen. QUEDA: las 15 misiones por tipo de Vice City Stories (cobros,
+     recuperar vehiculos, contrabando, golpes) — se decidio a proposito
+     dejarlas para otra tanda, ver el registro de la 32a.
   3. LA LISTA DE COCHES ENCARGADOS en la grua del puerto (import/export).
      El puerto y la grua ya estan dibujados; pagan segun el estado del coche.
   4. PANTALLA DE PROGRESO con porcentaje, tipo "100%": misiones, locales,

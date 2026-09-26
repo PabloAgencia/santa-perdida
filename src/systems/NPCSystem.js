@@ -163,6 +163,21 @@ export class NPCSystem {
     }
   }
 
+  // ---------- pandilleros a la carta ----------
+
+  // un atacante concreto de una faccion en un punto exacto, para un ataque
+  // dirigido (NegocioSystem, cuando una banda hostil aprieta un negocio
+  // tuyo). Va armado siempre, para que el ataque se note; el resto (que se
+  // vuelva hostil, que combata) lo hace el mismo camino que a cualquier
+  // otro de banda, updateHostility y checkAttacks.
+  crearPandillero(x, y, faction) {
+    const skin = Math.floor(Math.random() * SKINS);
+    const p = new Pedestrian(this.scene, this.map, x, y, skin, faction, this.pathfinder);
+    p.armado = true;
+    this.people.push(p);
+    return p;
+  }
+
   // ---------- conductores ----------
 
   // uno al volante de cada coche del trafico. No entra en la lista de gente:

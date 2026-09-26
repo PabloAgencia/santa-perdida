@@ -130,6 +130,38 @@ class GameStateClass {
     return coche;
   }
 
+  // ---------- la caja de cada negocio ----------
+
+  caja(clave) {
+    return this.propiedad(clave)?.caja ?? 0;
+  }
+
+  acumularRenta(clave, cantidad, tope) {
+    const p = this.propiedad(clave);
+    if (!p) return 0;
+    p.caja = Phaser.Math.Clamp((p.caja ?? 0) + cantidad, 0, tope);
+    return p.caja;
+  }
+
+  cobrarRenta(clave) {
+    const p = this.propiedad(clave);
+    if (!p || !p.caja) return 0;
+    const cobrado = Math.round(p.caja);
+    p.caja = 0;
+    if (cobrado > 0) this.addMoney(cobrado, `negocio:${clave}`);
+    return cobrado;
+  }
+
+  // un ataque de banda que se sale con la suya: se lleva una fraccion de la
+  // caja, no la cobra el jugador (no pasa por addMoney)
+  robarCaja(clave, fraccion) {
+    const p = this.propiedad(clave);
+    if (!p || !p.caja) return 0;
+    const robado = Math.round(p.caja * fraccion);
+    p.caja = Math.max(0, p.caja - robado);
+    return robado;
+  }
+
   // ---------- armas ----------
 
   tieneArma(clave) {

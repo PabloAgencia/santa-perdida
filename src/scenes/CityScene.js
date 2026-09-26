@@ -18,6 +18,7 @@ import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
+import { NegocioSystem } from '../systems/NegocioSystem.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
@@ -69,6 +70,7 @@ export class CityScene extends Phaser.Scene {
     this.pisos = new PisoSystem(this, this.map);
     this.locales = new LocalSystem(this, this.map);
     this.concesionario = new ConcesionarioSystem(this, this.map);
+    this.negocios = new NegocioSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -402,6 +404,7 @@ export class CityScene extends Phaser.Scene {
         !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
         !this.usarLocalCerca() &&
+        !this.usarNegocioCerca() &&
         !this.comprarCocheCerca() &&
         !this.usarMaquinaCerca()
       ) {
@@ -496,6 +499,7 @@ export class CityScene extends Phaser.Scene {
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.locales.update(this.player, !!this.drivingVehicle);
     if (!this.drivingVehicle) this.concesionario.update(this.player);
+    this.negocios.update(dt, this.player);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -798,6 +802,31 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // el negocio: si no es tuyo, E lo compra; si ya es tuyo, E cobra la caja
+  // (salvo que este bajo ataque de banda, ver NegocioSystem)
+  usarNegocioCerca() {
+    if (!this.negocios || !this.negocios.cerca) return false;
+    const n = this.negocios.cerca;
+
+    if (!GameState.esDueno(n.clave)) {
+      const que = this.negocios.comprar(n);
+      if (que === 'sin-dinero') {
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${n.cfg.nombre}: ${n.cfg.precio} €. No te llega`, tone: 'danger',
+        });
+      } else if (que === 'comprado') {
+        Audio.notes([392, 523.25, 659.25], 0.1);
+        EventBus.emit(EVT.BIG_MESSAGE, { title: 'YA ES TUYO', subtitle: n.cfg.nombre });
+        EventBus.emit(EVT.NOTIFY, { text: `${n.cfg.nombre} comprado`, tone: 'money' });
+      }
+      return true;
+    }
+
+    const resultado = this.negocios.cobrar(n);
+    if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+    return true;
+  }
+
   // el concesionario: E junto a uno de los coches expuestos y se compra ESE
   comprarCocheCerca() {
     const c = this.concesionario && this.concesionario.cerca;
@@ -1026,6 +1055,15 @@ export class CityScene extends Phaser.Scene {
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
       concesionarioCerca: this.concesionario && this.concesionario.cerca
         ? { nombre: VEHICLES[this.concesionario.cerca.tipo].name, precio: this.concesionario.cerca.precio }
+        : null,
+      negocioCerca: this.negocios && this.negocios.cerca
+        ? {
+          nombre: this.negocios.cerca.cfg.nombre,
+          precio: this.negocios.cerca.cfg.precio,
+          esTuyo: GameState.esDueno(this.negocios.cerca.clave),
+          enAtaque: !!this.negocios.cerca.ataque,
+          caja: Math.round(GameState.caja(this.negocios.cerca.clave)),
+        }
         : null,
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
