@@ -47,6 +47,25 @@ FACTOR = 2                          # el doble, para pantallas finas
 ANCHO_LANDMARK = 1600
 PREFIJOS = ('interior-', 'landmark-')
 
+# Desde el 27-sep Pablo genera en la app de Gemini, que pinta su estrellita
+# en la esquina de abajo a la derecha. En un sprite se va sola (se queda
+# suelta del dibujo), pero una lamina es un cuadro entero y se veria en el
+# suelo. Se tapa con el trozo de al lado puesto en espejo. Solo en las
+# laminas nuevas: los interiores de antes vienen de AI Studio, sin marca, y
+# no se tocan.
+CON_ESTRELLITA = ('landmark-', 'interior-concesionario')
+ESQUINA_ANCHO = 0.09
+ESQUINA_ALTO = 0.13
+
+
+def tapar_estrellita(im):
+    an, al = im.size
+    w = int(an * ESQUINA_ANCHO)
+    h = int(al * ESQUINA_ALTO)
+    vecino = im.crop((an - 2 * w, al - h, an - w, al))
+    im.paste(vecino.transpose(Image.FLIP_LEFT_RIGHT), (an - w, al - h))
+    return im
+
 
 def main():
     if not os.path.isdir(ORIGENES):
@@ -67,6 +86,8 @@ def main():
         destino = os.path.join(ARTE, base + '.jpg')
 
         im = Image.open(origen).convert('RGB')
+        if base.startswith(CON_ESTRELLITA):
+            im = tapar_estrellita(im)
         if base.startswith('landmark-'):
             ancho = ANCHO_LANDMARK
         else:

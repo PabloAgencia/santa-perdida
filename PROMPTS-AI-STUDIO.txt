@@ -29,10 +29,9 @@ YA HECHO (no hace falta volver a generarlo)
    · Nombrar un juego que el modelo conozca ("top-down view like in GTA
      Chinatown Wars") funciona mejor que tres frases describiendo el angulo.
      Lo vio Pablo y es lo que mas ha ahorrado.
-   · Para los SPRITES se pide fondo magenta plano (#FF00FF): el damero que
-     pinta el Playground se confunde con los grises del dibujo y cuesta
-     recortarlo. Las LAMINAS (interiores y landmarks) NO llevan magenta: son
-     cuadros enteros.
+   · Para los SPRITES se pide fondo magenta plano (#FF00FF): un fondo a
+     cuadros se confunde con los grises del dibujo y cuesta recortarlo. Las
+     LAMINAS (interiores y landmarks) NO llevan magenta: son cuadros enteros.
 
 
 ################################################################################
@@ -54,10 +53,16 @@ DONDE SE DEJA CADA COSA (con el nombre EXACTO que pone encima de cada prompt)
    maquina, corazon, arma, caja         ->  sprites\originales\objetos\
    Valen .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
 
-LA PROPORCION: en AI Studio, antes de darle a generar, elige en el
-desplegable de "aspect ratio" la que pone cada prompt. Si no, la IA saca un
-cuadrado y el juego lo tiene que estirar. Pedirla solo con palabras en el
-texto no basta: casi siempre la ignora.
+SE HACEN EN GEMINI, "Crear imagen" (desde el 27-sep, ya no AI Studio).
+  · LA PROPORCION va escrita en la primera linea de cada prompt ("Create a
+    WIDE LANDSCAPE image in 16:9..."). Gemini no tiene desplegable, asi que
+    es la unica forma de pedirla. Si aun asi sale CUADRADA una que no es
+    1:1, repitela: si no, el juego la tiene que estirar y se deforma.
+  · LA ESTRELLITA de Gemini en la esquina de abajo a la derecha: no pasa
+    nada, no hace falta quitarla. En los sprites ya se iba sola, y en las
+    laminas (interior y landmarks) la tapa el preparador.
+  · Si te devuelve varias versiones, quedate con la que mejor cumpla lo de
+    "desde arriba del todo" y los porcentajes: lo demas da igual.
 
 
 --------------------------------------------------------------------------------
@@ -67,6 +72,7 @@ OJO CON ESTA, es distinta a los otros interiores: NO lleva muebles ni
 COCHES. El juego pone encima de cada plaza el coche de verdad; si el cuadro
 trae coches pintados se ven dos superpuestos.
 
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down interior of a wide car dealership showroom floor, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a floor-plan view,
 like the interiors in GTA Chinatown Wars. The camera is mounted on the
@@ -108,6 +114,7 @@ shape anywhere, not even in the background. Nothing on top of the six bays.
 --------------------------------------------------------------------------------
   2.  ambulancia.png                                      proporcion 16:9
 --------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
 Top-down sprite of a white ambulance van seen from DIRECTLY ABOVE at a
 perfect 90 degree overhead angle, like the cars in GTA Chinatown Wars - like
 a map or a blueprint. Only the roof and the tops of the wheels are visible,
@@ -132,6 +139,7 @@ Van al mismo tamaño diminuto que las que ya hay, por eso son tan simples.
 --------------------------------------------------------------------------------
   marca-concesionario.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a car dealership: a light blue rounded square badge
 with a small white car silhouette seen from the side inside it. Simple
 shapes, thick dark outline, flat colours, no gradients, no shading detail, no
@@ -143,6 +151,7 @@ no text, no watermark, no border.
 --------------------------------------------------------------------------------
   marca-desguace.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a scrapyard: a rust orange rounded square badge with
 a small white spanner (wrench) silhouette inside it, placed diagonally.
 Simple shapes, thick dark outline, flat colours, no gradients, no shading
@@ -154,6 +163,7 @@ shadow, no text, no watermark, no border.
 --------------------------------------------------------------------------------
   marca-carrera.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a street race: a golden yellow rounded square badge
 with a small black and white checkered flag inside it. Simple shapes, thick
 dark outline, flat colours, no gradients, no shading detail, no 3D. It has to
@@ -165,6 +175,7 @@ watermark, no border.
 --------------------------------------------------------------------------------
   marca-hospital.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a hospital: a white rounded square badge with a bold
 red cross inside it. Simple shapes, thick dark outline, flat colours, no
 gradients, no shading detail, no 3D. It has to be readable when shown at 16
@@ -175,6 +186,7 @@ background (#FF00FF), no shadow, no text, no watermark, no border.
 --------------------------------------------------------------------------------
   marca-comisaria.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a police station: a dark navy blue rounded square
 badge with a small white police star badge silhouette inside it. Simple
 shapes, thick dark outline, flat colours, no gradients, no shading detail, no
@@ -186,6 +198,7 @@ no text, no watermark, no border.
 --------------------------------------------------------------------------------
   marca-taller.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a car paint shop: a purple rounded square badge with
 a small white spray paint can silhouette inside it. Simple shapes, thick dark
 outline, flat colours, no gradients, no shading detail, no 3D. It has to be
@@ -197,6 +210,7 @@ watermark, no border.
 --------------------------------------------------------------------------------
   marca-comida.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a fried chicken takeaway: a red rounded square badge
 with a small white chicken drumstick silhouette inside it. Simple shapes,
 thick dark outline, flat colours, no gradients, no shading detail, no 3D. It
@@ -208,6 +222,7 @@ watermark, no border.
 --------------------------------------------------------------------------------
   marca-negocio.png
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Flat map marker icon for a business you can buy: a green rounded square badge
 with a small white briefcase silhouette inside it. Simple shapes, thick dark
 outline, flat colours, no gradients, no shading detail, no 3D. It has to be
@@ -254,6 +269,7 @@ coches, y una imagen encima la taparia.
 --------------------------------------------------------------------------------
   landmark-playa-a.png           Playa Buenavista, mitad OESTE    16:9
 --------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
 Top-down aerial view of a city beach, seen from DIRECTLY ABOVE at a perfect
 90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
 The camera is high in the sky pointing straight down. NO perspective, NO
@@ -286,6 +302,7 @@ watermark. NO people. NO cars or vehicles.
 --------------------------------------------------------------------------------
   landmark-playa-b.png           Playa Buenavista, mitad ESTE     16:9
 --------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
 Top-down aerial view of a city beach, seen from DIRECTLY ABOVE at a perfect
 90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
 The camera is high in the sky pointing straight down. NO perspective, NO
@@ -318,6 +335,7 @@ watermark. NO people. NO cars or vehicles.
 --------------------------------------------------------------------------------
   landmark-estadio.png           Estadio Municipal                 3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of a small football stadium, seen from DIRECTLY ABOVE
 at a perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -348,6 +366,7 @@ writing or watermark. NO people, NO crowd. NO vehicles.
 --------------------------------------------------------------------------------
   landmark-casino.png            Casino Fortuna                    3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of a flashy casino, seen from DIRECTLY ABOVE at a
 perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -375,6 +394,7 @@ NO people. NO vehicles.
 --------------------------------------------------------------------------------
   landmark-torre.png             Torre Sombra                      5:4
 --------------------------------------------------------------------------------
+Create a slightly wide LANDSCAPE image in 5:4 aspect ratio, not square.
 Top-down aerial view of the roof of a very tall modern skyscraper, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
 city in GTA Chinatown Wars. The camera is high in the sky pointing straight
@@ -403,6 +423,7 @@ NO vehicles, NO helicopter.
 --------------------------------------------------------------------------------
   landmark-plaza.png             Plaza del Farol                  16:9
 --------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
 Top-down aerial view of a paved city square, seen from DIRECTLY ABOVE at a
 perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -430,6 +451,7 @@ NO vehicles.
 --------------------------------------------------------------------------------
   landmark-mercado.png           Mercado Cubierto                  3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of a covered city market, seen from DIRECTLY ABOVE at a
 perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -457,6 +479,7 @@ watermark. NO people. NO vehicles.
 --------------------------------------------------------------------------------
   landmark-carcel.png            Correccional Santa Perdida        3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of a walled prison compound, seen from DIRECTLY ABOVE
 at a perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -482,6 +505,7 @@ NO vehicles.
 --------------------------------------------------------------------------------
   landmark-aparcamiento.png      Aparcamiento Central              3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of an open-air car park, seen from DIRECTLY ABOVE at a
 perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -511,6 +535,7 @@ letter P, logos or watermark. NO people.
 --------------------------------------------------------------------------------
   landmark-poligono.png          Poligono Industrial               3:2
 --------------------------------------------------------------------------------
+Create a LANDSCAPE image in 3:2 aspect ratio, not square.
 Top-down aerial view of an industrial container yard, seen from DIRECTLY
 ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
 GTA Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -541,6 +566,7 @@ people. NO trucks or cars.
 --------------------------------------------------------------------------------
   landmark-aeropuerto-a.png      Aerodromo, mitad OESTE           21:9
 --------------------------------------------------------------------------------
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down aerial view of a small coastal airfield, seen from DIRECTLY ABOVE
 at a perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -577,6 +603,7 @@ people. NO cars or trucks.
 --------------------------------------------------------------------------------
   landmark-aeropuerto-b.png      Aerodromo, mitad ESTE            21:9
 --------------------------------------------------------------------------------
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down aerial view of a small coastal airfield, seen from DIRECTLY ABOVE
 at a perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -607,6 +634,7 @@ people. NO vehicles, NO planes in this half.
 --------------------------------------------------------------------------------
   landmark-monte.png             Mirador del Farallon             21:9
 --------------------------------------------------------------------------------
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down aerial view of a rocky coastal hill, seen from DIRECTLY ABOVE at a
 perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -638,6 +666,7 @@ NO vehicles.
 --------------------------------------------------------------------------------
   landmark-isla.png              Isla del Pescador                21:9
 --------------------------------------------------------------------------------
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down aerial view of a tiny island in a calm bay, seen from DIRECTLY
 ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
 GTA Chinatown Wars. The camera is high in the sky pointing straight down.
@@ -666,6 +695,7 @@ NO cars.
 --------------------------------------------------------------------------------
   landmark-faro.png              El Faro                           1:1
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Top-down aerial view of a lighthouse on a harbour pier, seen from DIRECTLY
 ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
 GTA Chinatown Wars. The camera is high in the sky pointing straight down. NO
@@ -691,6 +721,7 @@ NO boats, NO vehicles.
 --------------------------------------------------------------------------------
   landmark-grua.png              Grua del Puerto                  21:9
 --------------------------------------------------------------------------------
+Create an ULTRA-WIDE LANDSCAPE image in 21:9 aspect ratio (more than twice as wide as it is tall), not square.
 Top-down aerial view of a harbour container crane on a quay, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
 city in GTA Chinatown Wars. The camera is high in the sky pointing straight
@@ -725,6 +756,7 @@ simples y un borde oscuro gordo; el detalle fino se pierde al encogerlos.
 --------------------------------------------------------------------------------
   maquina.png                    la maquina de refrescos
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Game sprite of a street drinks vending machine, seen from above and slightly
 in front like the objects in GTA Chinatown Wars, so its glowing front with
 rows of drink cans is visible. Tall and narrow, dark body, lit blue-white
@@ -737,6 +769,7 @@ text, no brand logo, no watermark, no border.
 --------------------------------------------------------------------------------
   corazon.png                    el corazon de vida
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Game pickup sprite of a glowing red heart floating above the ground, the
 classic video game health item, seen from above. Bright red with a lighter
 shine on the upper left and a soft red glow around it. Simple readable
@@ -748,6 +781,7 @@ Centered, filling most of the image, plain flat magenta background
 --------------------------------------------------------------------------------
   arma.png                       el arma tirada en el suelo
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Game pickup sprite of a black handgun lying flat on the ground, seen from
 DIRECTLY ABOVE like in GTA Chinatown Wars, the barrel pointing RIGHT. Dark
 grey metal with a lighter edge highlight. Simple readable shape, thick dark
@@ -759,6 +793,7 @@ no watermark, no border.
 --------------------------------------------------------------------------------
   caja.png                       el paquete de los repartos
 --------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
 Game sprite of a cardboard delivery box seen from DIRECTLY ABOVE like in GTA
 Chinatown Wars: a square brown box top with a strip of darker packing tape
 across it in a cross. Simple readable shape, thick dark outline, flat
