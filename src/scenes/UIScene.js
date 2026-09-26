@@ -17,6 +17,17 @@ export class UIScene extends Phaser.Scene {
     this.cityCam = this.scene.get('CityScene').cameras.main;
     this.notices = [];
 
+    // EL VELO DE LA NOCHE. Va lo primero de todo para quedar por debajo del
+    // resto del HUD (el marcador se tiene que leer igual de bien a las tres
+    // de la madrugada que a mediodia). MULTIPLY para que oscurezca de verdad
+    // en vez de tapar el mundo con una niebla plana.
+    this.veloNoche = this.add.image(0, 0, 'px').setOrigin(0, 0)
+      .setDisplaySize(w, h).setBlendMode(Phaser.BlendModes.MULTIPLY)
+      .setTint(0xffffff).setAlpha(0);
+    this.relojTexto = this.add.text(16, 38, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '14px', color: '#a49c8a',
+    }).setOrigin(0, 0);
+
     // TODO EL MARCADOR VA ARRIBA A LA DERECHA, como en San Andreas: primero
     // lo que llevas en la mano, debajo el dinero, debajo la busca y abajo
     // del todo las barras. El mapa se baja a la esquina de abajo, que es
@@ -425,6 +436,14 @@ export class UIScene extends Phaser.Scene {
     this.moneyText.setText(`${money.toLocaleString('es-ES')} €`);
   }
 
+  updateDiaNoche(velo) {
+    if (!velo) return;
+    this.veloNoche.setTint(velo.color).setAlpha(velo.alpha);
+    const h = Math.floor(velo.hora);
+    const m = Math.floor((velo.hora - h) * 60);
+    this.relojTexto.setText(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+  }
+
   updateHud(d) {
     this.deliveriesText.setText(`Entregas: ${d.deliveries}`);
 
@@ -484,6 +503,7 @@ export class UIScene extends Phaser.Scene {
     }
     this.updateTerritory(d.territory);
     this.updateGuerra(d.guerraActiva);
+    this.updateDiaNoche(d.diaNoche);
 
     this.vehiclePanel.setVisible(d.driving);
     if (d.driving) {

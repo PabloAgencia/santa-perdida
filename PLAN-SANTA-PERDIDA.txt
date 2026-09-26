@@ -2610,7 +2610,22 @@ LA CIUDAD MAS GRANDE  (pedido por Pablo el 21-sep) — HECHO DEL TODO 26-sep
 --------------------------------------------------------------------------------
 LA CIUDAD MAS VIVA
 --------------------------------------------------------------------------------
- 12. DIA Y NOCHE, y que dormir en el escondite adelante 6 horas del reloj.
+ 12. HECHO (50a tanda, 26-sep). Dia y noche, y que dormir en el escondite
+     adelante 6 horas del reloj.
+     Reloj del mundo en minutos (GameState.minutoDelDia), 2 minutos de
+     mundo por segundo real (un dia completo dura 12 minutos reales).
+     Empieza a las 9:00 y se guarda con la partida. Un velo en UIScene
+     (imagen a pantalla completa en MULTIPLY, por debajo del resto del HUD
+     para que el marcador se siga leyendo igual de bien) va de blanco
+     (mediodia, sin tinte) a azul oscuro (de 21:30 a 5:00) pasando por un
+     ambar de amanecer/atardecer, interpolado por tramos horarios
+     (DiaNocheSystem.js). Reloj pequeño HH:MM debajo de "Entregas". Dormir
+     en la cama SIEMPRE adelanta 6 horas (antes solo curaba si hacia
+     falta; ahora si ya estabas entero tambien pasa el tiempo, con su
+     propio aviso "no te hacia falta curarte"). Probado en el navegador a
+     las 01:00 (velo azul), 06:45 (velo ambar de amanecer) y con el ciclo
+     completo de dormir con y sin necesitar curarse; guardado y cargado
+     comprobado con datos sueltos.
  13. ENCUENTROS POR LA CALLE: gente con un icono que te da encargos cortos.
      Reaprovecha entero el sistema de contactos que ya funciona.
  14. LA CIUDAD SE ABRE POR ZONAS conforme avanzas (si entras donde no debes,

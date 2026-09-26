@@ -33,6 +33,7 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
 import { PintarCiudad } from '../world/PintarCiudad.js';
 import { DanoVehiculos } from '../systems/DanoVehiculos.js';
+import { DiaNocheSystem } from '../systems/DiaNocheSystem.js';
 
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
@@ -96,6 +97,7 @@ export class CityScene extends Phaser.Scene {
       pagoBase: 70, pagoPorTile: 1.3, tiempoPorTile: 0.36, bonusATiempo: 90,
     });
     this.justiciero = new JusticieroSystem(this, this.map, this.net);
+    this.diaNoche = new DiaNocheSystem();
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
     this.hurtCooldown = 0;
@@ -496,6 +498,7 @@ export class CityScene extends Phaser.Scene {
       this.player.update(dt, { left, right, up, down, run: k.run.isDown });
     }
 
+    this.diaNoche.update(dt);
     this.lights.update(dt, this.player.x, this.player.y);
 
     // Para el trafico tu tambien eres un peaton cuando vas a pie: antes no
@@ -1214,6 +1217,7 @@ export class CityScene extends Phaser.Scene {
       mission: this.missions.estado(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
       contactos: this.missions.puntos(),
+      diaNoche: this.diaNoche.velo(),
     });
   }
 }

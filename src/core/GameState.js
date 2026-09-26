@@ -57,6 +57,22 @@ class GameStateClass {
     //   clave -> { tipo, precio, nivel, plazas, garaje: [], compradaEl }
     this.propiedades = {};
     this.flags = {};
+    // el reloj del mundo, en minutos desde medianoche (0-1439). Empieza a
+    // media mañana, como si la partida arrancara un dia cualquiera.
+    this.minutoDelDia = 9 * 60;
+  }
+
+  // ---------- el reloj ----------
+
+  // lo llama DiaNocheSystem cada fotograma (minutos de mundo, no de reloj de
+  // pared) y HideoutScene de un salto al dormir (360 = seis horas)
+  avanzarReloj(minutos) {
+    this.minutoDelDia = ((this.minutoDelDia + minutos) % 1440 + 1440) % 1440;
+  }
+
+  // la hora en punto, de 0 a 24 con decimales (14.5 = las dos y media)
+  get horaDelDia() {
+    return this.minutoDelDia / 60;
   }
 
   // ---------- sitios ----------
@@ -401,6 +417,7 @@ class GameStateClass {
       descubiertos: this.descubiertos,
       propiedades: this.propiedades,
       flags: this.flags,
+      minutoDelDia: this.minutoDelDia,
       savedAt: Date.now(),
     };
   }
@@ -432,6 +449,8 @@ class GameStateClass {
       if (typeof p.plazas !== 'number') p.plazas = 0;
     }
     this.flags = data.flags ?? {};
+    // partidas de antes del reloj: arrancan a media mañana, como una nueva
+    this.minutoDelDia = data.minutoDelDia ?? 9 * 60;
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;
   }
