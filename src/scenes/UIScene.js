@@ -85,7 +85,7 @@ export class UIScene extends Phaser.Scene {
     }).setOrigin(1, 1);
     this.helpText.setText([
       'WASD mover · SHIFT correr · E entrar · F pegar · Q objetivo',
-      'TAB arma · M mapa · P progreso · J encargo · ESPACIO freno · K guardar',
+      'TAB arma · M mapa · P progreso · L mercado · J encargo · ESPACIO freno · K guardar',
     ]);
     this.tweens.add({
       targets: [this.helpText, this.helpBg], alpha: 0.4, delay: 16000, duration: 2500,
@@ -488,6 +488,7 @@ export class UIScene extends Phaser.Scene {
         : d.localCerca ? this.textoLocal(d.localCerca)
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
         : d.gruaCerca ? `E para entregar el ${d.gruaCerca.nombre} en la grua · ${d.gruaCerca.pago} €`
+        : d.desguaceCerca ? `E para vender el coche aqui · ${d.desguaceCerca.pago} €`
         : d.guerraCerca ? `E para desafiar a ${d.guerraCerca}`
         : d.concesionarioCerca ? `E para comprar ${d.concesionarioCerca.nombre} · ${d.concesionarioCerca.precio} €`
         : d.maquinaCerca ? 'E para comprar algo de comer' : ''

@@ -35,6 +35,7 @@ import { PintarCiudad } from '../world/PintarCiudad.js';
 import { DanoVehiculos } from '../systems/DanoVehiculos.js';
 import { DiaNocheSystem } from '../systems/DiaNocheSystem.js';
 import { EncuentroSystem } from '../systems/EncuentroSystem.js';
+import { MercadoSystem } from '../systems/MercadoSystem.js';
 
 const IDLE_INPUT = {
   throttle: false, brake: false, left: false, right: false, handbrake: false,
@@ -89,6 +90,7 @@ export class CityScene extends Phaser.Scene {
     this.locales = new LocalSystem(this, this.map);
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
+    this.mercado = new MercadoSystem(this, this.map);
     this.taxista = new TrabajoVehiculoSystem(this, this.map, {
       tipo: 'taxista', vehiculo: 'taxi', nombre: 'Taxista',
       pagoBase: 55, pagoPorTile: 1.1, tiempoPorTile: 0.32, bonusATiempo: 70,
@@ -215,10 +217,10 @@ export class CityScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D',
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
-      mapa: 'M', mute: 'N', pausa: 'ESC', progreso: 'P',
+      mapa: 'M', mute: 'N', pausa: 'ESC', progreso: 'P', libreta: 'L',
       atacar: 'F', objetivo: 'Q', arma: 'TAB',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,P,SHIFT,ESC,F,Q,TAB');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,P,L,SHIFT,ESC,F,Q,TAB');
 
     // el raton tambien pega, y al volante tambien dispara
     this.input.on('pointerdown', (p) => {
@@ -426,7 +428,7 @@ export class CityScene extends Phaser.Scene {
       // en coche: primero se prueba a meterlo en el garaje de tu piso o a
       // entregarlo en la grua; solo si ninguno aplica el E te baja como siempre
       if (this.drivingVehicle) {
-        if (!this.entrarEnPisoCerca() && !this.entregarEnGruaCerca()) this.exitVehicle();
+        if (!this.entrarEnPisoCerca() && !this.entregarEnGruaCerca() && !this.venderEnDesguaceCerca()) this.exitVehicle();
       } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.encuentros.intentarHablar(this.player.x, this.player.y) &&
@@ -471,6 +473,11 @@ export class CityScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(k.progreso)) {
       this.abrirProgreso();
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(k.libreta)) {
+      this.abrirLibreta();
       return;
     }
 
@@ -541,6 +548,7 @@ export class CityScene extends Phaser.Scene {
     if (!this.drivingVehicle) this.concesionario.update(this.player);
     this.negocios.update(dt, this.player);
     this.grua.update(this.player, this.drivingVehicle);
+    this.mercado.update(dt, this.player, this.drivingVehicle);
     this.guerra.update(dt, this.player, !!this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
@@ -941,6 +949,15 @@ export class CityScene extends Phaser.Scene {
     this.scene.launch('ProgresoScene');
   }
 
+  // la libreta del mercado: L congela la ciudad y dice donde pagan mejor
+  // los coches ahora mismo, en los desguaces (MercadoSystem)
+  abrirLibreta() {
+    this.captureState();
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('MercadoScene', { filas: this.mercado.resumen(this.player.x, this.player.y) });
+  }
+
   // menu de pausa: la ciudad se congela y se abre por encima
   abrirPausa() {
     this.captureState();
@@ -1055,6 +1072,27 @@ export class CityScene extends Phaser.Scene {
     EventBus.emit(EVT.NOTIFY, {
       text: `${resultado.nombre} entregado · ${resultado.pago} €`, tone: 'money',
     });
+    return true;
+  }
+
+  // el desguace del mercado (MercadoSystem): igual que la grua, pero
+  // acepta cualquier modelo y paga segun la demanda de ese barrio ahora
+  venderEnDesguaceCerca() {
+    if (!this.mercado || !this.mercado.cerca) return false;
+    const v = this.drivingVehicle;
+    const resultado = this.mercado.vender(v);
+    if (!resultado) return false;
+
+    const spot = v.findExitSpot();
+    const i = this.vehicles.indexOf(v);
+    if (i >= 0) this.vehicles.splice(i, 1);
+    v.destroy();
+    this.drivingVehicle = null;
+    this.player.setPosition(spot.x, spot.y);
+    this.player.setVisible(true);
+    this.cameras.main.setFollowOffset(0, 0);
+
+    Audio.notes([392, 523.25, 659.25, 783.99], 0.09);
     return true;
   }
 
@@ -1205,6 +1243,9 @@ export class CityScene extends Phaser.Scene {
         : null,
       gruaCerca: this.grua && this.grua.cerca
         ? { nombre: VEHICLES[this.drivingVehicle.type].name, pago: this.grua.estimarPago(this.drivingVehicle) }
+        : null,
+      desguaceCerca: this.mercado && this.mercado.cerca
+        ? { pago: this.mercado.estimar(this.mercado.cerca, this.drivingVehicle) }
         : null,
       negocioCerca: this.negocios && this.negocios.cerca
         ? {

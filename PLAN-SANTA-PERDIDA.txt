@@ -2643,9 +2643,30 @@ LA CIUDAD MAS VIVA
      y en el minimapa mientras espera. Probado end-to-end en el
      navegador: aparicion, aviso "E para hablar", aceptar, cumplir (paga
      de verdad), fallar por tiempo y desaparecer por no acercarse.
- 14. LA CIUDAD SE ABRE POR ZONAS conforme avanzas (si entras donde no debes,
-     busca alta, como en San Andreas).
- 15. MERCADO POR BARRIOS con precios que se mueven y una libreta para verlos.
+ 14. APARCADO A PROPOSITO (26-sep). Pablo, al preguntarle: este mapa se
+     queda TODO abierto desde el principio, sin busca por entrar donde no
+     debes. Este punto vuelve cuando se añadan mas islas a lo GTA (Santa
+     Perdida como la primera, y el resto bloqueadas segun avance una
+     historia que todavia hay que construir bien, con gancho y
+     coherencia) — entonces si tendra sentido el bloqueo por progreso,
+     igual que en San Andreas de verdad.
+ 15. HECHO (52a tanda, 26-sep). Mercado por barrios con precios que se
+     mueven y una libreta para verlos.
+     Pablo, al preguntarle que se compra o vende ahi: ampliar la grua
+     (coches por barrio). MercadoSystem.js nuevo, APARTE de GruaSystem
+     (no se toca: sigue con sus tres modelos pedidos de siempre). Cuatro
+     "desguaces" nuevos, uno en residencial/comercial/industrial/Los
+     Rompientes (repartidos como la armeria, evitando edificiosOcupados),
+     que compran CUALQUIER coche, sin lista de pedidos. Cada uno tiene su
+     propia demanda (x0.65 a x1.45) que cambia sola cada 100-170
+     segundos. Paga = precio del modelo x fraccion segun estado (0,12 a
+     0,34, un pelin peor que la grua a proposito) x demanda del sitio.
+     Libreta nueva (tecla L, MercadoScene.js, mismo patron que P de
+     progreso): los cuatro desguaces ordenados de mejor a peor demanda
+     ahora mismo, con la distancia en metros desde donde estas. Probado
+     en el navegador: los cuatro colocados, libreta legible sin
+     solapes, "E para vender" con el precio correcto, venta real (paga,
+     borra el coche, te baja).
  16. DESAFIOS CRONOMETRADOS con medalla de bronce, plata y oro.
  17. TRABAJOS: taxi, ambulancia y justiciero YA EXISTEN (36a tanda, para la
      mejora permanente del punto 10) — recoger y llevar dentro de un tiempo,
