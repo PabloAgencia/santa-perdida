@@ -1807,6 +1807,43 @@ TRIGESIMA TANDA (26-sep-2026): comprar coches y pisos, con garaje de verdad
   progreso).
 
 ================================================================================
+TRIGESIMOPRIMERA TANDA (26-sep-2026): quitarse la busca cargandose patrullas
+================================================================================
+
+  Cierra el PUNTO 8 de "el salto grande". Antes, `DanoVehiculos.explotar()`
+  trataba CUALQUIER coche reventado cerca del jugador como un delito — dos
+  estrellas, tres si era una patrulla. Eso era justo al reves de lo pedido:
+  cargarte una patrulla de verdad no es un delito, es quitartela de encima.
+
+  LA REGLA: si el coche que revienta es una patrulla con una `unit` activa
+  en `PoliceSystem.units` y no te la habias robado ya (`!u.robada` — la que
+  ya es tuya no cuenta, esa se trata como un coche cualquiera), y estabas
+  cerca (el mismo radio de 260 px que ya usaba el aviso de delito), baja una
+  estrella. Si estaba lejos, no sube ni baja nada: solo se limpia la unidad.
+
+  El chasis se queda quemado en la calle IGUAL que con cualquier otro coche
+  (`v.quemado`, sin borrarse — es la gracia de la tanda del daño de
+  vehiculos). Lo unico que desaparece es la UNIDAD de PoliceSystem: sus
+  agentes (si ya habian bajado) y la sirena. Nuevo metodo
+  `PoliceSystem.perderUnidadPorExplosion(vehicle)`, calcado de `removeUnit`
+  pero SIN tocar el vehiculo, que de eso ya se encarga DanoVehiculos.
+
+  Vale para cualquier patrulla activa: las normales, los controles que
+  cortan la calle y el furgon de asalto (los tres tienen su `unit` en
+  `police.units`), asi que tambien se les puede bajar la busca reventandolos.
+
+  COMPROBADO a mano en la consola, con la partida guardada real y varios
+  wanted distintos: destrozar una patrulla activa cerca baja una estrella y
+  retira su unidad (los vehiculos en la ciudad no cambian de numero: el
+  chasis se queda); destrozarla lejos NO baja nada, solo retira la unidad;
+  destrozar una que ya te habias robado tampoco baja nada (cuenta como
+  delito normal, como antes). Visualmente: aparece "PATRULLA DESTROZADA ·
+  UNA ESTRELLA MENOS" en verde en el aviso de la esquina. Cero errores en
+  consola.
+
+  LO QUE QUEDA DE ESTE BLOQUE: nada. Cerrado.
+
+================================================================================
 PENDIENTE — TODO LO QUE QUEDA POR HACER    (actualizado el 21-sep-2026, noche)
 ================================================================================
 
@@ -1848,8 +1885,8 @@ EL SALTO GRANDE
   7. HECHO (29a tanda, 26-sep). Taller de pintura: entras con el coche,
      pagas, sale de otro color, con la chapa arreglada y SIN policia detras
      si no te estan viendo. -> ERA PEDIDO EXPRESAMENTE POR PABLO.
-  8. QUITARSE LA BUSCA CARGANDOSE PATRULLAS: cada estrella se quita
-     destrozando un coche de policia embistiendolo.
+  8. HECHO (31a tanda, 26-sep). Quitarse la busca cargandose patrullas: cada
+     estrella se quita destrozando un coche de policia.
   9. GUERRA POR EL TERRITORIO de las bandas, con oleadas.
  10. QUE CADA TRABAJO DEJE UNA MEJORA PERMANENTE (ambulancia = mas vida,
      justiciero = la policia tarda mas en fichar tu coche, taxi = atajos...).

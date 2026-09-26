@@ -744,6 +744,19 @@ export class PoliceSystem {
     this.units.splice(i, 1);
   }
 
+  // Como removeUnit, pero SIN tocar el vehiculo: lo llama DanoVehiculos
+  // cuando una patrulla explota, y el chasis quemado se queda en la calle a
+  // proposito (ver DanoVehiculos.explotar). Aqui solo se deshace la unidad:
+  // sus agentes, si habia alguno fuera, y la sirena.
+  perderUnidadPorExplosion(vehicle) {
+    const i = this.units.findIndex((u) => u.vehicle === vehicle);
+    if (i < 0) return;
+    const u = this.units[i];
+    for (const o of u.officers) o.destroy();
+    u.siren.destroy();
+    this.units.splice(i, 1);
+  }
+
   topUp(player) {
     let attempts = 0;
     const normales = () => this.units.filter((u) => !u.roadblock && !u.furgon).length;

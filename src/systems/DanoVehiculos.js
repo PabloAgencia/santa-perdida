@@ -208,11 +208,28 @@ export class DanoVehiculos {
     EventBus.emit(EVT.NOTIFY, { text: 'Ha reventado', tone: 'danger' });
 
     // REVENTAR UN COCHE ES UN DELITO GORDO, y ademas se ve y se oye desde
-    // media calle. Si estabas cerca, te lo apuntan a ti: dos estrellas, y
-    // tres si era una patrulla. Sin esto podias ir quemando coches por la
-    // ciudad sin que pasara absolutamente nada.
+    // media calle. Si estabas cerca, te lo apuntan a ti: dos estrellas.
+    // Sin esto podias ir quemando coches por la ciudad sin que pasara
+    // absolutamente nada.
+    //
+    // LA EXCEPCION es una patrulla que TE ESTUVIERA PERSIGUIENDO DE VERDAD
+    // (`!u.robada`: si ya se la habias robado, es tu coche y esto no aplica):
+    // cargartela no es delito, es como quitarsela de encima. Cada una baja
+    // una estrella, igual que en San Andreas.
     const policia = this.scene.police;
-    if (policia && lejos < 260) {
+    const unidad = policia && policia.units.find((u) => u.vehicle === v);
+
+    if (unidad && !unidad.robada) {
+      if (lejos < 260 && GameState.wanted > 0) {
+        GameState.setWanted(GameState.wanted - 1);
+        Audio.notes([262, 330, 392], 0.12, 'triangle', 0.1);
+        EventBus.emit(EVT.NOTIFY, { text: 'Patrulla destrozada · una estrella menos', tone: 'money' });
+      }
+      // el chasis se queda quemado en la calle (ver arriba); la unidad como
+      // tal ya no existe, o sus agentes se quedan persiguiendo un coche que
+      // ya no va a ningun sitio
+      policia.perderUnidadPorExplosion(v);
+    } else if (policia && lejos < 260) {
       policia.reportarCrimen(v.x, v.y, v.police || v.eraPatrulla ? 3 : 2);
     }
   }
