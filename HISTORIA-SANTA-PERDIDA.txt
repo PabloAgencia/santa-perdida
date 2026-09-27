@@ -394,6 +394,187 @@ el matiz de Anzures encima)
 
 
 ================================================================================
+EL MAPA DE LAS MAS DE SESENTA MISIONES  (pedido por Pablo: "quiero mas de
+60 misiones, todo en progresion, todo conectado, como un GTA")
+================================================================================
+Esto es el ESQUELETO completo de la campaña: quien la da, en que acto cae y
+que cuenta en una frase. Las que ya estan escritas del todo en
+`config/missions.js` llevan [HECHA]; el resto son la hoja de ruta para las
+proximas tandas — se escriben con el mismo detalle que las que ya existen
+(intro, pasos, pago, rep), no se generan todas de golpe. NADA DE CENSURA
+en como se cuentan: si alguien muere, se queda muerto; si es una droga, se
+llama droga; si es el club, es el club.
+
+--------------------------------------------------------------------------------
+ACTO 1 — "SIN PREGUNTAS"  (6 misiones, LAS 6 YA HECHAS)
+--------------------------------------------------------------------------------
+ 1. [HECHA] primer-recado (Amarres) — El Consul te prueba con un fardo.
+ 2. [HECHA] coche-limpio (Amarres) — un coche sin fichar hasta el muelle.
+ 3. [HECHA] aviso-rompiente (Rompiente) — destrozar un coche como aviso.
+ 4. [HECHA] corre-chaval (Rompiente) — sacar a un chaval del barrio.
+ 5. [HECHA] cobro-verdial (Verdial) — la ronda de cobros de la Doña.
+ 6. [HECHA] sin-testigos (Verdial) — un coche al fondo del puerto.
+
+--------------------------------------------------------------------------------
+ACTO 2 — "TRES BANDAS, UNA CIUDAD"  (9 misiones: 3 del tramo medio original
++ 3 de la 64a tanda [HECHAS] + 3 nuevas por escribir)
+--------------------------------------------------------------------------------
+ 7. [HECHA] carrera-muelle (Amarres) — entrega contrarreloj, El Consul nervioso.
+ 8. [HECHA] el-soplon (Rompiente) — seguir al soplon sin que te vea.
+ 9. [HECHA] aguanta (Verdial) — la Doña te manda a un sitio sin avisar.
+10. [HECHA] la-duda-de-ferro (Amarres) — Ferro prueba tu lealtad a sus espaldas.
+11. [HECHA] lo-que-hizo-renco (Rompiente) — Renco sale de la ciudad para siempre.
+12. [HECHA] bien-llevado (Verdial) — la Doña pregunta por el puerto.
+13. cuentas-claras (Amarres) — Marina te pide auditar EN SECRETO los libros
+    de su padre: la primera vez que ella misma duda de El Consul.
+14. vale-toma-cartas (Rompiente) — Chispa duda demasiado para el gusto de
+    Vale; ella manda a Cero a resolver algo por su cuenta, sin avisarle.
+15. el-favor-de-empedrado (Verdial) — el abogado de la Doña usa a Cero para
+    un recado que no puede aparecer en ningun papel.
+
+--------------------------------------------------------------------------------
+ACTO 2.5 — "EL BAJO MUNDO"  (4 misiones nuevas, presentan a El Duque y el
+club; necesitan ClubScene ya construida — HECHO en la 64a tanda)
+--------------------------------------------------------------------------------
+16. bienvenido-al-terciopelo (El Duque) — primer encargo del Duque, Cero
+    conoce el club y de quien es de verdad (Casa Verdial, en la sombra).
+17. alguien-no-paga (El Duque) — un cliente se ha ido sin pagar a una de
+    las chicas: el primer "trabajo de chulo" (cobro + posible pelea).
+18. la-chica-nueva (una trabajadora del club, con nombre por decidir) —
+    pide ayuda para salir de una deuda que no es con El Duque, es con
+    alguien de fuera. Historia personal, al margen de las tres bandas.
+19. lo-que-sabe-la-camarera (la camarera del club) — ha oido un nombre en
+    la barra que no le sonaba de la ciudad: "Anzures". Primera vez que el
+    nombre se dice en voz alta, aunque nadie sepa aun quien es. GANCHO
+    DIRECTO al Acto 3.
+
+--------------------------------------------------------------------------------
+ACTO 3 — "EL HOMBRE DE FUERA"  (15 misiones nuevas, tramo mas largo: es
+donde se descubre todo)
+--------------------------------------------------------------------------------
+20. el-hombre-del-traje (Amarres) — Cero ve a El Consul reunido con un
+    desconocido de traje que no encaja en el puerto. Nadie dice su nombre.
+21. la-reportera (Teresa Alba, periodista) — se presenta: lleva meses
+    detras de quien compra terrenos por Santa Perdida sin dar la cara.
+22. ojos-en-el-barrio (Rompiente) — Vale ve a gente con planos y cascos
+    midiendo el barrio conflictivo. Nadie del barrio los ha llamado.
+23. papeles (Verdial) — Empedrado pide recuperar unos documentos "antes de
+    que los vea quien no debe": son el contrato con el Consorcio Poniente.
+24. lo-que-vio-la-grua (Sacau) — vio descargar algo en el puerto que no
+    llevaba el sello de ningun cargamento de Los Amarres.
+25. la-doña-no-duerme (Verdial) — primera vez que se ve a la Doña
+    nerviosa de verdad: Anzures le ha apretado el trato.
+26. el-barrio-no-se-vende (Rompiente) — Chispa organiza al barrio contra
+    "los de los cascos", sin saber aun para quien trabajan.
+27. ferro-se-harta (Amarres) — convencido de que El Consul se ha vendido,
+    Ferro empieza a mover gente sin permiso.
+28. un-sobre-para-el-inspector (Inspector Salaverri) — Cero ve, o hace, el
+    pago que demuestra hasta donde llega el dinero de fuera.
+29. nadie-se-fia-de-nadie — las tres bandas empiezan a sospechar entre
+    ellas (cada una cree que las otras dos estan detras de lo raro que
+    pasa). Mision de tension, sin bando fijo.
+30. la-foto-de-teresa (Teresa Alba) — conseguir la prueba que le falta a
+    la periodista: una foto de Anzures con alguien de las tres bandas.
+31. el-primero-en-caer — alguien del entorno de Anzures desaparece o
+    aparece muerto: la primera señal de que esto ya no es solo dinero.
+32. golpe-de-mano (Amarres) — Ferro se planta de verdad. EL MOMENTO QUE
+    MUERDE del Acto 3: segun como reaccione el jugador, cae Ferro o cae
+    alguien de la gente de Marina. No hay vuelta atras para quien caiga.
+33. el-trato (Verdial) — Cero presencia (o interfiere en) una negociacion
+    real entre Empedrado y Anzures.
+34. se-sabe — el descubrimiento se hace publico entre las tres bandas: YA
+    SABEN que Anzures y el Consorcio Poniente estan detras de todo. Cierra
+    el Acto 3 y abre el Acto 4.
+
+--------------------------------------------------------------------------------
+ACTO 4 — "LA CIUDAD ELIGE"  (15 misiones nuevas: 2 de tronco comun + 13
+repartidas en 5 caminos hacia los 5 finales de HISTORIA-SANTA-PERDIDA.txt)
+--------------------------------------------------------------------------------
+35. la-ciudad-se-entera — tronco comun: como reacciona cada banda al saber
+    la verdad, vista desde las tres a la vez.
+36. elige-un-bando — tronco comun, EL PUNTO DE NO RETORNO: a partir de
+    aqui, seguir haciendo encargos de una banda cierra puertas de verdad
+    con las otras (la reputacion ya lo penaliza; aqui se nota en la
+    historia, no solo en un numero).
+
+  CAMINO AMARRES (-> final "EL PUERTO ES NUESTRO")
+37. marina-toma-el-mando — con o sin su padre, Marina pone orden en Los
+    Amarres para plantar cara a Anzures.
+38. el-ultimo-barco-de-anzures — impedir que el Consorcio saque del puerto
+    lo que ya habia empezado a mover.
+39. el-consul-se-despide — cierre de camino: que pasa con Baltasar Roig
+    segun como haya ido todo. Puede que no le quede sitio ni en su propio
+    puerto.
+
+  CAMINO ROMPIENTE (-> final "SE QUEMA TODO")
+40. barricadas-de-verdad — el barrio conflictivo se cierra a cal y canto
+    contra el Consorcio y contra quien haga falta.
+41. la-noche-mas-larga — la noche en que todo se decide en las calles del
+    barrio: la mas dura de las 60, sin cortes para suavizarla.
+42. cuentas-pendientes — cierre de camino: Chispa cobra, literal, las
+    cuentas que quedaban sueltas desde el Acto 2 (Renco, Ferro si sigue
+    vivo, quien haya jugado sucio con la Cuadrilla).
+
+  CAMINO VERDIAL (-> final "GUANTE DE SEDA")
+43. el-precio-de-la-doña — que esta dispuesta a pagar (o a dejar caer) la
+    Doña para quitarse a Anzures de encima.
+44. fuera-anzures — el golpe final contra el Consorcio, hecho con guante
+    de seda: nada que se pueda demostrar en un papel.
+45. lo-que-queda-entre-las-sombras — cierre de camino: la deuda que Cero
+    contrae con Casa Verdial para siempre.
+
+  CAMINO CONSORCIO (-> final oscuro "SE VENDE LA CIUDAD")
+46. el-otro-lado-del-trato — Cero cambia de bando de verdad: trabaja PARA
+    Anzures, contra las tres bandas de la ciudad a la vez.
+47. firma-y-listo — cierre de camino: la ciudad cambia de dueño. Ninguna
+    banda se entera hasta que ya es tarde.
+
+  CAMINO INDEPENDIENTE (-> final "NADIE TE PREGUNTA", el mas dificil:
+  pide reputacion alta y balanceada con las tres a la vez)
+48. las-tres-bandas-una-noche — el unico punto de todo el juego en que
+    Amarres, Rompiente y Verdial trabajan juntas, por una noche, contra
+    Anzures.
+49. te-vas-de-santa-perdida — cierre de camino y epilogo de esta rama.
+
+50. epilogo-un-año-despues — ESCENA FINAL COMUN A LOS CINCO CAMINOS (con
+    texto distinto segun cual se haya jugado), a modo de cierre de
+    partida. Candidata a pantalla propia (ver "QUE QUEDA" del punto 4).
+
+--------------------------------------------------------------------------------
+SUELTAS — "STRANGER MISSIONS" (9 misiones, al margen de las tres bandas,
+se pueden ofrecer en cualquier momento a partir de cierta reputacion
+general; dan lore y algo de dinero, no hacen falta para ningun final)
+--------------------------------------------------------------------------------
+51. coches-con-historia (Puro, el mecanico) — reconoce un coche robado con
+    el que ya trabajo antes de que Cero llegase a la ciudad.
+52. el-ojo-de-puro (Puro) — necesita piezas raras que solo se consiguen
+    "sin preguntar de donde salen".
+53. deudas-viejas (Puro) — un favor personal, de antes de que existiera
+    el taller.
+54. lo-que-se-ve-desde-el-faro (Custodia del Faro) — algo que solo ella
+    pudo ver, una noche cualquiera de las de antes del Acto 3.
+55. el-faro-no-miente (Custodia del Faro) — segunda visita, ya con una
+    pista real sobre el Consorcio (encaja mejor a partir del Acto 3).
+56. el-rumor-del-mercado (Pregonero del Mercado) — el primero en enterarse
+    de todo, siempre, y el ultimo en decirlo si no le conviene.
+57. proteccion (El Duque) — otro chulo de fuera del barrio intenta operar
+    en terreno del Duque sin pagarle a Casa Verdial.
+58. el-otro-chulo (El Duque) — remate de la anterior: dejar claro que en
+    zona comercial no entra nadie sin permiso.
+59. la-medalla-que-falta — mision especial, se activa solo con las 40
+    medallas de la Santa Perdida recogidas
+    (`GameState.medallasRecogidas`, ColeccionablesSystem.js): la
+    superstición de la ciudad resulta ser mas que una superstición.
+60. el-ultimo-favor — mision final "de las sueltas", pensada para
+    cerrarse justo antes del Acto 4, sea cual sea el camino que se vaya a
+    tomar despues.
+
+TOTAL: 60 fichas. Se puede seguir engordando (mas sueltas, mas trabajos de
+El Duque) sin romper nada: el sistema entero se sostiene en `minRep` +
+`GameState.flags.misiones`, que no tiene techo.
+
+
+================================================================================
 QUE SE HA HECHO YA CON ESTO  (64a tanda, 27-sep)
 ================================================================================
   · `config/factions.js`: `jefe: { nombre, alias }` en las tres bandas.
