@@ -43,6 +43,7 @@ ESPERADOS = {
     'interior-piso-centro': 'el del Centro     16.000 $',
     'interior-piso': 'generica de piso (opcional, de reserva)',
     'interior-concesionario': 'el concesionario por dentro',
+    'interior-gimnasio': 'el gimnasio por dentro',
     'landmark-plaza': 'Plaza del Farol',
     'landmark-torre': 'Torre Sombra',
     'landmark-faro': 'El Faro',

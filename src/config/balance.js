@@ -37,6 +37,20 @@ export const ENTRENAR = {
   punteriaPorAcierto: 0.15,
 };
 
+// EL GIMNASIO (SISTEMA-PERSONAJE.txt, punto 4). Cada maquina es un minijuego
+// de DURACION segundos. TOPE es lo maximo que se gana (o se quema, la grasa)
+// en todo un dia de partida: como en San Andreas, pasado el tope ya no sube.
+// Con estos numeros una buena sesion llega al tope; pasar de 20 a 60 de
+// musculo (el cuerpo "fuerte") lleva unos siete dias de juego. La cuota de
+// entrada esta en config/locales.js, con los demas precios de los locales.
+export const GIMNASIO = {
+  duracion: 15,
+  tope: { musculo: 6, aguante: 8, grasa: 8, punteria: 3 },
+  pesas: { musculoPorRep: 0.6 },
+  cinta: { grasaPorSegundo: -0.55, aguantePorSegundo: 0.55 },
+  saco: { musculoPorGolpe: 0.35, punteriaPorGolpe: 0.2 },
+};
+
 export const CAMERA = {
   followLerp: 0.12,
   zoomFoot: 1.45,

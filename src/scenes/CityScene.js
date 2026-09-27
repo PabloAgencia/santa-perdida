@@ -310,6 +310,9 @@ export class CityScene extends Phaser.Scene {
       const puerta = this.interiorDoor || this.hideoutDoor;
       if (puerta) this.player.setPosition(puerta.x, puerta.y);
       this.player.setVisible(true);
+      // por si el cuerpo cambio dentro (el gimnasio sube musculo o quema
+      // grasa): no hace nada si el tramo sigue siendo el mismo
+      this.player.actualizarCuerpo();
       this.hurtCooldown = 1.5;
       this.cameras.main.startFollow(
         this.player.sprite, true, CAMERA.followLerp, CAMERA.followLerp
@@ -962,6 +965,25 @@ export class CityScene extends Phaser.Scene {
   usarLocalCerca() {
     const local = this.locales && this.locales.cerca;
     if (!local || local.cfg.accion === 'ninguna') return false;
+
+    // El gimnasio no es un efecto instantaneo como curar o comer: se entra,
+    // como en un piso o el concesionario. La cuota se cobra en la puerta.
+    if (local.cfg.accion === 'gimnasio') {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
+        return true;
+      }
+      if (!GameState.canAfford(local.cfg.precio)) {
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${local.cfg.nombre}: ${local.cfg.precio} €. No te llega`, tone: 'danger',
+        });
+        return true;
+      }
+      GameState.spendMoney(local.cfg.precio, 'gimnasio');
+      this.interiorDoor = { x: local.x, y: local.y, edificio: local.edificio };
+      this.abrirInterior({}, 'GimnasioScene');
+      return true;
+    }
 
     const resultado = this.locales.usar(local, this.drivingVehicle);
     if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });

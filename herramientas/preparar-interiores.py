@@ -37,6 +37,7 @@ CALIDAD = 86
 EN_PANTALLA = {
     'interior-armeria': 660,        # ShopScene.sala
     'interior-concesionario': 760,  # ConcesionarioScene.sala
+    'interior-gimnasio': 640,       # GimnasioScene.sala
 }
 POR_DEFECTO = 600                   # HideoutScene.sala
 FACTOR = 2                          # el doble, para pantallas finas

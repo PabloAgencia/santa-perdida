@@ -49,6 +49,77 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
+#  LA TANDA DE AHORA (27-sep-2026): EL GIMNASIO                  2 PROMPTS
+################################################################################
+Se acaba de conectar el gimnasio (punto 22 del plan, SISTEMA-PERSONAJE.txt):
+una sala con tres maquinas (pesas, cinta, saco) y un icono propio en el mapa.
+Sin estas dos imagenes el juego sigue funcionando con rectangulos por codigo.
+
+DONDE SE DEJA CADA COSA
+   interior-gimnasio.png  ->  sprites\originales\edificios\
+   marca-gimnasio.png     ->  sprites\originales\iconos\
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+
+--------------------------------------------------------------------------------
+  interior-gimnasio.png                                   proporcion 8:5
+--------------------------------------------------------------------------------
+OJO CON ESTA: el juego pone tres cosas encima en sitios EXACTOS (el
+personaje y el texto de cada maquina). Si el dibujo las pone en otro sitio,
+el jugador aparece de pie sobre una pared o al lado de la maquina que no es.
+
+Create a LANDSCAPE image in 8:5 aspect ratio (a bit wider than tall), not
+square.
+Top-down interior of a small gym, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a floor-plan view, like the interiors in GTA
+Chinatown Wars. The camera is mounted on the ceiling looking straight down
+at the floor. NO walls seen from the front, NO perspective, NO tilt, NO
+vanishing point.
+
+FORMAT: landscape 8:5. The floor fills the entire image edge to edge, no
+border, no margin.
+
+THE FLOOR: dark rubber gym flooring with a grid pattern.
+
+LAYOUT - this part matters, the game places a piece of equipment and a
+label at each exact spot below, and nothing else should be drawn there:
+- AT 20% of the width, 42% of the height: a weight bench with a barbell
+  rack, seen from above.
+- AT 50% of the width, 30% of the height: a treadmill, seen from above.
+- AT 80% of the width, 42% of the height: a round punching bag hanging
+  from the ceiling, seen from above as a dark circle.
+- BOTTOM CENTRE EDGE (around 50% of the width, from 95% of the height to
+  the bottom edge): a stretch of floor left completely clear and open,
+  that is the door to the street.
+- The rest of the floor (corners, the band above the equipment) can carry
+  gym atmosphere: a wall mirror along the top edge, a water cooler, a
+  rack of dumbbells in a corner - but nothing blocking the three pieces of
+  equipment or the bottom-centre doorway.
+
+LIGHT: bright, slightly cool gym lighting, fluorescent tube reflections on
+the rubber floor.
+COLOUR: dark grey and black rubber floor, muted red and steel gym
+equipment, one warm accent (amber) somewhere in the decor.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT isometric.
+MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
+readable writing or watermark. NO people. Nothing on top of the three
+pieces of equipment or the bottom-centre doorway.
+
+
+--------------------------------------------------------------------------------
+  marca-gimnasio.png
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a gym: an amber/orange rounded square badge with a
+small white dumbbell silhouette inside it, seen straight on. Simple shapes,
+thick dark outline, flat colours, no gradients, no shading detail, no 3D. It
+has to be readable when shown at 16 pixels wide. Centered, filling almost
+the whole image, plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border.
+
+
+################################################################################
 #  LO QUE VIENE DESPUES
 ################################################################################
   · RETRATOS de los contactos de banda (punto 26 del plan). Primero hay que

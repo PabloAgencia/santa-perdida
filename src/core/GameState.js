@@ -60,6 +60,9 @@ class GameStateClass {
     // el reloj del mundo, en minutos desde medianoche (0-1439). Empieza a
     // media mañana, como si la partida arrancara un dia cualquiera.
     this.minutoDelDia = 9 * 60;
+    // que dia de partida es: sube cada vez que el reloj pasa de medianoche
+    // (tambien durmiendo). Lo usa el tope diario del gimnasio.
+    this.dia = 1;
   }
 
   // ---------- el reloj ----------
@@ -67,7 +70,38 @@ class GameStateClass {
   // lo llama DiaNocheSystem cada fotograma (minutos de mundo, no de reloj de
   // pared) y HideoutScene de un salto al dormir (360 = seis horas)
   avanzarReloj(minutos) {
-    this.minutoDelDia = ((this.minutoDelDia + minutos) % 1440 + 1440) % 1440;
+    const total = this.minutoDelDia + minutos;
+    if (total >= 1440) this.dia += Math.floor(total / 1440);
+    this.minutoDelDia = ((total % 1440) + 1440) % 1440;
+  }
+
+  // ---------- el gimnasio y su tope diario ----------
+  //
+  // Lo que se ha ganado HOY en el gimnasio, por atributo. Al cambiar de dia
+  // se empieza de cero. Como en San Andreas: pasado el tope, "por hoy ya has
+  // entrenado bastante".
+  gimnasioHoy() {
+    const g = this.flags.gimnasio;
+    if (!g || g.dia !== this.dia) {
+      this.flags.gimnasio = { dia: this.dia, musculo: 0, aguante: 0, grasa: 0, punteria: 0 };
+    }
+    return this.flags.gimnasio;
+  }
+
+  // Sube (o baja, la grasa) un atributo sin pasar del tope del dia.
+  // Devuelve lo que se ha aplicado de verdad (0 si ya estaba el tope).
+  entrenar(clave, cantidad, tope) {
+    const hoy = this.gimnasioHoy();
+    const queda = Math.max(0, tope - hoy[clave]);
+    const aplica = Math.min(Math.abs(cantidad), queda);
+    if (aplica <= 0) return 0;
+    // lo que cambia DE VERDAD: con la grasa ya a 0 o el musculo a 100 no se
+    // gasta tope ni se anuncia nada
+    const antes = this.atributo(clave);
+    this.subirAtributo(clave, Math.sign(cantidad) * aplica);
+    const real = Math.abs(this.atributo(clave) - antes);
+    hoy[clave] += real;
+    return real;
   }
 
   // la hora en punto, de 0 a 24 con decimales (14.5 = las dos y media)
@@ -418,6 +452,7 @@ class GameStateClass {
       propiedades: this.propiedades,
       flags: this.flags,
       minutoDelDia: this.minutoDelDia,
+      dia: this.dia,
       savedAt: Date.now(),
     };
   }
@@ -451,6 +486,7 @@ class GameStateClass {
     this.flags = data.flags ?? {};
     // partidas de antes del reloj: arrancan a media mañana, como una nueva
     this.minutoDelDia = data.minutoDelDia ?? 9 * 60;
+    this.dia = data.dia ?? 1;
     EventBus.emit(EVT.MONEY_CHANGED, { money: this.money, delta: 0, reason: 'load' });
     return true;
   }

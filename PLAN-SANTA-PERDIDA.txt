@@ -2941,8 +2941,29 @@ EL PERSONAJE  (pedido por Pablo el 21-sep) -> detalle en SISTEMA-PERSONAJE.txt
  21. [HECHO 21-sep] EL FISICO SE VE: gordo, flaco o cachas cambiando el
      ancho del tronco. Confirmado que era barato: el personaje es dibujo
      parametrico, no un modelo 3D.
- 22. GIMNASIO con tres maquinas (pesas, cinta, saco), minijuegos cortos y
-     tope diario para que la progresion no se haga en una tarde.
+ 22. [HECHO 27-sep, 59a tanda] GIMNASIO con tres maquinas (pesas, cinta,
+     saco), minijuegos cortos y tope diario para que la progresion no se
+     haga en una tarde. Se habia escrito el grueso en una sesion anterior
+     (`GimnasioScene.js`, `GameState.dia`/`gimnasioHoy()`/`entrenar()`,
+     `GIMNASIO` en balance.js, el local en config/locales.js) y se quedo
+     sin comitear, a medio conectar. Esta tanda cerro lo que faltaba:
+     registrada en main.js; `CityScene.usarLocalCerca` intercepta la
+     accion 'gimnasio' (cobra la cuota, corta si hay busca, abre la
+     escena por `abrirInterior`); `UIScene.textoLocal` avisa "E para
+     entrar"; `MapaScene` ya le pone icono (`marca-gimnasio`, cuadradito
+     mientras no exista); `CityScene.onHideoutExit` llama a
+     `player.actualizarCuerpo()` siempre al volver a la calle (antes solo
+     lo hacia la maquina de refrescos), para que musculo/grasa se note al
+     salir de cualquier interior, no solo del gimnasio. Prompts de
+     `interior-gimnasio` y `marca-gimnasio` en PROMPTS-PARA-GEMINI.txt
+     (con `preparar-interiores.py` y `actualizar-arte.py` ya sabiendo de
+     ellos); mientras no existan, la sala se dibuja por codigo y el icono
+     es un cuadradito, como el resto del juego. NO PROBADO EN EL
+     NAVEGADOR (sin Chrome conectado esta sesion tampoco): comprobado
+     `node --check` en todo lo tocado y que el servidor sirve
+     `GimnasioScene.js` sin 404. Pablo deberia entrar al gimnasio (esta
+     en el centro y en la zona comercial) antes de darlo por cerrado del
+     todo.
  23. ROPA en el armario del piso: cambia los colores del sprite, sube el
      atractivo y el respeto con unas bandas y lo baja con otras.
      (La base ya esta: `config/aspecto.js` tiene el catalogo y el jugador

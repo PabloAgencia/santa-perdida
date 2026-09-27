@@ -66,6 +66,20 @@ export const LOCALES = {
     // barato y sin tope: comer cura poco y engorda, como debe ser
     accion: 'comer',
   },
+  // SISTEMA-PERSONAJE.txt punto 4: uno en el centro y otro en el comercial.
+  // Se paga la cuota al entrar y dentro (GimnasioScene) estan las maquinas.
+  gimnasio: {
+    clave: 'gimnasio',
+    nombre: 'Gimnasio',
+    corto: 'GIMNASIO',
+    cuantos: 2,
+    separacion: 2000,
+    zonas: ['centro', 'comercial'],
+    precio: 20,
+    enCoche: false,
+    color: 0xd98a4a,
+    accion: 'gimnasio',
+  },
 };
 
 export const CLAVES_LOCALES = Object.keys(LOCALES);

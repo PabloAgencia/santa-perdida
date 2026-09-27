@@ -31,6 +31,8 @@ export class LocalSystem {
         cuantos: cfg.cuantos,
         separacion: cfg.separacion,
         ocupados: this.scene.edificiosOcupados,
+        // algunos solo van en ciertos barrios (el gimnasio: centro y comercial)
+        sirve: cfg.zonas ? (b) => cfg.zonas.includes(b.zone) : null,
       });
       for (const s of sitios) {
         const local = {
