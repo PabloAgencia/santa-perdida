@@ -182,6 +182,13 @@ export class MapaScene extends Phaser.Scene {
       this.marca(t.x, t.y, f ? f.accent : 0xd9584a, `Territorio ${f ? f.short : ''}`, 9);
     }
 
+    // LOS SITIOS PRIVADOS de BajoMundoSystem: pedido explicito de Pablo,
+    // "que se marque". Siempre visibles, como el resto de sitios fijos de
+    // la ciudad.
+    for (const s of city.bajoMundo ? city.bajoMundo.sitios : []) {
+      this.marca(s.x, s.y, 0xc060a0, 'Sitio privado', 8);
+    }
+
     // los sitios que se ven desde lejos si salen desde el principio: son
     // justo para orientarse
     for (const L of city.map.cfg.landmarks || []) {

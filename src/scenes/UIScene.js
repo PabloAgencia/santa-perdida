@@ -520,7 +520,10 @@ export class UIScene extends Phaser.Scene {
         : d.carreraCerca ? 'E para empezar la carrera'
         : d.guerraCerca ? `E para desafiar a ${d.guerraCerca}`
         : d.concesionarioCerca ? 'E para entrar en el concesionario'
-        : d.maquinaCerca ? 'E para comprar algo de comer' : ''
+        : d.maquinaCerca ? 'E para comprar algo de comer'
+        : d.pasandoElRato ? 'Un buen rato...'
+        : d.sitioPrivadoCerca ? 'E para parar aqui'
+        : d.trabajadoraCerca ? `E: "¿Quieres pasar un buen rato?" · ${d.trabajadoraCerca.precio} €` : ''
     );
     if (d.arma) {
       this.armaIcono.setTexture(`icono-${d.arma.clave}`).setVisible(true);

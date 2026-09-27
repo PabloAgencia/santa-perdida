@@ -3362,6 +3362,65 @@ esa noche, primera hecha ya:
     al pegar puñetazos (pedido, no hecho todavia — falta pensar como se ve
     sin que estorbe, `CombatSystem.golpear`/`Player.golpe` son el sitio).
 
+ V. HECHO (64a tanda, 27-sep, mismo dia). El combo de golpes, las armas de
+    fuego contra vehiculos, y "pasar un buen rato" hecho del todo bien
+    (recoger en la calle, llevar a un sitio privado marcado, cobro real
+    poco a poco) con un bug de verdad encontrado por el camino.
+
+    · COMBO A PUÑOS. `CombatSystem`: cada golpe cuerpo a cuerpo que conecta
+      (persona o vehiculo) sin fallar y sin dejar pasar mas de
+      `COMBATE.ventanaCombo` (1,1 s) sube un contador; se corta solo al
+      fallar o al tardar demasiado. Cada nivel de combo (hasta el 5º) suma
+      un 8% de daño (`comboBonusPorGolpe`), y desde el segundo golpe sale
+      un "x2", "x3"... encima del jugador, mas grande y mas caliente de
+      color cuanto mas alto.
+    · ARMAS DE FUEGO CONTRA VEHICULOS. Iba a medias: los puños y el bate ya
+      hacian daño a un coche (bloque U), pero disparar a un coche parado
+      NO le hacia nada en absoluto, ni sonaba a que la bala fuera a algun
+      sitio. `CombatSystem.trazarBala` ahora tambien para en un vehiculo
+      (con su alcance real: un rifle o un sniper le dan desde lejos, un
+      puño no), y `COMBATE.danoVehiculoPorDisparo = 0,8` (una bala entra en
+      la chapa mucho mejor que un puñetazo, `danoAVehiculoPorGolpe = 0,4`).
+      Probado con una pistola: 8 disparos, 240 a 86 hp, tal cual
+      `arma.dano (24) x 0,8 x 8`.
+    · "PASAR UN BUEN RATO", el diseño completo que pidio Pablo (nada
+      explicito en ningun paso, igual que los GTA de siempre):
+        1. Se recoge en la calle (`BajoMundoSystem.recoger`): la
+           trabajadora desaparece de la acera, "sube al coche".
+        2. Hay que llevarla a uno de los CINCO SITIOS PRIVADOS de la
+           ciudad (callejones de verdad, mismo criterio que los corazones
+           de `PickupSystem`), marcados con un aro morado en el mundo Y EN
+           EL MAPA GRANDE (Pablo lo pidio explicito: "que se marque").
+        3. Alli se para (`empezar()`) y el dinero se va cobrando DE
+           VERDAD poco a poco mientras pasan los segundos (12 €/s durante
+           5 s, 60 € y +45 de vida en total), no de golpe.
+      BUG ENCONTRADO Y ARREGLADO por el camino: `GameState.spendMoney`
+      REDONDEA cada llamada y descarta lo que sea menor de 0,5 €; llamando
+      a spendMoney cada fotograma con la fraccion de ese fotograma (unos
+      0,2 €), TODO se perdia por el redondeo y no se cobraba nada en
+      absoluto, aunque `GameState.heal()` (que no redondea) si curaba de
+      verdad — asi se noto el fallo: subia la vida sin bajar el dinero.
+      Arreglado acumulando el objetivo sin redondear y cobrando solo los
+      euros ENTEROS que se van cruzando (`BajoMundoSystem.tickSesion`).
+      Si te quedas sin dinero a mitad, o te bajas del coche, se corta ahi
+      (`CityScene.exitVehicle` llama a `bajoMundo.cancelar()`).
+    · LA "FISICA" DE LAS TRABAJADORAS, calle y club. No es que se les
+      pueda mover las manos de verdad (son fotos de IA de una pieza, no
+      un cuerpo por partes como el jugador: ningun peaton del juego tiene
+      eso, no es solo cosa de estas), pero SI que tenian un fallo real:
+      se deslizaban de un lado a otro siempre en el mismo fotograma, sin
+      el bamboleo de los 4 fotogramas de andar que ya usa cualquier
+      peaton de la calle. Se veian patinando en vez de caminando.
+      Arreglado en `BajoMundoSystem.js` (las de la calle) y en
+      `ClubScene.js` (las que rondan la barra y cruzan la sala).
+
+    PROBADO EN EL NAVEGADOR, cada pieza por separado: el combo (golpes
+    seguidos, contador subiendo); las balas contra un coche parado (hp
+    bajando lo que toca); el ciclo completo de "buen rato" en una sola
+    tirada (recoger -> sitio -> 6 lecturas de 1 segundo cada una,
+    dinero -12 €/s exacto, salud +9/s exacto, termina justo en el
+    segundo 5 con 60 € gastados y +45 de vida).
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

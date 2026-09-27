@@ -28,6 +28,14 @@ export class CombatSystem {
       .setDisplaySize(30, 4).setTint(0xd9584a).setVisible(false).setDepth(9002);
 
     this.destellos = [];
+
+    // EL COMBO A PUÑOS (y bate, cuchillo...), pedido por Pablo: encadenar
+    // golpes sin fallar ni dejar pasar mas de VENTANA_COMBO segundos entre
+    // uno y el siguiente sube el contador, se ve en pantalla y pega un poco
+    // mas fuerte cuanto mas alto va. Se corta solo (`update`) si se tarda
+    // demasiado en pegar otra vez.
+    this.combo = 0;
+    this.comboTimer = 0;
   }
 
   get arma() {
@@ -149,14 +157,19 @@ export class CombatSystem {
     // el brazo sale, pegues o falles: fallar tambien se ve
     if (player.golpe) player.golpe();
 
-    // el musculo se nota en los puños y en el bate
+    // el musculo se nota en los puños y en el bate, y el combo un poco mas:
+    // cada golpe seguido sin fallar pega un 8% mas, hasta un tope de +32%
+    // en el quinto golpe. Es lo que hace que encadenar valga la pena de
+    // verdad, no solo se vea bonito.
+    const bonusCombo = 1 + Math.min(this.combo, 4) * COMBATE.comboBonusPorGolpe;
     const extra = (GameState.atributo('musculo') / 100) * arma.dano * COMBATE.danoExtraPorMusculo;
-    const dano = arma.dano + extra;
+    const dano = (arma.dano + extra) * bonusCombo;
 
     if (objetivo && Phaser.Math.Distance.Between(objetivo.x, objetivo.y, player.x, player.y) <= arma.alcance) {
       this.aplicar(objetivo, dano, player, true);
       GameState.subirAtributo('musculo', ENTRENAR.musculoPorGolpe);
       if (!Audio.soltar('golpe', 0.7)) Audio.crash(0.18);
+      this.marcarGolpe(player);
       return true;
     }
 
@@ -174,11 +187,38 @@ export class CombatSystem {
       // estuviera hecho polvo a puñetazos.
       vehiculo.syncSprite();
       if (!Audio.soltar('golpe', 0.6)) Audio.crash(0.22);
+      this.marcarGolpe(player);
       return true;
     }
 
+    // FALLAR CORTA EL COMBO, igual que dejar pasar demasiado tiempo
+    this.combo = 0;
+    this.comboTimer = 0;
     Audio.notes([180], 0.05, 'triangle', 0.05);   // golpe al aire
     return false;
+  }
+
+  // Sube el contador, lo enseña un instante encima del jugador (mas grande
+  // y mas caliente de color cuanto mas alto) y reinicia la cuenta atras
+  // para el siguiente golpe.
+  marcarGolpe(player) {
+    this.combo++;
+    this.comboTimer = COMBATE.ventanaCombo;
+    if (this.combo < 2) return;   // el primer golpe no es "combo" todavia
+
+    const COLORES = ['#e6e1d4', '#f2d06b', '#e8b54a', '#e8834a', '#d9584a'];
+    const color = COLORES[Math.min(this.combo - 2, COLORES.length - 1)];
+    const texto = this.scene.add.text(player.x, player.y - 30, `x${this.combo}`, {
+      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
+      stroke: '#05060a', strokeThickness: 4,
+      fontSize: `${Math.min(18 + this.combo * 2, 34)}px`,
+      color,
+    }).setOrigin(0.5).setDepth(9500);
+    this.scene.tweens.add({
+      targets: texto, y: texto.y - 26, alpha: 0, scale: 1.3,
+      duration: 500, ease: 'Sine.out',
+      onComplete: () => texto.destroy(),
+    });
   }
 
   // El coche desocupado mas cercano al alcance del arma, para poder
@@ -218,6 +258,12 @@ export class CombatSystem {
       if (impacto.ente) {
         this.aplicar(impacto.ente, arma.dano, player, false);
         algunoDentro = true;
+      } else if (impacto.vehiculo) {
+        // una bala si entra en la chapa de verdad, con el alcance real del
+        // arma (ver COMBATE.danoVehiculoPorDisparo en config/weapons.js)
+        impacto.vehiculo.hp = Math.max(0, impacto.vehiculo.hp - arma.dano * COMBATE.danoVehiculoPorDisparo);
+        impacto.vehiculo.syncSprite();
+        algunoDentro = true;
       }
       this.pintarDisparo(player, impacto.x, impacto.y);
     }
@@ -254,6 +300,15 @@ export class CombatSystem {
       if (this.scene.map.isSolidPoint(x, y)) return { x, y, ente: null };
       for (const { ente } of gente) {
         if (Math.hypot(ente.x - x, ente.y - y) < 11) return { x, y, ente };
+      }
+      // LOS COCHES TAMBIEN PARAN LA BALA. Antes solo la gente y las paredes
+      // contaban: dispararle a un coche aparcado no hacia absolutamente
+      // nada, ni siquiera sonaba a que la bala hubiera ido a algun sitio.
+      for (const v of this.scene.vehicles) {
+        // `player` es el propio vehiculo cuando se dispara desde dentro
+        // (dispararDesdeCoche): que no se dispare a si mismo por delante
+        if (v.occupied || v === player) continue;
+        if (Math.hypot(v.x - x, v.y - y) < v.stats.width * 0.6) return { x, y, ente: null, vehiculo: v };
       }
     }
     return { x: player.x + cos * arma.alcance, y: player.y + sin * arma.alcance, ente: null };
@@ -383,6 +438,12 @@ export class CombatSystem {
 
   update(dt, player, aPie, vehiculo = null) {
     if (this.espera > 0) this.espera -= dt;
+
+    // se tarda demasiado en pegar otra vez: el combo se corta solo
+    if (this.comboTimer > 0) {
+      this.comboTimer -= dt;
+      if (this.comboTimer <= 0) this.combo = 0;
+    }
 
     // DESDE EL COCHE TAMBIEN SE FIJA, pero solo con un arma de una mano, que
     // es lo unico con lo que se puede disparar al volante. Enseñar el

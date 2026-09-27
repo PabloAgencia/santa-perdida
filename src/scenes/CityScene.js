@@ -15,6 +15,7 @@ import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
 import { ColeccionablesSystem } from '../systems/ColeccionablesSystem.js';
+import { BajoMundoSystem, PRECIO_BUEN_RATO } from '../systems/BajoMundoSystem.js';
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
@@ -82,6 +83,7 @@ export class CityScene extends Phaser.Scene {
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
     this.coleccionables = new ColeccionablesSystem(this, this.map);
+    this.bajoMundo = new BajoMundoSystem(this, this.map);
 
     // Los que "son tuyos" y tienen que salir SIEMPRE en el mismo edificio
     // entre cargas (piso, negocio, guerra de territorio) van primero, y cada
@@ -499,6 +501,9 @@ export class CityScene extends Phaser.Scene {
   exitVehicle() {
     const v = this.drivingVehicle;
     if (!v) return;
+    // si te bajas con la pasajera del bajo mundo a medio camino, se acabo:
+    // no se queda esperando en un coche sin nadie al volante
+    this.bajoMundo.cancelar();
     const spot = v.findExitSpot();
     v.occupied = false;
     v.encendido = false;
@@ -546,7 +551,8 @@ export class CityScene extends Phaser.Scene {
       if (this.drivingVehicle) {
         if (
           !this.entrarEnPisoCerca() && !this.entregarEnGruaCerca() &&
-          !this.venderEnDesguaceCerca() && !this.empezarCarreraCerca()
+          !this.venderEnDesguaceCerca() && !this.empezarCarreraCerca() &&
+          !this.pasarBuenRatoCerca()
         ) this.exitVehicle();
       } else if (
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
@@ -662,6 +668,7 @@ export class CityScene extends Phaser.Scene {
     this.checkPlayerHarm(dt);
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
     this.coleccionables.update(this.player, !!this.drivingVehicle);
+    this.bajoMundo.update(dt, this.drivingVehicle);
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.locales.update(this.player, !!this.drivingVehicle);
@@ -1088,6 +1095,39 @@ export class CityScene extends Phaser.Scene {
     return true;
   }
 
+  // "PASAR UN BUEN RATO" (BajoMundoSystem, HISTORIA-SANTA-PERDIDA.txt): dos
+  // pasos, como pidio Pablo. Primero se recoge en la calle (sube al coche,
+  // no se ve nada raro, solo desaparece de la acera); despues hay que
+  // llevarla a uno de los sitios privados marcados en la ciudad, y alli es
+  // donde se cobra de verdad, poco a poco mientras pasan los segundos
+  // (`BajoMundoSystem.tickSesion`). Con la policia detras no vale ninguno de
+  // los dos pasos.
+  pasarBuenRatoCerca() {
+    if (this.bajoMundo.sesion) return true;   // ya en marcha, el E no hace nada mas
+
+    if (this.bajoMundo.sitioCerca) {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'No hay tiempo para eso ahora', tone: 'danger' });
+        return true;
+      }
+      const resultado = this.bajoMundo.empezar();
+      if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+      return true;
+    }
+
+    if (this.bajoMundo.cerca) {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'No hay tiempo para eso ahora', tone: 'danger' });
+        return true;
+      }
+      const resultado = this.bajoMundo.recoger();
+      if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+      return true;
+    }
+
+    return false;
+  }
+
   // el mapa entero: se congela la ciudad y se abre encima, como la pausa
   abrirMapa() {
     this.captureState();
@@ -1476,6 +1516,9 @@ export class CityScene extends Phaser.Scene {
         : null,
       aliento: this.drivingVehicle ? 1 : this.player.alientoRatio,
       maquinaCerca: !!this.pickups.cercaDeMaquina && !this.drivingVehicle,
+      trabajadoraCerca: this.drivingVehicle && this.bajoMundo.cerca ? { precio: PRECIO_BUEN_RATO } : null,
+      sitioPrivadoCerca: this.drivingVehicle && this.bajoMundo.sitioCerca,
+      pasandoElRato: !!this.bajoMundo.sesion,
       arma: this.drivingVehicle ? null : {
         clave: GameState.armaActual,
         nombre: ARMAS[GameState.armaActual].nombre,

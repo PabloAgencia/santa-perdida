@@ -199,4 +199,13 @@ export const COMBATE = {
   // la chapa aguanta mas que una persona: un puñetazo o un bate abollan,
   // no destrozan, un coche entero
   danoAVehiculoPorGolpe: 0.4,
+  // una bala si que entra de verdad en la chapa y el cristal, mucho mas
+  // que un golpe cuerpo a cuerpo (y con el alcance real del arma: un
+  // rifle o un sniper pueden dar a un coche desde lejos, un puño no)
+  danoVehiculoPorDisparo: 0.8,
+  // EL COMBO A PUÑOS: cada golpe seguido sin fallar suma un 8% de daño,
+  // hasta el quinto golpe (+32%); pasado este tiempo sin pegar otra vez,
+  // se corta solo.
+  comboBonusPorGolpe: 0.08,
+  ventanaCombo: 1.1,
 };

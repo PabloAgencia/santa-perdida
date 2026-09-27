@@ -122,7 +122,7 @@ export class ClubScene extends Phaser.Scene {
       const x0 = r.vertical ? fijaPx : s.x + s.w * r.desde;
       const y0 = r.vertical ? s.y + s.h * r.desde : fijaPx;
       const spr = this.add.image(x0, y0, `${r.clave}-0`).setDepth(1000 + i);
-      return { ...r, spr, fijaPx, t: i * 1.7 };
+      return { ...r, spr, fijaPx, t: i * 1.7, fase: 0, fotoT: 0 };
     });
 
     this.puerta = { x: s.x + s.w / 2, y: s.y + s.h - 6 };
@@ -195,6 +195,15 @@ export class ClubScene extends Phaser.Scene {
         r.spr.setPosition(s0.x + s0.w * recorrido, r.fijaPx);
       }
       r.spr.setDepth(r.spr.y);
+      // LOS 4 FOTOGRAMAS DE ANDAR, como cualquier peaton de la calle: antes
+      // se quedaban clavadas en el fotograma 0 mientras se deslizaban de
+      // lado a lado, y se veia rigido, como patinando en vez de caminando.
+      r.fotoT += dt;
+      if (r.fotoT > 0.22) {
+        r.fotoT = 0;
+        r.fase = (r.fase + 1) % 4;
+        r.spr.setTexture(`${r.clave}-${r.fase}`);
+      }
     }
 
     let dx = 0;
