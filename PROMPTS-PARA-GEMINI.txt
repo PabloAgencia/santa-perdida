@@ -54,7 +54,163 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026): TODOS LOS DEMAS TEJADOS      18 PROMPTS
+#  LA TANDA DE AHORA (27-sep-2026, noche): EL CLUB              6 PROMPTS
+################################################################################
+Pedido por Pablo para HISTORIA-SANTA-PERDIDA.txt (seccion "EL BAJO MUNDO"):
+el club de El Duque, por fuera y por dentro, y cuatro personajes distintos
+para la gente que trabaja ahi. TODO tratado igual que el resto del juego:
+sin nada grafico ni explicito. Los personajes se ven exactamente igual de
+"tapados" que cualquier otro del juego, porque la camara esta en el techo
+mirando hacia abajo: no se ve cara, no se ve cuerpo, solo la coronilla, los
+hombros y la punta de los zapatos. Es ropa de noche, ni mas ni menos.
+
+Esto todavia no tiene sistema en el codigo (no existe ClubScene.js ni un
+negocio "club" en config/negocios.js): son los prompts primero, como
+siempre, para no generar de mas ni de menos. En cuanto esten las imagenes,
+la siguiente tanda las conecta.
+
+DONDE SE DEJA CADA COSA
+   club.png              sprites\originales\edificios\   (el tejado)
+   interior-club.jpg      sprites\originales\edificios\   (el interior)
+   peaton-13.png a peaton-16.png   sprites\originales\personajes\
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+
+--------------------------------------------------------------------------------
+  club.png                        tejado del club (por fuera)      1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small nightclub building roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls of the building are NOT visible, only
+the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat dark roof with a cluster of large AC units, a row of
+coloured neon tube shapes running along one edge (pink and purple, switched
+on, glowing softly), a satellite dish, a small rooftop smoking area with
+two stools in one corner.
+
+COLOUR: dark charcoal roof, glowing pink and purple neon accents, muted
+steel AC units.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+
+
+--------------------------------------------------------------------------------
+  interior-club.jpg               El Terciopelo, por dentro         8:5
+--------------------------------------------------------------------------------
+Un salon, no varias habitaciones: mismo esquema que los otros interiores del
+juego, una sola sala vista entera desde arriba. Todavia no hay puntos
+exactos que respetar (no esta programado), asi que el reparto de abajo es
+orientativo: cuando se conecte al juego, si algo no cae bien, se ajusta la
+escena antes que repetir la imagen.
+
+Create a LANDSCAPE image in 8:5 aspect ratio (a bit wider than tall), not
+square.
+Top-down interior of a small nightclub, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a floor-plan view, like the interiors in
+GTA Chinatown Wars. The camera is mounted on the ceiling looking straight
+down at the floor. NO walls seen from the front, NO perspective, NO tilt,
+NO vanishing point.
+
+FORMAT: landscape 8:5. The floor fills the entire image edge to edge, no
+border, no margin.
+
+LAYOUT:
+- BOTTOM CENTRE EDGE (around 50% of the width, from 96% of the height to
+  the bottom edge): a stretch of floor left completely clear and open,
+  that is the door.
+- CENTRE of the room: a circular dance floor with coloured light patterns
+  projected on it, seen from above.
+- ALONG THE LEFT EDGE: a long bar counter with stools, bottles on shelves
+  behind it (no readable labels).
+- ALONG THE RIGHT EDGE: a row of private velvet booths with low round
+  tables.
+- TOP OF THE ROOM: a small raised DJ stage with a booth, seen from above.
+- The rest of the floor can carry atmosphere: scattered small round
+  tables, a coat-check counter near the door, moody coloured lighting
+  pools on the floor.
+
+LIGHT: dark room lit mostly by coloured stage and bar lighting (pink,
+purple, deep blue), pools of light on the dance floor.
+COLOUR: dark polished floor, deep purple and burgundy velvet, warm brass
+bar fittings, glowing pink/purple/blue light pools.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT isometric.
+MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
+readable writing or watermark. NO people. Nothing blocking the doorway.
+
+
+--------------------------------------------------------------------------------
+  peaton-13.png                   trabajadora del club, look 1
+--------------------------------------------------------------------------------
+Top-down sprite of a woman seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of her head, her shoulders and the tips of her shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. She is standing still, facing RIGHT. Night-out fashion: a short
+sequined red dress, dark hair in a high updo, high heels. Pixel art, chunky
+readable pixels, dark muted night-time palette with a pop of red, strong
+dark outline around the silhouette so it reads at a small size. Plain flat
+magenta background (#FF00FF), no shadow, no text, no watermark, no border,
+the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-14.png                   trabajadora del club, look 2
+--------------------------------------------------------------------------------
+Top-down sprite of a woman seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of her head, her shoulders and the tips of her shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. She is standing still, facing RIGHT. Night-out fashion: a leopard
+print faux-fur coat worn open over a dark slip dress, short dark bob
+haircut, ankle boots. Pixel art, chunky readable pixels, dark muted
+night-time palette, strong dark outline around the silhouette so it reads
+at a small size. Plain flat magenta background (#FF00FF), no shadow, no
+text, no watermark, no border, the figure centered and filling most of the
+image.
+
+
+--------------------------------------------------------------------------------
+  peaton-15.png                   trabajadora del club, look 3
+--------------------------------------------------------------------------------
+Top-down sprite of a woman seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of her head, her shoulders and the tips of her shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. She is standing still, facing RIGHT. Night-out fashion: a metallic
+silver slip dress, hair up in a sleek ponytail, platform heels. Pixel art,
+chunky readable pixels, dark muted night-time palette with a pop of
+silver, strong dark outline around the silhouette so it reads at a small
+size. Plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border, the figure centered and filling most of the image.
+
+
+--------------------------------------------------------------------------------
+  peaton-16.png                   trabajadora del club, look 4
+--------------------------------------------------------------------------------
+Top-down sprite of a woman seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight
+down. Only the top of her head, her shoulders and the tips of her shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. She is standing still, facing RIGHT. Night-out fashion: a black
+leather jacket worn open over a dark red slip dress, long red hair loose,
+thigh-high boots. Pixel art, chunky readable pixels, dark muted night-time
+palette with a pop of deep red, strong dark outline around the silhouette
+so it reads at a small size. Plain flat magenta background (#FF00FF), no
+shadow, no text, no watermark, no border, the figure centered and filling
+most of the image.
+
+
+################################################################################
+#  TANDA ANTERIOR (27-sep-2026, aun pendiente): TODOS LOS DEMAS TEJADOS  18 PROMPTS
 ################################################################################
 Pablo: "tenemos los interiores... pero tambien deberiamos hacer los
 exteriores. A ver si piensas bien en todo". Repasado el codigo entero, esto

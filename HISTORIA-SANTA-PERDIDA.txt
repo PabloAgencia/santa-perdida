@@ -443,3 +443,9 @@ QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
      "EL BAJO MUNDO — VICIO Y NEGOCIO" de mas arriba, apuntado por Pablo
      explicitamente. Tratado siempre como negocio de la ciudad (como el
      contrabando o la extorsion), nunca de forma grafica ni explicita.
+     YA EN COLA en `PROMPTS-PARA-GEMINI.txt` (27-sep, noche): el tejado del
+     club, el interior de "El Terciopelo" y cuatro personajes distintos
+     para la gente que trabaja ahi (peaton-13 a 16). En cuanto Pablo los
+     genere, falta escribir `ClubScene.js` (si se quiere entrar de verdad,
+     como el gimnasio) o un `NEGOCIO` mas simple (solo por fuera, como los
+     demas) segun cuanto peso quiera darle al sitio.
