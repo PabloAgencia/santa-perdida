@@ -80,6 +80,22 @@ export const LOCALES = {
     color: 0xd98a4a,
     accion: 'gimnasio',
   },
+  // HISTORIA-SANTA-PERDIDA.txt, "EL BAJO MUNDO": el club de El Duque, uno
+  // solo en toda la ciudad (cuantos: 1) y siempre en la zona comercial,
+  // terreno de Casa Verdial. Misma mecanica que el gimnasio: se paga en la
+  // puerta y dentro (ClubScene) esta el resto.
+  club: {
+    clave: 'club',
+    nombre: 'El Terciopelo',
+    corto: 'EL TERCIOPELO',
+    cuantos: 1,
+    separacion: 9999,
+    zonas: ['comercial'],
+    precio: 25,
+    enCoche: false,
+    color: 0xc060a0,
+    accion: 'club',
+  },
 };
 
 export const CLAVES_LOCALES = Object.keys(LOCALES);

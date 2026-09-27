@@ -1004,6 +1004,27 @@ export class CityScene extends Phaser.Scene {
       return true;
     }
 
+    // EL CLUB: misma mecanica que el gimnasio (se paga en la puerta, se
+    // entra de verdad). Con la policia detras tampoco se puede entrar: no
+    // tendria sentido colarte en El Terciopelo con dos coches patrulla
+    // parados en la puerta.
+    if (local.cfg.accion === 'club') {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no te dejan pasar', tone: 'danger' });
+        return true;
+      }
+      if (!GameState.canAfford(local.cfg.precio)) {
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${local.cfg.nombre}: ${local.cfg.precio} €. No te llega`, tone: 'danger',
+        });
+        return true;
+      }
+      GameState.spendMoney(local.cfg.precio, 'club');
+      this.interiorDoor = { x: local.x, y: local.y, edificio: local.edificio };
+      this.abrirInterior({}, 'ClubScene');
+      return true;
+    }
+
     const resultado = this.locales.usar(local, this.drivingVehicle);
     if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
     return true;

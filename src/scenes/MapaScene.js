@@ -149,6 +149,7 @@ export class MapaScene extends Phaser.Scene {
       hospital: 'marca-hospital', comisaria: 'marca-comisaria',
       taller: 'marca-taller', comida: 'marca-comida',
       gimnasio: 'marca-gimnasio',
+      club: 'marca-club',
     };
     for (const l of city.locales ? city.locales.locales : []) {
       if (!GameState.conoce(l.clave)) continue;
