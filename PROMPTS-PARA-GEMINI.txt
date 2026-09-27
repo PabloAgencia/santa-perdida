@@ -13,7 +13,8 @@ YA HECHO (no hace falta volver a generarlo)
 --------------------------------------------------------------------------------
   14 personajes   jugador (normal, gordo, fuerte), policia, swat, tres de
                   banda y doce peatones
-  11 iconos       armas, corazon, escudo y los marcadores del mapa
+  13 iconos       armas (incluidos cuchillo y puño americano), corazon,
+                  escudo y los marcadores del mapa
    8 vehiculos    con sus colores
    6 tejados
    1 portada      la pantalla de inicio
@@ -21,11 +22,12 @@ YA HECHO (no hace falta volver a generarlo)
   16 landmarks    playa, aerodromo y monte en dos/tres mitades, plaza, torre,
                   faro, grua, estadio, mercado, carcel, casino, aparcamiento,
                   poligono e isla
-   9 marcas       las del mapa grande (concesionario, desguace, carrera,
-                  hospital, comisaria, taller, comida, negocio) y la casa
+  10 marcas       las del mapa grande (concesionario, desguace, carrera,
+                  hospital, comisaria, taller, comida, negocio), la casa
+                  propia y los pisos en venta
    1 vehiculo mas la ambulancia
    3 objetos      dos maquinas de refrescos distintas y la caja de reparto
-                  (el corazon y el arma reusan iconos que ya existian)
+                  (el corazon reusa un icono que ya existia)
 
   Sus prompts estaban aqui y se han quitado: si algun dia hay que repetir
   alguno, siguen en el historial:
@@ -34,6 +36,8 @@ YA HECHO (no hace falta volver a generarlo)
       git show edd194a:PROMPTS-AI-STUDIO.txt   (los 8 interiores)
       git show b899094:PROMPTS-AI-STUDIO.txt   (los 30 del concesionario,
                                                  landmarks, marcas y objetos)
+      git show cb3f8ff:PROMPTS-PARA-GEMINI.txt (cuchillo, piso en venta y
+                                                 puño americano)
 
   DOS COSAS DE AQUELLOS PROMPTS QUE CONVIENE NO OLVIDAR
    · Nombrar un juego que el modelo conozca ("top-down view like in GTA
@@ -45,70 +49,7 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026)                               3 PROMPTS
-################################################################################
-
-   1. icono-cuchillo       el cuchillo, arma nueva (ver PLAN-SANTA-PERDIDA.txt)
-   2. marca-piso-venta     los pisos EN VENTA en el mapa grande no tenian
-                           icono propio; el de "tu escondite" (marca-casa) es
-                           solo para el que ya has comprado
-   3. icono-americano      el puño americano se quedo fuera de la tanda
-                           original de iconos (es de antes de que existiera
-                           esta arma) y sigue siendo dibujo por codigo
-
-DONDE SE DEJA CADA COSA
-   icono-cuchillo.png     ->  sprites\originales\iconos\
-   marca-piso-venta.png   ->  sprites\originales\iconos\
-   icono-americano.png    ->  sprites\originales\iconos\
-   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
-
-SE HACEN EN GEMINI, "Crear imagen". Si te devuelve varias versiones, quedate
-con la que mejor cumpla la descripcion: lo demas da igual.
-
-
---------------------------------------------------------------------------------
-  icono-cuchillo.png
---------------------------------------------------------------------------------
-Create a SQUARE image, 1:1 aspect ratio.
-Flat game HUD icon of a combat knife placed DIAGONALLY, from the bottom left
-to the top right, drawn as a clean silhouette. A narrow silver blade tapering
-to a point, with a short dark handle. Simple shapes, thick dark outline, two
-flat colours only (steel grey blade, dark brown handle), no gradients, no
-shading detail, no 3D. It has to be readable when shown at 20 pixels wide.
-Centered, filling almost the whole image, plain flat magenta background
-(#FF00FF), no shadow, no text, no watermark, no border.
-
-
---------------------------------------------------------------------------------
-  marca-piso-venta.png
---------------------------------------------------------------------------------
-Create a SQUARE image, 1:1 aspect ratio.
-Flat map marker icon for a house for sale: a light blue rounded square badge
-with a small white house silhouette inside it and a small price-tag shape
-next to it, seen straight on. Simple shapes, thick dark outline, flat
-colours, no gradients, no shading detail, no 3D. It has to be readable when
-shown at 16 pixels wide. Centered, filling almost the whole image, plain
-flat magenta background (#FF00FF), no shadow, no text, no watermark, no
-border.
-
-
---------------------------------------------------------------------------------
-  icono-americano.png
---------------------------------------------------------------------------------
-Create a SQUARE image, 1:1 aspect ratio.
-Flat game HUD icon of a clenched fist wearing a brass knuckle-duster, seen
-from the side, knuckles pointing RIGHT, drawn as a clean silhouette. Same
-pose as a bare fist, but with four metal rings across the knuckles so it
-reads as a different, tougher weapon at a glance. Simple shapes, thick dark
-outline, flat colours only (skin tone, a darker skin tone for shading, and
-grey metal for the rings), no gradients, no shading detail, no 3D. It has to
-be readable when shown at 20 pixels wide. Centered, filling almost the whole
-image, plain flat magenta background (#FF00FF), no shadow, no text, no
-watermark, no border.
-
-
-################################################################################
-#  LO QUE VIENE DESPUES DE ESTA TANDA
+#  LO QUE VIENE DESPUES
 ################################################################################
   · RETRATOS de los contactos de banda (punto 26 del plan). Primero hay que
     decidir DONDE salen en pantalla (la propuesta: en el cartel grande que
