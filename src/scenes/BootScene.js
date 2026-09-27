@@ -396,6 +396,23 @@ export class BootScene extends Phaser.Scene {
       bate.destroy();
     }
 
+    // El cuchillo, en diagonal como el bate para que se lea igual de bien:
+    // hoja plateada estrecha y mango oscuro corto, mucho mas fino que el bate
+    // para que no se confundan de un vistazo.
+    if (!this.textures.exists('icono-cuchillo')) {
+      const cuc = this.g();
+      cuc.translateCanvas(20, 20);
+      cuc.rotateCanvas(-Math.PI / 4);
+      cuc.fillStyle(OSCURO, 1);
+      cuc.fillRoundedRect(-16, -3, 34, 6, 3);
+      cuc.fillStyle(ACERO, 1);
+      cuc.fillTriangle(-14, -2, -14, 2, 17, 0);   // la hoja, en punta
+      cuc.fillStyle(0x6b4a28, 1);
+      cuc.fillRoundedRect(-16, -2.6, 9, 5.2, 2);
+      cuc.generateTexture('icono-cuchillo', 40, 40);
+      cuc.destroy();
+    }
+
     // La pistola mira a la derecha, con la empuñadura inclinada hacia atras:
     // de perfil plano parecia un martillo.
     if (!this.textures.exists('icono-pistola')) {
@@ -677,7 +694,9 @@ export class BootScene extends Phaser.Scene {
     cor.generateTexture('corazon', 28, 28);
     cor.destroy();
 
-    // maquina de refrescos: alta, con su cristal y su luz
+    // maquinas de refrescos: alta, con su cristal y su luz. DOS variantes
+    // (colores distintos) para que no sea siempre la misma en cada acera;
+    // PickupSystem.plantarMaquinas elige una al azar por sitio.
     const maq = this.g();
     maq.fillStyle(0x1b1f25, 1);
     maq.fillRoundedRect(0, 0, 14, 20, 2);
@@ -687,18 +706,20 @@ export class BootScene extends Phaser.Scene {
     maq.fillRect(3, 4, 4, 10);
     maq.fillStyle(0xe8b54a, 1);
     maq.fillRect(3, 16, 8, 2);
-    maq.generateTexture('maquina', 14, 20);
+    maq.generateTexture('maquina-1', 14, 20);
     maq.destroy();
 
-    // arma tirada en el suelo
-    const arm = this.g();
-    arm.fillStyle(0x1b1f25, 1);
-    arm.fillRect(1, 5, 14, 4);
-    arm.fillRect(3, 8, 4, 5);
-    arm.fillStyle(0x4a4f57, 1);
-    arm.fillRect(2, 6, 11, 2);
-    arm.generateTexture('arma-suelo', 16, 14);
-    arm.destroy();
+    const maq2 = this.g();
+    maq2.fillStyle(0x1b1f25, 1);
+    maq2.fillRoundedRect(0, 0, 14, 20, 2);
+    maq2.fillStyle(0x8a2f3a, 1);
+    maq2.fillRect(2, 3, 10, 12);
+    maq2.fillStyle(0xe89aa0, 0.75);
+    maq2.fillRect(3, 4, 4, 10);
+    maq2.fillStyle(0x7fd08a, 1);
+    maq2.fillRect(3, 16, 8, 2);
+    maq2.generateTexture('maquina-2', 14, 20);
+    maq2.destroy();
 
     this.makeIconosDeHud();
 

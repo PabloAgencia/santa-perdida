@@ -39,6 +39,7 @@ const ALCANCE_MAQUINA = 40;     // a esta hay que acercarse y pulsar E
 const REAPARECE_ARMA = 210;     // segundos hasta que vuelve a estar
 const ARMAS_SEMBRADAS = [
   { clave: 'americano', balas: 0, cuantas: 5, separacion: 1400 },
+  { clave: 'cuchillo', balas: 0, cuantas: 4, separacion: 1600 },
   { clave: 'bate', balas: 0, cuantas: 4, separacion: 1800 },
   { clave: 'pistola', balas: 18, cuantas: 3, separacion: 2600 },
   { clave: 'escopeta', balas: 8, cuantas: 2, separacion: 3400 },
@@ -119,16 +120,25 @@ export class PickupSystem {
     }
   }
 
+  // El icono gira sobre si mismo, como el arma que flota en San Andreas: se
+  // ve de un vistazo que hay algo que recoger y de que arma se trata, sin
+  // acercarse. `scaleX` va de 1 a -1 y vuelta: en un sprite plano 2D es lo
+  // que mas se parece a un giro en el sitio (una rotacion de verdad solo
+  // pondria el arma de canto un instante, un icono de 22px no se ve nada).
+  girarIcono(icono) {
+    this.scene.tweens.add({
+      targets: icono, scaleX: { from: icono.scaleX, to: -icono.scaleX },
+      duration: 1100, yoyo: true, repeat: -1, ease: 'Linear',
+    });
+  }
+
   crearArmaFija(x, y, clave, balas) {
     const icono = this.scene.add.image(x, y, `icono-${clave}`)
       .setDisplaySize(22, 22).setDepth(y + 1);
     const brillo = this.scene.add.image(x, y, 'lamp')
       .setDisplaySize(52, 52).setTint(0x8fb8e8)
       .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.28).setDepth(3);
-    this.scene.tweens.add({
-      targets: icono, scale: { from: icono.scale * 0.88, to: icono.scale * 1.12 },
-      duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-    });
+    this.girarIcono(icono);
     return { x, y, clave, balas, icono, brillo, espera: 0 };
   }
 
@@ -260,7 +270,10 @@ export class PickupSystem {
 
       const x = s.x + pared[0] * 9;
       const y = s.y + pared[1] * 9;
-      const icono = this.scene.add.image(x, y, 'maquina').setDepth(y);
+      // dos modelos distintos, alternados al azar: si fuera siempre la misma
+      // maquina, la acera entera parecia una fotocopia de si misma
+      const tipo = Math.random() < 0.5 ? 'maquina-1' : 'maquina-2';
+      const icono = this.scene.add.image(x, y, tipo).setDepth(y);
       const luz = this.scene.add.image(x, y, 'lamp')
         .setDisplaySize(54, 54).setTint(0x8fd0e0)
         .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.18).setDepth(-890);
@@ -272,15 +285,17 @@ export class PickupSystem {
 
   // Al que cae se le queda el hierro en la acera. Es la forma de conseguir
   // tu primera pistola sin pasar por una tienda, y la que usan todos los GTA.
+  //
+  // El icono es el DEL ARMA QUE LLEVABA (antes era siempre el mismo dibujo
+  // generico de "arma-suelo", da igual lo que soltara), y gira igual que las
+  // armas fijas de los callejones: se ve de lejos que arma es sin acercarse.
   soltarArma(x, y, clave, balas) {
-    const icono = this.scene.add.image(x, y, 'arma-suelo').setDepth(y + 1);
+    const icono = this.scene.add.image(x, y, `icono-${clave}`)
+      .setDisplaySize(22, 22).setDepth(y + 1);
     const brillo = this.scene.add.image(x, y, 'lamp')
       .setDisplaySize(56, 56).setTint(0xe8b54a)
       .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.3).setDepth(3);
-    this.scene.tweens.add({
-      targets: [icono], scale: { from: 0.9, to: 1.1 },
-      duration: 700, yoyo: true, repeat: -1, ease: 'Sine.inOut',
-    });
+    this.girarIcono(icono);
     this.sueltos.push({ x, y, clave, balas, icono, brillo, vida: 40 });
   }
 

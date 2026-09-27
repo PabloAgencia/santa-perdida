@@ -395,10 +395,15 @@ def preparar_iconos(hechos):
 # Los objetos de la calle: nombre del fichero -> (clave en el juego, ancho,
 # alto). Salen algo mas grandes que el dibujo por codigo de antes (la maquina
 # era de 14x20): a ese tamaño una imagen de verdad se queda en un borron.
+#
+# DOS maquinas (maquina-1, maquina-2) para que no sea siempre la misma por la
+# acera; PickupSystem.plantarMaquinas elige una al azar por sitio. Ya no hay
+# "arma" generica: el arma tirada en el suelo usa el icono DE ESA arma
+# (icono-pistola, icono-bate...), que ya existe en sprites/originales/iconos/.
 OBJETOS = {
-    'maquina': ('maquina', 20, 28),
+    'maquina-1': ('maquina-1', 20, 28),
+    'maquina-2': ('maquina-2', 20, 28),
     'corazon': ('corazon', 28, 28),
-    'arma': ('arma-suelo', 24, 20),
     'caja': ('crate', 24, 24),
 }
 

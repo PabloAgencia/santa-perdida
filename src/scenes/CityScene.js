@@ -289,7 +289,13 @@ export class CityScene extends Phaser.Scene {
       // un atropello del trafico asusta a la gente, pero no es asunto tuyo
       if (!culpaDelJugador) return;
 
-      this.police.report(pedestrian.x, pedestrian.y, fatal ? 2 : 1);
+      // Un atropello mortal PONE la busca en 1, no la suma: antes sumaba (con
+      // report(), igual que embestir una patrulla) y cargarte a cuatro
+      // peatones de una tacada disparaba a 6 estrellas de golpe, mientras que
+      // uno solo ya daba 2. Ahora es el mismo criterio que un tiro delante de
+      // testigos (`reportarCrimen`, ver CombatSystem): un atropello no es mas
+      // grave que eso. Uno que no mata no avisa a nadie.
+      if (fatal) this.police.reportarCrimen(pedestrian.x, pedestrian.y, 1);
       Audio.crash(Math.min(0.7, speed / 400));
       this.cameras.main.shake(fatal ? 180 : 110, fatal ? 0.005 : 0.003);
       EventBus.emit(EVT.NOTIFY, {

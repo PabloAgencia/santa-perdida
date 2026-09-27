@@ -2821,6 +2821,78 @@ esa noche, primera hecha ya:
     negocio del Centro (y los del puerto, por las naves) pueden salir en
     otro edificio la proxima vez que se cargue; lo comprado no se pierde.
 
+ K. HECHO (58a tanda, 27-sep). Media docena de encargos sueltos que dio
+    Pablo tras probar el juego:
+      · LAS ESTRELLAS DE BUSCA SUBIAN A LO BESTIA CON EL COCHE. Un atropello
+        mortal SUMABA 2 (con `report()`, igual que embestir una patrulla), y
+        varios seguidos en una tacada podian disparar a 6 de golpe; uno solo
+        ya daba 2. `CityScene.onPedHit` ahora usa `reportarCrimen(x,y,1)`,
+        el mismo criterio de "PONE un minimo, no suma" que ya usaba
+        CombatSystem para un tiro delante de testigos: un atropello no es
+        mas grave que eso, y uno que no mata no avisa a nadie.
+      · LAS 26 IMAGENES QUE GENERO PABLO EL 26/27-sep (interior del
+        concesionario, ambulancia, 8 marcas del mapa, 16 landmarks, caja y
+        dos maquinas de refrescos) estaban en su carpeta de descargas sin
+        colocar: copiadas a sprites/originales/ y pasados
+        preparar-sprites.py + preparar-interiores.py + actualizar-arte.py.
+        Todo el mapa tiene ya arte de IA de verdad.
+      · DOS MAQUINAS DISTINTAS por la acera (maquina-1, maquina-2), elegida
+        al azar por sitio en `PickupSystem.plantarMaquinas`, para que no sea
+        siempre la misma. preparar-sprites.py sabe de las dos.
+      · EL ARMA TIRADA EN EL SUELO (la que sueltan al caer y las fijas de
+        los callejones) usaba un icono generico ("arma-suelo") sin relacion
+        con el arma real. Ahora `soltarArma` usa `icono-${clave}`, la MISMA
+        que ya usaban las fijas, y las dos GIRAN sobre si mismas
+        (`PickupSystem.girarIcono`, un scaleX de 1 a -1 y vuelta) como el
+        arma que flota en San Andreas. Se quito el dibujo de "arma-suelo"
+        de BootScene y la entrada "arma" de preparar-sprites.py: ya no
+        hacia falta.
+      · CUCHILLO, arma nueva (`config/weapons.js`): mas rapido que el puño
+        americano (cadencia 0,24 s contra 0,38) y algo mas de daño (21
+        contra 19), pero un pelin menos de alcance; el escalon a mano antes
+        del bate para quien prefiera pegar mas seguido que mas fuerte. En
+        `ORDEN_ARMAS` entre americano y bate, en el catalogo de la armeria y
+        sembrado en los callejones (`ARMAS_SEMBRADAS`, 4 unidades). Icono
+        propio dibujado por codigo (`BootScene.makeIconosDeHud`) y su
+        prompt en PROMPTS-AI-STUDIO.txt para cuando Pablo lo genere.
+      · CASAS EN VENTA sin icono en el mapa grande: el `marca-casa` (icono
+        naranja de "tu escondite") solo salia si ya la habias comprado; las
+        que aun no eran tuyas caian en el cuadradito de color de siempre.
+        Ahora usan `marca-piso-venta` (prompt tambien en
+        PROMPTS-AI-STUDIO.txt; mientras no exista, sigue el cuadradito, que
+        es el mismo "usa la imagen si esta" de todo el juego).
+    NO PROBADO EN EL NAVEGADOR: la extension de Chrome no estaba conectada
+    esta sesion. Comprobado en su lugar: sintaxis de los ficheros tocados
+    (`node --check`), y que el servidor sirve `sprites/listos/lista.json` y
+    `arte/lista.json` con todo lo nuevo dentro. Pablo deberia darle un
+    vistazo en el navegador a la busca, las maquinas y las armas girando
+    antes de darlo por bueno del todo.
+
+ L. PENDIENTE DE PABLO, es un bloque grande aparte. Pidio que el mapa "no
+    sea un cuadrado sin mas" (como el de San Andreas) y que lo de dentro
+    este "mejor repartido y organizado". Mirado el codigo: SON DOS
+    ARREGLOS DE TAMAÑO MUY DISTINTO, mejor no atacarlos a ciegas en la
+    misma tanda que todo lo de arriba:
+      · La forma cuadrada viene de `config/city.js`: la ciudad es una
+        rejilla de calles perfectamente rectangular (325x262) con mar SOLO
+        en una franja fina del borde sur (`seaTop: 253`, el resto del
+        perímetro es tierra). Darle una costa irregular de verdad (bahias,
+        peninsulas, mas de un lado con mar) es tocar la generacion de
+        calles, las zonas y OTRA VEZ la validacion de que ningun landmark
+        quede encima de un carril (lo que costo su propia tanda en el
+        bloque J) — del tamaño de "LA CIUDAD MAS GRANDE" (13 tandas).
+      · El reparto: los landmarks estan puestos a mano en
+        `config/city.js` y casi todos (monte, grua, isla, playa,
+        aerodromo, faro) se amontonan en esa misma franja sur, mientras el
+        interior del mapa solo tiene plaza+torre (pegados entre si),
+        casino, mercado, aparcamiento, carcel y poligono (estos dos
+        ultimos casi tocandose, mismo tramo de calle). Esto es mas
+        acotado: mover coordenadas y comprobar otra vez `solid && roadMask
+        === 0` en cada una.
+    Antes de arrancar ninguno de los dos hace falta que Pablo diga cual
+    (o si quiere los dos, por cual primero): no es lo mismo un rediseño
+    de la costa que separar ocho puntos ya puestos.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

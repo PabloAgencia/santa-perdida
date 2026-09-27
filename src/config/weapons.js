@@ -49,6 +49,23 @@ export const ARMAS = {
     municionMax: 0,
     sonido: 'golpe',
   },
+  // EL CUCHILLO: mas rapido que el americano y a la vez algo mas de daño,
+  // pero se paga con menos alcance (hay que estar pegado del todo). Es el
+  // ultimo escalon a mano antes del bate, para quien prefiera golpear mas
+  // seguido en vez de golpear mas fuerte.
+  cuchillo: {
+    dosManos: false,
+    clave: 'cuchillo',
+    nombre: 'Cuchillo',
+    cuerpo: true,
+    alcance: 24,
+    dano: 21,
+    cadencia: 0.24,
+    dispersion: 0,
+    precio: 90,
+    municionMax: 0,
+    sonido: 'golpe',
+  },
   bate: {
     dosManos: true,
     clave: 'bate',
@@ -159,7 +176,7 @@ export const ARMAS = {
 };
 
 // El orden en que se cambia con TAB: de menos a mas, como se consiguen.
-export const ORDEN_ARMAS = ['puno', 'americano', 'bate', 'pistola', 'escopeta', 'subfusil', 'rifle', 'sniper'];
+export const ORDEN_ARMAS = ['puno', 'americano', 'cuchillo', 'bate', 'pistola', 'escopeta', 'subfusil', 'rifle', 'sniper'];
 
 // Cuanto aguanta cada uno antes de caer. El jugador tiene su propia vida.
 export const VIDA = {

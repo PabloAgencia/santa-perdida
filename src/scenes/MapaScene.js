@@ -136,7 +136,7 @@ export class MapaScene extends Phaser.Scene {
         tuyo ? 0xe8b54a : 0x7fa8d0,
         tuyo ? piso.nombre : `${piso.precio} €`,
         tuyo ? 12 : 9,
-        tuyo ? 'marca-casa' : null
+        tuyo ? 'marca-casa' : 'marca-piso-venta'
       );
     }
 

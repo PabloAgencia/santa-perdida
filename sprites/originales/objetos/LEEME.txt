@@ -3,9 +3,12 @@ OBJETOS DE LA CALLE
 Aqui van las imagenes de los objetos pequeños que hay por la calle, con
 estos nombres EXACTOS (los prompts estan en PROMPTS-AI-STUDIO.txt):
 
-  maquina.png   la maquina de refrescos de las aceras
-  corazon.png   el corazon de vida que se coge por los callejones
-  arma.png      el arma tirada en el suelo
-  caja.png      el paquete de los repartos
+  maquina-1.png   una maquina de refrescos de las aceras
+  maquina-2.png   otra maquina distinta, para que no sea siempre la misma
+  corazon.png     el corazon de vida que se coge por los callejones
+  caja.png        el paquete de los repartos
+
+(Ya no hace falta "arma.png": el arma tirada en el suelo usa el icono de esa
+arma en concreto, que sale de sprites/originales/iconos/.)
 
 Despues se pasa  python herramientas/preparar-sprites.py  (eso lo hago yo).
