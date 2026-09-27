@@ -88,15 +88,21 @@ export class ProgresoScene extends Phaser.Scene {
   // GameState: nada de esto vive en ningun sitio nuevo.
   calcular() {
     const misiones = MISSIONS.filter((m) => GameState.flags.misiones?.[m.id]).length;
-    const pisos = ZONAS_CON_PISO.filter((z) => GameState.esDueno(clavePiso(z))).length;
-    const negociosTotal = Object.keys(NEGOCIOS).length;
-    const negocios = Object.keys(NEGOCIOS).filter((z) => GameState.esDueno(claveNegocio(z))).length;
+    // +1 en pisos y negocios: el atico de la torre y el casino, que no van
+    // en ZONAS_CON_PISO/NEGOCIOS porque no son "uno por barrio" (ver
+    // PisoSystem.colocarAtico y NegocioSystem.colocarCasino)
+    const pisosTotal = ZONAS_CON_PISO.length + 1;
+    const pisos = ZONAS_CON_PISO.filter((z) => GameState.esDueno(clavePiso(z))).length
+      + (GameState.esDueno(clavePiso('torre')) ? 1 : 0);
+    const negociosTotal = Object.keys(NEGOCIOS).length + 1;
+    const negocios = Object.keys(NEGOCIOS).filter((z) => GameState.esDueno(claveNegocio(z))).length
+      + (GameState.esDueno(claveNegocio('casino')) ? 1 : 0);
     const coches = VEHICLE_KEYS.filter((t) => GameState.flags.cochesComprados?.[t]).length;
     const entregas = GameState.stats.deliveries || 0;
 
     return [
       { nombre: 'Misiones', etiqueta: `${misiones} / ${MISSIONS.length}`, fraccion: misiones / MISSIONS.length },
-      { nombre: 'Pisos', etiqueta: `${pisos} / ${ZONAS_CON_PISO.length}`, fraccion: pisos / ZONAS_CON_PISO.length },
+      { nombre: 'Pisos', etiqueta: `${pisos} / ${pisosTotal}`, fraccion: pisos / pisosTotal },
       { nombre: 'Negocios', etiqueta: `${negocios} / ${negociosTotal}`, fraccion: negocios / negociosTotal },
       { nombre: 'Coches', etiqueta: `${coches} / ${VEHICLE_KEYS.length}`, fraccion: coches / VEHICLE_KEYS.length },
       { nombre: 'Entregas', etiqueta: `${entregas} / ${TOPE_ENTREGAS}+`, fraccion: Math.min(entregas, TOPE_ENTREGAS) / TOPE_ENTREGAS },

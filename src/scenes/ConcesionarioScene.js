@@ -49,7 +49,8 @@ export class ConcesionarioScene extends Phaser.Scene {
       fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px', color: '#bcd6ee',
     }).setOrigin(0.5);
 
-    // los seis modelos, en fila, cada uno con su plaza
+    // todos los modelos del concesionario, en fila, cada uno con su plaza
+    // (se reparten solos segun cuantos haya en VEHICLE_KEYS)
     this.bahias = VEHICLE_KEYS.map((tipo, i) => {
       const bx = s.x + (s.w / (VEHICLE_KEYS.length + 1)) * (i + 1);
       const by = s.y + 150;

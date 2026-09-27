@@ -57,6 +57,20 @@ export const NEGOCIOS = {
   },
 };
 
+// EL DE MAS ARRIBA DE TODOS, aparte de los seis de siempre (uno por barrio):
+// no va en un edificio cualquiera, va en el landmark del casino, que ya
+// existia sin ningun uso. Por eso vive en su propia constante y no dentro
+// de NEGOCIOS: el reparto de NEGOCIOS es "uno por barrio, en un edificio
+// normal cualquiera", y este es justo lo contrario. Lo coloca
+// NegocioSystem.colocarCasino() aparte del bucle de siempre.
+export const NEGOCIO_CASINO = {
+  nombre: 'Casino Fortuna',
+  corto: 'CASINO',
+  descripcion: 'El mas caro de todos. Lo que entra por la puerta, no siempre sale.',
+  precio: 20000, rentaPorSegundo: 0.22, tope: 1100,
+  tipo: 'apuestas', color: 0xd4af37,
+};
+
 // La clave con la que vive dentro de GameState.propiedades, igual que
-// `clavePiso` en config/pisos.js
+// `clavePiso` en config/pisos.js. Sirve igual para el casino: claveNegocio('casino').
 export const claveNegocio = (zona) => `negocio-${zona}`;

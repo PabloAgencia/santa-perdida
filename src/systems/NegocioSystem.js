@@ -1,4 +1,4 @@
-import { NEGOCIOS, claveNegocio } from '../config/negocios.js';
+import { NEGOCIOS, NEGOCIO_CASINO, claveNegocio } from '../config/negocios.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
 import { puertaDe } from '../world/puertas.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
@@ -67,6 +67,28 @@ export class NegocioSystem {
         break;
       }
     }
+    this.colocarCasino();
+  }
+
+  // EL CASINO: no es "uno por barrio en un edificio cualquiera" como los
+  // otros seis, es EL LANDMARK del casino, que ya existia sin ningun uso.
+  // `zona: 'centro'` es solo para que lo ataque la banda que ya manda en el
+  // centro (ZONE_OWNER), no porque comparta edificio con la joyeria: cada
+  // uno tiene su propia clave y su propia caja. Ya tiene su lamina propia
+  // (landmark-casino); no hace falta pedirle un tejado aparte.
+  colocarCasino() {
+    const lm = this.map.landmarks.find((l) => l.type === 'casino');
+    if (!lm || !lm.fachada) return;
+    const b = lm.fachada;
+    const puerta = puertaDe(this.map, b);
+    if (!puerta) return;
+    const negocio = {
+      zona: 'centro', clave: claveNegocio('casino'), x: puerta.x, y: puerta.y,
+      edificio: b, cfg: NEGOCIO_CASINO,
+      ataque: null, probTimer: CHEQUEO_ATAQUE * Math.random(), refrescoTimer: 0,
+    };
+    this.negocios.push(negocio);
+    this.pintar(negocio);
   }
 
   // igual que el tejado de un barrio o de un local: uno por negocio (seis en

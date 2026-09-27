@@ -3024,9 +3024,41 @@ esa noche, primera hecha ya:
     exacto y un Chinchorro en la grua a 0,32 exacto, el segundo intento
     seguido bloqueado con el coche intacto (no se destruye si no se
     vende) y el cooldown marcando ~90 s.
-    PENDIENTE DE PABLO: la otra mitad de la propuesta (subir el techo de
-    precios con un piso/coche/negocio de lujo nuevo) queda para cuando la
-    quiera, no se ha tocado.
+    HECHO (61a tanda, 27-sep, la misma sesion: Pablo dijo "dale" a la otra
+    mitad de la propuesta). EL TECHO DE PRECIOS NUEVO: tres cosas mas
+    caras que nada que hubiera antes, para que siga habiendo algo que de
+    verdad cueste conseguir:
+      · CENTELLA, 15.000 € — el coche mas caro con diferencia (el Vela GT,
+        el que era el tope, se queda en 8.500). `config/vehicles.js`;
+        entra solo en el concesionario (las bahias se reparten solas
+        segun cuantos coches haya, `VEHICLE_KEYS.length + 1`), en la
+        grua y en el trafico, sin tocar nada de eso.
+      · ATICO DE LA TORRE SOMBRA, 28.000 €, 5 plazas de garaje — el piso
+        mas caro con diferencia (el del Centro, el tope de antes, se
+        queda en 16.000). No es "uno por barrio en un edificio
+        cualquiera" como los otros seis: va en el landmark de la Torre
+        Sombra, que existia sin ningun uso. `PISO_ATICO` en
+        config/pisos.js, aparte de `PISOS` a proposito (el reparto por
+        barrio no sabe colocar algo en un landmark); lo coloca
+        `PisoSystem.colocarAtico()`.
+      · CASINO FORTUNA, 20.000 € de renta — el negocio mas caro con
+        diferencia (la Joyeria del Centro, el tope de antes, se queda en
+        12.000). Iba en el landmark del casino, que tambien existia sin
+        ningun uso. `NEGOCIO_CASINO` en config/negocios.js, aparte de
+        `NEGOCIOS`; lo coloca `NegocioSystem.colocarCasino()`. Zona
+        'centro' solo para que lo ataque la banda que ya manda ahi (no
+        comparte caja con la joyeria, cada uno con su propia clave).
+    NINGUNO DE LOS DOS LANDMARKS NECESITA TEJADO NUEVO: ya tienen su
+    propia lamina (landmark-torre, landmark-casino) desde la tanda J: la
+    imagen manda y `pintarTejado` no encuentra nada que pintar encima.
+    Solo hacen falta 2 imagenes nuevas (no las 3 que parecia a primera
+    vista): `centella.png` y `interior-piso-atico.png`, en
+    PROMPTS-PARA-GEMINI.txt. `ProgresoScene` (el "100%") ya cuenta los
+    dos nuevos (pisos y negocios pasan de X/6 a X/7).
+    PROBADO EN VIVO: los 7 coches en el concesionario (Centella a 15.000 €,
+    con dibujo por codigo mientras no tenga foto), el cartel "SE VENDE
+    20000 €" sobre el casino de verdad y "SE VENDE 28000 €" al pie de la
+    Torre Sombra, los dos con su circulo de puerta. Sin errores en consola.
 
 --------------------------------------------------------------------------------
 ARTE

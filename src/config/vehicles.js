@@ -56,6 +56,19 @@ export const VEHICLES = {
     maxHp: 70, price: 8500,
     palette: [0xb8382c, 0x1f1f24, 0xc8a12e, 0x2d5f7a, 0xa8a49b],
   },
+  // EL DE MAS ARRIBA DE TODOS. Pablo, viendo que con el dinero que se gana
+  // jugando ya se compraba el Vela GT sin esfuerzo: "dale techo a los
+  // precios". Mas rapido y mas caro que nada en el concesionario, para que
+  // siga habiendo algo que de verdad cueste conseguir.
+  centella: {
+    name: 'Centella',
+    clase: 'rapido',
+    length: 49, width: 20,
+    maxSpeed: 520, accel: 300, brake: 455, reverseSpeed: 118,
+    turnRate: 2.05, lateralRetention: 0.855,
+    maxHp: 65, price: 15000,
+    palette: [0xd4af37, 0xc4c4c4, 0x151517, 0xb8262c, 0x0f4c81],
+  },
   bastion: {
     name: 'Bastion',
     clase: 'resistente',

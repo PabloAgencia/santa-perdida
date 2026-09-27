@@ -73,7 +73,22 @@ export const PISOS = {
   },
 };
 
-// La clave con la que vive dentro de GameState.propiedades
+// EL DE MAS ARRIBA DE TODOS, aparte de los seis de siempre (uno por
+// barrio): no va en un edificio cualquiera, va en la Torre Sombra, que ya
+// existia sin ningun uso. Por eso vive en su propia constante y no dentro
+// de PISOS: el reparto de PISOS es "uno por barrio, en un edificio normal
+// cualquiera", y este es justo lo contrario. Lo coloca
+// PisoSystem.colocarAtico() aparte del bucle de siempre.
+export const PISO_ATICO = {
+  nombre: 'Atico de la Torre Sombra',
+  descripcion: 'Toda la ciudad a los pies. El mas caro con diferencia.',
+  precio: 28000,
+  plazas: 5,
+  lamina: 'interior-piso-atico',
+};
+
+// La clave con la que vive dentro de GameState.propiedades. Sirve igual
+// para el atico: clavePiso('torre').
 export const clavePiso = (zona) => `piso-${zona}`;
 
 export const ZONAS_CON_PISO = Object.keys(PISOS);

@@ -1,5 +1,5 @@
 import { TILE } from '../config/balance.js';
-import { PISOS, clavePiso } from '../config/pisos.js';
+import { PISOS, PISO_ATICO, clavePiso } from '../config/pisos.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
@@ -92,6 +92,30 @@ export class PisoSystem {
         break;
       }
     }
+    this.colocarAtico();
+  }
+
+  // EL ATICO DE LA TORRE SOMBRA: no es "uno por barrio en un edificio
+  // cualquiera" como los otros seis, es EL LANDMARK de la torre. Ya tiene
+  // su propia lamina (landmark-torre); no hace falta pedir un tejado
+  // aparte, `pintarTejado` no encuentra `techo-piso-torre` y no dibuja nada
+  // encima. Si el landmark no existiera (mapa distinto en el futuro), esto
+  // no hace nada y el juego sigue con los seis de siempre.
+  colocarAtico() {
+    const lm = this.map.landmarks.find((l) => l.type === 'torre');
+    if (!lm) return;
+    const puerta = this.puertaDe(lm);
+    if (!puerta) return;
+    const piso = {
+      zona: 'torre',
+      clave: clavePiso('torre'),
+      x: puerta.x,
+      y: puerta.y,
+      edificio: lm,
+      ...PISO_ATICO,
+    };
+    this.pisos.push(piso);
+    this.pintar(piso);
   }
 
   // igual que el tejado de un barrio o de un local: uno por piso (seis en

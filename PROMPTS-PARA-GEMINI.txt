@@ -503,6 +503,88 @@ NO vehicles.
 
 
 ################################################################################
+#  EL TECHO DE PRECIOS NUEVO (27-sep-2026)                       2 PROMPTS
+################################################################################
+La otra mitad del ajuste de economia (ver PLAN-SANTA-PERDIDA.txt, bloque N):
+tres cosas nuevas, mas caras que nada que hubiera antes, para que siga
+habiendo algo que de verdad cueste conseguir. Dos de las tres (el Casino
+como negocio y el atico de la Torre Sombra) van en landmarks que YA TIENEN
+su lamina — no hace falta pedir nada nuevo para ellos. Solo faltan estas
+dos:
+
+DONDE SE DEJA CADA COSA
+   centella.png              ->  sprites\originales\coches\
+   interior-piso-atico.png   ->  sprites\originales\edificios\
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+
+--------------------------------------------------------------------------------
+  centella.png                    el coche mas caro del juego      16:9
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a sleek exotic supercar seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like the cars in GTA Chinatown Wars —
+like a map or a blueprint. Only the roof and the tops of the wheels are
+visible, NO side of the vehicle, NO perspective, NO tilt. The front of the
+car points RIGHT. Low, wide, aggressive supercar silhouette: a long sloped
+bonnet, a narrow low cabin set well back, wide rear haunches, a small
+rear spoiler. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no watermark, no border, the vehicle centered and filling
+most of the image.
+
+
+--------------------------------------------------------------------------------
+  interior-piso-atico.png    Atico de la Torre Sombra    28.000 €   8:5
+--------------------------------------------------------------------------------
+El piso mas caro con diferencia. Mismo esquema que los otros seis interiores
+de piso (una sola sala, vista cenital), pero se nota de un vistazo que es un
+atico de lujo en lo alto de un rascacielos, no un piso normal.
+
+OJO CON ESTA: el juego pone tres cosas encima en sitios EXACTOS (la cama
+para dormir, el garaje para sacar el coche, y la puerta). Si el dibujo las
+pone en otro sitio, el jugador aparece durmiendo en la pared o al lado del
+garaje que no es.
+
+Create a LANDSCAPE image in 8:5 aspect ratio (a bit wider than tall), not
+square.
+Top-down interior of a luxury penthouse apartment, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a floor-plan view, like the
+interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
+looking straight down at the floor. NO walls seen from the front, NO
+perspective, NO tilt, NO vanishing point.
+
+FORMAT: landscape 8:5. The floor fills the entire image edge to edge, no
+border, no margin.
+
+LAYOUT - this part matters, the game places furniture and a car at each
+exact spot below, and nothing else should be drawn there:
+- AT 15% of the width, 27% of the height: a large double bed with dark
+  premium bedding, seen from above.
+- AT 50% of the width, 13% of the height: an indoor parking spot for a
+  single car (a clean rectangular marked area, like a private garage bay
+  built into the penthouse) — leave it visually empty, the game places the
+  car sprite there.
+- BOTTOM CENTRE EDGE (around 50% of the width, from 96% of the height to
+  the bottom edge): a stretch of floor left completely clear and open,
+  that is the door.
+- The rest of the floor can carry penthouse atmosphere: floor-to-ceiling
+  windows along one edge showing the city skyline far below, a sunken
+  lounge area with a low sofa, a bar cart, a thick rug, a glass coffee
+  table - but nothing blocking the bed, the parking spot or the doorway.
+
+LIGHT: warm evening light through the windows, soft lamp glow.
+COLOUR: dark polished floor, warm wood and gold accents, deep blue night
+sky through the windows, city lights in the distance.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT isometric.
+MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
+readable writing or watermark. NO people. NO car (the game places its own
+sprite on the parking spot). Nothing on top of the bed, the parking spot or
+the doorway.
+
+
+################################################################################
 #  LO QUE VIENE DESPUES
 ################################################################################
   · RETRATOS de los contactos de banda (punto 26 del plan). Primero hay que
