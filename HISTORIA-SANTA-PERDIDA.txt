@@ -416,10 +416,24 @@ QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
      banda) y asignar una fija a cada personaje con nombre, en vez de que
      sean intercambiables. El caro pero mejor: retratos de IA como los de
      los barrios, uno por personaje principal.
-  2. MISIONES NUEVAS DEL ACTO 2: la subtrama de Ferro cuestionando a El
-     Consul, Renco descubierto como soplon (ahora mismo "El soplon" ya
-     termina en romperle el coche, falta la escena de que Chispa decida
-     que hacer con el luego), la pista de la Doña sobre el puerto.
+  2. MISIONES DEL ACTO 2 — HECHO (64a tanda, 27-sep). Tres nuevas en
+     `config/missions.js`, una por banda, insertadas en el sitio correcto
+     del array (el orden del array es el orden en que se ofrecen, ver
+     `MissionSystem.disponiblesDe`): "La duda de Ferro" (amarres, minRep
+     17), "Lo que hizo Renco" (rompiente, minRep 17: el cierre de verdad
+     de "El soplon", saca a Renco de la ciudad para siempre) y
+     "\"Bien llevado\"" (verdial, minRep 20: la pista de la Doña sobre el
+     puerto). PROBADO EN EL NAVEGADOR simulando reputacion creciente y
+     mirando que devuelve `disponiblesDe` en cada banda: la secuencia real
+     de juego sale
+       amarres: primer-recado -> coche-limpio -> carrera-muelle ->
+                LA DUDA DE FERRO -> ultimo-viaje
+       rompiente: aviso-rompiente -> corre-chaval -> el-soplon ->
+                LO QUE HIZO RENCO
+       verdial: cobro-verdial -> sin-testigos -> aguanta -> BIEN LLEVADO
+     tal cual estaba pensado en el arco. 13 misiones en total ahora
+     (`MISSIONS.length`), y `ProgresoScene` ya lo cuenta bien porque usa
+     ese numero en vez de un 10 fijo.
   3. ACTO 3 ENTERO: la aparicion de Anzures y el Consorcio Poniente. Es
      tramo nuevo, no existia en la primera version de este documento.
   4. ACTO 4 Y LOS CUATRO FINALES: la mision o mini-cadena final por banda,

@@ -3276,6 +3276,31 @@ esa noche, primera hecha ya:
     finales — ver la seccion "QUE QUEDA" al final de
     `HISTORIA-SANTA-PERDIDA.txt`, que lo detalla punto por punto.
 
+ T. HECHO (64a tanda, 27-sep, mismo dia). Pablo pidio subir el tono
+    ("rollo GTA San Andreas, muertes, drogas, traicion") y apunto meter
+    prostitutas/club/chulo, y ademas las tres misiones del ACTO 2.
+
+    · `HISTORIA-SANTA-PERDIDA.txt` ampliado con "EL BAJO MUNDO": El Duque
+      (nuevo personaje, dueño del club, paga proteccion a la Doña — no es
+      banda nueva), los trabajos de chulo, el mecanismo de "clientes" a lo
+      GTA clasico (nunca grafico), y las drogas como lo que de verdad
+      lleva el contrabando de Los Amarres. Cada acto a partir del 2 tiene
+      ahora un "momento que muerde" con consecuencia real y permanente.
+    · 6 prompts nuevos en `PROMPTS-PARA-GEMINI.txt`: tejado del club,
+      interior de "El Terciopelo" y cuatro personajes (peaton-13 a 16).
+      Mismo tratamiento no explicito que el resto del juego (camara
+      cenital, solo coronilla/hombros/zapatos). Sin codigo todavia: son
+      los prompts primero, como siempre.
+    · `config/missions.js`: tres misiones nuevas del ACTO 2, una por
+      banda, en su sitio correcto del array. Ver el detalle completo en el
+      punto 2 de "QUE QUEDA" de `HISTORIA-SANTA-PERDIDA.txt` (probado en
+      el navegador simulando reputacion creciente en las tres bandas: la
+      secuencia real de juego sale tal cual estaba pensada en el arco).
+
+    QUE QUEDA: Acto 3 (Anzures), Acto 4 y los cuatro finales, el club
+    conectado al codigo en cuanto Pablo genere las imagenes — todo
+    detallado en `HISTORIA-SANTA-PERDIDA.txt`.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

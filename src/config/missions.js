@@ -143,6 +143,48 @@ export const MISSIONS = [
       { tipo: 'perder', limite: 100, texto: 'Sal de ahi' },
     ],
   },
+  // ---------- ACTO 2: "TRES BANDAS, UNA CIUDAD" (HISTORIA-SANTA-PERDIDA.txt)
+  // Las grietas internas de cada banda. La de Rompiente es la que "muerde"
+  // de verdad: Renco no vuelve a aparecer despues de esta.
+  {
+    id: 'la-duda-de-ferro',
+    faccion: 'amarres',
+    nombre: 'La duda de Ferro',
+    intro: 'Ferro te para antes de que llegues a hablar con El Consul. Quiere que le lleves algo a un comprador el mismo, sin pasar por el despacho. "Esto no hace falta que lo sepa nadie mas." No es un encargo de Los Amarres: es una prueba de a quien le eres leal.',
+    minRep: 17,
+    pago: 260,
+    rep: 10,
+    pasos: [
+      { tipo: 'recoger', zona: 'industrial', texto: 'Recoge lo que te da Ferro' },
+      { tipo: 'entregar', zona: 'conflictivo', limite: 100, texto: 'Entregalo sin que se entere nadie del puerto' },
+    ],
+  },
+  {
+    id: 'lo-que-hizo-renco',
+    faccion: 'rompiente',
+    nombre: 'Lo que hizo Renco',
+    intro: 'No hablo de mas: vendio de verdad. Por su culpa se fue al garete un cargamento entero de El Consul, y ahora hasta Los Amarres miran raro a la Cuadrilla. Chispa no quiere un cadaver en su barrio: quiere a Renco fuera de Santa Perdida esta misma noche, y que no vuelva nunca.',
+    minRep: 17,
+    pago: 300,
+    rep: 12,
+    pasos: [
+      { tipo: 'recoger', zona: 'conflictivo', texto: 'Recoge a Renco antes de que alguien se te adelante' },
+      { tipo: 'conducir', zona: 'industrial', limite: 110, texto: 'Sacalo por la carretera del poligono, lejos de todos' },
+    ],
+  },
+  {
+    id: 'bien-llevado',
+    faccion: 'verdial',
+    nombre: '"Bien llevado"',
+    intro: 'La Doña lo dice como quien no quiere la cosa, mirando al puerto desde su ventana: "Todo eso, bien llevado, valdria mucho mas." Lo que de verdad quiere es saber cuanto se mueve por los muelles de Los Amarres cada semana, y que en el puerto nadie sepa quien pregunta.',
+    minRep: 20,
+    pago: 340,
+    rep: 13,
+    pasos: [
+      { tipo: 'ir', zona: 'puerto', texto: 'Acercate a los muelles sin llamar la atencion' },
+      { tipo: 'entregar', zona: 'centro', limite: 120, texto: 'Llevale el recuento a Casa Verdial' },
+    ],
+  },
   {
     id: 'ultimo-viaje',
     faccion: 'amarres',
