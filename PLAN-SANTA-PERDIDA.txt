@@ -3421,6 +3421,70 @@ esa noche, primera hecha ya:
     dinero -12 €/s exacto, salud +9/s exacto, termina justo en el
     segundo 5 con 60 € gastados y +45 de vida).
 
+ W. APUNTADO (64a tanda, 27-sep, antes de que Pablo se fuera). Cuatro cosas
+    para la proxima vez, NINGUNA hecha todavia — se deja escrito con
+    detalle para no tener que redescubrirlo.
+
+    1. EL COMBO NO ERA ESO. Pablo aclaro: no quiere un contador que solo
+       multiplica el daño (eso ya esta, bloque V), quiere un combo de
+       GOLPES DISTINTOS de verdad — derecha, izquierda, etc., como un
+       juego de lucha. Para hacerlo bien hace falta: (a) mas de una
+       animacion de golpe en `Player.golpe()` (ahora mismo solo hay una,
+       el mismo brazo siempre); (b) que `CombatSystem.golpear()` sepa que
+       golpe toca segun la tecla o segun la posicion en la cadena, no
+       solo "pegar otra vez"; (c) decidir si hace falta una secuencia de
+       teclas (izq-izq-der tipo combo de lucha) o si basta con alternar
+       brazo automaticamente y que el bonus de daño (ya hecho) sea el
+       premio. Pablo no concreto cual de las dos, preguntarle antes de
+       montarlo.
+
+    2. LAS TRABAJADORAS NECESITAN BRAZOS DE VERDAD, Y SE PUEDE. Correccion
+       importante: dije que "ningun peaton tiene el cuerpo por partes" y
+       ES FALSO, Pablo tenia razon en dudarlo. Todo peaton normal
+       (`Pedestrian.js`) SI tiene brazos de verdad, con fisica de verdad:
+       `this.brazos = new Extremidades(scene, this.base)` en el
+       constructor (`entities/Extremidades.js`, que usa
+       `world/extremidades.js`: `colorDelCuerpo` saca el color de la
+       chaqueta DEL PROPIO SPRITE, `makeExtremidad` dibuja una capsula
+       pequeña por brazo, coloreada a juego). El vaiven se controla en
+       `Pedestrian.animar()` (`this.vaiven`) y se coloca en
+       `Pedestrian.syncSprite()`. ES GENERICO: no depende de que el
+       cuerpo sea foto de IA o dibujo por codigo, cualquier clave de
+       textura vale (`ped-0`, `gang-verdial`, lo que sea). Para las
+       trabajadoras (`ped-12` a `ped-15`) es literalmente el mismo
+       patron: crear un `Extremidades` por cada una (calle en
+       `BajoMundoSystem.js`, club en `ClubScene.js`), colocarlos en su
+       update() igual que hace `Pedestrian.syncSprite()`, y destruirlos
+       cuando se quitan del mundo. No hace falta arte nuevo ni inventar
+       nada: es reusar tal cual lo que ya usa cualquier peaton.
+
+    3. LOS SITIOS PRIVADOS, MAS DISCRETOS. El aro morado de
+       `BajoMundoSystem.sembrarSitios()` (y su marca a juego en
+       `MapaScene.js`) llama demasiado la atencion para algo que se
+       supone que es un sitio "privado". Bajar opacidad/tamaño, o
+       cambiar el aro grande por algo mas pequeño y apagado (una simple
+       lucecita, por ejemplo). Pablo lo pidio explicito: "que los sitios
+       sean mas discretos".
+
+    4. BUG: UN PEATON ATRAVESO LA AMBULANCIA. Pasa estando parado un rato
+       en un sitio privado con el coche quieto: un peaton paso por
+       encima del vehiculo como si no estuviera. NO es un fallo de
+       `BajoMundoSystem`: es que `NPCSystem`/`Pedestrian.tryMove()` solo
+       comprueba paredes del mapa (`map.isSolidBox`), NUNCA vehiculos —
+       los peatones no evitan coches aparcados en ningun sitio del
+       juego, esto solo se nota mas parado en un sitio privado porque el
+       jugador se queda quieto mucho mas tiempo del habitual. Arreglo de
+       fondo: que `Pedestrian.tryMove` (o quien llame a `tryMove`)
+       tambien compruebe contra `getCircles()` de los vehiculos cercanos,
+       no solo contra el mapa.
+
+    ADEMAS: confirmado que los 18 prompts de tejados pendientes
+    (armeria, taller, comida, gimnasio, concesionario, desguace, 6 pisos,
+    6 negocios) YA ESTAN escritos del todo en `PROMPTS-PARA-GEMINI.txt`
+    desde la tanda en que se crearon — no faltaba nada por escribir,
+    estan listos para copiar tal cual. Pablo penso que quiza se habian
+    quedado a medias; comprobado linea a linea, ninguno lo esta.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------
