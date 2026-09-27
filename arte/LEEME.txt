@@ -46,6 +46,7 @@ SI SE BORRA TODO ESTO
   por codigo, con su titulo y su subtitulo. El juego no se rompe.
 
 DONDE ESTA EL PROMPT PARA GENERAR UNA
-  En PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU".
+  Ya esta hecha (ver PROMPTS-PARA-GEMINI.txt, "YA HECHO"); si hay que
+  repetirla, el prompt sigue en el historial: git show 8149a10:PROMPTS-AI-STUDIO.txt
 
 (Tocado el 22-sep-2026 para forzar que Cloudflare suba esta carpeta.)

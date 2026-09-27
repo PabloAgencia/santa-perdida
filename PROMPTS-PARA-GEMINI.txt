@@ -45,17 +45,21 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026)                               2 PROMPTS
+#  LA TANDA DE AHORA (27-sep-2026)                               3 PROMPTS
 ################################################################################
 
    1. icono-cuchillo       el cuchillo, arma nueva (ver PLAN-SANTA-PERDIDA.txt)
    2. marca-piso-venta     los pisos EN VENTA en el mapa grande no tenian
                            icono propio; el de "tu escondite" (marca-casa) es
                            solo para el que ya has comprado
+   3. icono-americano      el puño americano se quedo fuera de la tanda
+                           original de iconos (es de antes de que existiera
+                           esta arma) y sigue siendo dibujo por codigo
 
 DONDE SE DEJA CADA COSA
-   icono-cuchillo.png    ->  sprites\originales\iconos\
-   marca-piso-venta.png  ->  sprites\originales\iconos\
+   icono-cuchillo.png     ->  sprites\originales\iconos\
+   marca-piso-venta.png   ->  sprites\originales\iconos\
+   icono-americano.png    ->  sprites\originales\iconos\
    Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
 
 SE HACEN EN GEMINI, "Crear imagen". Si te devuelve varias versiones, quedate
@@ -86,6 +90,21 @@ colours, no gradients, no shading detail, no 3D. It has to be readable when
 shown at 16 pixels wide. Centered, filling almost the whole image, plain
 flat magenta background (#FF00FF), no shadow, no text, no watermark, no
 border.
+
+
+--------------------------------------------------------------------------------
+  icono-americano.png
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat game HUD icon of a clenched fist wearing a brass knuckle-duster, seen
+from the side, knuckles pointing RIGHT, drawn as a clean silhouette. Same
+pose as a bare fist, but with four metal rings across the knuckles so it
+reads as a different, tougher weapon at a glance. Simple shapes, thick dark
+outline, flat colours only (skin tone, a darker skin tone for shading, and
+grey metal for the rings), no gradients, no shading detail, no 3D. It has to
+be readable when shown at 20 pixels wide. Centered, filling almost the whole
+image, plain flat magenta background (#FF00FF), no shadow, no text, no
+watermark, no border.
 
 
 ################################################################################

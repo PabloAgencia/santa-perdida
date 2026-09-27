@@ -1101,10 +1101,9 @@ podido
      `node herramientas/actualizar-audio.js`: sin el, el juego pediria
      ficheros que no existen y llenaria la consola de errores.
 
-  ARTE CON IA: los prompts estan escritos en PROMPTS-AI-STUDIO.txt, con el
-     tamaño y el sitio de cada cosa. AI Studio pide plan de pago o clave de
-     API para el modelo de imagen; con una de las dos claves que ya hay
-     creadas en el panel se genera todo desde aqui.
+  ARTE CON IA: los prompts estan escritos en PROMPTS-PARA-GEMINI.txt, con el
+     tamaño y el sitio de cada cosa. Desde el 27-sep se generan en la app de
+     Gemini ("Crear imagen"), no en AI Studio.
 VIGESIMOPRIMERA TANDA (22-sep-2026): sonido de verdad y dos armas mas
 ================================================================================
 Pablo bajo los sonidos de Pixabay y los dejo en `audio/`.
@@ -1291,7 +1290,8 @@ portada
        MEDIDO: pixeles de letra pintada en la zona, 17.679 antes y 0 despues.
        El script lo comprueba solo y avisa si quedan.
 
-     EL PROMPT esta en PROMPTS-AI-STUDIO.txt, seccion "LA PORTADA DEL MENU".
+     EL PROMPT, si hay que repetirlo, esta en el historial:
+     git show 8149a10:PROMPTS-AI-STUDIO.txt
      AVISO para la proxima: decia tres veces que no llevara letras y las
      llevo igual. Con una portada no pasa nada (se esmerila y listo), pero si
      algun dia hace falta otra, mejor contar con que las traera.
@@ -1383,7 +1383,8 @@ interiores dibujados
      Con lamina, la luz de la bombilla baja de 0,5 a 0,2: el dibujo ya trae
      su propia luz y sumarle otra encima lo lavaba entero.
 
-     Los prompts, en PROMPTS-AI-STUDIO.txt, seccion "LOS INTERIORES".
+     Los prompts, si hay que repetirlos, en el historial:
+     git show edd194a:PROMPTS-AI-STUDIO.txt
 
   UN FALLO QUE SE CAZO ANTES DE QUE PASARA: preparar-portada.py escribia
   arte/lista.json como ["portada.jpg"] y punto. En cuanto entraran los
@@ -2781,8 +2782,9 @@ esa noche, primera hecha ya:
  J. HECHO (56a tanda, 26-sep, ya con Opus). TODO CON ARTE DE IA, y los
     landmarks fuera de la calzada. Pablo: "todo o casi todo debe llevar
     imagenes con IA". Se reviso sistematicamente que seguia dibujado por
-    codigo y se preparo la tanda entera (30 prompts en
-    PROMPTS-AI-STUDIO.txt, por orden): interior del concesionario, la
+    codigo y se preparo la tanda entera (30 prompts, entonces en
+    PROMPTS-AI-STUDIO.txt — renombrado a PROMPTS-PARA-GEMINI.txt en la
+    58a tanda, ver bloque K), por orden: interior del concesionario, la
     ambulancia (el UNICO vehiculo sin foto), 8 marcas del mapa, 16 laminas
     de landmarks (playa y aerodromo en dos mitades, que la IA no los saca
     tan anchos sin deformar) y 4 objetos de la calle. Y el codigo para que
@@ -2854,13 +2856,26 @@ esa noche, primera hecha ya:
         `ORDEN_ARMAS` entre americano y bate, en el catalogo de la armeria y
         sembrado en los callejones (`ARMAS_SEMBRADAS`, 4 unidades). Icono
         propio dibujado por codigo (`BootScene.makeIconosDeHud`) y su
-        prompt en PROMPTS-AI-STUDIO.txt para cuando Pablo lo genere.
+        prompt en PROMPTS-PARA-GEMINI.txt para cuando Pablo lo genere.
       · CASAS EN VENTA sin icono en el mapa grande: el `marca-casa` (icono
         naranja de "tu escondite") solo salia si ya la habias comprado; las
         que aun no eran tuyas caian en el cuadradito de color de siempre.
         Ahora usan `marca-piso-venta` (prompt tambien en
-        PROMPTS-AI-STUDIO.txt; mientras no exista, sigue el cuadradito, que
-        es el mismo "usa la imagen si esta" de todo el juego).
+        PROMPTS-PARA-GEMINI.txt; mientras no exista, sigue el cuadradito,
+        que es el mismo "usa la imagen si esta" de todo el juego).
+      · EL FICHERO DE PROMPTS SE RENOMBRO: PROMPTS-AI-STUDIO.txt ->
+        PROMPTS-PARA-GEMINI.txt (Pablo genera en la app de Gemini desde el
+        27-sep, ya no en AI Studio; el nombre viejo llevaba a confusion).
+        Referencias actualizadas en este PLAN y en los dos LEEME.txt que lo
+        citaban; los `git show <hash>:PROMPTS-AI-STUDIO.txt` de mas arriba
+        se quedan con el nombre viejo a proposito, que es el que tenia el
+        fichero EN ese commit.
+      · SE ECHABA EN FALTA EL ICONO DEL PUÑO AMERICANO: nunca se genero con
+        IA (se quedo fuera de la tanda original de iconos, de antes de que
+        existiera esta arma), asi que en la calle y en el HUD sale siempre
+        el dibujo por codigo. Prompt añadido a PROMPTS-PARA-GEMINI.txt para
+        cuando Pablo lo genere; mientras tanto no es un fallo, es el mismo
+        "usa la imagen si esta" de todo el juego.
     NO PROBADO EN EL NAVEGADOR: la extension de Chrome no estaba conectada
     esta sesion. Comprobado en su lugar: sintaxis de los ficheros tocados
     (`node --check`), y que el servidor sirve `sprites/listos/lista.json` y

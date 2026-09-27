@@ -1,7 +1,7 @@
 OBJETOS DE LA CALLE
 ===================
 Aqui van las imagenes de los objetos pequeños que hay por la calle, con
-estos nombres EXACTOS (los prompts estan en PROMPTS-AI-STUDIO.txt):
+estos nombres EXACTOS (los prompts estan en PROMPTS-PARA-GEMINI.txt):
 
   maquina-1.png   una maquina de refrescos de las aceras
   maquina-2.png   otra maquina distinta, para que no sea siempre la misma
