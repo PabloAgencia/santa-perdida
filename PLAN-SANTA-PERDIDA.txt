@@ -3136,14 +3136,46 @@ EL PERSONAJE  (pedido por Pablo el 21-sep) -> detalle en SISTEMA-PERSONAJE.txt
      `GimnasioScene.js` sin 404. Pablo deberia entrar al gimnasio (esta
      en el centro y en la zona comercial) antes de darlo por cerrado del
      todo.
- 23. ROPA en el armario del piso: cambia los colores del sprite, sube el
-     atractivo y el respeto con unas bandas y lo baja con otras.
-     (La base ya esta: `config/aspecto.js` tiene el catalogo y el jugador
-      sabe cambiarse con `ponerRopa()`. Falta el armario y mas conjuntos.)
- 24. GARAJE SEGUN EL TAMAÑO DE LA CASA: cuchitril 1 coche, piso 2, casa del
-     centro 4, nave del puerto 6 (y ahi se entregan los coches encargados).
-     Se guardan con su color, su tuneo y su estado.
- 25. CHALECO que se gasta antes que la vida y que se ve en el sprite.
+ 23. [HECHO 27-sep, 63a tanda] ROPA en el armario del piso. Cinco trajes en
+     `config/aspecto.js`: de calle (gratis), elegante (600 €, solo sube el
+     atractivo) y uno por banda (220 € cada uno, con el `accent` de esa
+     banda de config/factions.js). El armario esta en CUALQUIER piso
+     (HideoutScene, incluido el escondite): un mueble mas, con su propia
+     lista tipo tienda (W/S elegir, E poner/comprar, ESC salir).
+       · EL EFECTO ES "MIENTRAS LA LLEVAS PUESTA", no un regalo de una
+         sola vez por comprarla: ponerte los colores de una banda sube el
+         respeto con ELLA (+8) y lo baja un poco con las otras dos (-4
+         cada una), y al cambiarte de traje se deshace justo eso antes de
+         aplicar el nuevo. Igual con el atractivo. Probado en vivo con
+         GameState de verdad: equipar, cambiar y volver a "de calle" deja
+         las tres reputaciones EXACTAS a como estaban antes, sin desvios.
+       · SE MOVIO `ropa` DE Player.js A GameState: el armario vive en
+         HideoutScene, una escena sin referencia al Player de verdad (esta
+         en CityScene). GameState ya es "la fuente unica de verdad" de
+         todo lo que hace falta recordar entre escenas (el blindaje ya
+         vivia asi); la ropa ahora tambien. Se guarda en la partida.
+       · BUG QUE SE DESCUBRIO AL HACERLO: cambiar de ropa NO SE VEIA DE
+         NINGUN LADO. El cuerpo con foto (player-foto/gordo/fuerte, ya
+         generados) ignora los colores de ROPA por completo; solo el
+         dibujo por codigo de repuesto los usaba. Arreglado con un
+         parche de color aparte (`detalle-ropa`, un rectangulo blanco
+         que Player.js tiñe del color de la banda) pegado al pecho,
+         POR ENCIMA de cualquier cuerpo, con o sin foto. Probado en vivo
+         y con zoom: se ve el turquesa de Los Amarres en el pecho.
+ 24. YA HECHO DE ANTES, sin que se marcara: GARAJE SEGUN EL TAMAÑO DE LA
+     CASA. Revisado el codigo (27-sep): `config/pisos.js` ya tiene
+     `plazas` distinto por piso (1, 2, 2, 3, 4, 4, y 5 el atico nuevo), y
+     `CityScene.guardarCocheEnGaraje`/`sacarCocheDelGaraje` ya guardan y
+     devuelven tipo, color Y estado (hp) de verdad. Lo unico que pedia el
+     punto original y no existe en el juego es el "tuneo": no hay ningun
+     sistema de tuneado de coches, asi que no hay nada que guardar de eso.
+ 25. [HECHO 27-sep, 63a tanda] CHALECO que se gasta antes que la vida (ya
+     estaba) Y QUE SE VE EN EL SPRITE (esto era lo que faltaba: antes solo
+     vivia en la barra del HUD). `BootScene.makeChaleco` + un `this.chaleco`
+     en el contenedor del jugador, oculto salvo que `GameState.blindaje >
+     0`. Solo en CityScene (el jugador de verdad): en las escenas con el
+     retrato estatico (tienda, gimnasio, concesionario, piso) no se puso,
+     el coste no compensaba para un sitio donde no te disparan.
 
 --------------------------------------------------------------------------------
 ARTE

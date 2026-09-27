@@ -1,6 +1,7 @@
 import { EventBus, EVT } from './EventBus.js';
 import { ECONOMY, SAVE, BUSCA_MAXIMA } from '../config/balance.js';
 import { FACTION_KEYS, REP } from '../config/factions.js';
+import { ROPA, EFECTO_BANDA_PROPIA, EFECTO_BANDA_RIVAL } from '../config/aspecto.js';
 
 // FUENTE UNICA DE VERDAD. Ningun otro modulo guarda copias de estos datos
 // ni los escribe directamente: todo pasa por los metodos de aqui.
@@ -45,6 +46,12 @@ class GameStateClass {
     this.armaActual = 'puno';
     // el chaleco se gasta antes que la vida, y no se recupera solo
     this.blindaje = 0;
+    // LA ROPA (punto 23 del plan). 'calle' es gratis y siempre esta puesta
+    // de salida. El armario esta en cualquier piso (HideoutScene), que no
+    // tiene una referencia al Player de verdad (vive en CityScene, otra
+    // escena): por eso vive aqui y no en Player.js, igual que el blindaje.
+    this.ropa = 'calle';
+    this.ropaComprada = {};
     // Sitios que ya has visto de cerca. El mapa solo enseña lo descubierto:
     // una ciudad de la que lo sabes todo desde el minuto uno no invita a
     // recorrerla.
@@ -275,6 +282,60 @@ class GameStateClass {
     return this.armaActual;
   }
 
+  // ---------- ropa ----------
+
+  tieneRopa(clave) {
+    return !!ROPA[clave] && (ROPA[clave].precio === 0 || !!this.ropaComprada[clave]);
+  }
+
+  // Se compra y se pone en el mismo paso: en el armario no tiene sentido
+  // pagar por un traje y salir con el de calle puesto igualmente. Devuelve
+  // un texto para el aviso (para acertar o para el "no te llega"), o null
+  // si la clave no existe.
+  comprarYPonerRopa(clave) {
+    if (!ROPA[clave]) return null;
+    const r = ROPA[clave];
+    if (this.ropa === clave) return { texto: 'Ya la llevas puesta', tono: 'dim' };
+
+    if (!this.tieneRopa(clave)) {
+      if (!this.canAfford(r.precio)) {
+        return { texto: `${r.nombre}: ${r.precio} €. No te llega`, tono: 'danger' };
+      }
+      this.spendMoney(r.precio, 'ropa');
+      this.ropaComprada[clave] = true;
+    }
+    this.ponerRopa(clave);
+    return { texto: `${r.nombre} puesta`, tono: 'money' };
+  }
+
+  // SOLO cambia lo que llevas puesto (no cobra ni comprueba el precio, para
+  // eso esta comprarYPonerRopa): deshace el efecto de la ropa anterior y
+  // aplica el de la nueva. "Efecto" es el atractivo Y el respeto de banda si
+  // la lleva, y los dos son "mientras la llevas puesta", no un regalo de una
+  // sola vez por haberla comprado — asi que se puede llamar directo, por
+  // ejemplo al cargar una partida guardada.
+  ponerRopa(clave) {
+    if (!ROPA[clave] || clave === this.ropa) return false;
+    this.aplicarEfectoRopa(this.ropa, -1);
+    this.ropa = clave;
+    this.aplicarEfectoRopa(this.ropa, 1);
+    EventBus.emit(EVT.STATS_CHANGED, { ropa: clave });
+    return true;
+  }
+
+  // signo +1 al ponerse la prenda, -1 al quitarsela (cambiar a otra)
+  aplicarEfectoRopa(clave, signo) {
+    const r = ROPA[clave];
+    if (!r) return;
+    if (r.atractivo) this.subirAtributo('atractivo', r.atractivo * signo);
+    if (r.banda) {
+      for (const key of FACTION_KEYS) {
+        const delta = (key === r.banda ? EFECTO_BANDA_PROPIA : EFECTO_BANDA_RIVAL) * signo;
+        this.changeFaction(key, delta);
+      }
+    }
+  }
+
   // ---------- atributos ----------
 
   // el musculo da vida de mas: de 100 a 150 puntos, y la ambulancia suma
@@ -473,6 +534,8 @@ class GameStateClass {
       armas: this.armas,
       armaActual: this.armaActual,
       blindaje: this.blindaje,
+      ropa: this.ropa,
+      ropaComprada: this.ropaComprada,
       descubiertos: this.descubiertos,
       propiedades: this.propiedades,
       flags: this.flags,
@@ -499,6 +562,10 @@ class GameStateClass {
     this.armas = data.armas ?? { puno: null };
     this.armaActual = data.armaActual ?? 'puno';
     this.blindaje = data.blindaje ?? 0;
+    // partidas de antes del armario: de calle, la de siempre, y sin nada
+    // comprado todavia
+    this.ropa = data.ropa ?? 'calle';
+    this.ropaComprada = data.ropaComprada ?? {};
     this.descubiertos = data.descubiertos ?? {};
     // partidas de antes de que existieran las propiedades: sin nada comprado
     this.propiedades = data.propiedades ?? {};

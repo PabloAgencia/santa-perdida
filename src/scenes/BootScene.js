@@ -54,6 +54,8 @@ export class BootScene extends Phaser.Scene {
     this.makeTileset();
     this.makeVehicles();
     this.makePlayer();
+    this.makeDetalleRopa();
+    this.makeChaleco();
     this.makePedestrians();
     this.makeOfficer();
     this.makeGangs();
@@ -324,6 +326,41 @@ export class BootScene extends Phaser.Scene {
       ancho: anchoDelCuerpo(25, 20),
       largo: CUERPO.largo,
     }, LIENZO);
+  }
+
+  // Un pedacito de color de la ropa puesta, SIEMPRE visible, con foto o sin
+  // ella. Sin esto, el punto 23 ("cambia los colores del sprite") no se
+  // notaba nunca: el cuerpo con foto (player-foto/gordo/fuerte, que ya
+  // existen) ignora los colores de ROPA por completo, asi que cambiarte de
+  // traje no se veia de ningun lado salvo en el dibujo por codigo de
+  // repuesto. Blanco liso: Player.js lo tiñe del `detalle` de la ropa
+  // puesta cada vez que cambia.
+  makeDetalleRopa() {
+    if (this.textures.exists('detalle-ropa')) return;
+    const g = this.g();
+    g.fillStyle(0xffffff, 1);
+    g.fillRoundedRect(0, 0, 4, 10, 1);
+    g.generateTexture('detalle-ropa', 4, 10);
+    g.destroy();
+  }
+
+  // El chaleco puesto ENCIMA del tronco (punto 25 del plan: "que se vea en
+  // el sprite"). Antes el blindaje solo vivia en la barra del HUD; visto
+  // desde arriba, llevar chaleco o no llevarlo se veia exactamente igual.
+  // Mismos tonos grises que el icono del HUD (hud-escudo), para que se
+  // reconozca como la misma cosa de un vistazo. Player.js lo enseña o lo
+  // esconde segun GameState.blindaje, no aqui.
+  makeChaleco() {
+    if (this.textures.exists('chaleco')) return;
+    const g = this.g();
+    g.fillStyle(0x1c1f24, 1);
+    g.fillRoundedRect(1, 1, 10, 12, 2);
+    g.fillStyle(0xbfc6d0, 1);
+    g.fillRoundedRect(2, 2, 8, 10, 2);
+    g.fillStyle(0x8890a0, 1);
+    g.fillRect(5, 2, 2, 10);   // la cincha central
+    g.generateTexture('chaleco', 12, 14);
+    g.destroy();
   }
 
   // Los iconos de la esquina: el arma que llevas en la mano, el corazon de la

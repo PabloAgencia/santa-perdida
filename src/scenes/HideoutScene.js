@@ -4,6 +4,8 @@ import { Audio } from '../core/Audio.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER } from '../config/balance.js';
 import { texturaDelJugador } from '../world/personArt.js';
+import { ROPA } from '../config/aspecto.js';
+import { FACTIONS } from '../config/factions.js';
 
 // Pablo lo quiere todo en Pricedown, sin excepciones
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
@@ -79,6 +81,22 @@ export class HideoutScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
+    // EL ARMARIO (punto 23 del plan). Sitio libre de los demas muebles: no
+    // se pisa con la cama, la mesilla, el garaje, la mesa ni el sofa.
+    this.armario = { x: s.x + 170, y: s.y + 230 };
+    if (!conLamina) {
+      this.add.image(this.armario.x, this.armario.y, 'px').setOrigin(0.5)
+        .setDisplaySize(52, 70).setTint(0x4a3626);
+      this.add.image(this.armario.x, this.armario.y, 'px').setOrigin(0.5)
+        .setDisplaySize(44, 62).setTint(0x5a4530);
+      this.add.image(this.armario.x, this.armario.y, 'px').setOrigin(0.5)
+        .setDisplaySize(2, 62).setTint(0x2e2015);
+    }
+    this.add.text(this.armario.x, this.armario.y + 44, 'ARMARIO', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
+    }).setOrigin(0.5);
+    this.armarioUI = null;
+
     // luz de la bombilla. Con ilustracion se baja: el dibujo ya trae su
     // propia luz pintada y sumarle otra encima lo lavaba entero.
     this.add.image(s.x + s.w / 2, s.y + 120, 'lamp')
@@ -141,7 +159,7 @@ export class HideoutScene extends Phaser.Scene {
 
     this.keys = this.input.keyboard.addKeys({
       up: 'W', down: 'S', left: 'A', right: 'D',
-      upA: 'UP', downA: 'DOWN', leftA: 'LEFT', rightA: 'RIGHT', usar: 'E',
+      upA: 'UP', downA: 'DOWN', leftA: 'LEFT', rightA: 'RIGHT', usar: 'E', salir: 'ESC',
     });
 
     // OJO: Phaser reutiliza la misma instancia de escena al volver a entrar,
@@ -150,6 +168,7 @@ export class HideoutScene extends Phaser.Scene {
     this.confirmacion = 0;
     this.saliendo = false;
     this.cocheASacar = null;
+    this.armarioAbierto = false;
     this.cameras.main.fadeIn(420, 0, 0, 0);
     // Curarse ya NO es automatico por entrar: hay que echarse en la cama.
     // Entrar y salir dejaba la vida a 100 gratis y sin enterarte.
@@ -174,6 +193,11 @@ export class HideoutScene extends Phaser.Scene {
     const k = this.keys;
     const s = this.sala;
 
+    if (this.armarioAbierto) {
+      this.updateArmario();
+      return;
+    }
+
     let dx = 0;
     let dy = 0;
     if (k.left.isDown || k.leftA.isDown) dx -= 1;
@@ -196,6 +220,7 @@ export class HideoutScene extends Phaser.Scene {
     const enCama = Phaser.Math.Distance.Between(this.px, this.py, this.cama.x, this.cama.y) < 54;
     const enGaraje = this.garaje &&
       Phaser.Math.Distance.Between(this.px, this.py, this.garaje.x, this.garaje.y) < 50;
+    const enArmario = Phaser.Math.Distance.Between(this.px, this.py, this.armario.x, this.armario.y) < 54;
 
     // el mensaje de confirmacion aguanta unos segundos; antes lo pisaba el
     // texto de ayuda en el fotograma siguiente y no se llegaba a ver
@@ -208,7 +233,8 @@ export class HideoutScene extends Phaser.Scene {
           : enCama ? (GameState.health >= GameState.vidaMaxima ? 'E para dormir (pasan 6 horas)' : 'E para dormir y curarte')
             : enGaraje ? (GameState.cochesEn(this.sitio.clave).length > 0
               ? 'E para sacar un coche del garaje' : 'El garaje esta vacio')
-              : enPuerta ? 'E para salir a la calle' : ''
+              : enArmario ? 'E para abrir el armario'
+                : enPuerta ? 'E para salir a la calle' : ''
       );
     }
 
@@ -241,6 +267,8 @@ export class HideoutScene extends Phaser.Scene {
         }
       } else if (enGaraje) {
         this.sacarCoche();
+      } else if (enArmario) {
+        this.abrirArmario();
       } else if (enPuerta) {
         this.salir();
       }
@@ -264,6 +292,104 @@ export class HideoutScene extends Phaser.Scene {
     }
     this.cocheASacar = this.sitio.clave;
     this.salir();
+  }
+
+  // ---------- el armario (punto 23 del plan) ----------
+
+  listaRopa() {
+    return Object.keys(ROPA).map((clave) => {
+      const r = ROPA[clave];
+      let detalle = '';
+      if (r.atractivo) detalle += `atractivo +${r.atractivo}`;
+      if (r.banda) {
+        detalle += (detalle ? '  ·  ' : '') + `colores de ${FACTIONS[r.banda].name}`;
+      }
+      return {
+        clave, nombre: r.nombre, precio: r.precio, detalle,
+        tiene: GameState.tieneRopa(clave), puesta: GameState.ropa === clave,
+      };
+    });
+  }
+
+  abrirArmario() {
+    this.armarioAbierto = true;
+    const claves = Object.keys(ROPA);
+    this.indiceRopa = Math.max(0, claves.indexOf(GameState.ropa));
+    Audio.menuOpen();
+    this.pintarArmario();
+  }
+
+  // se destruye y se vuelve a montar entera en cada cambio: son cinco
+  // trajes, no compensa llevar la cuenta de que texto hay que actualizar
+  pintarArmario() {
+    if (this.armarioUI) this.armarioUI.destroy();
+    const w = this.scale.width;
+    const h = this.scale.height;
+    const lista = this.listaRopa();
+    const ancho = 480;
+    const alto = 90 + lista.length * 36;
+
+    const ui = this.add.container(w / 2, h / 2).setDepth(50);
+    ui.add(this.add.image(0, 0, 'px').setDisplaySize(ancho, alto).setTint(0x05060a).setAlpha(0.92));
+    ui.add(this.add.text(0, -alto / 2 + 26, 'ARMARIO', {
+      fontFamily: TITULO, fontSize: '24px', color: '#e8b54a', stroke: '#05060a', strokeThickness: 4,
+    }).setOrigin(0.5));
+
+    lista.forEach((it, i) => {
+      const y = -alto / 2 + 66 + i * 36;
+      const elegido = i === this.indiceRopa;
+      const color = elegido ? '#e8b54a' : it.puesta ? '#8fd694' : '#e6e1d4';
+      const estado = it.puesta ? 'PUESTA' : it.tiene ? 'EN EL ARMARIO' : `${it.precio} €`;
+      ui.add(this.add.text(-ancho / 2 + 26, y, it.nombre, {
+        fontFamily: FONT, fontSize: '16px', color, stroke: '#05060a', strokeThickness: 2,
+      }).setOrigin(0, 0.5));
+      ui.add(this.add.text(ancho / 2 - 26, y, estado, {
+        fontFamily: FONT, fontSize: '13px',
+        color: it.puesta ? '#8fd694' : COLORS.dim, stroke: '#05060a', strokeThickness: 2,
+      }).setOrigin(1, 0.5));
+      if (it.detalle) {
+        ui.add(this.add.text(-ancho / 2 + 26, y + 15, it.detalle, {
+          fontFamily: FONT, fontSize: '11px', color: COLORS.dim,
+        }).setOrigin(0, 0.5));
+      }
+    });
+
+    ui.add(this.add.text(0, alto / 2 - 20, 'W/S elegir  ·  E ponerte o comprar  ·  ESC salir', {
+      fontFamily: FONT, fontSize: '12px', color: COLORS.dim,
+    }).setOrigin(0.5));
+
+    this.armarioUI = ui;
+  }
+
+  updateArmario() {
+    const k = this.keys;
+    const lista = this.listaRopa();
+
+    if (Phaser.Input.Keyboard.JustDown(k.up) || Phaser.Input.Keyboard.JustDown(k.upA)) {
+      this.indiceRopa = (this.indiceRopa - 1 + lista.length) % lista.length;
+      Audio.menuMove();
+      this.pintarArmario();
+    } else if (Phaser.Input.Keyboard.JustDown(k.down) || Phaser.Input.Keyboard.JustDown(k.downA)) {
+      this.indiceRopa = (this.indiceRopa + 1) % lista.length;
+      Audio.menuMove();
+      this.pintarArmario();
+    } else if (Phaser.Input.Keyboard.JustDown(k.usar)) {
+      const resultado = GameState.comprarYPonerRopa(lista[this.indiceRopa].clave);
+      Audio.menuSelect();
+      if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+      this.pintarArmario();
+    } else if (Phaser.Input.Keyboard.JustDown(k.salir)) {
+      this.cerrarArmario();
+    }
+  }
+
+  cerrarArmario() {
+    if (this.armarioUI) {
+      this.armarioUI.destroy();
+      this.armarioUI = null;
+    }
+    this.armarioAbierto = false;
+    Audio.menuClose();
   }
 
   destello() {

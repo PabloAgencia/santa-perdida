@@ -36,7 +36,6 @@ export class Player {
     this.angle = 0;
     this.radius = PLAYER.radius;
     this.running = false;
-    this.ropa = 'calle';
     this.tramoCuerpo = null;
 
     // aliento: los segundos de carrera que te quedan ahora mismo
@@ -64,9 +63,20 @@ export class Player {
     this.brazoIzq = scene.add.image(0, 0, 'px');
     this.brazoDer = scene.add.image(0, 0, 'px');
     this.tronco = scene.add.image(0, 0, 'player-0').setOrigin(0.5);
+    // Punto 23 del plan: el color de la ropa puesta se ve encima del pecho,
+    // tambien con el cuerpo de foto (que por su cuenta ignora los colores
+    // de ROPA por completo). `actualizarCuerpo()` lo tiñe cada vez que
+    // cambia la ropa.
+    this.detalle = scene.add.image(-2, 1, 'detalle-ropa').setOrigin(0.5);
+    // Punto 25 del plan: el chaleco se ve en el sprite, no solo en la barra
+    // del HUD. Encima de todo (se pinta el ultimo, tapa el pecho y el
+    // detalle de la ropa) y oculto por defecto: `update()` lo enseña solo
+    // si GameState.blindaje > 0.
+    this.chaleco = scene.add.image(0, -1, 'chaleco').setOrigin(0.5).setVisible(false);
 
     this.sprite = scene.add.container(x, y, [
-      this.piernaIzq, this.piernaDer, this.brazoIzq, this.brazoDer, this.tronco,
+      this.piernaIzq, this.piernaDer, this.brazoIzq, this.brazoDer,
+      this.tronco, this.detalle, this.chaleco,
     ]);
 
     this.actualizarCuerpo(true);
@@ -96,11 +106,12 @@ export class Player {
   actualizarCuerpo(forzar = false) {
     const grasa = GameState.atributo('grasa');
     const musculo = GameState.atributo('musculo');
-    const tramo = `${tramoDelCuerpo(grasa, musculo)}-${this.ropa}`;
+    const tramo = `${tramoDelCuerpo(grasa, musculo)}-${GameState.ropa}`;
     if (!forzar && tramo === this.tramoCuerpo) return;
     this.tramoCuerpo = tramo;
 
-    const ropa = ROPA[this.ropa] || ROPA.calle;
+    const ropa = ROPA[GameState.ropa] || ROPA.calle;
+    this.detalle.setTint(ropa.detalle);
     const conFoto = this.cuerpoDeImagen(grasa, musculo);
 
     if (conFoto) {
@@ -268,13 +279,11 @@ export class Player {
       .setRotation(0.1);
   }
 
-  ponerRopa(clave) {
-    if (!ROPA[clave]) return false;
-    this.ropa = clave;
-    this.actualizarCuerpo(true);
-    return true;
-  }
-
+  // El armario (HideoutScene) llama a GameState.ponerRopa directamente: esa
+  // escena no tiene una referencia al Player de verdad (vive en CityScene,
+  // otra escena distinta), y GameState es la fuente unica de verdad de todo
+  // lo que hay que recordar entre escenas. Aqui solo hace falta enterarse de
+  // que ha cambiado para redibujar el cuerpo.
   setVisible(v) {
     this.sprite.setVisible(v);
     this.shadow.setVisible(v);
@@ -365,6 +374,7 @@ export class Player {
     }
     if (this.golpeando > 0) this.golpeando = Math.max(0, this.golpeando - dt);
     this.colocarExtremidades(Math.sin(this.paso * Math.PI * 2) * this.vaiven);
+    this.chaleco.setVisible(GameState.blindaje > 0);
 
     this.syncSprite();
   }
