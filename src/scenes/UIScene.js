@@ -394,17 +394,30 @@ export class UIScene extends Phaser.Scene {
       }
     });
   }
-  updateWanted(level) {
+  updateWanted(level, perdiendo = false) {
     this.wantedPips.forEach((pip, i) => {
       const puesta = i < level;
       pip.setTint(puesta ? 0xf2d06b : 0x2a2f36);
       pip.setAlpha(puesta ? 1 : 0.45);
     });
 
+    if (this.latido) { this.latido.stop(); this.latido = null; }
+
+    // SALIENDO DEL TALLER: todas las estrellas puestas parpadean juntas
+    // mientras se estan yendo solas. Manda sobre el parpadeo normal de la
+    // ultima: aqui lo que importa es "se esta perdiendo", no "vas al limite".
+    if (perdiendo && level > 0) {
+      const puestas = this.wantedPips.slice(0, level);
+      this.latido = this.tweens.add({
+        targets: puestas, alpha: { from: 1, to: 0.25 },
+        duration: 260, yoyo: true, repeat: -1,
+      });
+      return;
+    }
+
     // LA ULTIMA PARPADEA. Con seis estrellas encima hace falta que se note
     // que estas en lo mas alto y no en un nivel cualquiera.
     const ultima = this.wantedPips[level - 1];
-    if (this.latido) { this.latido.stop(); this.latido = null; }
     if (ultima && level >= BUSCA_MAXIMA - 1) {
       this.latido = this.tweens.add({
         targets: ultima, alpha: { from: 1, to: 0.35 },
@@ -490,7 +503,7 @@ export class UIScene extends Phaser.Scene {
     d = Object.assign({}, d, { target: destino });
     this.updateArrow(destino);
     this.updateMinimap(d);
-    this.updateWanted(d.wanted || 0);
+    this.updateWanted(d.wanted || 0, !!d.perdiendoBusca);
     this.updateHealth(d.health ?? 100, d.healthMax ?? 100);
     this.updateBlindaje(d.blindaje ?? 0);
     this.updateAliento(d.aliento ?? 1);

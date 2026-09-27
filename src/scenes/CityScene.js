@@ -503,6 +503,9 @@ export class CityScene extends Phaser.Scene {
     const dt = Math.min(delta / 1000, 0.05);
     const k = this.keys;
     GameState.avanzarCooldownVenta(dt);
+    if (GameState.avanzarPerdidaBusca(dt)) {
+      EventBus.emit(EVT.NOTIFY, { text: 'Te has librado de la policia', tone: 'money' });
+    }
 
     // acabas de morir: el mundo se congela un instante mientras el cuerpo
     // cae y se desmadeja, y la pantalla se funde a negro encima (ver respawn)
@@ -1397,6 +1400,7 @@ export class CityScene extends Phaser.Scene {
       },
       deliveries: GameState.stats.deliveries,
       wanted: GameState.wanted,
+      perdiendoBusca: GameState.perdiendoBusca > 0,
       health: GameState.health,
       healthMax: GameState.vidaMaxima,
       blindaje: GameState.blindaje,

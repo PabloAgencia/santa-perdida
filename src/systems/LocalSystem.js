@@ -175,14 +175,19 @@ export class LocalSystem {
 
       // Y LO IMPORTANTE: te quita la busca, pero SOLO si no te estan viendo.
       // Entrando con la patrulla pegada al culo no serviria de nada.
+      //
+      // No se borra en seco: tarda unos segundos (las estrellas parpadean en
+      // el HUD mientras tanto) y si cometes otro delito en ese rato se queda
+      // como estaba (ver GameState.setWanted). Asi el taller tiene riesgo de
+      // verdad y no es un boton magico.
       const veAlguien = this.scene.police && this.scene.police.units.some(
         (u) => u.state === 'persiguiendo' &&
           Phaser.Math.Distance.Between(u.vehicle.x, u.vehicle.y, vehiculo.x, vehiculo.y) < 320
       );
       if (GameState.wanted > 0 && !veAlguien) {
-        GameState.setWanted(0);
+        GameState.iniciarPerdidaBusca(10);
         Audio.notes([392, 330, 262], 0.16, 'triangle', 0.1);
-        return { texto: `Otro color y sin busca · ${cfg.precio} €`, tono: 'money' };
+        return { texto: `Otro color · perdiendo la busca... · ${cfg.precio} €`, tono: 'money' };
       }
       Audio.notes([392, 523.25], 0.1);
       return {

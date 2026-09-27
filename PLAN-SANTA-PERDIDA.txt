@@ -3098,6 +3098,54 @@ esa noche, primera hecha ya:
     `ENGINES.barato.vol` y `NIVEL_RALENTI`/`NIVEL_TOPE` en Audio.js son los
     dos sitios exactos a tocar.
 
+ P. HECHO (64a tanda, 27-sep). El taller de pintura, con riesgo de verdad.
+
+    Pablo pidio "mira todo bien" y dio dos correcciones sobre lo que yo
+    habia dado por hecho o por pendiente sin comprobarlo bien:
+      · "Quitarse la busca cargandose patrullas" NO estaba pendiente: ya
+        existe desde la 31a tanda, en `DanoVehiculos.js` (reventar una
+        patrulla que te persigue de verdad, no una ya robada, baja una
+        estrella). Yo lo habia buscado solo en PoliceSystem.js y no lo
+        encontre ahi, y lo di por no hecho sin mirar el resto del codigo.
+      · El taller de pintura TAMPOCO estaba pendiente ("solo repara, no
+        pinta"): ya cambiaba el color del coche y quitaba la busca entera
+        de un tiron si no te veian entrar (`LocalSystem.js`, accion
+        'pintar', desde la 29a tanda). Otra vez di un dato por bueno sin
+        leer el archivo.
+    Las dos veces por buscar por nombre de archivo en vez de leer el
+    contenido. Apuntado en memoria para no repetirlo.
+
+    Con eso claro, Pablo pidio el matiz que SI faltaba, a lo San Andreas:
+    que quitar la busca en el taller no sea instantaneo, que las estrellas
+    parpadeen un rato mientras se van, y que si cometes otro delito en ese
+    rato se quede como estaba. Nuevo en `GameState.js`:
+      · `perdiendoBusca` (segundos que quedan, no se guarda en la
+        partida). `iniciarPerdidaBusca(seg)` lo arranca;
+        `avanzarPerdidaBusca(dt)` lo cuenta hacia atras cada fotograma
+        (la llama `CityScene.update`) y al llegar a cero limpia la busca
+        de verdad con `setWanted(0)`.
+      · `setWanted()` cancela `perdiendoBusca` en cuanto el nivel SUBE de
+        verdad (un delito nuevo): como `reportarCrimen`/`raiseWanted` ya
+        pasan por aqui, la reactivacion sale gratis, sin tocar la policia
+        para nada.
+    `LocalSystem.js`: al salir del taller sin que te vean, ya no
+    `setWanted(0)` en el sitio; llama a `GameState.iniciarPerdidaBusca(10)`
+    y avisa "perdiendo la busca...". `UIScene.updateWanted()` recibe ahora
+    un segundo parametro `perdiendo`: si es verdad, TODAS las estrellas
+    puestas parpadean juntas (antes solo la ultima parpadeaba, y solo al
+    tope de busca); al terminar el conteo sale el aviso "Te has librado de
+    la policia".
+
+    PROBADO EN EL NAVEGADOR (Chrome, con `game.loop.step` a mano porque el
+    loader se queda parado en la pestaña sin foco, como siempre): subida
+    la busca a 3 con `GameState.setWanted(3)`, usado el taller de verdad
+    (`city.locales.usar(taller, vehiculo)`) -> parpadeo confirmado en las
+    tres estrellas activas (tween corriendo, alphas oscilando). Cometido
+    un delito a medias (`raiseWanted(1)`) -> `perdiendoBusca` vuelve a 0 y
+    la busca sube a 4 de verdad, el beneficio se pierde. Repetido sin
+    cometer nada durante los 10 s -> `wanted` acaba en 0 y salta el aviso
+    "Te has librado de la policia". Los tres casos, tal cual.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

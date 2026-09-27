@@ -77,6 +77,10 @@ class GameStateClass {
     // muy por delante del reparto (que es "el suelo economico" a proposito).
     // NO se guarda en la partida: es un enfriamiento de sesion, no un dato.
     this.cooldownVentaCoche = 0;
+    // TALLER DE PINTURA: segundos que quedan para que la busca se borre sola
+    // (parpadeando en el HUD mientras tanto). Tampoco se guarda: es cosa de
+    // la sesion, y si se recarga la partida a medias, se acabo el beneficio.
+    this.perdiendoBusca = 0;
   }
 
   // ---------- vender coches (grua y desguace) ----------
@@ -469,6 +473,10 @@ class GameStateClass {
     // cuesta despegarselos) esta en la tabla BUSCA de systems/PoliceSystem.js.
     const next = Phaser.Math.Clamp(Math.round(level), 0, BUSCA_MAXIMA);
     if (next === this.wanted) return this.wanted;
+    // si estaba perdiendo la busca en el taller y ahora vuelve a SUBIR de
+    // verdad (un delito nuevo), se acabo el beneficio: no se pierde gratis
+    // encima de lo que acabas de hacer
+    if (next > this.wanted && this.perdiendoBusca > 0) this.perdiendoBusca = 0;
     this.wanted = next;
     EventBus.emit(EVT.WANTED_CHANGED, { wanted: this.wanted });
     return this.wanted;
@@ -476,6 +484,26 @@ class GameStateClass {
 
   raiseWanted(by = 1) {
     return this.setWanted(this.wanted + by);
+  }
+
+  // Lo llama el taller de pintura al salir sin que te vean: la busca no se
+  // borra en seco, tarda `segundos` (parpadeando en el HUD). Si en ese rato
+  // cometes otro delito, `setWanted` de arriba corta esto solo.
+  iniciarPerdidaBusca(segundos) {
+    this.perdiendoBusca = segundos;
+  }
+
+  // dt en segundos reales; lo llama CityScene cada fotograma. Devuelve true
+  // justo el fotograma en que termina de verdad (para el aviso y el sonido).
+  avanzarPerdidaBusca(dt) {
+    if (this.perdiendoBusca <= 0) return false;
+    this.perdiendoBusca -= dt;
+    if (this.perdiendoBusca <= 0) {
+      this.perdiendoBusca = 0;
+      this.setWanted(0);
+      return true;
+    }
+    return false;
   }
 
   changeFaction(key, delta) {
