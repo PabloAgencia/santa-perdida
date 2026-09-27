@@ -5,6 +5,7 @@ import { MISSIONS } from '../config/missions.js';
 import { ZONAS_CON_PISO, clavePiso } from '../config/pisos.js';
 import { NEGOCIOS, claveNegocio } from '../config/negocios.js';
 import { VEHICLE_KEYS } from '../config/vehicles.js';
+import { TOTAL_MEDALLAS } from '../systems/ColeccionablesSystem.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -84,10 +85,12 @@ export class ProgresoScene extends Phaser.Scene {
       .setTint(c.fraccion >= 1 ? 0x8fd694 : 0xe8b54a);
   }
 
-  // Cinco categorias, cada una pesa lo mismo en el total. Solo lee
-  // GameState: nada de esto vive en ningun sitio nuevo.
+  // Seis categorias, cada una pesa lo mismo en el total (ver el reduce de
+  // arriba, que reparte entre `categorias.length`). Solo lee GameState:
+  // nada de esto vive en ningun sitio nuevo.
   calcular() {
     const misiones = MISSIONS.filter((m) => GameState.flags.misiones?.[m.id]).length;
+    const medallas = Object.keys(GameState.medallasRecogidas).length;
     // +1 en pisos y negocios: el atico de la torre y el casino, que no van
     // en ZONAS_CON_PISO/NEGOCIOS porque no son "uno por barrio" (ver
     // PisoSystem.colocarAtico y NegocioSystem.colocarCasino)
@@ -106,6 +109,7 @@ export class ProgresoScene extends Phaser.Scene {
       { nombre: 'Negocios', etiqueta: `${negocios} / ${negociosTotal}`, fraccion: negocios / negociosTotal },
       { nombre: 'Coches', etiqueta: `${coches} / ${VEHICLE_KEYS.length}`, fraccion: coches / VEHICLE_KEYS.length },
       { nombre: 'Entregas', etiqueta: `${entregas} / ${TOPE_ENTREGAS}+`, fraccion: Math.min(entregas, TOPE_ENTREGAS) / TOPE_ENTREGAS },
+      { nombre: 'Medallas', etiqueta: `${medallas} / ${TOTAL_MEDALLAS}`, fraccion: medallas / TOTAL_MEDALLAS },
     ];
   }
 

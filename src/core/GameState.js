@@ -56,6 +56,10 @@ class GameStateClass {
     // una ciudad de la que lo sabes todo desde el minuto uno no invita a
     // recorrerla.
     this.descubiertos = {};
+    // MEDALLAS DE LA SANTA PERDIDA escondidas por la ciudad (indice ->
+    // true). No reaparecen nunca, asi que si no se guardaran aqui, recargar
+    // la partida las devolveria todas de golpe.
+    this.medallasRecogidas = {};
     // TODO LO QUE SE COMPRA Y SE QUEDA EN EL MUNDO: pisos ahora, locales
     // despues. Va en un solo sitio y con una sola forma a proposito. Si los
     // pisos se guardasen aqui y los negocios en su sistema, acabariamos con
@@ -565,6 +569,7 @@ class GameStateClass {
       ropa: this.ropa,
       ropaComprada: this.ropaComprada,
       descubiertos: this.descubiertos,
+      medallasRecogidas: this.medallasRecogidas,
       propiedades: this.propiedades,
       flags: this.flags,
       minutoDelDia: this.minutoDelDia,
@@ -595,6 +600,7 @@ class GameStateClass {
     this.ropa = data.ropa ?? 'calle';
     this.ropaComprada = data.ropaComprada ?? {};
     this.descubiertos = data.descubiertos ?? {};
+    this.medallasRecogidas = data.medallasRecogidas ?? {};
     // partidas de antes de que existieran las propiedades: sin nada comprado
     this.propiedades = data.propiedades ?? {};
     // y por si una partida vieja trae una propiedad a medio formar, que no

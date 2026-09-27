@@ -596,6 +596,25 @@ export class BootScene extends Phaser.Scene {
       esd.generateTexture('hud-escudo', 22, 22);
       esd.destroy();
     }
+
+    // LA MEDALLA DE LA SANTA PERDIDA: un ovalo dorado con una cruz grabada,
+    // como las estampitas de toda la vida. Un solo tono de oro para el
+    // borde y otro mas claro para el cuerpo, para que se lea de un vistazo
+    // y no se confunda con el corazon (rojo) ni el chaleco (gris).
+    if (!this.textures.exists('icono-medalla')) {
+      const med = this.g();
+      med.fillStyle(0x8a6a2a, 1);
+      med.fillEllipse(16, 17, 26, 30);
+      med.fillStyle(0xe8c563, 1);
+      med.fillEllipse(16, 17, 21, 25);
+      med.fillStyle(0x9c7a34, 1);
+      med.fillRect(14, 8, 4, 18);
+      med.fillRect(9, 14, 14, 4);
+      med.fillStyle(0xf6e2a0, 1);
+      med.fillEllipse(11, 10, 6, 4);
+      med.generateTexture('icono-medalla', 32, 34);
+      med.destroy();
+    }
   }
 
   makePedestrians() {

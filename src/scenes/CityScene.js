@@ -14,6 +14,7 @@ import { PoliceSystem } from '../systems/PoliceSystem.js';
 import { FactionSystem } from '../systems/FactionSystem.js';
 import { MissionSystem } from '../systems/MissionSystem.js';
 import { PickupSystem } from '../systems/PickupSystem.js';
+import { ColeccionablesSystem } from '../systems/ColeccionablesSystem.js';
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
@@ -80,6 +81,7 @@ export class CityScene extends Phaser.Scene {
     this.factions = new FactionSystem(this, this.map);
     this.missions = new MissionSystem(this, this.map, this.net);
     this.pickups = new PickupSystem(this, this.map);
+    this.coleccionables = new ColeccionablesSystem(this, this.map);
 
     // Los que "son tuyos" y tienen que salir SIEMPRE en el mismo edificio
     // entre cargas (piso, negocio, guerra de territorio) van primero, y cada
@@ -647,6 +649,7 @@ export class CityScene extends Phaser.Scene {
     this.updateLamps();
     this.checkPlayerHarm(dt);
     this.pickups.update(dt, this.player, !!this.drivingVehicle);
+    this.coleccionables.update(this.player, !!this.drivingVehicle);
     this.shops.update(this.player, !!this.drivingVehicle);
     this.pisos.update(this.player, !!this.drivingVehicle);
     this.locales.update(this.player, !!this.drivingVehicle);

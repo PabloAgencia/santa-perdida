@@ -3146,6 +3146,44 @@ esa noche, primera hecha ya:
     cometer nada durante los 10 s -> `wanted` acaba en 0 y salta el aviso
     "Te has librado de la policia". Los tres casos, tal cual.
 
+ Q. HECHO (64a tanda, 27-sep). Medallas de la Santa Perdida, coleccionable
+    nuevo por la ciudad — punto 9.1 de IDEAS-DE-LOS-GTA.txt.
+
+    Primer intento fue "paquetes escondidos" a secas, calcado del generico
+    de San Andreas. Pablo lo freno: "algo con mas vida, en San Andreas son
+    ostras, herraduras, etc, pues algo asi diferencial". Reescrito con
+    tema propio: CUARENTA MEDALLAS de la santa que le da nombre al juego,
+    jugando con la superstición de que quien lleva una encima sale bien
+    parado de la fuga. `ColeccionablesSystem.js` (nuevo), icono
+    `icono-medalla` en BootScene.js (ovalo dorado con una cruz, para no
+    confundirse con el corazon rojo ni el chaleco gris).
+
+    Reparto DETERMINISTA a proposito (nada de `Phaser.Utils.Array.Shuffle`,
+    que usa `Math.random()`): recorre primero los callejones de verdad
+    (igual que los corazones del PickupSystem) y completa con aceras si la
+    ciudad no da para 40 separadas. Como el orden sale siempre igual de la
+    rejilla del mapa (semilla fija en CityMap.js), el indice de cada
+    medalla es estable entre partidas y `GameState.medallasRecogidas`
+    (guardado, indice -> true) puede usarlo sin que una recogida en el
+    sitio equivocado tras cargar la partida. No reaparecen nunca. Sin
+    marca en el mapa ni el minimapa: son un premio por conocerse la
+    ciudad, no un recurso.
+
+    Cada 10 recogidas, un sobre de dinero (400/600/900/1500 €) con una
+    frase de la superstición local ("dicen que da suerte en la fuga"...
+    hasta "la Santa Perdida entera, medalla a medalla" en la 40). Metido
+    en `ProgresoScene` como sexta categoria del 100%.
+
+    PROBADO EN EL NAVEGADOR: las 40 se siembran de verdad
+    (`col.medallas.length === 40`), el icono se genera
+    (`textures.exists('icono-medalla')` true) y se ve bien de cerca (ovalo
+    dorado con cruz, capturado con la camara en zoom x3). Recogida de
+    verdad andando encima de una (no llamando al metodo a mano): el HUD
+    dice "Medalla de la Santa Perdida · 1/40" y la medalla desaparece del
+    mundo. Comprobados tambien a mano el hito de las 10 (mensaje grande,
+    +400 €) y que una instancia nueva de `ColeccionablesSystem` respeta
+    `GameState.medallasRecogidas` y no vuelve a plantar las ya cogidas.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------
