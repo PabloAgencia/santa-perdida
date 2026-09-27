@@ -292,6 +292,9 @@ def preparar_edificios(hechos):
         # uno por negocio (seis, cada uno de un comercio distinto)
         'negocio-conflictivo', 'negocio-residencial', 'negocio-comercial',
         'negocio-industrial', 'negocio-puerto', 'negocio-centro',
+        # el club de El Duque (HISTORIA-SANTA-PERDIDA.txt); todavia sin
+        # ClubScene.js ni negocio propio, pero el tejado ya esta
+        'club',
     ]
     for fichero in sorted(os.listdir(carpeta)):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
@@ -340,6 +343,10 @@ PERSONAJES = {
     'peaton-10': 'ped-9',
     'peaton-11': 'ped-10',
     'peaton-12': 'ped-11',
+    'peaton-13': 'ped-12',
+    'peaton-14': 'ped-13',
+    'peaton-15': 'ped-14',
+    'peaton-16': 'ped-15',
 }
 
 # El lienzo es de 32 px, pero la persona ocupa 23: es lo que mide la que
