@@ -278,13 +278,21 @@ def preparar_edificios(hechos):
     if not os.path.isdir(carpeta):
         return
     # los seis barrios, mas TODOS los "edificios de uso": LocalSystem,
-    # ShopSystem y ConcesionarioSystem buscan cada uno `techo-<su clave>`
-    # exactamente igual que PintarCiudad busca `techo-<barrio>`. Incluidos
-    # aqui para que salgan con el mismo nombre y el mismo tamaño, sin
-    # duplicar la funcion.
-    TEJADOS = ['centro', 'residencial', 'comercial', 'industrial',
-               'conflictivo', 'puerto', 'hospital', 'comisaria', 'taller',
-               'comida', 'gimnasio', 'armeria', 'concesionario']
+    # ShopSystem, ConcesionarioSystem, PisoSystem, NegocioSystem y
+    # MercadoSystem buscan cada uno `techo-<su clave>` exactamente igual que
+    # PintarCiudad busca `techo-<barrio>`. Incluidos aqui para que salgan con
+    # el mismo nombre y el mismo tamaño, sin duplicar la funcion.
+    TEJADOS = [
+        'centro', 'residencial', 'comercial', 'industrial', 'conflictivo',
+        'puerto', 'hospital', 'comisaria', 'taller', 'comida', 'gimnasio',
+        'armeria', 'concesionario', 'desguace',
+        # uno por piso (seis, a juego con su interior)
+        'piso-conflictivo', 'piso-residencial', 'piso-comercial',
+        'piso-industrial', 'piso-puerto', 'piso-centro',
+        # uno por negocio (seis, cada uno de un comercio distinto)
+        'negocio-conflictivo', 'negocio-residencial', 'negocio-comercial',
+        'negocio-industrial', 'negocio-puerto', 'negocio-centro',
+    ]
     for fichero in sorted(os.listdir(carpeta)):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             continue

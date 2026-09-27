@@ -4,6 +4,7 @@ import { TILE } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
+import { COOLDOWN_VENTA_COCHE } from './GruaSystem.js';
 
 // EL MERCADO DE COCHES POR BARRIOS. La grua del puerto (GruaSystem) ya
 // compraba coches, pero solo en un sitio y solo tres modelos concretos a la
@@ -16,7 +17,10 @@ const ZONAS = ['residencial', 'comercial', 'industrial', 'conflictivo'];
 const SEPARACION = 1700;
 const ALCANCE = 70;
 const PAGO_MIN_FRACCION = 0.12;
-const PAGO_MAX_FRACCION = 0.34;   // un pelin peor que la grua: es la via facil, no la mejor paga
+// un pelin peor que la grua: es la via facil, no la mejor paga. Con la
+// demanda del sitio (0,65 a 1,45) la fraccion de verdad puede llegar a
+// rondar la de la grua en el mejor momento, pero nunca de calle
+const PAGO_MAX_FRACCION = 0.24;
 const REFRESCO_ENTRE = [100, 170];  // segundos entre subidas/bajadas de demanda de cada desguace
 
 export class MercadoSystem {
@@ -61,18 +65,30 @@ export class MercadoSystem {
       if (!b) continue;
       const puerta = this.puertaDe(b);
 
-      this.puntos.push({
+      const punto = {
         x: puerta.x, y: puerta.y, edificio: b, zona,
         nombre: CITY.zones[zona]?.label || zona,
         demanda: 0.8 + Math.random() * 0.5,
         refresco: Phaser.Math.Between(REFRESCO_ENTRE[0], REFRESCO_ENTRE[1]),
-      });
+      };
+      this.puntos.push(punto);
       if (ocupados) ocupados.add(b);
-      this.pintar(puerta);
+      this.pintar(punto);
     }
   }
 
+  // igual que el tejado de un barrio o de un local: un solo `techo-desguace`
+  // compartido por los cuatro (son el mismo tipo de sitio, no seis sabores
+  // distintos como los pisos o los negocios)
+  pintarTejado(p) {
+    if (!this.scene.textures.exists('techo-desguace')) return;
+    const b = p.edificio;
+    this.scene.add.image(b.px, b.py, 'techo-desguace')
+      .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
+  }
+
   pintar(p) {
+    this.pintarTejado(p);
     const aro = this.scene.add.image(p.x, p.y, 'ring')
       .setDisplaySize(58, 58).setTint(0xc87f4a).setDepth(6);
     this.scene.tweens.add({
@@ -111,8 +127,10 @@ export class MercadoSystem {
 
   vender(vehicle) {
     if (!this.cerca) return null;
+    if (!GameState.puedeVenderCoche()) return null;
     const pago = this.estimar(this.cerca, vehicle);
     GameState.addMoney(pago, 'desguace');
+    GameState.marcarVentaCoche(COOLDOWN_VENTA_COCHE);
     EventBus.emit(EVT.NOTIFY, { text: `Vendido en el desguace · ${pago} €`, tone: 'money' });
     return { pago, nombre: VEHICLES[vehicle.type].name };
   }

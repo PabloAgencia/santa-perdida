@@ -13,8 +13,14 @@ import { GameState } from '../core/GameState.js';
 
 const CUANTOS_ENCARGOS = 3;
 const PAGO_MIN_FRACCION = 0.14;   // un coche hecho polvo, aun asi paga algo
-const PAGO_MAX_FRACCION = 0.42;   // como nuevo, lo mejor que se puede sacar
+const PAGO_MAX_FRACCION = 0.32;   // como nuevo, lo mejor que se puede sacar
 const ALCANCE = 140;              // el landmark es grande, no hace falta pegarse
+// Medido: un coche de 8.500 € (el mas caro) como nuevo daba 3.570 € DE UN
+// TIRON, sin esperar nada entre entrega y entrega. Era, con diferencia, la
+// forma mas rapida de hacerse rico del juego, muy por delante del reparto.
+// GameState.cooldownVentaCoche es COMPARTIDO con el desguace (MercadoSystem):
+// es "cambiar un coche por dinero", da igual por cual sitio se haga.
+export const COOLDOWN_VENTA_COCHE = 90;
 
 export class GruaSystem {
   constructor(scene, map) {
@@ -75,8 +81,10 @@ export class GruaSystem {
   // pedidos (quien llama deberia haberlo comprobado ya con `cerca`).
   entregar(vehicle) {
     if (!this.pedidos.includes(vehicle.type)) return null;
+    if (!GameState.puedeVenderCoche()) return null;
     const pago = this.estimarPago(vehicle);
     GameState.addMoney(pago, 'importexport');
+    GameState.marcarVentaCoche(COOLDOWN_VENTA_COCHE);
 
     this.pedidos = this.pedidos.filter((t) => t !== vehicle.type);
     this.pedidos.push(this.siguienteModelo());

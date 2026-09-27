@@ -2981,6 +2981,53 @@ esa noche, primera hecha ya:
     (no usa `etiquetaFlotante`, su cartel crece hacia arriba desde la base
     en vez de estar centrado) pero con la misma placa oscura detras.
 
+ N. HECHO (60a tanda, 27-sep). Dos encargos sueltos mas.
+
+    TODOS LOS DEMAS EDIFICIOS DE USO. Pablo: "a ver si piensas bien en
+    todo". El hospital y la comisaria ya llegaron (probados en vivo: el
+    hospital sale perfecto — cruz, helipuerto, rejillas —, la comisaria
+    igual de bien PERO con la palabra "POLICIA" pintada encima pese a que
+    el prompt pedia expresamente que no llevara letras; Pablo decide si la
+    repite). Repasado el codigo entero para no dejarse nada: ademas de los
+    cinco que faltaban por escribir (armeria, taller, comida, gimnasio y
+    concesionario por fuera, que la tanda anterior solo dejo apuntados en
+    la cabecera sin escribir el prompt de verdad), PisoSystem y
+    NegocioSystem ganaron el mismo `pintarTejado` que LocalSystem/
+    ShopSystem/ConcesionarioSystem (`techo-piso-<barrio>`,
+    `techo-negocio-<barrio>`, uno por cada uno de los seis, a juego con su
+    interior o su tipo de comercio) y MercadoSystem gano el suyo
+    (`techo-desguace`, uno solo para los cuatro). 18 prompts nuevos en
+    PROMPTS-PARA-GEMINI.txt. Con esto, TODO edificio en el que se puede
+    entrar o hacer algo tiene su propio tejado posible; lo que sigue
+    generico a proposito son los edificios de relleno sin nada dentro.
+
+    LA ECONOMIA. Pablo, viendo 17.100 € en una partida con pisos de
+    1.200 a 16.000 €: "no tiene sentido, dale progresion y coherencia".
+    Medido con las formulas reales del codigo (no a ojo): el reparto (el
+    "suelo economico" a proposito) deja 150-250 € cada 30-60 s, pero la
+    grua del puerto y los desguaces pagaban una fraccion del precio del
+    coche SIN NINGUN LIMITE de veces ni espera — un Vela GT (8.500 €)
+    entero dejaba 3.570 € DE UN VIAJE, la forma mas rapida de hacerse
+    rico del juego con diferencia. Con el jugador delante se le dieron
+    tres caminos (frenar el pico, subir el techo de precios, o las dos);
+    eligio frenar el pico primero. Aplicado:
+      · `GameState.cooldownVentaCoche`: 90 segundos reales compartidos
+        entre la grua y el desguace (es la misma cosa, "cambiar un coche
+        por dinero"), para que no se puedan encadenar entregas sin
+        descanso. NO se guarda en la partida, es un enfriamiento de
+        sesion. Aviso claro en el HUD ("Espera X s...") en vez de que no
+        pase nada al pulsar E.
+      · Fraccion maxima bajada: grua 42% -> 32%, desguace 34% -> 24% (la
+        demanda del sitio, 0,65-1,45, puede acercarla a la de la grua en
+        el mejor momento, pero ya no de calle).
+    PROBADO EN VIVO, no solo con node --check: vendido un Bastion a 0,24
+    exacto y un Chinchorro en la grua a 0,32 exacto, el segundo intento
+    seguido bloqueado con el coche intacto (no se destruye si no se
+    vende) y el cooldown marcando ~90 s.
+    PENDIENTE DE PABLO: la otra mitad de la propuesta (subir el techo de
+    precios con un piso/coche/negocio de lujo nuevo) queda para cuando la
+    quiera, no se ha tocado.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

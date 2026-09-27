@@ -16,7 +16,7 @@ YA HECHO (no hace falta volver a generarlo)
   13 iconos       armas (incluidos cuchillo y puño americano), corazon,
                   escudo y los marcadores del mapa
    8 vehiculos    con sus colores
-   6 tejados
+   8 tejados      los seis barrios, el hospital y la comisaria
    1 portada      la pantalla de inicio
    9 interiores   escondite, armeria, los seis pisos y el concesionario
   16 landmarks    playa, aerodromo y monte en dos/tres mitades, plaza, torre,
@@ -41,6 +41,7 @@ YA HECHO (no hace falta volver a generarlo)
       git show cb3f8ff:PROMPTS-PARA-GEMINI.txt (cuchillo, piso en venta y
                                                  puño americano)
       git show 82b56cc:PROMPTS-PARA-GEMINI.txt (el gimnasio, interior e icono)
+      git show 772794e:PROMPTS-PARA-GEMINI.txt (hospital y comisaria por fuera)
 
   DOS COSAS DE AQUELLOS PROMPTS QUE CONVIENE NO OLVIDAR
    · Nombrar un juego que el modelo conozca ("top-down view like in GTA
@@ -48,80 +49,453 @@ YA HECHO (no hace falta volver a generarlo)
      Lo vio Pablo y es lo que mas ha ahorrado.
    · Para los SPRITES se pide fondo magenta plano (#FF00FF): un fondo a
      cuadros se confunde con los grises del dibujo y cuesta recortarlo. Las
-     LAMINAS (interiores y landmarks) NO llevan magenta: son cuadros enteros.
+     LAMINAS (interiores, landmarks y TEJADOS) NO llevan magenta: son cuadros
+     enteros que se estiran sobre el edificio entero.
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026): LOS EDIFICIOS POR FUERA      7 PROMPTS
+#  LA TANDA DE AHORA (27-sep-2026): TODOS LOS DEMAS TEJADOS      18 PROMPTS
 ################################################################################
-Pablo: "tenemos los interiores de varios edificios y locales, pero tambien
-deberiamos hacer los exteriores". Hospital, comisaria, armeria, taller,
-sitios de comida, gimnasio y el concesionario se ven por fuera como un
-rectangulo de color liso (el mismo tejado que cualquier edificio normal del
-barrio, mas un cartel o un cruce pintado por codigo encima en el caso del
-hospital y la comisaria) en vez de un tejado de verdad, como los seis
-barrios (que si tienen foto).
+Pablo: "tenemos los interiores... pero tambien deberiamos hacer los
+exteriores. A ver si piensas bien en todo". Repasado el codigo entero, esto
+es TODO lo que sigue con un tejado generico de barrio (o un dibujo por
+codigo, en el caso del hospital y la comisaria, ya resueltos) en vez de uno
+propio:
 
-Estas siete imagenes son EXACTAMENTE eso: un tejado mas, con el mismo
-tratamiento que `centro.png` o `industrial.png` (se recorta al cuadrado del
-medio, se estira sobre el edificio que le toque, cualquier tamaño). El
-codigo YA SABE buscarlas (`techo-<clave>`, igual que un barrio): en cuanto
-esten, salen solas, sin tocar nada mas. Sin ellas el juego sigue como
-ahora, con el tejado del barrio de siempre.
+   armeria, taller, comida, gimnasio, concesionario    5   (el 2o intento
+                                                            de esta tanda:
+                                                            se quedaron sin
+                                                            escribir la vez
+                                                            pasada)
+   los seis pisos, uno por barrio                      6   (a juego con su
+                                                            interior, que ya
+                                                            tiene uno cada uno)
+   los seis negocios, uno por barrio                   6   (cada uno de un
+                                                            comercio distinto)
+   el desguace (los cuatro comparten el mismo)          1
 
-DONDE SE DEJA CADA COSA (todas van con los tejados de barrio, NO con los
-iconos del mapa: esos ya existen — marca-hospital, marca-comisaria,
-marca-armeria, marca-taller, marca-comida, marca-gimnasio,
-marca-concesionario — y son otra cosa)
-   hospital.png        ->  sprites\originales\edificios\
-   comisaria.png       ->  sprites\originales\edificios\
-   armeria.png         ->  sprites\originales\edificios\
-   taller.png          ->  sprites\originales\edificios\
-   comida.png          ->  sprites\originales\edificios\
-   gimnasio.png        ->  sprites\originales\edificios\
-   concesionario.png   ->  sprites\originales\edificios\
+Con esto, TODO edificio en el que se puede entrar o hacer algo tiene su
+propio tejado. Lo que queda generico a proposito: los edificios normales de
+relleno (no se puede interactuar con ellos) y los landmarks, que ya tienen
+su propia lamina desde antes.
+
+MISMO TRATAMIENTO QUE UN TEJADO DE BARRIO: se recorta al cuadrado del medio
+y se estira sobre el edificio que le toque (cualquier tamaño). El codigo YA
+SABE buscarlas (`techo-<clave>`): en cuanto esten, salen solas. Sin ellas,
+cada uno sigue con el tejado de su barrio de siempre — no se rompe nada.
+
+DONDE SE DEJA CADA COSA (todas en sprites\originales\edificios\, NO con los
+iconos del mapa: esos ya existen y son otra cosa)
+   armeria.png              taller.png            comida.png
+   gimnasio.png              concesionario.png     desguace.png
+   piso-conflictivo.png      piso-residencial.png  piso-comercial.png
+   piso-industrial.png       piso-puerto.png       piso-centro.png
+   negocio-conflictivo.png   negocio-residencial.png  negocio-comercial.png
+   negocio-industrial.png    negocio-puerto.png    negocio-centro.png
    Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
 
 
 --------------------------------------------------------------------------------
-  hospital.png                    tejado del hospital              1:1
+  armeria.png                     tejado de la armeria             1:1
 --------------------------------------------------------------------------------
 Create a SQUARE image, 1:1 aspect ratio.
-Top-down aerial view of a small city hospital roof, seen from DIRECTLY ABOVE
-at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Top-down aerial view of a small gun shop roof, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
 Chinatown Wars. The camera is high in the sky pointing straight down. NO
 perspective, NO tilt, the walls of the building are NOT visible, only the
 roof, filling the whole image edge to edge.
 
-LAYOUT: a flat white/pale roof with a large red cross painted in the middle,
-a rooftop helipad marking (a plain circle, NO letter H) off to one side,
-some air-conditioning units and vents scattered around, red warning lights
-at the corners.
+LAYOUT: a flat reinforced-looking roof, dark green-grey metal panels, a
+couple of stacked sandbags in one corner, a small satellite dish, a
+security camera housing, an air vent.
 
-COLOUR: white and pale grey roof, bright red cross, muted metal vents.
+COLOUR: dark green-grey metal, sandy sandbags, muted steel.
 STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
 photorealistic, NOT a 3D render, NOT a photo.
 MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
-NO vehicles, NO helicopter.
+NO vehicles, NO weapons lying visible.
 
 
 --------------------------------------------------------------------------------
-  comisaria.png                   tejado de la comisaria           1:1
+  taller.png                      tejado del taller de pintura     1:1
 --------------------------------------------------------------------------------
 Create a SQUARE image, 1:1 aspect ratio.
-Top-down aerial view of a small city police station roof, seen from
+Top-down aerial view of a small car paint-shop garage roof, seen from
 DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
 city in GTA Chinatown Wars. The camera is high in the sky pointing straight
 down. NO perspective, NO tilt, the walls of the building are NOT visible,
 only the roof, filling the whole image edge to edge.
 
-LAYOUT: a flat dark navy-blue roof with a large circular police badge
-emblem painted in the middle (blue and white, plain shield or star shape,
-NO letters), a radio antenna mast, a satellite dish and a couple of
-air-conditioning units scattered around.
+LAYOUT: a corrugated metal garage roof with a row of skylights down the
+middle, a big extractor fan, a stack of paint drums in one corner (muted
+colours, no readable labels), faded paint stains on the metal.
 
-COLOUR: dark navy blue roof, white and light blue badge, muted metal
-fixtures.
+COLOUR: weathered grey-blue corrugated metal, muted paint-drum colours
+(red, yellow, blue), rust streaks.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  comida.png                      tejado del sitio de comida       1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small fried-chicken takeaway roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat red-and-white striped roof, a big rooftop ornament shaped
+like a fried chicken drumstick (no letters on it, just the shape), a couple
+of small extractor vents, a folded-up red awning frame visible at one edge.
+
+COLOUR: red and white stripes, warm golden-brown drumstick shape, muted
+metal vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  gimnasio.png                    tejado del gimnasio (por fuera)  1:1
+--------------------------------------------------------------------------------
+OJO: esta es la fachada vista DESDE FUERA, distinta de interior-gimnasio.png
+(el interior, ya hecho).
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small gym building roof, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the building are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a flat dark roof with several large air-conditioning units (a gym
+needs a lot of cooling), a small painted circle marking on the roof like an
+old basketball hoop backboard seen from above, amber accent stripes along
+one edge.
+
+COLOUR: dark grey roof, amber/orange accents, muted metal AC units.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  concesionario.png               tejado del concesionario         1:1
+--------------------------------------------------------------------------------
+OJO: esta es la fachada vista DESDE FUERA, distinta de
+interior-concesionario.png (el interior, ya hecho, que es la sala de venta).
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small car dealership showroom roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat pale roof with a big skylight grid running down the middle
+(the showroom floor is lit from above), a string of small triangular
+pennant flags along one edge (plain colours, no writing), a rooftop AC unit.
+
+COLOUR: pale grey-blue roof, glass skylight reflections, faded multicolour
+pennants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO cars visible through the skylight.
+
+
+--------------------------------------------------------------------------------
+  desguace.png                    tejado del desguace              1:1
+--------------------------------------------------------------------------------
+Los cuatro desguaces de la ciudad comparten este mismo tejado.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small scrapyard office roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls of the building are NOT visible, only
+the roof, filling the whole image edge to edge.
+
+LAYOUT: a rusty corrugated metal roof, a stack of old tyres in one corner,
+a couple of oil drums, patches of rust and grime, a bare bulb light fixture.
+
+COLOUR: rusty brown-orange corrugated metal, black tyres, muted grime.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO wrecked cars (esos van en el patio, no en este tejado).
+
+
+################################################################################
+#  LOS SEIS PISOS                                                6 PROMPTS
+################################################################################
+Cada uno a juego con su interior (ya hecho) y su precio: cuanto mas caro,
+mas se nota por fuera. Las descripciones vienen de config/pisos.js.
+
+
+--------------------------------------------------------------------------------
+  piso-conflictivo.png     Altillo en Los Rompientes    1.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a run-down small apartment roof above a bar, seen
+from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view,
+like the city in GTA Chinatown Wars. The camera is high in the sky pointing
+straight down. NO perspective, NO tilt, the walls are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a patched corrugated roof with mismatched panels, a wonky TV
+antenna, a clothesline with a couple of hanging clothes, a small rusty AC
+unit, a satellite dish tilted at an odd angle.
+
+COLOUR: faded rust-brown and grey patched metal, muted washing-line colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-residencial.png     Piso en Residencial          3.500 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of an ordinary small apartment building roof, seen
+from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view,
+like the city in GTA Chinatown Wars. The camera is high in the sky pointing
+straight down. NO perspective, NO tilt, the walls are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a plain tiled roof, a water tank on short legs, a cluster of TV
+antennas, a clothesline, a couple of small potted plants near the access
+hatch.
+
+COLOUR: warm terracotta tile, weathered grey water tank, green plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-comercial.png       Estudio sobre la tienda      5.000 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small flat roof above a row of shops, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a flat grey roof, a small rooftop terrace with a folding chair and
+a couple of potted plants, an AC unit, a narrow rooftop access door seen
+from above.
+
+COLOUR: cool grey roof, warm terracotta pots, faded folding chair.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-industrial.png      Nave en el poligono          7.500 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a cold industrial warehouse roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a wide corrugated metal roof with a row of skylights, thick
+ventilation ducts running across it, a large exhaust fan, faint rust
+streaks.
+
+COLOUR: cold grey-blue corrugated metal, dark ducts, muted rust.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-puerto.png          Almacen del puerto           11.000 €   1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a big dockside warehouse roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a large flat roof with tar-paper texture, thick pipework running
+along one edge, a couple of large vents, faint oil stains, a rooftop
+walkway railing along one side.
+
+COLOUR: dark tar-grey roof, rusty pipework, muted oil stains.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO ships.
+
+
+--------------------------------------------------------------------------------
+  piso-centro.png          Apartamento del Centro       16.000 €   1:1
+--------------------------------------------------------------------------------
+Esta es LA RECOMPENSA: el piso mas caro del juego. Tiene que notarse de un
+vistazo que es mejor que los otros cinco.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a luxury penthouse rooftop terrace, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof and
+terrace, filling the whole image edge to edge.
+
+LAYOUT: a polished dark roof deck with a small rectangular plunge pool in
+the middle, a couple of built-in bench seats, neat rows of planters with
+trimmed hedges around the edge, a glass safety railing all around.
+
+COLOUR: dark polished decking, turquoise pool water, deep green hedges,
+warm wood tones.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+################################################################################
+#  LOS SEIS NEGOCIOS                                             6 PROMPTS
+################################################################################
+Cada uno de un comercio distinto (config/negocios.js). El de mas renta
+(Joyeria) tiene que notarse mas cuidado que el mas barato (Locutorio).
+
+
+--------------------------------------------------------------------------------
+  negocio-conflictivo.png   Locutorio Los Rompientes    2.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small phone-call-shop roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a cheap flat roof with a cluster of mismatched satellite dishes and
+antennas wired together, a small AC unit, patched tar paper.
+
+COLOUR: dull grey tar roof, weathered white and grey satellite dishes.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-residencial.png   Lavanderia Buenavista       3.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small laundromat roof, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls are NOT visible, only the roof, filling the
+whole image edge to edge.
+
+LAYOUT: a flat pale-blue roof, a row of steam vents releasing a light haze,
+a small water tank, faint damp streaks running down from the vents.
+
+COLOUR: pale blue-grey roof, white steam haze, muted metal vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-comercial.png     Boutique Verdial            5.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a stylish clothing boutique roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a smart dark-purple roof, a small rooftop garden strip with neat
+trimmed shrubs along one edge, a folded outdoor umbrella, a discreet
+skylight.
+
+COLOUR: deep purple roof, muted green shrubs, warm wood umbrella pole.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-industrial.png    Almacen del Poligono        7.000 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a smuggling warehouse roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a wide corrugated roof, a couple of tarpaulin-covered mounds near
+one edge (crates hidden under a tarp), a vent stack, faint rust streaks.
+
+COLOUR: dark green-grey corrugated metal, olive tarpaulin, muted rust.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-puerto.png        Lonja del Muelle            9.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small dockside fish-market roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a pale roof with a few coils of thick rope, a stack of empty
+fish crates near one edge, a couple of ice-machine vents, damp patches.
+
+COLOUR: pale weathered roof, muted rope brown, cool blue-grey ice vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO boats.
+
+
+--------------------------------------------------------------------------------
+  negocio-centro.png        Joyeria del Centro          12.000 €   1:1
+--------------------------------------------------------------------------------
+Esta es LA RECOMPENSA de los negocios: el mas caro con diferencia. Tiene que
+notarse de un vistazo que es el mas lujoso de los seis.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of an upscale jewellery-store roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a dark polished roof with a gold decorative trim along the edges, a
+domed glass skylight in the centre, a discreet security camera, a couple of
+ornamental potted topiary shapes near the access hatch.
+
+COLOUR: deep charcoal roof, gold trim, warm glass dome glow, deep green
+topiary.
 STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
 photorealistic, NOT a 3D render, NOT a photo.
 MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.

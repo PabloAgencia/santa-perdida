@@ -94,7 +94,18 @@ export class PisoSystem {
     }
   }
 
+  // igual que el tejado de un barrio o de un local: uno por piso (seis en
+  // total, a juego con su interior, ya que cada uno tiene el suyo propio)
+  pintarTejado(piso) {
+    const clave = `techo-piso-${piso.zona}`;
+    if (!this.scene.textures.exists(clave)) return;
+    const b = piso.edificio;
+    this.scene.add.image(b.px, b.py, clave)
+      .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
+  }
+
   pintar(piso) {
+    this.pintarTejado(piso);
     const suyo = GameState.esDueno(piso.clave);
     const color = suyo ? 0xe8b54a : 0x7fa8d0;
 

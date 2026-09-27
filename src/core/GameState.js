@@ -63,6 +63,31 @@ class GameStateClass {
     // que dia de partida es: sube cada vez que el reloj pasa de medianoche
     // (tambien durmiendo). Lo usa el tope diario del gimnasio.
     this.dia = 1;
+    // segundos reales que quedan para poder vender OTRO coche (grua o
+    // desguace, es la misma cosa: "cambiar un coche por dinero" da igual por
+    // cual de los dos se haga). Sin esto, encadenar entregas sin descansar
+    // era la forma mas rapida de hacerse rico del juego con diferencia,
+    // muy por delante del reparto (que es "el suelo economico" a proposito).
+    // NO se guarda en la partida: es un enfriamiento de sesion, no un dato.
+    this.cooldownVentaCoche = 0;
+  }
+
+  // ---------- vender coches (grua y desguace) ----------
+
+  puedeVenderCoche() {
+    return this.cooldownVentaCoche <= 0;
+  }
+
+  marcarVentaCoche(segundos) {
+    this.cooldownVentaCoche = segundos;
+  }
+
+  // dt en segundos reales; lo llama CityScene cada fotograma, igual que
+  // hurtCooldown o jobCooldown
+  avanzarCooldownVenta(dt) {
+    if (this.cooldownVentaCoche > 0) {
+      this.cooldownVentaCoche = Math.max(0, this.cooldownVentaCoche - dt);
+    }
   }
 
   // ---------- el reloj ----------

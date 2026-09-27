@@ -502,6 +502,7 @@ export class CityScene extends Phaser.Scene {
   update(time, delta) {
     const dt = Math.min(delta / 1000, 0.05);
     const k = this.keys;
+    GameState.avanzarCooldownVenta(dt);
 
     // acabas de morir: el mundo se congela un instante mientras el cuerpo
     // cae y se desmadeja, y la pantalla se funde a negro encima (ver respawn)
@@ -1171,6 +1172,13 @@ export class CityScene extends Phaser.Scene {
   // piso vendido) y paga segun lo entero que llegue.
   entregarEnGruaCerca() {
     if (!this.grua || !this.grua.cerca) return false;
+    if (!GameState.puedeVenderCoche()) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: `Espera ${Math.ceil(GameState.cooldownVentaCoche)} s antes de traer otro coche`,
+        tone: 'dim',
+      });
+      return true;
+    }
     const v = this.drivingVehicle;
     const resultado = this.grua.entregar(v);
     if (!resultado) return false;
@@ -1195,6 +1203,13 @@ export class CityScene extends Phaser.Scene {
   // acepta cualquier modelo y paga segun la demanda de ese barrio ahora
   venderEnDesguaceCerca() {
     if (!this.mercado || !this.mercado.cerca) return false;
+    if (!GameState.puedeVenderCoche()) {
+      EventBus.emit(EVT.NOTIFY, {
+        text: `Espera ${Math.ceil(GameState.cooldownVentaCoche)} s antes de vender otro coche`,
+        tone: 'dim',
+      });
+      return true;
+    }
     const v = this.drivingVehicle;
     const resultado = this.mercado.vender(v);
     if (!resultado) return false;
@@ -1393,10 +1408,17 @@ export class CityScene extends Phaser.Scene {
         ? { faccion: FACTIONS[this.guerra.activo.faction].short, oleada: this.guerra.activo.oleada }
         : null,
       gruaCerca: this.grua && this.grua.cerca
-        ? { nombre: VEHICLES[this.drivingVehicle.type].name, pago: this.grua.estimarPago(this.drivingVehicle) }
+        ? {
+          nombre: VEHICLES[this.drivingVehicle.type].name,
+          pago: this.grua.estimarPago(this.drivingVehicle),
+          cooldown: GameState.puedeVenderCoche() ? 0 : Math.ceil(GameState.cooldownVentaCoche),
+        }
         : null,
       desguaceCerca: this.mercado && this.mercado.cerca
-        ? { pago: this.mercado.estimar(this.mercado.cerca, this.drivingVehicle) }
+        ? {
+          pago: this.mercado.estimar(this.mercado.cerca, this.drivingVehicle),
+          cooldown: GameState.puedeVenderCoche() ? 0 : Math.ceil(GameState.cooldownVentaCoche),
+        }
         : null,
       carreraCerca: !!(
         this.carreras && this.carreras.cerca && !this.carreras.activa &&

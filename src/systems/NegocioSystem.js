@@ -69,7 +69,18 @@ export class NegocioSystem {
     }
   }
 
+  // igual que el tejado de un barrio o de un local: uno por negocio (seis en
+  // total, cada uno de un tipo de comercio distinto)
+  pintarTejado(n) {
+    const clave = `techo-negocio-${n.zona}`;
+    if (!this.scene.textures.exists(clave)) return;
+    const b = n.edificio;
+    this.scene.add.image(b.px, b.py, clave)
+      .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
+  }
+
   pintar(n) {
+    this.pintarTejado(n);
     const suyo = GameState.esDueno(n.clave);
     n.aro = this.scene.add.image(n.x, n.y, 'ring')
       .setDisplaySize(60, 60).setTint(suyo ? 0xe8b54a : n.cfg.color).setDepth(6);
