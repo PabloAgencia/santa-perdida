@@ -53,6 +53,17 @@ export class Vehicle {
 
     this.sprite = scene.add.image(x, y, `veh-${type}-${this.color}`);
 
+    // LA VIDA DEL COCHE, a la vista: antes solo se notaba por como cambiaba
+    // de comportamiento (`salud` mas abajo) o porque humeaba, nunca con un
+    // numero. Pablo lo pidio explicito: que un puñetazo, un choque, lo que
+    // sea, se vea bajar. Solo aparece si esta tocado (entero no se enseña,
+    // igual que la barra de blindaje del jugador), y no gira con el coche:
+    // siempre plana, como todas las barras de vida de toda la vida.
+    this.vidaFondo = scene.add.image(x, y, 'px')
+      .setDisplaySize(this.stats.width * 0.9, 4).setTint(0x14161a).setAlpha(0.85).setVisible(false);
+    this.vidaBarra = scene.add.image(x, y, 'px')
+      .setOrigin(0, 0.5).setDisplaySize(this.stats.width * 0.9, 3).setTint(0x8fd694).setVisible(false);
+
     this.buildProbes();
     this.syncSprite();
   }
@@ -240,6 +251,21 @@ export class Vehicle {
     this.shadow.setRotation(this.angle);
     this.shadow.setDepth(this.y - 1);
 
+    const tocado = this.hp < this.stats.maxHp;
+    this.vidaFondo.setVisible(tocado);
+    this.vidaBarra.setVisible(tocado);
+    if (tocado) {
+      const arriba = this.y - this.stats.width * 0.9;
+      const ancho = this.stats.width * 0.9;
+      const salud01 = Phaser.Math.Clamp(this.hp / this.stats.maxHp, 0, 1);
+      this.vidaFondo.setPosition(this.x, arriba).setDepth(9998);
+      this.vidaBarra
+        .setPosition(this.x - ancho / 2, arriba)
+        .setDisplaySize(Math.max(1, ancho * salud01), 3)
+        .setTint(salud01 > 0.5 ? 0x8fd694 : salud01 > 0.22 ? 0xe8b54a : 0xd9584a)
+        .setDepth(9999);
+    }
+
     // el chasis quemado se queda negro y ahi se queda: no vuelve a cambiar
     // de color por mucho que le den
     if (this.quemado) {
@@ -304,5 +330,7 @@ export class Vehicle {
     this.shadow.destroy();
     this.beam.destroy();
     this.stopLights.destroy();
+    this.vidaFondo.destroy();
+    this.vidaBarra.destroy();
   }
 }

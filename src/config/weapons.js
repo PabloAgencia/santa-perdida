@@ -196,4 +196,7 @@ export const COMBATE = {
   penalizacionEnMovimiento: 1.8,
   // el musculo suma a los golpes de cerca
   danoExtraPorMusculo: 0.5,
+  // la chapa aguanta mas que una persona: un puñetazo o un bate abollan,
+  // no destrozan, un coche entero
+  danoAVehiculoPorGolpe: 0.4,
 };

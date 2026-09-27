@@ -3301,6 +3301,67 @@ esa noche, primera hecha ya:
     conectado al codigo en cuanto Pablo genere las imagenes — todo
     detallado en `HISTORIA-SANTA-PERDIDA.txt`.
 
+ U. HECHO (64a tanda, 27-sep, mismo dia). Cinco cosas sueltas que trajo
+    Pablo de golpe, cada una comprobada de verdad, no solo arreglada a ojo.
+
+    · EL MOTOR "SE REINICIABA" A FONDO — encontrado el porque de verdad.
+      `Audio._vueltasDe(r)` sube las revoluciones dentro de cada una de las
+      5 marchas y las deja caer de golpe (de ~1.0 a ~0.34) al entrar en la
+      siguiente: es el salto de tono normal de un cambio de marcha. El
+      motor SINTETIZADO ya tapaba ese salto con un corte de volumen de un
+      instante; al motor GRABADO (el que se usa de verdad, los mp3)
+      nadie le habia puesto el mismo corte, asi que acelerando a fondo se
+      pasan las 4 marchas seguidas y en cada una suena como si la muestra
+      volviera a empezar. Comprobado el salto con un script (barrido de
+      r de 0 a 1, marcando cada cambio de marcha): confirmado en r=0.20,
+      0.40, 0.60 y 0.80, tal cual. Arreglado con el mismo corte de volumen
+      que ya tenia el sintetizado. De paso, `NIVEL_TOPE` bajado de 0,58 a
+      0,46 (seguia sonando alto, otra vuelta de tuerca).
+    · EL MAPA GRANDE NO ENSEÑABA LA GUERRA DE TERRITORIO. Pablo pregunto
+      si de verdad estaba todo bien puesto en el mapa, y NO: los tres
+      puntos de `GuerraTerritorioSystem.puntos` (donde se planta cara a
+      una banda por su barrio) no tenian ninguna marca en `MapaScene.js`,
+      aunque en la calle si tienen su aro y su cartel. Añadidos, con el
+      color de cada banda, siempre visibles como los landmarks. Probado en
+      el navegador: las tres marcas ("Territorio Amarres/Rompiente/
+      Verdial") salen bien.
+    · LOS PROMPTS PENDIENTES, ACLARADO: Pablo veia `marca-taller.png` etc.
+      en `sprites/originales/iconos/` y penso que ya estaban hechos. Son
+      dos cosas DISTINTAS: `marca-*` es el puntito de 20x20 del mapa
+      grande (ya existe, es un icono con fondo magenta); lo pendiente
+      (`taller.png`, `armeria.png`...) es el TEJADO del edificio, una
+      lamina de 128x128 sin magenta, lo que se ve al pasar por delante en
+      la calle. Comprobado el contenido real de la carpeta: los 18
+      siguen sin generar, ninguno esta hecho.
+    · EL "ROJO" SOBRE EL PERSONAJE. No era un fallo de logica: es
+      `detalle-ropa` (punto 23, tanda 63a), el acento de color de la
+      chaqueta puesta, que en la ropa 'calle' (la de serie) es un marron
+      rojizo (`0x7d3d20`). El fallo de verdad era de tamaño: a 4x10 px y
+      opaco, sobre el sprite FOTO real del jugador quedaba como un parche
+      pegado, no como un detalle de ropa. Reducido a 3x6 px y 85% de
+      opacidad (`BootScene.makeDetalleRopa`, `Player.js`).
+    · BARRA DE VIDA EN LOS VEHICULOS, pedida explicita. `Vehicle.js`:
+      dos imagenes nuevas (fondo + relleno), solo visibles si
+      `hp < maxHp`, en verde/ambar/rojo segun el nivel, siempre en plano
+      (no giran con el coche). Y de paso, un fallo real que esto dejo al
+      descubierto: `candidatos()` de `CombatSystem.js` NUNCA incluia
+      vehiculos, asi que darle puños o bate a un coche no hacia nada en
+      absoluto (solo embestirlo con el propio coche contaba). Añadido
+      `vehiculoCerca()` y un tramo nuevo en `golpear()`: sin gente al
+      alcance, busca un coche cerca y le hace daño (`COMBATE.
+      danoAVehiculoPorGolpe = 0.4`: la chapa aguanta mas que una persona).
+      Un coche APARCADO deja de actualizarse del todo en cuanto esta
+      quieto (optimizacion de rendimiento de siempre, `CityScene.update`),
+      asi que sin mas la barra se quedaba congelada en "entero" aunque ya
+      estuviera abollado a puñetazos: arreglado llamando a
+      `vehiculo.syncSprite()` justo despues del golpe. Probado en el
+      navegador con una ambulancia parada: 6 puñetazos, hp de 240 a 211,
+      la barra verde aparece y baja lo justo.
+
+    QUE QUEDA de lo que pidio Pablo en el mismo mensaje: un combo visual
+    al pegar puñetazos (pedido, no hecho todavia — falta pensar como se ve
+    sin que estorbe, `CombatSystem.golpear`/`Player.golpe` son el sitio).
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

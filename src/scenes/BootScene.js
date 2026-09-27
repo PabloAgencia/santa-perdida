@@ -337,10 +337,16 @@ export class BootScene extends Phaser.Scene {
   // puesta cada vez que cambia.
   makeDetalleRopa() {
     if (this.textures.exists('detalle-ropa')) return;
+    // Mas pequeño que al principio: a tamaño 4x10 y opaco quedaba como un
+    // parche de color pegado encima de la foto del jugador, no como un
+    // detalle de la chaqueta. Pablo lo vio y pregunto que era ese "rojo"
+    // encima del personaje — no era un fallo de logica (el color es el de
+    // `ROPA[clave].detalle`, a proposito), pero SI un fallo de que se
+    // integrara mal visualmente con el sprite foto-realista.
     const g = this.g();
     g.fillStyle(0xffffff, 1);
-    g.fillRoundedRect(0, 0, 4, 10, 1);
-    g.generateTexture('detalle-ropa', 4, 10);
+    g.fillRoundedRect(0, 0, 3, 6, 1);
+    g.generateTexture('detalle-ropa', 3, 6);
     g.destroy();
   }
 

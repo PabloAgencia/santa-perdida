@@ -1,6 +1,7 @@
 import { COLORS } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
 import { Audio } from '../core/Audio.js';
+import { FACTIONS } from '../config/factions.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -169,6 +170,16 @@ export class MapaScene extends Phaser.Scene {
     }
     for (const c of city.carreras ? city.carreras.carreras : []) {
       this.marca(c.x, c.y, 0xe8b54a, 'Carrera', 9, 'marca-carrera');
+    }
+
+    // LA GUERRA DE TERRITORIO no salia en el mapa grande, aunque en la calle
+    // si tiene su aro y su cartel (GuerraTerritorioSystem.pintar): un sitio
+    // donde se puede plantar cara a una banda tiene que verse desde aqui
+    // igual que una carrera o un desguace. Siempre visibles, como los
+    // landmarks: son parte fija de la ciudad, no algo que se "descubra".
+    for (const t of city.guerra ? city.guerra.puntos : []) {
+      const f = FACTIONS[t.faction];
+      this.marca(t.x, t.y, f ? f.accent : 0xd9584a, `Territorio ${f ? f.short : ''}`, 9);
     }
 
     // los sitios que se ven desde lejos si salen desde el principio: son

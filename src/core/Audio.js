@@ -303,10 +303,23 @@ class GameAudio {
       // El techo tambien baja un poco (antes llegaba a 0.75): Pablo lo pidio
       // mas bajo en general.
       const NIVEL_RALENTI = 0.1;
-      const NIVEL_TOPE = 0.58;
+      const NIVEL_TOPE = 0.46;
       const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * r2;
+
+      // EL "SE REINICIA EL SONIDO" QUE VEIA PABLO A FONDO: `_vueltasDe` sube
+      // las vueltas dentro de cada marcha y las deja caer de golpe (de ~1 a
+      // ~0.35) al entrar en la siguiente, que es justo como suena un cambio
+      // de marcha de verdad. El motor SINTETIZADO ya disimulaba ese salto de
+      // tono con un corte de volumen de un instante (`corte`/`cambio`, mas
+      // abajo); al motor GRABADO nunca se le puso el mismo corte, asi que el
+      // salto de tono sonaba solo, sin nada que lo tapara: acelerando a
+      // fondo pasas las cuatro marchas seguidas y en cada una se oye como si
+      // la muestra volviera a empezar. Mismo parche que el sintetizado.
+      const cambioMarcha = caja2.marcha !== this.marchaMuestra;
+      this.marchaMuestra = caja2.marcha;
+      const corte = cambioMarcha ? 0.45 : 1;
       this.motorGain.gain.setTargetAtTime(
-        on ? nivel * (perfil.vol || 1) : 0, t2, 0.08
+        on ? nivel * (perfil.vol || 1) * corte : 0, t2, cambioMarcha ? 0.02 : 0.08
       );
       if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
 

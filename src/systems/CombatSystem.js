@@ -153,14 +153,45 @@ export class CombatSystem {
     const extra = (GameState.atributo('musculo') / 100) * arma.dano * COMBATE.danoExtraPorMusculo;
     const dano = arma.dano + extra;
 
-    if (!objetivo || Phaser.Math.Distance.Between(objetivo.x, objetivo.y, player.x, player.y) > arma.alcance) {
-      Audio.notes([180], 0.05, 'triangle', 0.05);   // golpe al aire
-      return false;
+    if (objetivo && Phaser.Math.Distance.Between(objetivo.x, objetivo.y, player.x, player.y) <= arma.alcance) {
+      this.aplicar(objetivo, dano, player, true);
+      GameState.subirAtributo('musculo', ENTRENAR.musculoPorGolpe);
+      if (!Audio.soltar('golpe', 0.7)) Audio.crash(0.18);
+      return true;
     }
-    this.aplicar(objetivo, dano, player, true);
-    GameState.subirAtributo('musculo', ENTRENAR.musculoPorGolpe);
-    if (!Audio.soltar('golpe', 0.7)) Audio.crash(0.18);
-    return true;
+
+    // SIN GENTE AL ALCANCE: por si hay un coche cerca. Pablo lo pidio para
+    // que la barra de vida del vehiculo (Vehicle.js) tenga con que llenarse
+    // sin tener que embestirlo siempre en marcha. La chapa aguanta mas que
+    // una persona (COMBATE.danoAVehiculoPorGolpe).
+    const vehiculo = this.vehiculoCerca(player, arma.alcance);
+    if (vehiculo) {
+      vehiculo.hp = Math.max(0, vehiculo.hp - dano * COMBATE.danoAVehiculoPorGolpe);
+      // CityScene deja de actualizar del todo un coche aparcado en cuanto se
+      // para (`v.speed < 2`, es carisimo hacerlo con toda la ciudad llena de
+      // coches quietos): sin esto, la barra de vida que se pinta dentro de
+      // `syncSprite()` se quedaba congelada en "entero" aunque el coche ya
+      // estuviera hecho polvo a puñetazos.
+      vehiculo.syncSprite();
+      if (!Audio.soltar('golpe', 0.6)) Audio.crash(0.22);
+      return true;
+    }
+
+    Audio.notes([180], 0.05, 'triangle', 0.05);   // golpe al aire
+    return false;
+  }
+
+  // El coche desocupado mas cercano al alcance del arma, para poder
+  // golpearlo a puños o a bate sin tener que subirte y embestirlo.
+  vehiculoCerca(player, alcance) {
+    let mejor = null;
+    let mejorDist = alcance;
+    for (const v of this.scene.vehicles) {
+      if (v.occupied) continue;
+      const d = Phaser.Math.Distance.Between(v.x, v.y, player.x, player.y);
+      if (d < mejorDist) { mejorDist = d; mejor = v; }
+    }
+    return mejor;
   }
 
   // `torpeza` multiplica el desvio: 1 a pie, mas al disparar desde el coche

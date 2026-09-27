@@ -67,7 +67,7 @@ export class Player {
     // tambien con el cuerpo de foto (que por su cuenta ignora los colores
     // de ROPA por completo). `actualizarCuerpo()` lo tiñe cada vez que
     // cambia la ropa.
-    this.detalle = scene.add.image(-2, 1, 'detalle-ropa').setOrigin(0.5);
+    this.detalle = scene.add.image(-1, 0, 'detalle-ropa').setOrigin(0.5).setAlpha(0.85);
     // Punto 25 del plan: el chaleco se ve en el sprite, no solo en la barra
     // del HUD. Encima de todo (se pinta el ultimo, tapa el pecho y el
     // detalle de la ropa) y oculto por defecto: `update()` lo enseña solo
