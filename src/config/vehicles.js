@@ -19,7 +19,12 @@ export const GLASS = 0x1d2128;
 // que suena a traqueteo y le pega al cacharro; `motor-1` es un motor grande
 // y estable, para el sedan y la patrulla.
 export const ENGINES = {
-  barato:     { base: 40, range: 62,  wave: 'triangle', body: 0.6,  bright: 620, vol: 0.85,
+  // vol mas alto que los demas A PROPOSITO: medido con ffmpeg volumedetect,
+  // motor-4.mp3 suena de media unos 6 dB mas flojo que el resto de
+  // grabaciones (mean_volume -18.7 dB contra -12,5/-13,2 de las otras,
+  // aunque el PICO sea igual de alto en todas) — sin este empujon el
+  // Chinchorro sonaba raro de debil al lado de cualquier otro coche.
+  barato:     { base: 40, range: 62,  wave: 'triangle', body: 0.6,  bright: 620, vol: 1.3,
                 muestra: 'motor-4', tono: 1 },
   rapido:     { base: 48, range: 92,  wave: 'triangle', body: 0.45, bright: 950, vol: 1.0,
                 muestra: 'motor-3', tono: 1 },

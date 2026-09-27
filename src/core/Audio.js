@@ -294,13 +294,17 @@ class GameAudio {
       const caja2 = this._vueltasDe(r2);
       const tono = (perfil.tono || 1) * (0.62 + caja2.vueltas * 1.25);
       this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.06);
-      // PARADO CASI NO SUENA. Un coche al ralenti hace ruido, si, pero en el
-      // juego te pasas mucho rato quieto (leyendo el mapa, esperando, mirando
-      // la tienda) y ahi el motor a todo trapo cansa. Con el pie fuera y el
-      // coche parado, el motor baja a un tercio: se sigue oyendo que esta
-      // encendido, pero no molesta.
-      const quieto = !throttle && r2 < 0.03;
-      const nivel = quieto ? 0.12 : 0.3 + caja2.vueltas * 0.45;
+      // PROGRESIVO DE VERDAD CON LA VELOCIDAD, no con si se pisa el pedal.
+      // Antes saltaba de 0.12 a 0.3+ en el instante de tocar el acelerador,
+      // AUNQUE EL COCHE SIGUIERA PARADO (el salto vivia en `throttle`, un
+      // booleano, no en la velocidad real): de ahi que sonara mal
+      // configurado, "a trompicones" en vez de "de menos a mas". Ahora sube
+      // liso con r2 (0 parado, 1 a tope), sin escalones ni saltos.
+      // El techo tambien baja un poco (antes llegaba a 0.75): Pablo lo pidio
+      // mas bajo en general.
+      const NIVEL_RALENTI = 0.1;
+      const NIVEL_TOPE = 0.58;
+      const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * r2;
       this.motorGain.gain.setTargetAtTime(
         on ? nivel * (perfil.vol || 1) : 0, t2, 0.08
       );

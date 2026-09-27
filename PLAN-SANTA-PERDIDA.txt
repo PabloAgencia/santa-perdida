@@ -3060,6 +3060,44 @@ esa noche, primera hecha ya:
     20000 €" sobre el casino de verdad y "SE VENDE 28000 €" al pie de la
     Torre Sombra, los dos con su circulo de puerta. Sin errores en consola.
 
+ O. HECHO (62a tanda, 27-sep). El motor de los coches, medido y corregido.
+
+    Pablo bajo tres mods de sonido para probar coches nuevos: los tres
+    resultaron ser mods de audio de GTA V (.rpf/.awc, uno con instrucciones
+    para OpenIV y carpeta `fivem`). DESCARTADOS los tres: el repo y la web
+    son publicos, y el audio de un GTA es de Rockstar — es justo el caso
+    que ya avisaba SONIDOS-QUE-BAJAR.txt. No se pueden ni abrir sin las
+    herramientas de modding de GTA V.
+
+    Pablo, sobre los 5 motores YA PUESTOS (no los mods): "alguno es una
+    mierda, mal configurado, tiene que sonar mas bajo y progresivo segun
+    su velocidad". Medido con ffmpeg (`volumedetect`), no a ojo:
+      · LAS CINCO GRABACIONES miden 1,75 s, con el mismo pico (-1,1/-1,2
+        dB) pero motor-4 (barato, el Chinchorro) suena de MEDIA 6 dB mas
+        flojo que las otras cuatro (-18,7 dB contra -12,5/-13,2). Mismo
+        pico, pero una forma de onda mucho mas dinamica (picos sueltos,
+        silencio entre medias) que las demas, que suenan mas plenas.
+        Probado normalizar el fichero con `loudnorm`: en un clip de 1,75 s
+        el algoritmo no tiene bastante material para medir bien y apenas
+        cambio nada (-19,1 dB de salida). Arreglado por el otro lado, en
+        el codigo: `ENGINES.barato.vol` subido de 0,85 a 1,3 en
+        config/vehicles.js, para compensar sin tocar el fichero.
+      · EL FALLO GORDO, en `Audio.js engine()`: el volumen NO seguia la
+        velocidad de verdad, seguia si se pisaba el pedal — un booleano.
+        En el instante de tocar el acelerador (aunque el coche siguiera
+        totalmente parado) el volumen saltaba de 0,12 a 0,3-0,39 de
+        golpe. DE AHI el "no progresivo" y el "mal configurado": no es
+        que sonara mal la grabacion, es que el volumen daba un escalon en
+        vez de subir liso. Reescrito para que dependa de `r2` (la
+        velocidad real, 0 a 1) en linea recta, sin escalones: al ralenti
+        0,10, a tope 0,58 (antes llegaba a 0,75 — el "un poco mas bajo"
+        que pidio).
+    NO ESCUCHADO POR MI (no tengo oidos): el calculo y la medida son de
+    verdad, pero el resultado final solo lo puede confirmar Pablo jugando.
+    Si el Chinchorro sigue sonando raro o el progresivo no convence,
+    `ENGINES.barato.vol` y `NIVEL_RALENTI`/`NIVEL_TOPE` en Audio.js son los
+    dos sitios exactos a tocar.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------
