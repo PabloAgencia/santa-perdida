@@ -134,16 +134,26 @@ export const CITY = {
     { type: 'playa', label: 'Playa Buenavista', x: 140, y: 234, w: 70, h: 19 },
     // una manzana entera de la zona industrial
     { type: 'estadio', label: 'Estadio Municipal', x: 226, y: 172, w: 17, h: 11 },
-    // una manzana comercial normal
-    { type: 'mercado', label: 'Mercado Cubierto', x: 58, y: 100, w: 17, h: 11 },
-    // otra manzana industrial, distinta a la del estadio
-    { type: 'carcel', label: 'Correccional Santa Perdida', x: 106, y: 190, w: 17, h: 11 },
-    // una manzana de centro
-    { type: 'casino', label: 'Casino Fortuna', x: 154, y: 82, w: 17, h: 11 },
-    // otra manzana comercial, distinta de la del mercado
+    // REPARTO 27-sep (58a tanda): antes en col2/fila5 (comercial), pegado a
+    // aparcamiento. Un mercado de barrio encaja igual de bien junto a las
+    // casas, y asi la zona residencial (filas 0-2, que no tenia NINGUN
+    // landmark) deja de estar vacia del todo.
+    { type: 'mercado', label: 'Mercado Cubierto', x: 130, y: 28, w: 17, h: 11 },
+    // REPARTO 27-sep: antes en col4/fila10 (industrial), a solo una columna
+    // del poligono. La zona conflictiva (columnas 10-12) no tenia NINGUN
+    // landmark, y una carcel encaja mejor ahi que en medio de las naves.
+    { type: 'carcel', label: 'Correccional Santa Perdida', x: 274, y: 118, w: 17, h: 11 },
+    // REPARTO 27-sep: antes en col6/fila4, apilado justo encima de la torre
+    // (fila5) y la plaza (fila6): tres landmarks en la misma columna, tres
+    // filas seguidas. Se queda en la zona centro pero en la esquina
+    // contraria, lejos de la torre y de la plaza.
+    { type: 'casino', label: 'Casino Fortuna', x: 202, y: 64, w: 17, h: 11 },
+    // otra manzana comercial, distinta de la del mercado (que ya no esta aqui)
     { type: 'aparcamiento', label: 'Aparcamiento Central', x: 34, y: 136, w: 17, h: 11 },
-    // otra manzana industrial, distinta del estadio y la carcel
-    { type: 'poligono', label: 'Poligono Industrial', x: 82, y: 190, w: 17, h: 11 },
+    // REPARTO 27-sep: antes en col3/fila10, pegado a la carcel. Ahora en la
+    // esquina opuesta de la (enorme) zona industrial, lejos del estadio y de
+    // donde estaba la carcel.
+    { type: 'poligono', label: 'Poligono Industrial', x: 274, y: 208, w: 17, h: 11 },
     // otro tramo de la franja de arena/puerto, al este de la playa y antes
     // del faro (comprobado: solo naves del puerto, nada especial)
     { type: 'aeropuerto', label: 'Aerodromo Santa Perdida', x: 210, y: 234, w: 85, h: 19 },

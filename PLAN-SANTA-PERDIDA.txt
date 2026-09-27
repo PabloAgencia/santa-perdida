@@ -2868,30 +2868,48 @@ esa noche, primera hecha ya:
     vistazo en el navegador a la busca, las maquinas y las armas girando
     antes de darlo por bueno del todo.
 
- L. PENDIENTE DE PABLO, es un bloque grande aparte. Pidio que el mapa "no
-    sea un cuadrado sin mas" (como el de San Andreas) y que lo de dentro
-    este "mejor repartido y organizado". Mirado el codigo: SON DOS
-    ARREGLOS DE TAMAÑO MUY DISTINTO, mejor no atacarlos a ciegas en la
-    misma tanda que todo lo de arriba:
-      · La forma cuadrada viene de `config/city.js`: la ciudad es una
-        rejilla de calles perfectamente rectangular (325x262) con mar SOLO
-        en una franja fina del borde sur (`seaTop: 253`, el resto del
-        perímetro es tierra). Darle una costa irregular de verdad (bahias,
-        peninsulas, mas de un lado con mar) es tocar la generacion de
-        calles, las zonas y OTRA VEZ la validacion de que ningun landmark
-        quede encima de un carril (lo que costo su propia tanda en el
-        bloque J) — del tamaño de "LA CIUDAD MAS GRANDE" (13 tandas).
-      · El reparto: los landmarks estan puestos a mano en
-        `config/city.js` y casi todos (monte, grua, isla, playa,
-        aerodromo, faro) se amontonan en esa misma franja sur, mientras el
-        interior del mapa solo tiene plaza+torre (pegados entre si),
-        casino, mercado, aparcamiento, carcel y poligono (estos dos
-        ultimos casi tocandose, mismo tramo de calle). Esto es mas
-        acotado: mover coordenadas y comprobar otra vez `solid && roadMask
-        === 0` en cada una.
-    Antes de arrancar ninguno de los dos hace falta que Pablo diga cual
-    (o si quiere los dos, por cual primero): no es lo mismo un rediseño
-    de la costa que separar ocho puntos ya puestos.
+ L. Pidio que el mapa "no sea un cuadrado sin mas" (como San Andreas) y que
+    lo de dentro este "mejor repartido y organizado". Son dos arreglos de
+    tamaño muy distinto (visto el codigo); Pablo eligio: los dos, empezando
+    por el reparto.
+
+    HECHO (58a tanda, 27-sep). EL REPARTO. Cuatro landmarks de manzana
+    estaban mal puestos y se han movido dentro de `config/city.js`:
+      · CASINO apilado justo encima de la torre y la plaza: tres landmarks
+        en la misma columna, tres filas seguidas. Movido a la esquina
+        contraria de la zona centro (de fila4/col6 a fila3/col8).
+      · CARCEL y POLIGONO a una columna de distancia el uno del otro, en
+        la misma fila de la zona industrial. La carcel se llevo a la zona
+        conflictiva (fila6/col11), que no tenia NINGUN landmark y una
+        carcel ahi encaja mejor que entre naves; el poligono se fue a la
+        esquina opuesta de la zona industrial (fila11/col11), lejos del
+        estadio.
+      · MERCADO en zona comercial, pegado (en fila) a donde estaba el
+        aparcamiento. Movido a la zona residencial (fila1/col5), que
+        tampoco tenia ningun landmark: un mercado de barrio encaja mejor
+        junto a las casas que en medio de tiendas.
+    Los otros (aparcamiento, estadio, torre, plaza y toda la franja
+    costera: monte, grua, isla, playa, aerodromo, faro) se quedan igual:
+    la franja costera YA estaba bien repartida de punta a punta, y torre+
+    plaza siguen pegadas a proposito (es el centro civico).
+    COMPROBADO CON CÓDIGO, no a ojo: un script suelto genero el mapa de
+    verdad (`CityMap.generate()`) y conto casillas `solid && roadMask`
+    dentro de cada landmark nuevo (0, igual que antes de moverlos) y
+    solapes entre los ocho landmarks de manzana (0). El script se borro
+    despues de usarlo, no queda en el repo.
+    NO PROBADO EN EL NAVEGADOR (misma sesion sin Chrome conectado, ver
+    bloque K): Pablo deberia darse una vuelta por el mapa (M) y por las
+    zonas residencial y conflictiva para ver como queda el reparto nuevo.
+
+    PENDIENTE DE PABLO. LA COSTA IRREGULAR. La ciudad es una rejilla de
+    calles perfectamente rectangular (325x262) con mar SOLO en una franja
+    fina del borde sur (`seaTop: 253`); el resto del perimetro es tierra
+    recta, y de ahi viene la sensacion de "cuadrado". Darle una costa de
+    verdad (bahias, peninsulas, mar por mas de un lado) significa tocar la
+    generacion de calles, las zonas y OTRA VEZ la validacion de que ningun
+    landmark quede encima de un carril (lo que costo su propia tanda en el
+    bloque J) — del tamaño de "LA CIUDAD MAS GRANDE" (13 tandas). Pablo
+    dice cuando se arranca.
 
 --------------------------------------------------------------------------------
 ARTE
