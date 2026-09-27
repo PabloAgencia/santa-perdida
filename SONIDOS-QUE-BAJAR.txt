@@ -1,4 +1,4 @@
-SONIDOS QUE HAY QUE BAJAR DE PIXABAY                        (22-sep-2026)
+SONIDOS QUE HAY QUE BAJAR DE PIXABAY                        (27-sep-2026)
 ================================================================================
 
 El juego ya suena sin esto (todo sintetizado), pero en cuanto aparezca un
@@ -11,79 +11,68 @@ pantalla de "Just a moment" de Cloudflare). Desde el navegador, a mano, son
 dos minutos.
 
 POR QUE NO SE USAN LOS SONIDOS DE LOS GTA
-  El juego esta publicado en santa-perdida.pages.dev y en GitHub Pages, y el
-  repositorio es publico. El audio de un GTA es de Rockstar: una reclamacion
-  tumbaria la web y el repositorio. En tu ordenador, para ti, haz lo que
-  quieras; en lo que esta publicado a tu nombre, no.
+  El juego esta publicado en santa-perdida.creskio.com y en GitHub Pages, y
+  el repositorio es publico. El audio de un GTA es de Rockstar: una
+  reclamacion tumbaria la web y el repositorio. En tu ordenador, para ti,
+  haz lo que quieras; en lo que esta publicado a tu nombre, no.
 
 
 --------------------------------------------------------------------------------
-LO IMPORTANTE: EL MOTOR
+YA ESTAN PUESTOS (no hace falta bajar nada de esto otra vez)
 --------------------------------------------------------------------------------
-  Guardar como:  audio/motor-loop.mp3
+  MOTOR (5 grabaciones, una por "clase" de vehiculo, NO una por coche):
+    motor-1.mp3       resistente (Bastion, Taxi) y policia (Patrulla, con
+                       el tono un poco mas alto)
+    motor-2.mp3       furgoneta (Carguero, Furgon de asalto, Ambulancia)
+    motor-3.mp3       rapido (Vela GT Y TAMBIEN Centella: comparten motor)
+    motor-4.mp3       barato (Chinchorro)
+    motor-moto.mp3    moto (Avispa)
 
-  Buscar en pixabay.com/sound-effects:   "car engine loop"
-                                         "engine idle loop"
-                                         "car idle"
+    El juego les cambia la velocidad de reproduccion segun las vueltas (de
+    0,62 a 1,87) y monta encima la caja de cinco marchas: por eso cada
+    grabacion tiene que ser un ralenti LIMPIO en bucle, sin arranque de
+    llave ni frenazo, 3-10 s, sin musica ni voces.
 
-  QUE TIENE QUE SER: un motor AL RALENTI o a pocas vueltas, en BUCLE, de 3 a
-  10 segundos, sin arranque de llave al principio ni frenazo al final, y sin
-  musica ni voces. Cuanto mas plano y aburrido, mejor.
+  CHOQUES Y FRENADAS:
+    choque.mp3         golpe seco de chapa
+    frenada.mp3        derrape de ruedas
 
-  POR QUE ASI: el juego le cambia la velocidad de reproduccion segun las
-  vueltas (de 0,62 a 1,87), y por encima va montada la caja de cambios de
-  cinco marchas que ya esta hecha. Si el fichero ya trae el motor acelerando,
-  al estirarlo suena raro. Con un ralenti limpio sale el "de menos a mas" de
-  verdad.
+  DISPAROS (4, uno por arma de fuego; los cuerpo a cuerpo — puños,
+  americano, cuchillo, bate — usan `punetazo.mp3`, no llevan el suyo):
+    disparo-pistola.mp3
+    disparo-escopeta.mp3
+    disparo-rifle.mp3     (el subfusil reusa este mismo sonido)
+    disparo-sniper.mp3
 
-  Si encuentras uno bueno de coche deportivo y otro de furgoneta, guardame
-  los dos y los reparto por tipo de vehiculo (dime y lo monto).
+  GOLPES:
+    punetazo.mp3
 
 
 --------------------------------------------------------------------------------
-LOS DEMAS (opcionales, por orden de lo que mas se nota)
+LO QUE QUEDA (opcional, el juego funciona igual sin ello)
 --------------------------------------------------------------------------------
-  audio/choque.mp3          "car crash" / "metal impact"
-                            Un golpe seco de chapa, menos de 1 segundo.
+  UN SEXTO MOTOR PARA EL CENTELLA (15.000 €, el coche mas caro del
+  juego), si quieres que suene distinto del Vela GT en vez de compartir
+  el mismo motor-3. Esto SI necesita que yo toque codigo ademas del
+  fichero (una clase de motor nueva en config/vehicles.js y su entrada en
+  Audio.js): avisame cuando lo tengas y lo conecto.
+  Buscar en pixabay.com/sound-effects:  "sports car engine loop"
+                                        "supercar idle"
+  Mismas normas que los de arriba: ralenti limpio, en bucle, 3-10 s.
 
-  audio/frenada.mp3         "tire screech" / "car skid"
-                            Derrape de ruedas, 1-2 segundos.
-
-  audio/disparo-pistola.mp3 "pistol shot" / "gun shot"
-                            Un tiro seco, sin eco largo.
-
-  audio/disparo-escopeta.mp3  "shotgun"
-                            Mas grave y con mas cuerpo que el anterior.
-
-  audio/punetazo.mp3        "punch" / "body hit"
-                            Golpe corto y sordo.
-
-
-OPCIONALES: LOS MENUS
-  Estos CINCO no hacen falta. El juego ya los sintetiza, y los numeros del
-  sintetizado estan ajustados MIDIENDO un sonido de referencia, asi que se
-  parecen bastante. Solo si algun dia encuentras uno que te guste mas.
+  LOS MENUS (cinco, el juego los sintetiza y se parecen bastante ya
+  medido, asi que solo si encuentras uno que te guste mas):
+    menu-mover.mp3      "menu blip" / "ui beep" — pitido corto ~0,3 s,
+                         tono sobre 550 Hz, el que mas se oye
+    menu-entrar.mp3     "menu select" / "ui confirm" — igual pero mas
+                         grave, sobre 355 Hz
+    menu-atras.mp3      "menu back" / "ui cancel" — mas grave y mas corto
+    menu-abrir.mp3      "menu open" — dos pitidos encadenados que SUBEN
+    menu-cerrar.mp3     "menu close" — los mismos dos pero BAJANDO
 
   OJO CON LA LICENCIA: aqui dentro solo entran sonidos que se puedan
   publicar. El repo es PUBLICO y la web tambien. Los de Pixabay valen; un
   sonido sacado de otro juego, no.
-
-  audio/menu-mover.mp3      "menu blip" / "ui beep"
-                            Pitido corto de unos 0,3 s, con su cola. Tono
-                            sobre 550 Hz. Es el que mas se oye.
-
-  audio/menu-entrar.mp3     "menu select" / "ui confirm"
-                            El mismo aparato pero mas grave, sobre 355 Hz.
-
-  audio/menu-atras.mp3      "menu back" / "ui cancel"
-                            Mas grave aun y mas corto.
-
-  audio/menu-abrir.mp3      "menu open" / "ui open"
-                            Al abrir el mapa, la pausa o un mostrador. Dos
-                            pitidos encadenados que SUBEN.
-
-  audio/menu-cerrar.mp3     "menu close"
-                            Al cerrarlos. Los mismos dos, pero BAJANDO.
 
 
 --------------------------------------------------------------------------------
