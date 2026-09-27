@@ -13,6 +13,14 @@ export class SlotsScene extends Phaser.Scene {
     super({ key: 'SlotsScene', active: false });
   }
 
+  // Llega desde el menu con un modo ('nueva' o 'cargar', segun el boton que
+  // se pulso) o sin nada (ESC en mitad de una partida, u otros sitios que
+  // aun apunten aqui a secas). Es solo para el titulo y para decidir con
+  // que ranura se abre: la pantalla y sus teclas son las mismas siempre.
+  init(data) {
+    this.modo = (data && data.modo) || null;
+  }
+
   create() {
     const w = this.scale.width;
     const h = this.scale.height;
@@ -22,12 +30,15 @@ export class SlotsScene extends Phaser.Scene {
     this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setTint(0x05060a).setAlpha(0.6);
 
-    this.add.text(w / 2, 62, 'TUS PARTIDAS', {
+    const titulo = this.modo === 'nueva' ? 'NUEVA PARTIDA'
+      : this.modo === 'cargar' ? 'CARGAR PARTIDA'
+      : 'TUS PARTIDAS';
+    this.add.text(w / 2, 62, titulo, {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 7,
       fontSize: '54px', color: '#e8b54a',
     }).setOrigin(0.5);
 
-    this.indice = Math.max(0, SaveSystem.ranura - 1);
+    this.indice = this.indiceInicial();
     this.confirmando = null;
     this.nube = null;
     this.filas = [];
@@ -85,6 +96,30 @@ export class SlotsScene extends Phaser.Scene {
 
     this.pintar();
     this.mirarLaNube();
+  }
+
+  // En que ranura se abre la pantalla, segun para que se vino:
+  //   nueva   -> la primera libre (si no hay ninguna libre, la actual: el
+  //              jugador vera "N para empezar de cero" y decidira el)
+  //   cargar  -> la que se guardo mas reciente, para no obligar a buscarla
+  //   (nada)  -> la ranura activa, como siempre
+  indiceInicial() {
+    if (this.modo === 'nueva') {
+      for (let n = 1; n <= SAVE.ranuras; n++) {
+        if (!SaveSystem.hasSave(n)) return n - 1;
+      }
+      return Math.max(0, SaveSystem.ranura - 1);
+    }
+    if (this.modo === 'cargar') {
+      let mejor = null;
+      let fechaMejor = -1;
+      for (let n = 1; n <= SAVE.ranuras; n++) {
+        const r = SaveSystem.resumen(n);
+        if (r && (r.fecha || 0) > fechaMejor) { fechaMejor = r.fecha || 0; mejor = n; }
+      }
+      if (mejor) return mejor - 1;
+    }
+    return Math.max(0, SaveSystem.ranura - 1);
   }
 
   // ---------- pintar ----------

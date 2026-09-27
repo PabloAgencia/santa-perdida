@@ -3184,6 +3184,54 @@ esa noche, primera hecha ya:
     +400 €) y que una instancia nueva de `ColeccionablesSystem` respeta
     `GameState.medallasRecogidas` y no vuelve a plantar las ya cogidas.
 
+ R. HECHO (64a tanda, 27-sep). El menu de inicio, como en los GTA de
+    verdad: continuar, nueva partida, cargar partida.
+
+    Pablo pregunto si guardar/cargar esta bien hecho. Auditado: SI. Tres
+    ranuras (`SaveSystem.js`), cada guardado va a `localStorage` Y a la
+    nube si hay cuenta (nunca al reves: si falla la nube, la partida local
+    ya esta a salvo), autoguardado cada 15 s
+    (`CityScene.autosaveTimer`/`SAVE.autosaveMs`) mas al comprar cosas
+    importantes y con la tecla K, y los campos nuevos que se han ido
+    añadiendo esta sesion (ropa, medallas, perdiendoBusca...) usan `?? {}`
+    al cargar para que una partida vieja sin esos campos no se rompa. Nada
+    que arreglar ahi.
+
+    Lo que SI faltaba era la pantalla de inicio: antes tenia "SEGUIR LA
+    PARTIDA / EMPEZAR A JUGAR" y "TUS PARTIDAS" a secas (dos botones que
+    hacian de hecho las tres cosas, pero no se leian como un menu de
+    GTA de toda la vida). Reescrito `MenuScene.construirOpciones()`: la
+    lista sale distinta segun haya o no partidas guardadas —
+    "CONTINUAR · PARTIDA N" solo si la ranura activa tiene algo,
+    "NUEVA PARTIDA" siempre, "CARGAR PARTIDA" solo si hay alguna partida
+    en cualquier ranura. Sin partidas: solo tres opciones (nueva, cuenta,
+    controles). Con partida: cinco.
+
+    `SlotsScene.js` (la pantalla de las tres ranuras) recibe ahora un
+    `modo` ('nueva' o 'cargar') por `scene.start('SlotsScene', {modo})`:
+    cambia el titulo de la pantalla y en que ranura se abre por defecto
+    (la primera vacia para "nueva", la mas reciente para "cargar"). Las
+    teclas y el resto de la pantalla no cambian.
+
+    UN RIESGO REAL que hizo falta resolver: la portada (`arte/portada.jpg`)
+    trae el panel esmerilado de las opciones COCIDO en la imagen, medido
+    para CUATRO opciones exactas. Con partida guardada la lista ahora
+    tiene CINCO. Arreglado en `MenuScene.js`: la lista de opciones se
+    reparte SIEMPRE entre los mismos 398 y 540,5 px medidos en la imagen
+    (antes un salto fijo de 47,5 px que solo valia para cuatro), mas
+    apretada si son cinco y con la letra un punto mas pequeña
+    (26 px en vez de 32) para que no se toquen.
+
+    PROBADO EN EL NAVEGADOR, con la partida real de Pablo (sin guardar
+    nada de las pruebas): con partida activa salen las cinco opciones
+    bien repartidas dentro del panel, sin salirse ("CONTINUAR · PARTIDA
+    3", capturado). "CARGAR PARTIDA" abre las ranuras con la 3 (la mas
+    reciente, 17.100 €) ya seleccionada. "NUEVA PARTIDA" las abre con la
+    2 (la unica vacia) ya seleccionada. Simulado tambien, sin tocar
+    `localStorage` de verdad, el caso de un jugador sin ninguna partida:
+    la lista sale con solo tres opciones (nueva, cuenta, controles), sin
+    "continuar" ni "cargar".
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

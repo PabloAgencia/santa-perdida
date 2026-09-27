@@ -60,28 +60,35 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
-    this.opciones = [
-      // atajo directo a la partida que estabas jugando
-      { label: this.etiquetaSeguir(), accion: () => this.seguirDirecto() },
-      { label: 'TUS PARTIDAS', accion: () => this.irARanuras() },
-      { label: this.etiquetaCuenta(), accion: () => this.verCuenta() },
-      { label: 'CONTROLES', accion: () => this.verControles() },
-    ];
+    // COMO EN LOS GTA DE TODA LA VIDA: continuar (si hay algo que
+    // continuar), nueva partida, cargar partida (si hay algo que cargar).
+    // Antes era un unico "SEGUIR LA PARTIDA / EMPEZAR A JUGAR" mas "TUS
+    // PARTIDAS" a secas, que hacia lo mismo pero no se leia como un menu de
+    // toda la vida. La lista sale distinta segun haya o no partidas
+    // guardadas, asi que nunca se ofrece "cargar" si no hay nada que cargar.
+    this.opciones = this.construirOpciones();
 
     // Con portada las opciones van ENCIMA del panel esmerilado que la
     // ilustracion trae cocido (ahi estaban las opciones pintadas, que
-    // herramientas/preparar-portada.py borro). Estos dos numeros salen de
-    // medir donde estaban en la imagen, pasados a las medidas de la escena.
+    // herramientas/preparar-portada.py borro). El panel se midio con CUATRO
+    // opciones, de 398 a 540.5 (398 + 3 x 47.5). La lista ahora puede traer
+    // tres o cinco segun haya o no partidas guardadas: para no salirse
+    // nunca del panel, SIEMPRE se reparten entre esos mismos 398 y 540.5,
+    // solo que mas juntas si son cinco o mas separadas si son tres.
     this.indice = 0;
     const primera = conPortada ? 398 : h * 0.56;
-    const salto = conPortada ? 47.5 : 44;
+    const ultima = 540.5;
+    const n = this.opciones.length;
+    const salto = conPortada ? (n > 1 ? (ultima - primera) / (n - 1) : 0) : 44;
     this.items = this.opciones.map((op, i) =>
       this.add.text(w / 2, primera + i * salto, op.label, {
         fontFamily: TITULO, stroke: '#05060a',
         // sobre la ilustracion el borde tiene que ser mas gordo: el fondo
-        // tiene color y detalle, y con 4 las letras se despegaban poco
+        // tiene color y detalle, y con 4 las letras se despegaban poco.
+        // Con cinco opciones van mas apretadas (ver `salto` de arriba), asi
+        // que la letra baja un poco para que no se toquen.
         strokeThickness: conPortada ? 6 : 4,
-        fontSize: conPortada ? '32px' : '30px',
+        fontSize: conPortada ? (n > 4 ? '26px' : '32px') : '30px',
         color: COLORS.ink,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
         // con el raton suena igual que con las flechas, pero solo al CAMBIAR
@@ -143,9 +150,7 @@ export class MenuScene extends Phaser.Scene {
       AccountUI.pintarNuevaClave();
       AccountUI.alCerrar = () => {
         this.input.keyboard.enabled = true;
-        this.opciones[2].label = this.etiquetaCuenta();
-        this.items[2].setText(this.opciones[2].label);
-        this.pintar();
+        this.refrescarCuenta();
       };
     } else {
       AccountUI.abrir(() => {
@@ -155,8 +160,21 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
-  etiquetaSeguir() {
-    return SaveSystem.hasSave() ? `SEGUIR LA PARTIDA ${SaveSystem.ranura}` : 'EMPEZAR A JUGAR';
+  construirOpciones() {
+    const opciones = [];
+    if (SaveSystem.hasSave()) {
+      opciones.push({
+        id: 'continuar', label: `CONTINUAR · PARTIDA ${SaveSystem.ranura}`,
+        accion: () => this.seguirDirecto(),
+      });
+    }
+    opciones.push({ id: 'nueva', label: 'NUEVA PARTIDA', accion: () => this.irASlots('nueva') });
+    if (SaveSystem.hayAlguna()) {
+      opciones.push({ id: 'cargar', label: 'CARGAR PARTIDA', accion: () => this.irASlots('cargar') });
+    }
+    opciones.push({ id: 'cuenta', label: this.etiquetaCuenta(), accion: () => this.verCuenta() });
+    opciones.push({ id: 'controles', label: 'CONTROLES', accion: () => this.verControles() });
+    return opciones;
   }
 
   etiquetaCuenta() {
@@ -255,9 +273,20 @@ export class MenuScene extends Phaser.Scene {
     this.time.delayedCall(450, () => this.scene.start('CityScene'));
   }
 
-  irARanuras() {
+  irASlots(modo) {
     this.cameras.main.fadeOut(280, 0, 0, 0);
-    this.time.delayedCall(300, () => this.scene.start('SlotsScene'));
+    this.time.delayedCall(300, () => this.scene.start('SlotsScene', { modo }));
+  }
+
+  // Solo se retoca la etiqueta de la cuenta: iniciar sesion no cambia si hay
+  // partidas guardadas, asi que el resto de la lista (continuar/nueva/
+  // cargar) no hace falta tocarlo.
+  refrescarCuenta() {
+    const op = this.opciones.find((o) => o.id === 'cuenta');
+    const i = this.opciones.indexOf(op);
+    op.label = this.etiquetaCuenta();
+    this.items[i].setText(op.label);
+    this.pintar();
   }
 
   // la pantalla de cuenta es HTML por encima del juego, asi que mientras
@@ -266,11 +295,7 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard.enabled = false;
     AccountUI.abrir(() => {
       this.input.keyboard.enabled = true;
-      this.opciones[0].label = this.etiquetaSeguir();
-      this.opciones[2].label = this.etiquetaCuenta();
-      this.items[0].setText(this.opciones[0].label);
-      this.items[2].setText(this.opciones[2].label);
-      this.pintar();
+      this.refrescarCuenta();
     });
   }
 
