@@ -238,12 +238,77 @@ EL PREGONERO DEL MERCADO — vende de todo un poco en el mercado cubierto
 
 
 ================================================================================
+EL BAJO MUNDO — VICIO Y NEGOCIO  (apuntado por Pablo, pendiente de construir)
+================================================================================
+Pablo lo pidio explicito: "meter tambien lo de las prostitutas, club de
+striptease, y chulo con sus respectivos trabajos". Se apunta aqui completo
+para que quede diseñado, aunque el codigo se escriba en una tanda futura.
+Se trata TAL COMO LO TRATAN LOS GTA DE SIEMPRE: de forma adulta pero NUNCA
+grafica ni explicita — un negocio mas de la ciudad (como el contrabando o
+la extorsion), no una escena. Todo pasa fuera de camara o abstraido en un
+numero, igual que ya pasa con la violencia del juego (un disparo es un
+icono y una barra de vida, no una herida dibujada).
+
+EL DUQUE — nuevo personaje con nombre, no una banda nueva: dirige el unico
+  club de la ciudad (zona comercial, terreno de Casa Verdial) desde hace
+  años. Trajeado, con mas anillos de oro que dedos, encantador con quien
+  le conviene. Paga proteccion a la Doña como cualquier otro negocio del
+  centro y la zona comercial, asi que ES PARTE del entramado de Casa
+  Verdial sin ser uno de los suyos de sangre: el sitio perfecto para que la
+  Doña mueva dinero que no quiere que pase por sus propios libros. Encaja
+  ahi con el resto del guion sin inventar una cuarta banda.
+
+  EL NEGOCIO: un `NEGOCIO` mas, del mismo tipo que ya existen en
+  `config/negocios.js` (renta por segundo, tope, mejorable): "El Terciopelo"
+  o similar, comprable como cualquier otro local. Da mas renta que la media
+  porque el riesgo (policia, competencia) tambien es mayor.
+
+  TRABAJOS DE CHULO (para cuando exista un TrabajoVehiculoSystem o un
+  sistema de encargos sueltos parecido, como taxista/ambulancia/
+  justiciero): rondas de cobro a las chicas que trabajan para El Duque
+  (variante de "La ronda de cobros" que ya existe para Casa Verdial),
+  proteccion cuando un cliente se pone violento (variante del CombatSystem
+  que ya existe, sin arte nuevo: es una pelea como otra cualquiera), y
+  espantar a chulos de otros barrios que intentan operar en terreno de
+  El Duque sin pagarle (gancho perfecto para una mision de Ferro o de la
+  Cuadrilla intentando meter cabeza en el negocio, subtrama del Acto 2).
+
+  "CLIENTES" COMO MECANICA (la parte clasica de los GTA de toda la vida,
+  GTA III/Vice City/San Andreas): un peaton especifico de noche cerca del
+  club, se sube al coche del jugador aparcado, la camara NO entra dentro
+  (se abstrae con el coche balanceandose un momento, como ya hacen esos
+  juegos), y al salir se recupera algo de vida a cambio de dinero — un
+  "corazon de pago" mas, con su propio icono, que completa el trio que ya
+  existe (corazon gratis en callejon / maquina en la acera / esto). Barato
+  de montar sobre `PickupSystem.js`, que ya tiene los tres tipos de curacion
+  con logica parecida.
+
+  DROGAS: encaja con Los Amarres (contrabando) mas que con Casa Verdial.
+  En vez de una banda nueva, es una LINEA DE NEGOCIO extra del contrabando
+  que ya existe: el "fardo" que se recoge en varias misiones de El Consul
+  siempre fue generico a proposito, y a partir del Acto 2 puede empezar a
+  decirse claramente que es. Abre la puerta al bloque 6 de
+  IDEAS-DE-LOS-GTA.txt (comprar barato en un barrio, vender caro en otro)
+  con LAS DROGAS como la mercancia real en vez de una generica "pieza de
+  coche": mismo sistema, mas peso narrativo.
+
+
+================================================================================
 EL ARCO — CUATRO ACTOS  (antes eran tres; con "muchos personajes, como un
 GTA" hace falta un cuarto para el giro del Hombre de Fuera y el final)
 ================================================================================
 Sigue sin hacer falta un sistema de "actos" nuevo en el codigo: el corte
 sigue siendo `minRep` en `config/missions.js`, que ya hace de reloj de la
 historia. Lo que cambia es cuanto hay escrito dentro de cada tramo.
+
+EL TONO (pedido explicito de Pablo: "rollo GTA San Andreas, muertes, drogas,
+traicion"). El Acto 1 puede ser mas ligero (es la toma de contacto), pero a
+partir del Acto 2 la historia tiene que MORDER: alguien con nombre propio
+muere de verdad y se queda muerto (no un "game over", una baja real del
+reparto que el jugador conocia), alguien en quien confiabas te traiciona
+por dinero o por miedo, y las drogas dejan de ser un eufemismo ("el fardo")
+para llamarse por su nombre en el dialogo. Cada acto necesita como minimo
+UN moento que se recuerde, no solo mas encargos del mismo tipo.
 
 ACTO 1 — "SIN PREGUNTAS"  (minRep -100 a 10)
   Cero llega a Santa Perdida sin nada y sin nombre. Las tres bandas
@@ -256,31 +321,43 @@ ACTO 1 — "SIN PREGUNTAS"  (minRep -100 a 10)
 
 ACTO 2 — "TRES BANDAS, UNA CIUDAD"  (minRep 10 a 20)
   Cada banda te da trabajo mas delicado, y aparecen las grietas internas:
-  Ferro empieza a cuestionar a El Consul en publico; Renco es descubierto
-  como soplon y Chispa tiene que decidir que hacer con el; la Doña deja
-  caer, como quien no quiere la cosa, que el puerto "valdria mucho mas
-  bien llevado". Ninguna banda ve el patron todavia: cada una cree que su
-  problema es solo suyo.
+  Ferro empieza a cuestionar a El Consul en publico; la Doña deja caer,
+  como quien no quiere la cosa, que el puerto "valdria mucho mas bien
+  llevado"; El Duque nota que alguien esta intentando meterle mano a su
+  negocio sin pagarle a la Doña (la conexion con el bajo mundo, ver mas
+  arriba). EL MOMENTO QUE MUERDE: Renco es descubierto como soplon de
+  verdad (ya no solo "hablar de mas": paso informacion que costo un
+  cargamento entero de El Consul), y le toca a Chispa decidir en persona
+  que hacer con alguien de su propia cuadrilla. Sea cual sea la decision
+  del jugador en esa mision, Renco NO vuelve a aparecer despues: la
+  traicion tiene consecuencia real, no un dialogo y ya esta.
 
 ACTO 3 — "EL HOMBRE DE FUERA"  (minRep 20 a 30, tramo nuevo)
   Se descubre a Anzures y al Consorcio Poniente. La Doña deja de ser "la
   banda rica" para ser "alguien que tambien esta acorralada": Empedrado
   aparece negociando con Anzures, y por primera vez Cero (y el jugador)
   entiende que la guerra entre las tres bandas es cosa de un cuarto
-  jugador que no vive en Santa Perdida. El Inspector Salaverri puede
-  aparecer aqui si se construye su subtrama, como prueba de hasta donde
-  llega el dinero de fuera.
+  jugador que no vive en Santa Perdida. EL MOMENTO QUE MUERDE: la disputa
+  entre Marina y Ferro por Los Amarres deja de ser politica de despacho —
+  Ferro intenta un golpe de mano de verdad, y segun como reaccione el
+  jugador, o cae Ferro o cae alguien de la gente de Marina. El Inspector
+  Salaverri puede aparecer aqui si se construye su subtrama, como prueba
+  de hasta donde llega el dinero de fuera.
 
 ACTO 4 — "LA CIUDAD ELIGE"  (minRep 30+, tramo nuevo)
   El final de verdad. Cada banda reacciona distinto a la noticia:
   El Consul quiere pelear por el puerto con lo que tiene, Marina quiere
-  tomar el control ella misma antes de que su padre lo pierda todo, Ferro
-  quiere vender el ya y repartirse lo que quede, Chispa quiere quemarlo
-  todo antes que dejarse echar del barrio, la Doña ofrece una salida a
-  quien la ayude a librarse de Anzures sin perder lo suyo, y Maximo puede
-  aprovechar el caos para quedarse el con Casa Verdial. Aqui es donde
-  pesan de verdad las decisiones de las bandas a las que ayudaste o no
-  durante toda la partida.
+  tomar el control ella misma antes de que su padre lo pierda todo, o
+  Ferro (si sigue vivo tras el Acto 3) quiere vender ya y repartirse lo
+  que quede; Chispa quiere quemarlo todo antes que dejarse echar del
+  barrio; la Doña ofrece una salida a quien la ayude a librarse de Anzures
+  sin perder lo suyo, y Maximo puede aprovechar el caos para quedarse el
+  con Casa Verdial. EL MOMENTO QUE MUERDE, el mas fuerte de los cuatro:
+  segun el final hacia el que vaya el jugador, UNO de los tres jefes de
+  banda no llega vivo a los creditos. No es un castigo por jugar mal: es
+  el precio de una guerra de bandas de verdad, y cambia segun a quien
+  ayudaste y a quien dejaste solo. Aqui es donde pesan de verdad las
+  decisiones de toda la partida.
 
 
 ================================================================================
@@ -333,8 +410,8 @@ QUE SE HA HECHO YA CON ESTO  (64a tanda, 27-sep)
 
 QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
   1. NOMBRAR A LOS SPRITES: Marina, Ferro, Sacau, Vale, el Abuelo, Renco,
-     Maximo, Empedrado y Salaverri de momento no tienen sprite propio, solo
-     existen en este documento. El barato: reusar las variantes
+     Maximo, Empedrado, Salaverri y El Duque de momento no tienen sprite
+     propio, solo existen en este documento. El barato: reusar las variantes
      `gang-<banda>-1/2/3` que ya existen (BootScene.makeGangs, 4 por
      banda) y asignar una fija a cada personaje con nombre, en vez de que
      sean intercambiables. El caro pero mejor: retratos de IA como los de
@@ -361,3 +438,8 @@ QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
      el color del suelo. El barrio RESIDENCIAL sin dueño (ver arriba) es
      el sitio logico para que el ACTO 4 se juegue de verdad si se quiere
      dar mas peso territorial al final.
+  8. EL BAJO MUNDO (El Duque, el club, los trabajos de chulo, las drogas
+     como mercancia real del contrabando): diseño completo en la seccion
+     "EL BAJO MUNDO — VICIO Y NEGOCIO" de mas arriba, apuntado por Pablo
+     explicitamente. Tratado siempre como negocio de la ciudad (como el
+     contrabando o la extorsion), nunca de forma grafica ni explicita.
