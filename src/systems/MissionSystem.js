@@ -5,6 +5,7 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { Vehicle } from '../entities/Vehicle.js';
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
 import { steerTo } from './driving.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 const ALCANCE = 42;
 
@@ -98,11 +99,13 @@ export class MissionSystem {
           duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
         });
 
-        objetos.push(
-          this.scene.add.text(punto.x, punto.y + 34, f.short, {
-            fontFamily: 'Pricedown, Anton, sans-serif', stroke: '#05060a', strokeThickness: 2, fontSize: '16px', color: '#e6e1d4',
-          }).setOrigin(0.5).setAlpha(0.8).setDepth(10)
+        // EL NOMBRE DEL JEFE, no el de la banda: HISTORIA-SANTA-PERDIDA.txt.
+        // Antes decia "AMARRES"/"ROMPIENTE"/"VERDIAL" (una sigla); ahora
+        // dice el alias de quien de verdad te esta dando el encargo.
+        const et = etiquetaFlotante(
+          this.scene, punto.x, punto.y + 34, f.jefe.alias.toUpperCase(), f.accent, 14
         );
+        objetos.push(et.texto, et.placa, et.raya);
 
         this.dadores.push({
           faccion: key, mision, x: punto.x, y: punto.y, objetos,
@@ -115,7 +118,7 @@ export class MissionSystem {
       if (antes.has(d.mision.id)) continue;
       if (antes.size === 0) continue;   // al empezar la partida no se avisa
       EventBus.emit(EVT.NOTIFY, {
-        text: `${FACTIONS[d.faccion].short} te espera para un trabajo nuevo`,
+        text: `${FACTIONS[d.faccion].jefe.alias} te espera para un trabajo nuevo`,
         tone: 'objective',
       });
     }
@@ -348,7 +351,7 @@ export class MissionSystem {
     this.ultimoCerca = cerca;
     if (!cerca) return;
     EventBus.emit(EVT.NOTIFY, {
-      text: `E para hablar con ${FACTIONS[cerca.faccion].short}: ${cerca.mision.nombre}`,
+      text: `E para hablar con ${FACTIONS[cerca.faccion].jefe.alias}: ${cerca.mision.nombre}`,
       tone: 'objective',
     });
   }

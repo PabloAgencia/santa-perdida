@@ -3232,6 +3232,50 @@ esa noche, primera hecha ya:
     la lista sale con solo tres opciones (nueva, cuenta, controles), sin
     "continuar" ni "cargar".
 
+ S. EMPEZADO (64a tanda, 27-sep). LA HISTORIA DE VERDAD. Documento nuevo
+    aparte: `HISTORIA-SANTA-PERDIDA.txt` (version larga, con "muchos
+    personajes, como un GTA" segun lo pidio Pablo). Ahi esta todo el
+    reparto (32 personajes), los tres jefes de banda con nombre, el
+    antagonista de fuera (Sr. Anzures / Consorcio Poniente) y los cuatro
+    actos con sus cuatro finales. No se repite aqui: leer ese documento
+    para el contexto completo.
+
+    Lo que YA esta en el juego de esa historia, esta tanda:
+      · `config/factions.js`: `jefe: { nombre, alias }` en las tres
+        bandas (Baltasar Roig "El Consul", Nando Ecija "Chispa", Adelina
+        Verdial "La Doña").
+      · `MissionSystem.js`: el dador de mision enseña el alias del jefe,
+        no la sigla de la banda (con `etiquetaFlotante`, legible); los
+        avisos "tienes trabajo nuevo" y "E para hablar con..." tambien.
+      · `config/missions.js`: las diez intros que ya existian, reescritas
+        para leerse como un solo hilo (Acto 1: El Consul probando a Cero,
+        Chispa evitando una guerra que no puede permitirse, la Doña sin
+        mancharse las manos; semillas del Acto 2 ya plantadas: el trato
+        raro de El Consul, el "gente de fuera" que nota Chispa).
+      · `PrologoScene.js` (nueva, registrada en `main.js`): se abre UNA
+        VEZ, solo al empezar una partida de cero (`CityScene.create()`
+        comprueba `!loaded && !GameState.flags.prologoVisto`), pausando
+        CityScene y UIScene igual que MapaScene/ProgresoScene. Tres
+        pantallas de texto (la leyenda de la santa hundida, las tres
+        bandas, la escena de "Como quieras, aqui todos empezamos en
+        cero" que explica por que el protagonista se llama CERO desde
+        entonces), se avanza con ENTER/ESPACIO/clic. Al cerrar, marca
+        `GameState.flags.prologoVisto = true` y guarda.
+
+    PROBADO EN EL NAVEGADOR: partida nueva de verdad en una ranura vacia
+    (no una de Pablo con datos) -> las tres pantallas del prologo salen
+    en orden, con fundido, y la ultima cambia el texto de ayuda a "ENTER
+    o clic para EMPEZAR". Al terminar, vuelve a CityScene con el flag
+    puesto. El dador de la mision de Los Amarres se comprobo de cerca con
+    zoom x2,2: la etiqueta dice "EL CONSUL", no "AMARRES" (capturado).
+    Borrada la ranura de prueba al terminar para no dejar nada raro en
+    las partidas reales.
+
+    QUE QUEDA: todo el Acto 2 (subtrama de Ferro, Renco descubierto),
+    el Acto 3 entero (aparicion de Anzures) y el Acto 4 con los cuatro
+    finales — ver la seccion "QUE QUEDA" al final de
+    `HISTORIA-SANTA-PERDIDA.txt`, que lo detalla punto por punto.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

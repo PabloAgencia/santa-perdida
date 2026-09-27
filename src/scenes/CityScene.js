@@ -148,6 +148,18 @@ export class CityScene extends Phaser.Scene {
     this.setupEvents();
 
     this.scene.launch('UIScene');
+
+    // La primera vez que se juega una partida de cero, antes de nada:
+    // HISTORIA-SANTA-PERDIDA.txt. `loaded` ya dice si esto viene de un
+    // guardado (`SaveSystem.load()` de arriba) o de `GameState.reset()`.
+    if (!loaded && !GameState.flags.prologoVisto) this.abrirPrologo();
+  }
+
+  abrirPrologo() {
+    this.captureState();
+    this.scene.pause();
+    this.scene.pause('UIScene');
+    this.scene.launch('PrologoScene');
   }
 
   // Sin `desde`, el de siempre: el escondite del principio. Con `desde`

@@ -1,0 +1,363 @@
+================================================================================
+LA HISTORIA DE SANTA PERDIDA                          27-sep-2026 (version larga)
+================================================================================
+
+POR QUE ESTE DOCUMENTO
+  Pablo lo pidio en dos pasos. Primero: "hay que inventar una historia,
+  crear personajes, hacer el mapa vivo y dinamico y reestructurarlo".
+  Despues, viendo el primer borrador (tres jefes y un esqueleto de tres
+  actos sobre las diez misiones que ya existian): "profundiza bien en la
+  historia, que sea ultra extensa, muy guay, con muchos personajes, como
+  un GTA vaya". Esto es esa segunda pasada, mucho mas grande.
+
+  Regla de siempre, la de todas las sesiones: nada de nombres, sitios,
+  historias ni personajes de ningun GTA real. Todo lo de aqui es nuevo, con
+  nombre propio de Santa Perdida. Lo que se "copia" de los GTA es la FORMA
+  (varios actos, un reparto grande, subtramas por banda, un final que
+  cambia segun lo que hiciste), nunca el contenido.
+
+  Este documento es la BIBLIA de guion: personajes, relaciones, arco
+  completo. No es el guion mision a mision (eso son fichas nuevas en
+  `config/missions.js`, que se iran escribiendo tanda a tanda) sino el
+  mapa de todo lo que esas misiones van a contar.
+
+
+================================================================================
+LA CIUDAD COMO PERSONAJE
+================================================================================
+Santa Perdida no tiene santo patron de verdad: el nombre es una broma vieja
+del propio pueblo. Cuenta la leyenda local (que nadie sabe si es cierta o
+se la inventaron en un bar) que el pueblo se iba a llamar de otra forma,
+pero el barco que traia la imagen de la santa elegida para bendecir la
+fundacion se hundio en la bocana con santa y todo la noche antes de la
+ceremonia. Sin santa que perder, alguien dijo "pues que se llame Santa
+Perdida" y se quedo. Desde entonces la ciudad vive de espaldas a la suerte:
+un puerto que prospero de contrabando en contrabando, un centro que se hizo
+rico mirando para otro lado, y un barrio alto que se quedo pobre cuando todo
+el dinero se fue a otra parte. Las MEDALLAS DE LA SANTA PERDIDA que se
+encuentran por la ciudad (ColeccionablesSystem.js) son justo esto: la gente
+de aqui sigue rezandole a una santa que nunca llego, por si acaso.
+
+LOS SEIS BARRIOS, CADA UNO CON SU PROPIA HISTORIA CHICA:
+  · PUERTO — el motor economico real de la ciudad desde siempre. De Los
+    Amarres, y lo ha sido desde antes de que Los Amarres tuvieran ese
+    nombre.
+  · INDUSTRIAL — donde el puerto guarda lo que no quiere que se vea desde
+    la carretera. Comparte dueño con el puerto.
+  · CONFLICTIVO — el barrio alto que se quedo sin las fabricas que le daban
+    de comer hace dos generaciones. La Cuadrilla del Rompiente nacio ahi
+    de necesidad, no de ambicion.
+  · CENTRO — el dinero viejo. Casa Verdial lleva controlandolo tanto tiempo
+    que ya nadie se acuerda de que hubo un tiempo sin ellos.
+  · COMERCIAL — la vitrina de la ciudad, y la otra mitad del territorio de
+    Casa Verdial: aqui es donde el guante de seda se nota mas, porque aqui
+    es donde hay algo que proteger de verdad.
+  · RESIDENCIAL — el unico barrio que hoy no es de ninguna banda. Eso lo
+    convierte en terreno neutral y, por lo mismo, en el sitio que las tres
+    bandas querrian tener si pudieran.
+
+  (RESIDENCIAL SIN DUEÑO es intencionado: dejar un barrio "libre" da sitio
+  para que la historia lo dispute mas adelante — ver el ACTO 4.)
+
+
+================================================================================
+EL PROTAGONISTA — "CERO"
+================================================================================
+El jugador no tiene nombre propio en Santa Perdida a proposito, y esta vez
+eso tiene una escena que lo explica en vez de ser solo un silencio de
+videojuego viejo. En el PROLOGO (ver mas abajo), nada mas llegar, El
+Consul pregunta como te llamas: el jugador nunca contesta (no hay dialogo
+escrito para el protagonista, sigue la convencion de Santa Perdida de no
+doblar al jugador), y El Consul se encoge de hombros: "Como quieras. Aqui
+todos empezamos en cero." Desde ese momento las tres bandas y todo el
+reparto se refieren al jugador como CERO. Es un nombre que no es un
+nombre: encaja perfecto con "aqui nadie pregunta de donde vienes", y deja
+sitio para que cualquiera se ponga en su piel sin que la ciudad le imponga
+una historia previa que no sea la que el jugador construye jugando.
+
+
+================================================================================
+EL REPARTO — TREINTA Y DOS PERSONAJES CON NOMBRE
+================================================================================
+
+--------------------------------------------------------------------------------
+LOS AMARRES  (puerto + industrial, contrabando, color 0x2f7a6b)
+--------------------------------------------------------------------------------
+BALTASAR ROIG, "EL CONSUL" — el jefe. Sesenta y pico, habla como si cada
+  frase fuera un tratado internacional, llama "socio" a todo el mundo
+  hasta a quien esta a punto de hundir. Lleva treinta años haciendo que el
+  puerto de Santa Perdida sea el sitio donde entra y sale de todo. Su
+  punto ciego es la propia familia: cree que protege a su hija no
+  contandole nada, y es justo eso lo que la esta empujando a tomar el
+  control por su cuenta.
+
+MARINA ROIG — su hija, treinta y tantos. Lleva diez años haciendo el
+  trabajo de verdad mientras su padre da la cara en las reuniones: ella
+  organiza las rutas, paga a quien hay que pagar y sabe donde estan
+  enterrados los muertos, literales y de los otros. No confia en Cero al
+  principio ("otro que mi padre trae de la calle"), pero es la primera en
+  daros de cuenta de que El Consul esta cerrando un trato a espaldas de
+  todos. Segun por donde vaya la historia, acaba siendo la aliada mas
+  fuerte de Cero o la que toma Los Amarres por la fuerza si su padre cae.
+
+RAMIRO "FERRO" SOTELO — capataz de los muelles, el otro candidato a
+  heredar si El Consul se tambalea. Mas bruto que Marina, cree que Los
+  Amarres se han vuelto blandos negociando con gente de traje en vez de
+  cerrar tratos a la antigua. Es la voz que empuja a la banda hacia la
+  guerra abierta en vez de la mano izquierda de Marina: el conflicto entre
+  los dos es la subtrama interna de Los Amarres en el ACTO 2.
+
+SACAU — el gruista del puerto (el landmark `landmark-grua.jpg` es su
+  sitio de trabajo). Lo ve todo desde arriba y no cuenta nada gratis:
+  es el fence de la banda y la fuente de cotilleos mas fiable de los
+  muelles si se le paga o se le hace un favor. Personaje de alivio comico,
+  pero sus pistas son siempre ciertas.
+
+--------------------------------------------------------------------------------
+CUADRILLA DEL ROMPIENTE  (conflictivo, calle, color 0x9c4526)
+--------------------------------------------------------------------------------
+NANDO ECIJA, "CHISPA" — el jefe, veintipocos años. Se quedo con la
+  cuadrilla del barrio conflictivo cuando todos los que podian permitirselo
+  se fueron. No manda por ser el mas duro, manda porque es al que todos
+  siguen sin que se lo pida. Su punto flaco es exactamente esa lealtad: se
+  puede jugar con el amenazando al barrio, y alguien lo esta haciendo.
+
+VALERIA "VALE" MORON — la mano derecha de Chispa desde que eran niños, la
+  cabeza fria de la cuadrilla. Si Chispa decide con el estomago, Vale
+  decide con la cabeza, y las mas de las veces es ella quien evita que la
+  cuadrilla entera acabe presa o muerta. Es el personaje que mas rapido se
+  huele que hay alguien de fuera moviendo los hilos.
+
+CUSTODIO "EL ABUELO" — el mas veterano de la cuadrilla, cerca de los
+  setenta, de una banda de otra epoca que ya no existe. Ya no pelea, pero
+  cuenta como era el barrio conflictivo antes de que las fabricas
+  cerraran, y es la memoria historica de Santa Perdida en toda la
+  historia: sus conversaciones son donde el jugador entiende POR QUE el
+  barrio esta como esta, no solo que esta mal.
+
+RENCO — un chaval de la cuadrilla, del que nadie sospecha hasta la mision
+  "El soplon" (ya en `config/missions.js`). Le paga alguien de fuera del
+  barrio para contar los movimientos de Chispa: al principio parece un
+  buscavidas cualquiera, pero es el primer hilo visible de que Casa
+  Verdial esta detras de la tension entre bandas. Su traicion, cuando se
+  descubre, es lo que rompe la inocencia del ACTO 2.
+
+--------------------------------------------------------------------------------
+CASA VERDIAL  (centro + comercial, proteccion, color 0x5a3f7a)
+--------------------------------------------------------------------------------
+ADELINA VERDIAL, "LA DOÑA" — la jefa. Dinero heredado, modales perfectos,
+  nunca alza la voz porque nunca lo ha necesitado. Cobra proteccion como
+  quien cobra un alquiler, con papeles y sonrisas. Es la villana real de
+  la historia, pero no por gusto propio: esta atrapada en un trato con
+  alguien todavia mas grande que ella (ver EL HOMBRE DE FUERA, mas abajo),
+  y su plan contra Los Amarres y la Cuadrilla es la unica salida que ve
+  para no perderlo todo ella tambien.
+
+MAXIMO VERDIAL — el hijo de la Doña, impaciente por heredar. Cree que su
+  madre se ha vuelto lenta y que Casa Verdial deberia tomar el puerto por
+  la fuerza en vez de por contratos. Es el comodin de la historia: segun
+  las decisiones de Cero, puede acabar siendo el que se subleva contra su
+  propia madre en el ACTO 4, para bien o para mal.
+
+LICENCIADO EMPEDRADO — el abogado y hombre de confianza de la Doña, la
+  cara "legal" de Casa Verdial. Redacta cada contrato de forma que nunca
+  se pueda demostrar nada en un papel, y es quien de verdad negocia con
+  El Hombre de Fuera cuando la Doña prefiere no ensuciarse las manos ni
+  con eso.
+
+INSPECTOR SALAVERRI — un mando de la comisaria (ver PoliceSystem.js: es la
+  cara con nombre de por que la policia "mira para otro lado" en el centro
+  y la zona comercial) que cobra de Casa Verdial desde hace años. Buen
+  gancho para una subtrama de corrupcion policial: alguien podria
+  investigarlo, chantajearlo o usarlo, y eso cambiaria como se comporta la
+  policia en esos dos barrios durante el resto de la partida.
+
+--------------------------------------------------------------------------------
+EL HOMBRE DE FUERA  (el verdadero antagonista detras de todo)
+--------------------------------------------------------------------------------
+SR. ANZURES — no es de ninguna banda ni de Santa Perdida. Representa al
+  CONSORCIO PONIENTE, un grupo inversor de fuera que quiere comprar el
+  puerto entero y "poner en valor" el barrio conflictivo (es decir,
+  echar a la Cuadrilla y construir otra cosa encima). Trajeado, educado,
+  jamas se mancha las manos: paga a la Doña para que desestabilice a las
+  otras dos bandas mientras el, con toda la calma, prepara los papeles
+  para quedarse con la ciudad entera sin disparar un solo tiro. No aparece
+  hasta el ACTO 3: hasta entonces, todo lo raro que hacen las tres bandas
+  parece cosa suya propia. El verdadero giro de la historia es entender
+  que NINGUNA de las tres bandas es la mala: las tres estan siendo usadas
+  por alguien de fuera que ni siquiera vive aqui.
+
+  Esto es lo que convierte "tres bandas peleando" en algo mas grande: en
+  el ACTO 4, la pregunta ya no es "que banda gana", es "se vende la ciudad
+  entera o no", y ahi es donde de verdad puede pasar que las tres bandas
+  (Amarres, Rompiente y hasta la propia Doña, si se le da la salida)
+  acaben en el mismo bando por primera vez en la historia de Santa
+  Perdida.
+
+
+================================================================================
+PERSONAJES NEUTRALES — LA CIUDAD DE TODOS LOS DIAS
+================================================================================
+Estos no pelean por ningun barrio, pero le dan cuerpo a Santa Perdida y
+encajan cada uno con un sistema que YA EXISTE en el juego (no hace falta
+inventar mecanicas nuevas, solo ponerles cara a sitios que ya se usan):
+
+PURO — el mecanico del taller de pintura (`LocalSystem.js`, accion
+  'pintar'). Lleva la grasa incrustada en las manos desde los quince años
+  y no juzga a nadie por lo que trae el coche encima, solo por como se lo
+  trata: "un coche bien llevado dura, mal llevado se nota aunque lo pinte
+  cien veces". Buen sitio para soltar cotilleos de las tres bandas sin
+  mojarse con ninguna.
+
+DJ MAREJADA — la voz que suena en la radio del coche cuando exista (ver
+  IDEAS-DE-LOS-GTA.txt 10.4, pendiente de construir). Comenta lo que pasa
+  en la ciudad sin nombrar a nadie directamente ("dicen por ahi que en el
+  puerto hay movimiento"), y es la forma mas barata de que el jugador
+  sienta que el mundo reacciona a lo que hace, sin tener que escribir
+  cinematicas.
+
+LA PERIODISTA, TERESA ALBA — free-lance, lleva meses detras de un
+  reportaje sobre quien controla de verdad Santa Perdida. No trabaja para
+  ninguna banda ni para Cero, pero puede convertirse en la fuente de
+  encargos "de investigacion" al margen de las tres bandas: seguir a
+  alguien, hacer una foto, sacar un documento. Es el enganche natural para
+  el sistema de camara de fotos que ya estaba en la lista de pendientes
+  (IDEAS-3-COMPLETISTA).
+
+CUSTODIA DEL FARO — una mujer mayor que vive sola en el faro
+  (`landmark-faro.jpg`) desde hace decadas y ve todo lo que entra y sale
+  del puerto de noche sin que nadie la note a ella. Personaje de una sola
+  mision pero memorable, al estilo de los personajes "de un rato" de los
+  GTA de siempre: nadie la busca, pero quien la encuentra sale con algo
+  que nadie mas podia darle.
+
+EL PREGONERO DEL MERCADO — vende de todo un poco en el mercado cubierto
+  (`landmark-mercado.jpg`) y es quien mas rapido se entera de los rumores
+  de la calle, buena fuente para pistas del MercadoSystem (el comercio por
+  barrios que sigue pendiente de IDEAS-1, bloque 6).
+
+
+================================================================================
+EL ARCO — CUATRO ACTOS  (antes eran tres; con "muchos personajes, como un
+GTA" hace falta un cuarto para el giro del Hombre de Fuera y el final)
+================================================================================
+Sigue sin hacer falta un sistema de "actos" nuevo en el codigo: el corte
+sigue siendo `minRep` en `config/missions.js`, que ya hace de reloj de la
+historia. Lo que cambia es cuanto hay escrito dentro de cada tramo.
+
+ACTO 1 — "SIN PREGUNTAS"  (minRep -100 a 10)
+  Cero llega a Santa Perdida sin nada y sin nombre. Las tres bandas
+  reparten trabajo suelto sin saber que trabajas para las otras dos: El
+  Consul te prueba con un fardo, Chispa te usa porque no eres de la calle
+  y no cuenta como ofensa, la Doña te manda a cobrar porque no quiere dar
+  la cara. Cierra con la escena en la que El Consul te pone el nombre
+  CERO. Aparecen ya, de fondo, Marina, Vale, Sacau y el Abuelo: no llevan
+  peso todavia, pero estan ahi para cuando lo necesiten.
+
+ACTO 2 — "TRES BANDAS, UNA CIUDAD"  (minRep 10 a 20)
+  Cada banda te da trabajo mas delicado, y aparecen las grietas internas:
+  Ferro empieza a cuestionar a El Consul en publico; Renco es descubierto
+  como soplon y Chispa tiene que decidir que hacer con el; la Doña deja
+  caer, como quien no quiere la cosa, que el puerto "valdria mucho mas
+  bien llevado". Ninguna banda ve el patron todavia: cada una cree que su
+  problema es solo suyo.
+
+ACTO 3 — "EL HOMBRE DE FUERA"  (minRep 20 a 30, tramo nuevo)
+  Se descubre a Anzures y al Consorcio Poniente. La Doña deja de ser "la
+  banda rica" para ser "alguien que tambien esta acorralada": Empedrado
+  aparece negociando con Anzures, y por primera vez Cero (y el jugador)
+  entiende que la guerra entre las tres bandas es cosa de un cuarto
+  jugador que no vive en Santa Perdida. El Inspector Salaverri puede
+  aparecer aqui si se construye su subtrama, como prueba de hasta donde
+  llega el dinero de fuera.
+
+ACTO 4 — "LA CIUDAD ELIGE"  (minRep 30+, tramo nuevo)
+  El final de verdad. Cada banda reacciona distinto a la noticia:
+  El Consul quiere pelear por el puerto con lo que tiene, Marina quiere
+  tomar el control ella misma antes de que su padre lo pierda todo, Ferro
+  quiere vender el ya y repartirse lo que quede, Chispa quiere quemarlo
+  todo antes que dejarse echar del barrio, la Doña ofrece una salida a
+  quien la ayude a librarse de Anzures sin perder lo suyo, y Maximo puede
+  aprovechar el caos para quedarse el con Casa Verdial. Aqui es donde
+  pesan de verdad las decisiones de las bandas a las que ayudaste o no
+  durante toda la partida.
+
+
+================================================================================
+LOS FINALES  (gated por `GameState.factions`, sin sistema nuevo — ahora con
+el matiz de Anzures encima)
+================================================================================
+  · FINAL AMARRES — "EL PUERTO ES NUESTRO". Con Marina, no con Ferro: Los
+    Amarres echan a Anzures del puerto y se quedan la ciudad economica de
+    Santa Perdida. Ferro se va o se queda a un lado, segun se haya jugado
+    su subtrama.
+
+  · FINAL ROMPIENTE — "SE QUEMA TODO". Chispa planta cara a la vez a Casa
+    Verdial y al Consorcio. Gana el barrio, pero Santa Perdida queda mas
+    caliente que nunca: el final mas duro de los cuatro.
+
+  · FINAL VERDIAL — "GUANTE DE SEDA". Ayudas a la Doña a quitarse a
+    Anzures de encima SIN romper con las otras dos bandas del todo: ella
+    se queda con mas poder que nunca, pero a cambio de una deuda contigo
+    que dura para siempre. Maximo se traga su orgullo, de momento.
+
+  · FINAL DEL CONSORCIO — "SE VENDE LA CIUDAD" (nuevo, el final oscuro):
+    si el jugador ayuda a Anzures en vez de a ninguna banda (encargos
+    nuevos del ACTO 3 en adelante, todavia por escribir), Santa Perdida
+    cambia de dueño de verdad. Cero se hace rico. La ciudad, no: es el
+    final que enseña lo que de verdad estaba en juego todo este tiempo.
+
+  · FINAL INDEPENDIENTE — "NADIE TE PREGUNTA". El mas dificil: reputacion
+    alta con las tres bandas a la vez (el sistema ya lo penaliza por
+    diseño si ayudas a unos contra otros, asi que hace falta jugar muy
+    fino). Cero ayuda a las tres a plantar cara juntas al Consorcio y se
+    va de la ciudad sin deberle nada a nadie. Cierra el circulo con la
+    frase del menu: aqui nadie preguntaba de donde venias, y ahora nadie
+    pregunta adonde vas.
+
+
+================================================================================
+QUE SE HA HECHO YA CON ESTO  (64a tanda, 27-sep)
+================================================================================
+  · `config/factions.js`: `jefe: { nombre, alias }` en las tres bandas.
+  · `MissionSystem.js`: el dador de mision enseña el alias del jefe (EL
+    CONSUL / CHISPA / LA DOÑA), no la sigla de la banda; los avisos de
+    "tienes trabajo nuevo" y "E para hablar con..." dicen lo mismo.
+  · `config/missions.js`: las diez intros existentes reescritas para leerse
+    como un solo hilo (el Consul probando a Cero, Chispa evitando una
+    guerra que no puede permitirse, la Doña sin mancharse las manos), con
+    las semillas del ACTO 2 ya plantadas (el trato raro de El Consul, el
+    "gente de fuera" que nota Chispa).
+  · Prologo nuevo (`GameState.flags.prologoVisto`) que planta la premisa Y
+    la escena de "CERO" al empezar una partida de cero.
+
+QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
+  1. NOMBRAR A LOS SPRITES: Marina, Ferro, Sacau, Vale, el Abuelo, Renco,
+     Maximo, Empedrado y Salaverri de momento no tienen sprite propio, solo
+     existen en este documento. El barato: reusar las variantes
+     `gang-<banda>-1/2/3` que ya existen (BootScene.makeGangs, 4 por
+     banda) y asignar una fija a cada personaje con nombre, en vez de que
+     sean intercambiables. El caro pero mejor: retratos de IA como los de
+     los barrios, uno por personaje principal.
+  2. MISIONES NUEVAS DEL ACTO 2: la subtrama de Ferro cuestionando a El
+     Consul, Renco descubierto como soplon (ahora mismo "El soplon" ya
+     termina en romperle el coche, falta la escena de que Chispa decida
+     que hacer con el luego), la pista de la Doña sobre el puerto.
+  3. ACTO 3 ENTERO: la aparicion de Anzures y el Consorcio Poniente. Es
+     tramo nuevo, no existia en la primera version de este documento.
+  4. ACTO 4 Y LOS CUATRO FINALES: la mision o mini-cadena final por banda,
+     mas el final nuevo del Consorcio. Necesita, como minimo, una pantalla
+     de resumen de final (reutilizar BIG_MESSAGE a pantalla completa).
+  5. PERSONAJES NEUTRALES CON ENCARGO PROPIO: Puro, DJ Marejada, Teresa
+     Alba la periodista, la Custodia del Faro, el Pregonero del Mercado.
+     Cada uno puede dar 1-2 misiones sueltas, al margen de las tres
+     bandas, del estilo "stranger missions" de los GTA de toda la vida.
+  6. MAPA VIVO (bloque aparte, sigue en pie de la version anterior de este
+     documento): ciclo dia/noche que cambie densidad de trafico y
+     peatones, negocios cerrados de madrugada, presencia de banda visible
+     segun la reputacion.
+  7. REESTRUCTURAR EL MAPA (idem): auditar que cada barrio se sienta del
+     dueño que tiene de verdad (trafico, peatones, negocios), no solo por
+     el color del suelo. El barrio RESIDENCIAL sin dueño (ver arriba) es
+     el sitio logico para que el ACTO 4 se juegue de verdad si se quiere
+     dar mas peso territorial al final.

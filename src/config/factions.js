@@ -11,6 +11,10 @@ export const FACTIONS = {
     zones: ['puerto', 'industrial'],
     lema: 'Todo lo que entra por el muelle pasa por ellos',
     negocio: 'contrabando',
+    // HISTORIA-SANTA-PERDIDA.txt: el "dador de mision" ya no es una banda
+    // sin cara, es su jefe en persona. El sprite sigue siendo el mismo
+    // (`gang-amarres-0`), solo cambia el nombre que se lee encima.
+    jefe: { nombre: 'Baltasar Roig', alias: 'El Consul' },
   },
   rompiente: {
     key: 'rompiente',
@@ -21,6 +25,7 @@ export const FACTIONS = {
     zones: ['conflictivo'],
     lema: 'Chavales del barrio alto, sin nada que perder',
     negocio: 'calle',
+    jefe: { nombre: 'Nando Ecija', alias: 'Chispa' },
   },
   verdial: {
     key: 'verdial',
@@ -31,6 +36,7 @@ export const FACTIONS = {
     zones: ['centro', 'comercial'],
     lema: 'Dinero viejo que cobra proteccion con guantes',
     negocio: 'proteccion',
+    jefe: { nombre: 'Adelina Verdial', alias: 'La Doña' },
   },
 };
 
