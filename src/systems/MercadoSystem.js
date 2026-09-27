@@ -3,6 +3,7 @@ import { CITY } from '../config/city.js';
 import { TILE } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 // EL MERCADO DE COCHES POR BARRIOS. La grua del puerto (GruaSystem) ya
 // compraba coches, pero solo en un sitio y solo tres modelos concretos a la
@@ -78,10 +79,7 @@ export class MercadoSystem {
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(p.x, p.y - 32, 'DESGUACE', {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
-      fontSize: '12px', color: '#e0a878', stroke: '#05060a', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, p.x, p.y - 32, 'DESGUACE', 0xc87f4a);
   }
 
   update(dt, player, drivingVehicle) {

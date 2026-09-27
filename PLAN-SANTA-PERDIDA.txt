@@ -2926,6 +2926,61 @@ esa noche, primera hecha ya:
     bloque J) — del tamaño de "LA CIUDAD MAS GRANDE" (13 tandas). Pablo
     dice cuando se arranca.
 
+ M. HECHO (59a tanda, 27-sep, ya con Chrome conectado). Cierre del
+    gimnasio y arreglo general de legibilidad, todo PROBADO DE VERDAD en
+    el navegador esta vez (teleportando al jugador por JS y disparando
+    los sitios a mano, que es como se prueba sin depender de acertar con
+    el raton en un mapa de 10.400x8.384 px):
+      · interior-gimnasio.png y marca-gimnasio.png, las dos ultimas
+        imagenes de la tanda anterior, colocadas y comprobadas en vivo:
+        el gimnasio abre, el HUD de "hoy" sube de verdad al completar una
+        pesa (probado forzando un acierto), y se vuelve a la calle sin
+        fallos.
+      · LA CINTA Y EL SACO ESTABAN EN EL SITIO EQUIVOCADO: los porcentajes
+        del prompt (cinta al 50%/30%, saco al 80%/42%) no fue donde Gemini
+        dibujo esas maquinas de verdad — la cinta salio en el 34%/22% (a
+        la izquierda del todo) y lo que hace de saco (una rueda oscura,
+        no hay bolsa colgada) en el 79%/41%, casi bien pero no del todo.
+        Medido recortando la lamina real en las coordenadas del prompt y
+        mirando que maquina salia en cada recorte: `MAQUINAS` en
+        GimnasioScene.js ajustado a las coordenadas de verdad. De paso,
+        las etiquetas de las tres maquinas subieron (y+58 -> y+34), que
+        quedaban demasiado lejos de su maquina.
+      · LOS EDIFICIOS POR FUERA. Pablo: "tenemos los interiores... pero
+        tambien deberiamos hacer los exteriores". Hospital y comisaria se
+        veian como un rectangulo liso con una cruz o una placa pintada por
+        codigo; armeria, taller, comida, gimnasio y concesionario, como un
+        edificio cualquiera del barrio sin nada propio. Generalizado el
+        mismo truco del tejado de barrio (`techo-<zona>`) a CUALQUIER
+        edificio de uso: `LocalSystem.pintarEdificioDeUso` busca
+        `techo-<clave del local>` antes de mirar si es hospital o
+        comisaria a mano; `ShopSystem` y `ConcesionarioSystem` (que no
+        tenian tejado propio de ningun tipo) ganaron su `pintarTejado`.
+        preparar-sprites.py ya conoce los siete nombres (hospital,
+        comisaria, armeria, taller, comida, gimnasio, concesionario) como
+        si fueran un barrio mas. Siete prompts en PROMPTS-PARA-GEMINI.txt;
+        mientras no existan, cada uno sigue con el tejado de su barrio de
+        siempre (nada se rompe por no tenerlos).
+      · LOS RETULOS DE TODA LA CIUDAD SE LEIAN MAL. Pablo: "sale lo de
+        gimnasio pero no se lee bien". Cada sistema (nueve en total:
+        LocalSystem, ShopSystem, ConcesionarioSystem, CarreraSystem,
+        GuerraTerritorioSystem, MercadoSystem, NegocioSystem, PisoSystem y
+        GruaSystem) escribia su propio texto de color contra el mundo, con
+        solo un borde negro fino — bien contra un rectangulo plano, mal
+        contra un tejado de foto de verdad. Sacado a una funcion compartida
+        (`world/etiquetas.js`, `etiquetaFlotante`): texto SIEMPRE blanco y
+        legible, con una placa oscura semitransparente detras (ajustada al
+        ancho real del texto) y el color propio de cada sitio en una
+        rayita fina debajo, para no perder de un vistazo si es tuyo, de
+        una banda o de una tienda. Los tres que cambian de texto solos
+        (negocio, piso, grua) usan `refrescar()` para que la placa se
+        reajuste cuando cambia el precio o la caja. Comprobado en vivo:
+        "GIMNASIO", "SE VENDE" de un negocio (una y dos lineas) y el
+        territorio de una banda, los tres legibles contra fondos distintos.
+    Lo unico que sigue igual: la grua del puerto lleva su propio arreglo
+    (no usa `etiquetaFlotante`, su cartel crece hacia arriba desde la base
+    en vez de estar centrado) pero con la misma placa oscura detras.
+
 --------------------------------------------------------------------------------
 ARTE
 --------------------------------------------------------------------------------

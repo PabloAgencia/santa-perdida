@@ -16,10 +16,16 @@ const FONT = 'Pricedown, Anton, Impact, sans-serif';
 //
 // Los sitios de las maquinas NO se mueven: la lamina de IA (si la hay,
 // interior-gimnasio) se pide con las maquinas justo en estos sitios.
+// Medido a mano sobre la lamina de verdad (interior-gimnasio.png, 1312x816):
+// la cinta que pedia el prompt en el centro (0.5, 0.3) salio en el hueco de
+// la izquierda, encima de la unica cinta de correr que dibujo Gemini, y el
+// saco en (0.8, 0.42) caia entre unas pesas rusas, lejos de la rueda oscura
+// que hace de saco. Estas tres son las coordenadas REALES, recortando la
+// imagen en cada una y comprobando que sale la maquina que toca.
 const MAQUINAS = {
   pesas: { nombre: 'PESAS', fx: 0.2, fy: 0.42 },
-  cinta: { nombre: 'CINTA', fx: 0.5, fy: 0.3 },
-  saco: { nombre: 'SACO', fx: 0.8, fy: 0.42 },
+  cinta: { nombre: 'CINTA', fx: 0.344, fy: 0.22 },
+  saco: { nombre: 'SACO', fx: 0.793, fy: 0.407 },
 };
 
 export class GimnasioScene extends Phaser.Scene {
@@ -51,7 +57,7 @@ export class GimnasioScene extends Phaser.Scene {
     this.maquinas = Object.entries(MAQUINAS).map(([clave, m]) => {
       const x = s.x + s.w * m.fx;
       const y = s.y + s.h * m.fy;
-      this.add.text(x, y + 58, m.nombre, {
+      this.add.text(x, y + 34, m.nombre, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
       }).setOrigin(0.5);
       return { clave, x, y };

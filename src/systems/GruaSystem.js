@@ -33,19 +33,27 @@ export class GruaSystem {
     this.pedidos = Phaser.Utils.Array.Shuffle(VEHICLE_KEYS.slice()).slice(0, CUANTOS_ENCARGOS);
   }
 
+  // Placa oscura detras, igual que el resto de carteles de la ciudad
+  // (world/etiquetas.js): aqui no se usa esa funcion porque el cartel crece
+  // HACIA ARRIBA desde la base de la grua (origen 0.5,1), no centrado.
   pintar() {
     const nombres = this.pedidos.map((t) => VEHICLES[t].name).join('\n');
-    this.cartel = this.scene.add.text(
-      this.base.px, this.base.py - this.base.ph / 2 - 8, `SE COMPRAN\n${nombres}`, {
-        fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '12px',
-        color: '#c8965a', stroke: '#05060a', strokeThickness: 3, align: 'center',
-      }
-    ).setOrigin(0.5, 1).setDepth(6);
+    const x = this.base.px;
+    const y = this.base.py - this.base.ph / 2 - 8;
+    this.cartel = this.scene.add.text(x, y, `SE COMPRAN\n${nombres}`, {
+      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '12px',
+      color: '#f5f1e6', stroke: '#05060a', strokeThickness: 4, align: 'center',
+    }).setOrigin(0.5, 1).setDepth(6.2);
+    this.placa = this.scene.add.image(x, y - this.cartel.height / 2, 'px')
+      .setDisplaySize(this.cartel.width + 16, this.cartel.height + 8)
+      .setTint(0x05060a).setAlpha(0.7).setDepth(6);
   }
 
   refrescar() {
     const nombres = this.pedidos.map((t) => VEHICLES[t].name).join('\n');
     this.cartel.setText(`SE COMPRAN\n${nombres}`);
+    this.placa.setDisplaySize(this.cartel.width + 16, this.cartel.height + 8)
+      .setPosition(this.cartel.x, this.cartel.y - this.cartel.height / 2);
   }
 
   update(player, drivingVehicle) {

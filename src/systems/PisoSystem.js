@@ -2,6 +2,7 @@ import { TILE } from '../config/balance.js';
 import { PISOS, clavePiso } from '../config/pisos.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 // LOS PISOS FRANCOS EN LA CALLE: donde esta cada uno, su cartel con el precio
 // y comprarlo. Lo que cuesta y cuantos coches caben esta en config/pisos.js;
@@ -104,12 +105,7 @@ export class PisoSystem {
       duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
 
-    piso.cartel = this.scene.add.text(piso.x, piso.y - 34, this.textoCartel(piso), {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
-      fontSize: '13px', color: suyo ? '#e8b54a' : '#bcd6ee',
-      stroke: '#05060a', strokeThickness: 3,
-      align: 'center',
-    }).setOrigin(0.5).setDepth(6);
+    piso.etiqueta = etiquetaFlotante(this.scene, piso.x, piso.y - 34, this.textoCartel(piso), color);
   }
 
   textoCartel(piso) {
@@ -120,9 +116,11 @@ export class PisoSystem {
   // se llama al comprar: el cartel y el aro cambian de color en el sitio
   refrescar(piso) {
     const suyo = GameState.esDueno(piso.clave);
-    piso.aro.setTint(suyo ? 0xe8b54a : 0x7fa8d0);
-    piso.cartel.setText(this.textoCartel(piso));
-    piso.cartel.setColor(suyo ? '#e8b54a' : '#bcd6ee');
+    const color = suyo ? 0xe8b54a : 0x7fa8d0;
+    piso.aro.setTint(color);
+    piso.etiqueta.texto.setText(this.textoCartel(piso));
+    piso.etiqueta.raya.setTint(color);
+    piso.etiqueta.refrescar();
   }
 
   // Devuelve que ha pasado, para que quien llame decida el aviso. Aqui no se

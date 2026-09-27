@@ -1,6 +1,7 @@
 import { NEGOCIOS, claveNegocio } from '../config/negocios.js';
 import { FACTIONS, ZONE_OWNER } from '../config/factions.js';
 import { puertaDe } from '../world/puertas.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 
@@ -76,11 +77,9 @@ export class NegocioSystem {
       targets: n.aro, scale: { from: 0.85, to: 1.1 },
       duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    n.cartel = this.scene.add.text(n.x, n.y - 32, this.textoCartel(n), {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '12px',
-      color: suyo ? '#e8b54a' : '#' + n.cfg.color.toString(16).padStart(6, '0'),
-      stroke: '#05060a', strokeThickness: 3, align: 'center',
-    }).setOrigin(0.5).setDepth(6);
+    n.etiqueta = etiquetaFlotante(
+      this.scene, n.x, n.y - 32, this.textoCartel(n), suyo ? 0xe8b54a : n.cfg.color
+    );
   }
 
   textoCartel(n) {
@@ -92,8 +91,9 @@ export class NegocioSystem {
   refrescar(n) {
     const suyo = GameState.esDueno(n.clave);
     n.aro.setTint(suyo ? 0xe8b54a : n.cfg.color);
-    n.cartel.setText(this.textoCartel(n));
-    n.cartel.setColor(suyo ? '#e8b54a' : '#' + n.cfg.color.toString(16).padStart(6, '0'));
+    n.etiqueta.texto.setText(this.textoCartel(n));
+    n.etiqueta.raya.setTint(suyo ? 0xe8b54a : n.cfg.color);
+    n.etiqueta.refrescar();
   }
 
   update(dt, player) {

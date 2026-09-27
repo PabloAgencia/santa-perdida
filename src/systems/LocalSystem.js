@@ -2,6 +2,7 @@ import { LOCALES, CURAS } from '../config/locales.js';
 import { VEHICLES } from '../config/vehicles.js';
 import { Vehicle } from '../entities/Vehicle.js';
 import { repartirPorBarrios } from '../world/puertas.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
@@ -56,6 +57,16 @@ export class LocalSystem {
     if (!b) return;
     const lado = Math.min(b.pw, b.ph);
 
+    // igual que el tejado normal de un barrio (PintarCiudad.drawBuildings,
+    // `techo-${b.zone}`): si hay una imagen de IA para ESTE local en
+    // concreto, manda ella y el dibujo de rectangulos de abajo no se pinta.
+    const claveTecho = `techo-${local.cfg.clave}`;
+    if (this.scene.textures.exists(claveTecho)) {
+      this.scene.add.image(b.px, b.py, claveTecho)
+        .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
+      return;
+    }
+
     if (local.cfg.clave === 'hospital') {
       this.scene.add.image(b.px, b.py, 'px')
         .setDisplaySize(b.pw - 4, b.ph - 4).setTint(0xe8e4dc).setDepth(-900);
@@ -80,12 +91,7 @@ export class LocalSystem {
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1050, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(local.x, local.y - 32, local.cfg.corto, {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
-      fontSize: '12px',
-      color: '#' + local.cfg.color.toString(16).padStart(6, '0'),
-      stroke: '#05060a', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, local.x, local.y - 32, local.cfg.corto, local.cfg.color);
   }
 
   // Un coche del oficio aparcado en la puerta. No es decoracion: se roba

@@ -2,6 +2,7 @@ import { VEHICLES } from '../config/vehicles.js';
 import { repartirPorBarrios } from '../world/puertas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 // EL CONCESIONARIO. Ya no es una fila de coches aparcados en la acera con un
 // cartel cada uno (Pablo: "deberia poder entrarse, como un piso"): ahora es
@@ -29,16 +30,21 @@ export class ConcesionarioSystem {
     if (sitios.length === 0) return;
     this.puerta = sitios[0];
 
+    // igual que el tejado de un barrio o de un local: si hay imagen de IA,
+    // manda ella por encima del tejado normal del barrio
+    if (this.scene.textures.exists('techo-concesionario')) {
+      const b = this.puerta.edificio;
+      this.scene.add.image(b.px, b.py, 'techo-concesionario')
+        .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
+    }
+
     this.aro = this.scene.add.image(this.puerta.x, this.puerta.y, 'ring')
       .setDisplaySize(62, 62).setTint(0x7fa8d0).setDepth(6);
     this.scene.tweens.add({
       targets: this.aro, scale: { from: 0.85, to: 1.1 },
       duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(this.puerta.x, this.puerta.y - 34, 'CONCESIONARIO', {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '13px',
-      color: '#bcd6ee', stroke: '#05060a', strokeThickness: 3, align: 'center',
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, this.puerta.x, this.puerta.y - 34, 'CONCESIONARIO', 0x7fa8d0);
   }
 
   update(player) {

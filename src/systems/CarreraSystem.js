@@ -1,6 +1,7 @@
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 // CARRERAS CONTRARRELOJ. Punto 17 (lo que quedaba de "TRABAJOS") y punto 16
 // ("desafios cronometrados con medalla"): son la misma cosa, asi que van
@@ -95,10 +96,7 @@ export class CarreraSystem {
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(n.x, n.y - 34, 'CARRERA', {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
-      fontSize: '13px', color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, n.x, n.y - 34, 'CARRERA', 0xe8b54a);
   }
 
   update(dt, player, drivingVehicle) {

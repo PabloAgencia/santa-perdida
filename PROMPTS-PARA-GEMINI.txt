@@ -28,6 +28,8 @@ YA HECHO (no hace falta volver a generarlo)
    1 vehiculo mas la ambulancia
    3 objetos      dos maquinas de refrescos distintas y la caja de reparto
                   (el corazon reusa un icono que ya existia)
+  10 interiores   los de antes mas el gimnasio
+  11 marcas       las de antes mas la del gimnasio
 
   Sus prompts estaban aqui y se han quitado: si algun dia hay que repetir
   alguno, siguen en el historial:
@@ -38,6 +40,7 @@ YA HECHO (no hace falta volver a generarlo)
                                                  landmarks, marcas y objetos)
       git show cb3f8ff:PROMPTS-PARA-GEMINI.txt (cuchillo, piso en venta y
                                                  puño americano)
+      git show 82b56cc:PROMPTS-PARA-GEMINI.txt (el gimnasio, interior e icono)
 
   DOS COSAS DE AQUELLOS PROMPTS QUE CONVIENE NO OLVIDAR
    · Nombrar un juego que el modelo conozca ("top-down view like in GTA
@@ -49,74 +52,80 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026): EL GIMNASIO                  2 PROMPTS
+#  LA TANDA DE AHORA (27-sep-2026): LOS EDIFICIOS POR FUERA      7 PROMPTS
 ################################################################################
-Se acaba de conectar el gimnasio (punto 22 del plan, SISTEMA-PERSONAJE.txt):
-una sala con tres maquinas (pesas, cinta, saco) y un icono propio en el mapa.
-Sin estas dos imagenes el juego sigue funcionando con rectangulos por codigo.
+Pablo: "tenemos los interiores de varios edificios y locales, pero tambien
+deberiamos hacer los exteriores". Hospital, comisaria, armeria, taller,
+sitios de comida, gimnasio y el concesionario se ven por fuera como un
+rectangulo de color liso (el mismo tejado que cualquier edificio normal del
+barrio, mas un cartel o un cruce pintado por codigo encima en el caso del
+hospital y la comisaria) en vez de un tejado de verdad, como los seis
+barrios (que si tienen foto).
 
-DONDE SE DEJA CADA COSA
-   interior-gimnasio.png  ->  sprites\originales\edificios\
-   marca-gimnasio.png     ->  sprites\originales\iconos\
+Estas siete imagenes son EXACTAMENTE eso: un tejado mas, con el mismo
+tratamiento que `centro.png` o `industrial.png` (se recorta al cuadrado del
+medio, se estira sobre el edificio que le toque, cualquier tamaño). El
+codigo YA SABE buscarlas (`techo-<clave>`, igual que un barrio): en cuanto
+esten, salen solas, sin tocar nada mas. Sin ellas el juego sigue como
+ahora, con el tejado del barrio de siempre.
+
+DONDE SE DEJA CADA COSA (todas van con los tejados de barrio, NO con los
+iconos del mapa: esos ya existen — marca-hospital, marca-comisaria,
+marca-armeria, marca-taller, marca-comida, marca-gimnasio,
+marca-concesionario — y son otra cosa)
+   hospital.png        ->  sprites\originales\edificios\
+   comisaria.png       ->  sprites\originales\edificios\
+   armeria.png         ->  sprites\originales\edificios\
+   taller.png          ->  sprites\originales\edificios\
+   comida.png          ->  sprites\originales\edificios\
+   gimnasio.png        ->  sprites\originales\edificios\
+   concesionario.png   ->  sprites\originales\edificios\
    Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
 
 
 --------------------------------------------------------------------------------
-  interior-gimnasio.png                                   proporcion 8:5
---------------------------------------------------------------------------------
-OJO CON ESTA: el juego pone tres cosas encima en sitios EXACTOS (el
-personaje y el texto de cada maquina). Si el dibujo las pone en otro sitio,
-el jugador aparece de pie sobre una pared o al lado de la maquina que no es.
-
-Create a LANDSCAPE image in 8:5 aspect ratio (a bit wider than tall), not
-square.
-Top-down interior of a small gym, seen from DIRECTLY ABOVE at a perfect
-90-degree overhead angle - a floor-plan view, like the interiors in GTA
-Chinatown Wars. The camera is mounted on the ceiling looking straight down
-at the floor. NO walls seen from the front, NO perspective, NO tilt, NO
-vanishing point.
-
-FORMAT: landscape 8:5. The floor fills the entire image edge to edge, no
-border, no margin.
-
-THE FLOOR: dark rubber gym flooring with a grid pattern.
-
-LAYOUT - this part matters, the game places a piece of equipment and a
-label at each exact spot below, and nothing else should be drawn there:
-- AT 20% of the width, 42% of the height: a weight bench with a barbell
-  rack, seen from above.
-- AT 50% of the width, 30% of the height: a treadmill, seen from above.
-- AT 80% of the width, 42% of the height: a round punching bag hanging
-  from the ceiling, seen from above as a dark circle.
-- BOTTOM CENTRE EDGE (around 50% of the width, from 95% of the height to
-  the bottom edge): a stretch of floor left completely clear and open,
-  that is the door to the street.
-- The rest of the floor (corners, the band above the equipment) can carry
-  gym atmosphere: a wall mirror along the top edge, a water cooler, a
-  rack of dumbbells in a corner - but nothing blocking the three pieces of
-  equipment or the bottom-centre doorway.
-
-LIGHT: bright, slightly cool gym lighting, fluorescent tube reflections on
-the rubber floor.
-COLOUR: dark grey and black rubber floor, muted red and steel gym
-equipment, one warm accent (amber) somewhere in the decor.
-STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
-photorealistic, NOT a 3D render, NOT isometric.
-MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
-readable writing or watermark. NO people. Nothing on top of the three
-pieces of equipment or the bottom-centre doorway.
-
-
---------------------------------------------------------------------------------
-  marca-gimnasio.png
+  hospital.png                    tejado del hospital              1:1
 --------------------------------------------------------------------------------
 Create a SQUARE image, 1:1 aspect ratio.
-Flat map marker icon for a gym: an amber/orange rounded square badge with a
-small white dumbbell silhouette inside it, seen straight on. Simple shapes,
-thick dark outline, flat colours, no gradients, no shading detail, no 3D. It
-has to be readable when shown at 16 pixels wide. Centered, filling almost
-the whole image, plain flat magenta background (#FF00FF), no shadow, no
-text, no watermark, no border.
+Top-down aerial view of a small city hospital roof, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the building are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a flat white/pale roof with a large red cross painted in the middle,
+a rooftop helipad marking (a plain circle, NO letter H) off to one side,
+some air-conditioning units and vents scattered around, red warning lights
+at the corners.
+
+COLOUR: white and pale grey roof, bright red cross, muted metal vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO helicopter.
+
+
+--------------------------------------------------------------------------------
+  comisaria.png                   tejado de la comisaria           1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small city police station roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat dark navy-blue roof with a large circular police badge
+emblem painted in the middle (blue and white, plain shield or star shape,
+NO letters), a radio antenna mast, a satellite dish and a couple of
+air-conditioning units scattered around.
+
+COLOUR: dark navy blue roof, white and light blue badge, muted metal
+fixtures.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
 
 
 ################################################################################

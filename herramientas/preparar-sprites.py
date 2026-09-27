@@ -277,16 +277,22 @@ def preparar_edificios(hechos):
     carpeta = os.path.join(ORIGEN, 'edificios')
     if not os.path.isdir(carpeta):
         return
-    BARRIOS = ['centro', 'residencial', 'comercial',
-               'industrial', 'conflictivo', 'puerto']
+    # los seis barrios, mas TODOS los "edificios de uso": LocalSystem,
+    # ShopSystem y ConcesionarioSystem buscan cada uno `techo-<su clave>`
+    # exactamente igual que PintarCiudad busca `techo-<barrio>`. Incluidos
+    # aqui para que salgan con el mismo nombre y el mismo tamaño, sin
+    # duplicar la funcion.
+    TEJADOS = ['centro', 'residencial', 'comercial', 'industrial',
+               'conflictivo', 'puerto', 'hospital', 'comisaria', 'taller',
+               'comida', 'gimnasio', 'armeria', 'concesionario']
     for fichero in sorted(os.listdir(carpeta)):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             continue
         clave = os.path.splitext(fichero)[0].lower().strip()
         clave = ALIAS.get(clave, clave)
-        if clave not in BARRIOS:
-            print(f'  ! "{fichero}" no cuadra con ningun barrio '
-                  f'({", ".join(BARRIOS)})')
+        if clave not in TEJADOS:
+            print(f'  ! "{fichero}" no cuadra con ningun tejado conocido '
+                  f'({", ".join(TEJADOS)})')
             continue
 
         img = Image.open(os.path.join(carpeta, fichero)).convert('RGBA')

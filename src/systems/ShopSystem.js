@@ -1,6 +1,7 @@
 import { TILE } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 
 // La armeria. Siete locales repartidos por la ciudad, con su puerta a la calle
 // y su marcador, como el escondite. Conseguir un hierro matando a alguien esta
@@ -64,9 +65,20 @@ export class ShopSystem {
         const clave = `armeria-${Math.round(puerta.x)}-${Math.round(puerta.y)}`;
         this.tiendas.push({ x: puerta.x, y: puerta.y, edificio: b, clave, zona: b.zone });
         if (ocupados) ocupados.add(b);
+        this.pintarTejado(b);
         this.pintar(puerta);
       }
     }
+  }
+
+  // Igual que el tejado de un barrio (PintarCiudad.drawBuildings,
+  // `techo-${b.zone}`) o el de un local (LocalSystem.pintarEdificioDeUso):
+  // si hay una imagen de IA para la armeria, manda ella; si no, se queda
+  // el tejado normal del barrio que ya se pinto por debajo.
+  pintarTejado(b) {
+    if (!this.scene.textures.exists('techo-armeria')) return;
+    this.scene.add.image(b.px, b.py, 'techo-armeria')
+      .setDisplaySize(b.pw - 4, b.ph - 4).setDepth(-900);
   }
 
   pintar(p) {
@@ -76,10 +88,7 @@ export class ShopSystem {
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1000, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(p.x, p.y - 34, 'ARMERIA', {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif',
-      fontSize: '13px', color: '#9fe0a8', stroke: '#05060a', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, p.x, p.y - 34, 'ARMERIA', 0x7fd08a);
   }
 
   update(player, enCoche) {

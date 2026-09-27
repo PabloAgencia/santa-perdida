@@ -1,5 +1,6 @@
 import { FACTIONS, FACTION_KEYS } from '../config/factions.js';
 import { puertaDe } from '../world/puertas.js';
+import { etiquetaFlotante } from '../world/etiquetas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
@@ -61,11 +62,7 @@ export class GuerraTerritorioSystem {
       targets: p.aro, scale: { from: 0.85, to: 1.15 },
       duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    this.scene.add.text(p.x, p.y - 32, `TERRITORIO\n${f.short}`, {
-      fontFamily: 'Pricedown, Anton, Impact, sans-serif', fontSize: '12px',
-      color: '#' + f.accent.toString(16).padStart(6, '0'),
-      stroke: '#05060a', strokeThickness: 3, align: 'center',
-    }).setOrigin(0.5).setDepth(6);
+    etiquetaFlotante(this.scene, p.x, p.y - 32, `TERRITORIO\n${f.short}`, f.accent);
   }
 
   update(dt, player, enCoche) {
