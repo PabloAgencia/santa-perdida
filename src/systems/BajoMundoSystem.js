@@ -96,9 +96,9 @@ export class BajoMundoSystem {
 
     for (const p of elegidos) {
       const aro = this.scene.add.image(p.x, p.y, 'ring')
-        .setDisplaySize(50, 50).setTint(0xc060a0).setAlpha(0.5).setDepth(4);
+        .setDisplaySize(26, 26).setTint(0x8a5078).setAlpha(0.22).setDepth(4);
       this.scene.tweens.add({
-        targets: aro, alpha: { from: 0.3, to: 0.6 }, scale: { from: 0.9, to: 1.08 },
+        targets: aro, alpha: { from: 0.12, to: 0.3 }, scale: { from: 0.95, to: 1.05 },
         duration: 1400, yoyo: true, repeat: -1, ease: 'Sine.inOut',
       });
       this.sitios.push({ x: p.x, y: p.y, aro });

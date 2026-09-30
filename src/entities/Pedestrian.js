@@ -290,6 +290,7 @@ export class Pedestrian {
   update(dt, spots, vehicles = null) {
     if (this.attackCooldown > 0) this.attackCooldown -= dt;
     if (this.enCoche) return;
+    this.vehiculos = vehicles;
 
     if (this.down) {
       this.downTimer += dt;
@@ -416,11 +417,31 @@ export class Pedestrian {
     this.vaiven = Math.min(1, this.vaiven + dt * 5);
   }
 
+  // Un coche parado o casi parado es una pared mas: antes los peatones lo
+  // atravesaban porque tryMove solo miraba el mapa. Los coches que van de
+  // verdad deprisa se dejan fuera: a esos los trata checkVehicles (atropello).
+  // Si el peaton ya esta dentro del circulo (le aparcaron encima) se le deja
+  // salir, solo se le impide meterse mas.
+  chocaConParado(nx, ny) {
+    if (!this.vehiculos) return false;
+    for (const v of this.vehiculos) {
+      if (v.speed >= 45) continue;
+      if (Math.hypot(nx - v.x, ny - v.y) > v.stats.length) continue;
+      for (const c of v.getCircles()) {
+        const lim = c.r + this.radius;
+        const dNuevo = Math.hypot(nx - c.x, ny - c.y);
+        if (dNuevo < lim && dNuevo < Math.hypot(this.x - c.x, this.y - c.y)) return true;
+      }
+    }
+    return false;
+  }
+
   tryMove(dx, dy) {
     if (dx === 0 && dy === 0) return false;
     const nx = this.x + dx;
     const ny = this.y + dy;
     if (this.map.isSolidBox(nx, ny, this.radius, this.radius)) return false;
+    if (this.chocaConParado(nx, ny)) return false;
     this.x = nx;
     this.y = ny;
     return true;
