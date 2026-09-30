@@ -1,0 +1,189 @@
+APUNTES DE PABLO TRAS JUGAR - 30 de septiembre de 2026
+=======================================================
+Nada de esto esta hecho todavia. Son cosas que Pablo vio jugando la v41 y
+pidio que se apuntaran tal cual. Orden de abajo: primero lo que es un fallo,
+luego lo que es mejora, luego lo grande. Dentro de cada grupo, las cosas
+pequeñas van primero.
+
+Regla para cuando se haga: cada grupo es una tanda. Pablo dice por cual se
+empieza, no se arranca solo. Y antes de tocar un sistema, leer como esta ahora
+(ya hay cosas hechas que se mencionan aqui como si no existieran).
+
+
+=== A. FALLOS (lo que esta roto) ===
+
+A1. NUEVA PARTIDA SOBREESCRIBE SIN PREGUNTAR.
+    Le da a "nueva partida", elige una ranura que ya tenia partida, y en vez
+    de preguntar "¿sobreescribir?" la pisa directamente. Hay que poner una
+    confirmacion clara ("esta ranura ya tiene una partida, ¿borrarla?") antes
+    de cargar la nueva. Es lo mas barato de todo y lo mas grave (pierde datos).
+    Mirar MenuScene.js y el sistema de ranuras/cuentas.
+
+A2. LA POLICIA TARDA DEMASIADO EN DETENERME.
+    Mato a uno a tiros, viene la policia, se baja del coche, y estando yo
+    quieto tarda mucho en detenerme. Tiene que ir a por mi y detenerme rapido.
+
+A3. LOS COCHES DE POLICIA DESAPARECEN.
+    Lo ha visto ya 2 veces. Averiguar por que (¿se borran al alejarse?, ¿se
+    quitan por limite de coches?, ¿un fallo al bajarse los agentes?).
+
+A4. LA POLICIA ME MATA DENTRO DE UN COCHE ROBADO.
+    Robo un coche y la policia me dispara y me mata a mi. Si voy dentro de un
+    coche, las balas tienen que dañar al COCHE, no a mi. (Si el coche revienta
+    o yo salgo, ya es otra cosa.)
+
+A5. LOS COCHES DE LA CIUDAD SE GIRAN Y CAMBIAN DE DIRECCION DE GOLPE.
+    Van bien por su ruta y de repente dan la vuelta. Hay que trazar las rutas
+    de los NPCs de verdad (un camino fijo por calle y sentido, giros en las
+    esquinas, sin cambios raros a mitad de calle). Revisar TrafficSystem.js.
+
+A6. MODO CONDUCTOR DE AMBULANCIA ROTO.
+    - Te marca un sitio donde recoger, pero no hay ningun NPC ahi.
+    - Al llegar te dice que lo dejes en un sitio cualquiera: tiene que ser
+      SIEMPRE un hospital.
+    - Para eso hacen falta MAS HOSPITALES, bien separados por el mapa.
+
+A7. COLISIONES EN LOS INTERIORES.
+    En el club de striptease (y probablemente en el resto de interiores) no
+    hay colisiones: se atraviesa todo, no choca con nada y no se puede pegar.
+    Darle fisicas y colisiones a todos los interiores (muebles, barra,
+    paredes) y que se pueda pegar dentro.
+
+A8. LA IMAGEN DE LA MONTAÑA, A LA IZQUIERDA DE LA GRUA DEL PUERTO.
+    Hay una imagen de una montaña incrustada en el mapa sin sentido y sin
+    fisicas. Norma general que Pablo quiere: TODA imagen que creemos y
+    pongamos tiene que ser parte del juego con su logica (colision, sitio
+    coherente, que tenga sentido estar ahi). Revisar todas las que hay.
+
+A9. LAS FAROLAS HACEN DEMASIADO DAÑO.
+    Si voy en coche y choco con una farola, que se reviente (se rompa y
+    caiga) y ya, sin hacerme un daño exagerado.
+
+A10. PELEAR CON UN COCHE.
+    Si estoy pegando a un coche, al pegarle tiene que reaccionar: o huye, o se
+    baja el conductor a pegarme. Cosas aleatorias, como en un GTA.
+
+A11. SI ESTOY PARADO EN LA CALLE, QUE NO ME ATROPELLEN.
+    Ahora me revientan. Lo logico: pitan, avanzan despacio, y me rebasan.
+    (Es lo contrario de atropellar: el conductor NPC tiene que frenar y
+    esquivar si hay alguien delante.)
+
+
+=== B. LA POLICIA Y LAS ESTRELLAS: COMO EN GTA SAN ANDREAS ===
+
+Pablo lo pide "exactamente igual que San Andreas". Puntos concretos:
+
+B1. A veces mato a alguien y no sale ninguna estrella. Regla de San Andreas:
+    solo te buscan si un policia te VE (o te ve un testigo que avisa). Si
+    mato a alguien sin que me vea un policia, no hay estrellas. Si hay un
+    policia delante, sale 1 estrella.
+B2. CON 1 ESTRELLA NO DISPARAN, A NO SER QUE LLEVE ARMA EN LA MANO.
+    - Si voy a puños con 1 estrella: los policias vienen con la PORRA a
+      pegarme (y a detenerme), no disparan.
+    - Solo disparan si llevo un arma equipada en la mano.
+    (Esto cambia la regla actual, que segun las notas es "dispara a 2
+    estrellas": revisar PoliceSystem.js y el bloque del combate.)
+B3. Mirar como funciona el resto de estrellas en San Andreas (que sube a
+    2, 3... y que sale en cada nivel) antes de montarlo.
+
+B4. SI ME MATAN O ME DETIENEN: ME QUITAN LAS ARMAS.
+    - Pierdo las armas.
+    - Sale un ICONO (generado con IA, como el de Vice City) en un sitio del
+      mapa donde puedo RECUPERARLAS pagando X dinero.
+    - Falta decidir: cuanto cuesta, donde esta el icono (¿en la comisaria o
+      el hospital segun si me detienen o me matan?), y dibujar el icono.
+
+
+=== C. VEHICULOS ===
+
+C1. BARRA DE VIDA DE LOS COCHES: solo visible al recibir daño, y que
+    desaparezca a los 2 o 3 segundos si no reciben mas. Hoy se ve siempre.
+C2. VIDA SEGUN EL VEHICULO: moto menos vida, coche normal mas, furgones mas
+    todavia. Cada tipo con su vida propia.
+C3. COCHE CON LA VIDA A CERO: sale fuego del capo y tengo unos 6 SEGUNDOS para
+    bajarme y alejarme. Pasado ese tiempo, EXPLOTA (y daña a lo que este
+    cerca).
+C4. SONIDO DE LOS MOTORES. Esta mal en varios:
+    - Ambulancia: el sonido al acelerar de menos a mas velocidad no es
+      progresivo.
+    - Coche de policia: se escucha mal, tampoco progresivo.
+    - Furgoneta: igual.
+    - En general "se escuchan muchos muy mal". Hay que rehacer el sonido del
+      motor para que suba de forma continua con la velocidad (tono y volumen
+      ligados a la velocidad), para todos los vehiculos.
+    (Ver nota de la memoria: "verificar sonido sin oirlo" con OfflineAudio
+    Context, porque Claude no puede oir: medir pico, RMS y envolvente.)
+C5. SI DEJO DE PULSAR ACELERAR: el vehiculo debe ir frenando poco a poco,
+    como es logico (resistencia). Comprobar que pasa en todos los vehiculos.
+C6. CARRERAS, MUCHO MAS LARGAS Y COMPLEJAS:
+    - Al entrar en una carrera: FADE A NEGRO.
+    - Se colocan 3 COCHES rivales ademas del mio.
+    - Cada carrera tiene un recorrido DIFERENTE y largo, con muchas curvas
+      y tramos. No vale "5 puntos en recto y luego hacia arriba".
+    - Los rivales tienen que conducir la ruta de verdad.
+
+
+=== D. PERSONAJES Y COMBATE ===
+
+D1. FISICAS DE LOS BRAZOS IRREGULARES. El movimiento de los brazos de mi
+    personaje es irregular. Hay que dejar el movimiento PERFECTO, para mi
+    personaje y para todos los NPCs. (Ver Extremidades.js / extremidades.js;
+    la nota de la memoria dice que desde arriba el brazo se desliza, no gira.)
+D2. PUNTERIA: esta bien el autoapuntado a NPCs, pero tambien tiene que
+    DISPARAR DONDE HAGO CLIC: a un coche, a un NPC, o a lo que sea. Que
+    las dos cosas convivan.
+D3. LOS NPCs SUELTAN COSAS AL MORIR, como en San Andreas:
+    - Algunos sueltan dinero.
+    - Los miembros de banda: armas y dinero, o nada.
+    - No todos: aleatorio.
+D4. DESMEMBRAR (ALEATORIO): al matar a un NPC, a veces pierde un brazo o
+    los dos. Si pasa, el brazo se QUITA DEL CUERPO del NPC (no que aparezca
+    el NPC muerto con los brazos puestos y ademas brazos sueltos aparte).
+D5. CABEZA: poder dispararle de cerca, por ejemplo con una escopeta, y que
+    la cabeza REVIENTE. Misma regla: si pasa, desaparece del cuerpo.
+    (Aviso para cuando se haga: valorar el tono y la clasificacion de edad
+    del juego; y Gemini puede bloquear el arte de esto, asi que probablemente
+    se dibuje por codigo, no con IA.)
+
+
+=== E. ASPECTO VISUAL ===
+
+E1. LA NOCHE SE VE DEMASIADO OSCURA. Hay que dejarlo bien tanto de DIA como de
+    NOCHE: que de noche se pueda jugar y se vea bonito (farolas, luces de
+    coches, brillos), no una capa negra. Mirar DiaNocheSystem.js.
+
+
+=== F. MUNDO Y CIUDAD ===
+
+F1. PROPIEDADES PEGADAS. Hay 2 propiedades en venta juntas. Hay que colocarlas
+    CADA X METROS, bien repartidas, no amontonadas.
+F2. MAPA MAS DIVERSO: que haya sitios a los que ir, comprar, y cosas que hacer
+    en CASI CUALQUIER PUNTO del mapa. "Piensa y fijate en los demas GTA."
+    (Enlaza con IDEAS-DE-LOS-GTA.txt e IDEAS-DE-LOS-GTA-2-LO-GORDO.txt:
+    mirar ahi primero, ya hay 66 ideas con coste y orden.)
+F3. MAS HOSPITALES, BIEN SEPARADOS (ya apuntado en A6).
+F4. COHERENCIA GENERAL: "muchisima logica y coherencia al juego en varios
+    aspectos". Cada cosa tiene que tener sentido en el mundo.
+
+
+=== G. AIRE DE VIDEOJUEGO: HISTORIA ===
+
+G1. Al dar a NUEVA PARTIDA que salga algo de la historia: CINEMATICAS,
+    DIALOGOS, etc. Darle mas aire de videojuego. Generar el material
+    (texto de la historia, dialogos, imagenes con IA).
+    Ya existe un PrologoScene.js: mirar que hace ahora antes de empezar.
+    Esto es lo mas grande de toda la lista, va como proyecto propio.
+
+
+=== ORDEN QUE SUGIERO (Pablo decide) ===
+
+1. A1 (confirmar al sobreescribir): minutos y evita perder partidas.
+2. Pequeños y rapidos: A9 (farolas), C1 (barra de vida), A2 (detencion
+   rapida), A3 (coches de policia que desaparecen), A4 (balas al coche).
+3. Estrellas de San Andreas (grupo B) y armas confiscadas: una tanda.
+4. Sonido de motores (C4, C5): una tanda, y pedirle a Pablo que lo oiga.
+5. Coches: rutas (A5), fuego y explosion (C3), vida por tipo (C2).
+6. Ambulancia + hospitales (A6), propiedades separadas (F1): una tanda.
+7. Interiores con colisiones (A7), noche visible (E1).
+8. Carreras nuevas (C6), desmembrar (D4, D5), brazos perfectos (D1).
+9. Historia y cinematicas (G1): proyecto aparte, cuando haya cuota de sobra.
