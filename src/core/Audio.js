@@ -28,6 +28,7 @@ class GameAudio {
 
     this.noise = this._makeNoise();
     this.muestras = {};
+    this.tramosMotor = {};
     this.cargarMuestras();
     this._buildEngine();
     this._buildSkid();
@@ -99,9 +100,64 @@ class GameAudio {
         const res = await fetch(`audio/${nombre}`);
         if (!res.ok) continue;
         this.muestras[clave] = await this.ctx.decodeAudioData(await res.arrayBuffer());
+        if (clave.startsWith('motor-')) this.tramosMotor[clave] = this._tramoEstable(this.muestras[clave]);
       } catch (e) { /* si falla uno, el resto sigue */ }
     }
   }
+  // C4: LAS GRABACIONES NO SON ESTABLES. Medido (RMS y cruces por cero cada
+  // 0,25 s): motor-1 pasa de 298 a 1602 cruces dentro de la misma muestra,
+  // motor-2 de 0,32 a 0,14 de volumen, motor-4 a la mitad. Reproducidas
+  // enteras en bucle, el tono y el volumen "respiraban" por su cuenta aunque
+  // la velocidad fuera constante, y eso se oia como un motor irregular. Aqui
+  // se busca el tramo de 0,6 s MAS PLANO de cada muestra (poca variacion de
+  // volumen y de tono) y solo ese se pone en bucle, cortado en cruces por
+  // cero para que el empalme no haga clic.
+  _tramoEstable(buf) {
+    const d = buf.getChannelData(0);
+    const sr = buf.sampleRate;
+    const largo = Math.floor(sr * 0.6);
+    if (d.length < largo * 1.2) return { ini: 0, fin: buf.duration, gan: 1 };
+    const sub = Math.floor(sr * 0.1);
+    let mejor = { puntos: Infinity, a: 0 };
+    for (let a = 0; a + largo <= d.length; a += Math.floor(sr * 0.05)) {
+      const rms = [];
+      const zcr = [];
+      for (let b = a; b + sub <= a + largo; b += sub) {
+        let e = 0;
+        let z = 0;
+        for (let i = b; i < b + sub; i++) {
+          e += d[i] * d[i];
+          if (i > b && (d[i] >= 0) !== (d[i - 1] >= 0)) z++;
+        }
+        rms.push(Math.sqrt(e / sub));
+        zcr.push(z);
+      }
+      const media = (v) => v.reduce((x, y) => x + y, 0) / v.length;
+      const desv = (v) => Math.sqrt(media(v.map((x) => (x - media(v)) ** 2)));
+      const puntos = desv(rms) / (media(rms) || 1) + desv(zcr) / (media(zcr) || 1);
+      if (puntos < mejor.puntos) mejor = { puntos, a };
+    }
+    // ajustar a cruces por cero ascendentes
+    const alCruce = (i) => {
+      for (let k = i; k < Math.min(d.length - 1, i + 800); k++) {
+        if (d[k] < 0 && d[k + 1] >= 0) return k + 1;
+      }
+      return i;
+    };
+    const ini = alCruce(mejor.a);
+    const fin = alCruce(mejor.a + largo);
+    // el tramo plano puede ser de lo mas flojo de la grabacion: se compensa
+    // para que cada motor suene tan fuerte como sonaba entero (y asi los
+    // ajustes de volumen por vehiculo, ENGINES.vol, siguen valiendo)
+    const rmsDe = (a, b) => {
+      let e = 0;
+      for (let i = a; i < b; i++) e += d[i] * d[i];
+      return Math.sqrt(e / Math.max(1, b - a));
+    };
+    const gan = clamp(rmsDe(0, d.length) / (rmsDe(ini, fin) || 1), 0.6, 2.5);
+    return { ini: ini / sr, fin: fin / sr, gan };
+  }
+
   // El motor grabado se reproduce EN BUCLE y se le cambia la velocidad de
   // reproduccion segun las vueltas: asi suenan los motores en los juegos de
   // coches desde siempre, y con la caja de cambios de aqui da el subir y
@@ -127,7 +183,14 @@ class GameAudio {
     src.buffer = buf;
     src.loop = true;
     src.connect(this.motorGain);
-    src.start();
+    const tramo = this.tramosMotor && this.tramosMotor[clave];
+    if (tramo && tramo.fin > tramo.ini) {
+      src.loopStart = tramo.ini;
+      src.loopEnd = tramo.fin;
+      src.start(0, tramo.ini);
+    } else {
+      src.start();
+    }
     this.motorFuente = src;
   }
   // Suena una muestra suelta, con un poco de variacion de tono.
@@ -279,6 +342,17 @@ class GameAudio {
     return { marcha, vueltas: marcha === 0 ? 0.2 + dentro * 0.8 : alto };
   }
 
+  // Vueltas del motor en 0..1 segun la velocidad (0 parado, 1 a tope). Una
+  // sola curva suave, sin saltos: es lo que hace que suene "de menos a mas".
+  //
+  // REDLINE: a partir del 95 % de la velocidad el tono se queda CLAVADO en
+  // su maximo en vez de seguir subiendo (o temblar con cada pequeño cambio
+  // de velocidad). Era justo lo que sonaba mal "al llegar al maximo".
+  _vueltasContinuas(r) {
+    const REDLINE = 0.95;
+    return Math.pow(clamp(r, 0, REDLINE) / REDLINE, 0.85);
+  }
+
   engine(on, ratio, throttle, perfil = null) {
     if (!this.started) return;
     const t = this.ctx.currentTime;
@@ -291,37 +365,27 @@ class GameAudio {
       this._ponerMotor(perfilMuestra);
       const t2 = this.ctx.currentTime;
       const r2 = clamp(ratio, 0, 1);
-      const caja2 = this._vueltasDe(r2);
-      const tono = (perfil.tono || 1) * (0.62 + caja2.vueltas * 1.25);
-      this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.06);
-      // PROGRESIVO DE VERDAD CON LA VELOCIDAD, no con si se pisa el pedal.
-      // Antes saltaba de 0.12 a 0.3+ en el instante de tocar el acelerador,
-      // AUNQUE EL COCHE SIGUIERA PARADO (el salto vivia en `throttle`, un
-      // booleano, no en la velocidad real): de ahi que sonara mal
-      // configurado, "a trompicones" en vez de "de menos a mas". Ahora sube
-      // liso con r2 (0 parado, 1 a tope), sin escalones ni saltos.
-      // El techo tambien baja un poco (antes llegaba a 0.75): Pablo lo pidio
-      // mas bajo en general.
+      // C4: EL MOTOR SUBE DE FORMA CONTINUA CON LA VELOCIDAD. Antes habia
+      // cinco marchas: las vueltas subian y caian de golpe al cambiar (y el
+      // volante se cortaba), asi que acelerar sonaba a trompicones, sobre
+      // todo en la ambulancia, la patrulla y las furgonetas, que llegan a
+      // la marcha de arriba en nada. Ahora tono y volumen son una curva
+      // suave de la velocidad real, sin escalones.
+      const vueltas = this._vueltasContinuas(r2);
+      // al pisar el acelerador sube un pelin (se nota que empujas), con un
+      // tiempo de subida lento para que no sea un salto
+      const empuje = throttle ? 1 : 0;
+      this.empujeSuave = (this.empujeSuave || 0) + (empuje - (this.empujeSuave || 0)) * 0.08;
+      const tono = (perfil.tono || 1) * (0.8 + vueltas * 0.7 + this.empujeSuave * 0.03);
+      this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.1);
       const NIVEL_RALENTI = 0.1;
       const NIVEL_TOPE = 0.46;
-      const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * r2;
-
-      // EL "SE REINICIA EL SONIDO" QUE VEIA PABLO A FONDO: `_vueltasDe` sube
-      // las vueltas dentro de cada marcha y las deja caer de golpe (de ~1 a
-      // ~0.35) al entrar en la siguiente, que es justo como suena un cambio
-      // de marcha de verdad. El motor SINTETIZADO ya disimulaba ese salto de
-      // tono con un corte de volumen de un instante (`corte`/`cambio`, mas
-      // abajo); al motor GRABADO nunca se le puso el mismo corte, asi que el
-      // salto de tono sonaba solo, sin nada que lo tapara: acelerando a
-      // fondo pasas las cuatro marchas seguidas y en cada una se oye como si
-      // la muestra volviera a empezar. Mismo parche que el sintetizado.
-      const cambioMarcha = caja2.marcha !== this.marchaMuestra;
-      this.marchaMuestra = caja2.marcha;
-      const corte = cambioMarcha ? 0.45 : 1;
-      this.motorGain.gain.setTargetAtTime(
-        on ? nivel * (perfil.vol || 1) * corte : 0, t2, cambioMarcha ? 0.02 : 0.08
-      );
+      const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * vueltas + this.empujeSuave * 0.03;
+      const tr = this.tramosMotor && this.tramosMotor[perfilMuestra];
+      const gan = tr && tr.gan ? tr.gan : 1;
+      this.motorGain.gain.setTargetAtTime(on ? nivel * (perfil.vol || 1) * gan : 0, t2, 0.12);
       if (this.engGain) this.engGain.gain.setTargetAtTime(0, t2, 0.1);
+      const caja2 = { vueltas };
 
       // LA ASPEREZA, encima de la grabacion. Normalmente con muestra se
       // calla todo lo sintetizado, pero la grabacion de la moto no tiene
@@ -343,25 +407,21 @@ class GameAudio {
       this.osc1.type = p.wave;
     }
 
-    const caja = this._vueltasDe(r);
-    const cambio = caja.marcha !== this.marcha;
-    this.marcha = caja.marcha;
-    const rpm = caja.vueltas;
-
-    // al cambiar de marcha se levanta el pie un instante: el motor se apaga
-    // un poco y vuelve. Es un detalle pequeño que se nota mucho.
-    const corte = cambio ? 0.55 : 1;
+    // sin marchas: las vueltas son una curva continua de la velocidad
+    const rpm = this._vueltasContinuas(r);
+    const corte = 1;
+    const cambio = false;
     // parado y sin acelerar, el sintetizado tambien baja (ver el motor grabado)
     const quieto = !throttle && r < 0.03;
     const level = on
       ? (quieto ? 0.006 : 0.011 + rpm * 0.031 + (throttle ? 0.008 : 0)) * p.vol * corte
       : 0;
-    this.engGain.gain.setTargetAtTime(level, t, cambio ? 0.02 : 0.07);
+    this.engGain.gain.setTargetAtTime(level, t, 0.09);
     this.subGain.gain.setTargetAtTime(p.body, t, 0.12);
     this.armGain.gain.setTargetAtTime(0.05 + rpm * 0.16, t, 0.09);
 
     const freq = p.base + rpm * p.range;
-    const suavizado = cambio ? 0.02 : 0.05;
+    const suavizado = 0.07;
     this.osc1.frequency.setTargetAtTime(freq, t, suavizado);
     this.osc2.frequency.setTargetAtTime(freq * 0.5, t, suavizado);
     this.osc3.frequency.setTargetAtTime(freq * 3, t, suavizado);
