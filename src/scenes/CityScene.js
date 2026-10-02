@@ -247,7 +247,11 @@ export class CityScene extends Phaser.Scene {
 
     // el raton tambien pega, y al volante tambien dispara
     this.input.on('pointerdown', (p) => {
-      if (p.leftButtonDown() && this.scene.isActive()) this.atacarAhora();
+      if (p.leftButtonDown() && this.scene.isActive()) {
+        // el clic dispara hacia donde apunta el raton (en coordenadas del mundo)
+        const w = this.cameras.main.getWorldPoint(p.x, p.y);
+        this.atacarAhora({ x: w.x, y: w.y });
+      }
     });
 
     // los navegadores no dejan sonar nada hasta que el jugador toca algo
@@ -947,13 +951,13 @@ export class CityScene extends Phaser.Scene {
       .setDisplaySize(16, 20).setTint(0xe8b54a).setAlpha(0.8).setDepth(6);
   }
 
-  atacarAhora() {
+  atacarAhora(clic = null) {
     // al volante se dispara por la ventanilla, y solo con una mano
     if (this.drivingVehicle) {
-      this.combat.dispararDesdeCoche(this.drivingVehicle);
+      this.combat.dispararDesdeCoche(this.drivingVehicle, clic);
       return;
     }
-    this.combat.atacar(this.player, this.player.running);
+    this.combat.atacar(this.player, this.player.running, clic);
   }
 
   // EL BRAZO SIGUE AL OBJETIVO. Con un arma de fuego y alguien fijado, el

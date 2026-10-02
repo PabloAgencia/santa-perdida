@@ -1,7 +1,7 @@
 import { FASES } from '../world/personArt.js';
 import { Extremidades } from './Extremidades.js';
 import { VIDA } from '../config/weapons.js';
-import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
+import { Ragdoll, piezaRagdoll, ragdollDeCuerpo, desmembrarBrazos, reventarCabeza } from './Ragdoll.js';
 
 export class Pedestrian {
   constructor(scene, map, x, y, skin, faction = null, pathfinder = null) {
@@ -129,20 +129,22 @@ export class Pedestrian {
 
     // EL RAGDOLL: el cuerpo y los dos brazos salen despedidos por separado y
     // caen donde paran. Sustituye al giro instantaneo de 90 grados de antes.
-    this.ragdoll = new Ragdoll([
-      piezaRagdoll(
-        this.sprite, this.sprite.x, this.sprite.y, anguloImpacto, fuerza, this.sprite.rotation
-      ),
-      piezaRagdoll(
-        this.brazos.izq, this.brazos.izq.x, this.brazos.izq.y,
-        anguloImpacto, fuerza * 0.8, this.brazos.izq.rotation
-      ),
-      piezaRagdoll(
-        this.brazos.der, this.brazos.der.x, this.brazos.der.y,
-        anguloImpacto, fuerza * 0.8, this.brazos.der.rotation
-      ),
-    ]);
+    // D4: los brazos van PEGADOS al cuerpo (ragdollDeCuerpo); solo se
+    // sueltan si un tiro los arranca (desmembrar)
+    this.ragdoll = ragdollDeCuerpo(this.sprite, this.brazos, anguloImpacto, fuerza);
+    this.anguloMuerte = anguloImpacto;
     this.brazos.setVisible(true);
+  }
+
+  // llamadas desde CombatSystem al matar de un tiro
+  desmembrar(dos = false) {
+    return desmembrarBrazos(this.scene, this.ragdoll, this.anguloMuerte ?? 0, dos);
+  }
+
+  reventarCabeza() {
+    if (this.sinCabeza) return;
+    this.sinCabeza = true;
+    reventarCabeza(this.scene, this.ragdoll, this.anguloMuerte ?? 0);
   }
 
   // Huir de algo. OJO: hay que BORRAR la ruta que llevaba calculada; si no,
@@ -291,6 +293,7 @@ export class Pedestrian {
     if (this.attackCooldown > 0) this.attackCooldown -= dt;
     if (this.enCoche) return;
     this.vehiculos = vehicles;
+    this._dt = dt;
 
     if (this.down) {
       this.downTimer += dt;
@@ -406,6 +409,8 @@ export class Pedestrian {
   }
 
   animar(speed, dt) {
+    this.movioAhora = true;
+    this.velAnim = speed;
     this.paso += (speed / 42) * dt;
     const fase = Math.floor(this.paso) % FASES;
     if (fase !== this.fase) {
@@ -461,16 +466,17 @@ export class Pedestrian {
     this.brazos.setVisible(seVe);
     if (!seVe) return;
 
-    // el vaiven se apaga solo si ha dejado de andar (animar lo reenciende)
-    this.vaiven = Math.max(0, this.vaiven - 0.02);
-    this.brazos.colocar(
-      this.x, this.y, this.angle,
-      Math.sin(this.paso * Math.PI * 2) * this.vaiven,
+    // el braceo lo lleva Extremidades.andar: suave y con la fase continua
+    this.brazos.andar(
+      this.x, this.y, this.angle, this._dt || 0.0167,
+      this.movioAhora ? this.velAnim : 0,
       this.state === 'fleeing'
     );
+    this.movioAhora = false;
   }
 
   destroy() {
+    if (this.ragdoll && this.ragdoll.extras) this.ragdoll.extras.forEach((e) => e.destroy());
     this.sprite.destroy();
     this.brazos.destroy();
     this.shadow.destroy();

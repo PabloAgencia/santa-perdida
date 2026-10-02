@@ -299,6 +299,41 @@ export class PickupSystem {
     this.sueltos.push({ x, y, clave, balas, icono, brillo, vida: 40 });
   }
 
+  // D3: DINERO EN EL SUELO. Un fajo verde que gira un poco y se queda 40 s.
+  // Se coge andando por encima, como las armas.
+  soltarDinero(x, y, cantidad) {
+    this.billetes = this.billetes || [];
+    const icono = this.scene.add.image(x, y, 'px')
+      .setDisplaySize(13, 8).setTint(0x8fd694).setDepth(y + 1)
+      .setRotation(Math.random() * Math.PI);
+    const brillo = this.scene.add.image(x, y, 'lamp')
+      .setDisplaySize(44, 44).setTint(0x8fd694)
+      .setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.28).setDepth(3);
+    this.billetes.push({ x, y, cantidad, icono, brillo, vida: 40 });
+  }
+
+  recogerBilletes(dt, player, enCoche) {
+    if (!this.billetes || this.billetes.length === 0) return;
+    for (let i = this.billetes.length - 1; i >= 0; i--) {
+      const b = this.billetes[i];
+      b.vida -= dt;
+      if (b.vida <= 0) {
+        b.icono.destroy();
+        b.brillo.destroy();
+        this.billetes.splice(i, 1);
+        continue;
+      }
+      if (enCoche) continue;
+      if (Phaser.Math.Distance.Between(b.x, b.y, player.x, player.y) > 24) continue;
+      GameState.addMoney(b.cantidad, 'botin');
+      Audio.pickup();
+      EventBus.emit(EVT.NOTIFY, { text: `+${b.cantidad} €`, tone: 'money' });
+      b.icono.destroy();
+      b.brillo.destroy();
+      this.billetes.splice(i, 1);
+    }
+  }
+
   recogerArmas(dt, player, enCoche) {
     for (let i = this.sueltos.length - 1; i >= 0; i--) {
       const s = this.sueltos[i];
@@ -328,6 +363,7 @@ export class PickupSystem {
 
   update(dt, player, enCoche) {
     this.recogerArmas(dt, player, enCoche);
+    this.recogerBilletes(dt, player, enCoche);
     this.recogerArmasFijas(dt, player, enCoche);
     for (const c of this.corazones) {
       if (c.espera > 0) {
@@ -410,6 +446,8 @@ export class PickupSystem {
     for (const c of this.corazones) { c.icono.destroy(); c.brillo.destroy(); }
     for (const m of this.maquinas) { m.icono.destroy(); m.luz.destroy(); }
     for (const s of this.sueltos) { s.icono.destroy(); s.brillo.destroy(); }
+    for (const b of this.billetes || []) { b.icono.destroy(); b.brillo.destroy(); }
+    this.billetes = [];
     for (const c of this.chalecos) c.icono.destroy();
     this.chalecos = [];
     this.sueltos = [];

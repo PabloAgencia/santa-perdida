@@ -2,7 +2,7 @@ import { FASES } from '../world/personArt.js';
 import { Extremidades } from './Extremidades.js';
 import { VIDA, ARMAS } from '../config/weapons.js';
 import { GameState } from '../core/GameState.js';
-import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
+import { Ragdoll, piezaRagdoll, ragdollDeCuerpo, desmembrarBrazos, reventarCabeza } from './Ragdoll.js';
 
 const RADIO = 9;
 
@@ -98,21 +98,20 @@ export class Officer {
     // el cuerpo y los dos brazos salen despedidos por separado y caen donde
     // paran, igual que con un peaton (ver Ragdoll.js)
     const anguloImpacto = Math.atan2(this.y - desdeY, this.x - desdeX);
-    this.ragdoll = new Ragdoll([
-      piezaRagdoll(
-        this.sprite, this.sprite.x, this.sprite.y, anguloImpacto, 150, this.sprite.rotation
-      ),
-      piezaRagdoll(
-        this.brazos.izq, this.brazos.izq.x, this.brazos.izq.y,
-        anguloImpacto, 120, this.brazos.izq.rotation
-      ),
-      piezaRagdoll(
-        this.brazos.der, this.brazos.der.x, this.brazos.der.y,
-        anguloImpacto, 120, this.brazos.der.rotation
-      ),
-    ]);
+    this.ragdoll = ragdollDeCuerpo(this.sprite, this.brazos, anguloImpacto, 150);
+    this.anguloMuerte = anguloImpacto;
     this.brazos.setVisible(true);
     return 'muerto';
+  }
+
+  desmembrar(dos = false) {
+    return desmembrarBrazos(this.scene, this.ragdoll, this.anguloMuerte ?? 0, dos);
+  }
+
+  reventarCabeza() {
+    if (this.sinCabeza) return;
+    this.sinCabeza = true;
+    reventarCabeza(this.scene, this.ragdoll, this.anguloMuerte ?? 0);
   }
 
   tuArmaEsDeFuego() {
@@ -155,6 +154,8 @@ export class Officer {
       if (this.ragdoll && !this.ragdoll.quieto) this.ragdoll.update(dt);
       return Infinity;
     }
+    this._dt = dt;
+    this.moviendo = false;
     const dx = tx - this.x;
     const dy = ty - this.y;
     const dist = Math.hypot(dx, dy);
@@ -184,6 +185,7 @@ export class Officer {
     }
 
     this.angle = Phaser.Math.Angle.RotateTo(this.angle, Math.atan2(dy, dx), 12 * dt);
+    this.moviendo = movX || movY;
     this.paso += (this.speed / 44) * dt;
     const fase = Math.floor(this.paso) % FASES;
     if (fase !== this.fase) {
@@ -214,14 +216,15 @@ export class Officer {
     // Al APUNTAR el brazo se queda quieto y estirado, no braceando: un
     // policia disparandote mientras mueve los brazos como si paseara canta.
     const apuntando = this.recarga < 0.8;
-    this.brazos.colocar(
-      this.x, this.y, this.angle,
-      apuntando ? 0 : Math.sin(this.paso * Math.PI * 2),
+    this.brazos.andar(
+      this.x, this.y, this.angle, this._dt || 0.0167,
+      this.moviendo && !apuntando ? this.speed : 0,
       true
     );
   }
 
   destroy() {
+    if (this.ragdoll && this.ragdoll.extras) this.ragdoll.extras.forEach((e) => e.destroy());
     this.sprite.destroy();
     this.brazos.destroy();
     this.shadow.destroy();

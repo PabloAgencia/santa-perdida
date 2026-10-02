@@ -46,6 +46,22 @@ export class Extremidades {
     this.der = scene.add.image(0, 0, clave).setOrigin(0.2, 0.5);
   }
 
+  // D1: EL BRACEO PERFECTO, para cualquiera que ande. Antes cada tipo de
+  // personaje llevaba su propia cuenta del vaiven: el peaton lo apagaba con
+  // una resta por FOTOGRAMA (dependia de los fps), el agente lo cortaba en
+  // seco al pararse y los brazos se quedaban tiesos a media zancada. Ahora:
+  //   - la AMPLITUD sube y baja suave (mismo ritmo a cualquier fps)
+  //   - la FASE sigue su ciclo mientras la amplitud se apaga, asi el brazo
+  //     vuelve al costado dando su ultimo balanceo, nunca congelado
+  //   - la cadencia sale de la velocidad real: mas deprisa, mas braceo
+  andar(x, y, angle, dt, velocidad, corriendo = false) {
+    const objetivo = velocidad > 6 ? 1 : 0;
+    this.amp = (this.amp || 0) + (objetivo - (this.amp || 0)) * (1 - Math.exp(-dt * 9));
+    const ciclos = Math.max(velocidad / 42, this.amp > 0.02 ? 1.1 * this.amp : 0);
+    this.fase = (this.fase || 0) + ciclos * dt;
+    this.colocar(x, y, angle, Math.sin(this.fase * Math.PI * 2) * this.amp, corriendo);
+  }
+
   // x, y, angle: donde y hacia donde mira el cuerpo
   // swing: -1 a 1, el vaiven del paso
   colocar(x, y, angle, swing, corriendo = false) {

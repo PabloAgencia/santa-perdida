@@ -101,7 +101,24 @@ export class CombatSystem {
 
   // ---------- atacar ----------
 
-  atacar(player, enMovimiento) {
+  // D2: DISPARAR DONDE HAGO CLIC. El autoapuntado sigue ahi (tecla F o clic
+  // sobre alguien), pero un clic en cualquier otro sitio dispara hacia ese
+  // punto: a un coche, a un cristal, a lo que haya en la linea. Un clic sobre
+  // una persona la elige a ella; sobre nada, es un tiro al punto.
+  objetivoDeClic(clic, arma) {
+    if (!clic) return null;
+    let mejor = null;
+    let mejorDist = 28;
+    for (const { ente } of this.candidatos()) {
+      const d = Phaser.Math.Distance.Between(ente.x, ente.y, clic.x, clic.y);
+      if (d < mejorDist) { mejorDist = d; mejor = ente; }
+    }
+    if (mejor) return mejor;
+    // cuerpo a cuerpo no tiene "punto": se queda con el autoapuntado de siempre
+    return arma.cuerpo ? null : { x: clic.x, y: clic.y, punto: true };
+  }
+
+  atacar(player, enMovimiento, clic = null) {
     if (this.espera > 0) return false;
     const arma = this.arma;
 
@@ -112,7 +129,11 @@ export class CombatSystem {
     }
 
     this.espera = arma.cadencia;
-    const objetivo = this.objetivo && !this.objetivo.down ? this.objetivo : this.buscarObjetivo(player);
+    const deClic = this.objetivoDeClic(clic, arma);
+    const objetivo = deClic
+      || (this.objetivo && !this.objetivo.down ? this.objetivo : this.buscarObjetivo(player));
+    // el cuerpo mira hacia donde disparas
+    if (deClic && !arma.cuerpo) player.angle = Math.atan2(deClic.y - player.y, deClic.x - player.x);
 
     if (arma.cuerpo) return this.golpear(player, objetivo, arma);
     return this.disparar(player, objetivo, arma, enMovimiento);
@@ -127,7 +148,7 @@ export class CombatSystem {
   // El tiro sale DEL COCHE, no de ti, asi que el vehiculo hace de tirador: ya
   // tiene x, y y angle, que es todo lo que necesita el sistema. Y cuanto mas
   // rapido vas, peor apuntas: a tope de velocidad el desvio se triplica.
-  dispararDesdeCoche(vehiculo) {
+  dispararDesdeCoche(vehiculo, clic = null) {
     if (this.espera > 0) return false;
     const arma = this.arma;
 
@@ -145,9 +166,10 @@ export class CombatSystem {
     }
 
     this.espera = arma.cadencia * 1.25;   // se dispara mas lento al volante
-    const objetivo = this.objetivo && !this.objetivo.down
-      ? this.objetivo
-      : this.buscarObjetivo(vehiculo);
+    const objetivo = this.objetivoDeClic(clic, arma)
+      || (this.objetivo && !this.objetivo.down
+        ? this.objetivo
+        : this.buscarObjetivo(vehiculo));
 
     const marcha = Phaser.Math.Clamp(vehiculo.speed / vehiculo.stats.maxSpeed, 0, 1);
     return this.disparar(vehiculo, objetivo, arma, true, 1 + marcha * 2);
@@ -257,7 +279,13 @@ export class CombatSystem {
 
       const impacto = this.trazarBala(player, angulo, arma);
       if (impacto.ente) {
+        // lo que hace falta saber al matar: con que y desde cuanto
+        this.contextoTiro = {
+          arma,
+          dist: Math.hypot(impacto.ente.x - player.x, impacto.ente.y - player.y),
+        };
         this.aplicar(impacto.ente, arma.dano, player, false);
+        this.contextoTiro = null;
         algunoDentro = true;
       } else if (impacto.vehiculo) {
         // una bala si entra en la chapa de verdad, con el alcance real del
@@ -324,6 +352,7 @@ export class CombatSystem {
     if (resultado === 'muerto') {
       GameState.bumpStat('bajas', 1);
       this.soltarLoQueLlevaba(ente);
+      this.destrozar(ente);
       // cargarse a alguien delante de testigos tiene su precio
       this.scene.police.denunciar(ente.x, ente.y, ente.esPolicia ? 3 : 1);
 
@@ -337,18 +366,55 @@ export class CombatSystem {
     if (this.objetivo === ente && ente.down) this.objetivo = null;
   }
 
+  // D4 y D5, al matar de un tiro (ver Ragdoll.js):
+  //   escopeta de cerca   la cabeza revienta (7 de cada 10)
+  //   cualquier tiro      a veces se pierde un brazo, y mas raro los dos
+  // Los golpes y los atropellos nunca desmiembran.
+  destrozar(ente) {
+    const ctx = this.contextoTiro;
+    if (!ctx || typeof ente.desmembrar !== 'function') return;
+    if (ctx.arma.clave === 'escopeta' && ctx.dist <= 110 && Math.random() < 0.7) {
+      ente.reventarCabeza();
+      return;
+    }
+    if (Math.random() < 0.2) ente.desmembrar(Math.random() < 0.3);
+  }
+
   // Los de banda y los agentes van armados: al caer, el hierro se queda en
   // el suelo. Asi se consigue la primera pistola sin pasar por una tienda.
+  //
+  // D3, COMO EN SAN ANDREAS: no todos sueltan algo.
+  //   agente      su pistola, y a veces algo de calderilla
+  //   de banda    hierro Y/O dinero, o nada (uno de cada cuatro no lleva nada)
+  //   peaton      a veces una cartera con algo de dinero
   soltarLoQueLlevaba(ente) {
-    if (!this.scene.pickups) return;
+    const p = this.scene.pickups;
+    if (!p) return;
+    const dinero = (min, max) => Phaser.Math.Between(min, max);
+    // los billetes caen un poco al lado, para no pisar el arma
+    const alLado = () => ({ x: ente.x + Phaser.Math.Between(-12, 12), y: ente.y + Phaser.Math.Between(-12, 12) });
+
     if (ente.esPolicia) {
-      this.scene.pickups.soltarArma(ente.x, ente.y, 'pistola', 14);
+      p.soltarArma(ente.x, ente.y, 'pistola', 14);
+      if (Math.random() < 0.3) { const q = alLado(); p.soltarDinero(q.x, q.y, dinero(10, 40)); }
+    } else if (ente.faction) {
+      const suerte = Math.random();
+      if (suerte < 0.25) return;                       // nada de nada
+      if (ente.armado && suerte < 0.75) {
+        const clave = Math.random() < 0.25 ? 'escopeta' : 'pistola';
+        p.soltarArma(ente.x, ente.y, clave, clave === 'escopeta' ? 6 : 10);
+      }
+      if (suerte >= 0.5 || !ente.armado) {
+        const q = alLado();
+        p.soltarDinero(q.x, q.y, dinero(30, 140));
+      }
     } else if (ente.armado) {
       // solo suelta hierro el que lo llevaba: si te ha estado disparando, ahi queda
       const clave = Math.random() < 0.25 ? 'escopeta' : 'pistola';
-      this.scene.pickups.soltarArma(ente.x, ente.y, clave, clave === 'escopeta' ? 6 : 10);
-    } else if (!ente.faction && Math.random() < 0.08) {
-      this.scene.pickups.soltarArma(ente.x, ente.y, 'bate', 0);
+      p.soltarArma(ente.x, ente.y, clave, clave === 'escopeta' ? 6 : 10);
+    } else {
+      if (Math.random() < 0.08) p.soltarArma(ente.x, ente.y, 'bate', 0);
+      else if (Math.random() < 0.4) { const q = alLado(); p.soltarDinero(q.x, q.y, dinero(8, 45)); }
     }
   }
 
