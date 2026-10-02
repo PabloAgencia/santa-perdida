@@ -122,13 +122,32 @@ export class CityScene extends Phaser.Scene {
 
     if (loaded && GameState.vehicles.length > 0) {
       for (const v of GameState.vehicles) {
+        // F4: una partida guardada con el mapa de antes podia dejar el coche
+        // dentro de una pared (el mapa ha cambiado varias veces): se le busca
+        // sitio libre en la calle mas cercana
+        let { x, y } = v;
+        if (this.map.isSolidBox(x, y, 20, 24)) {
+          const libre = this.map.roadSpots
+            .filter((s) => !this.map.isSolidBox(s.x, s.y, 34, 34))
+            .sort((p, q) => Phaser.Math.Distance.Between(p.x, p.y, x, y)
+              - Phaser.Math.Distance.Between(q.x, q.y, x, y))[0];
+          if (libre) { x = libre.x; y = libre.y; }
+        }
         this.vehicles.push(
-          new Vehicle(this, this.map, v.type, v.x, v.y, v.angle, {
+          new Vehicle(this, this.map, v.type, x, y, v.angle, {
             id: v.id, hp: v.hp, color: v.color, deTuyo: v.deTuyo,
           })
         );
       }
-      this.player.setPosition(GameState.player.x, GameState.player.y);
+      // lo mismo para ti: si el guardado te dejo dentro de algo solido
+      let px = GameState.player.x;
+      let py = GameState.player.y;
+      if (this.map.isSolidBox(px, py, 8, 8)) {
+        const libre = this.findStartSpot({ x: px, y: py });
+        px = libre.x;
+        py = libre.y;
+      }
+      this.player.setPosition(px, py);
     } else {
       this.spawnDefaultVehicles();
       const start = this.findStartSpot();

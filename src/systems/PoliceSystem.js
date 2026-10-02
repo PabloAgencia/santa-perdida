@@ -25,14 +25,16 @@ export const ESTADO = {
 // la policia en un nivel habia que ir a buscarlos uno a uno, y era imposible
 // ver de un vistazo si la escalada tenia sentido.
 //
-// Ahora sube de verdad: en 1 te siguen y ya esta, en 2 sacan el arma, en 3
+// Ahora sube de verdad: en 1 te siguen y te detienen (solo disparan si
+// llevas un arma de fuego en la mano), en 2 sacan el arma, en 3
 // te cortan la calle, en 4 sale el furgon de asalto, y en 5 y 6 son mas, ven
 // mas lejos, corren mas y cuesta el triple quitartelos de encima.
 //
 //   coches      patrullas a la vez
 //   vision      a cuantos pixeles te ven
 //   velocidad   parte de la punta del coche que usan persiguiendo
-//   disparan    si los agentes que bajan abren fuego. Quien lo decide de
+//   disparan    si los agentes que bajan abren fuego (a 1 estrella, solo si
+//               llevas un arma de fuego: lo decide Officer.intentarDisparar). Quien lo decide de
 //               verdad es `desdeBusca` en Officer.js (cada clase de agente
 //               tiene el suyo); aqui esta para poder leer la escalada de un
 //               vistazo. Y de 2 a 6 ademas disparan mas seguido y fallan
