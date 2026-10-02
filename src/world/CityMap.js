@@ -308,21 +308,59 @@ export class CityMap {
             if (this.inBounds(x, y) && this.roadMask[this.idx(x, y)] !== 1) this.setTile(x, y, T.ALLEY);
           }
         }
-        lm.cima = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+        // EL MONTE, A JUEGO CON SU DIBUJO (arte/landmark-monte.jpg, 1584x672).
+        //
+        // Antes era una imagen pegada encima de un terreno llano: se podia
+        // andar y conducir por el aire por encima de la roca. Ahora la roca,
+        // los arboles y los acantilados son MACIZOS y solo se pasa por donde
+        // el dibujo tiene camino:
+        //   - el sendero de tierra del norte, que sube en zigzag desde la
+        //     calle del puerto hasta el mirador
+        //   - la plaza del mirador, arriba
+        //   - el sendero del sur, que baja de la calle hacia la costa
+        //   - la calle del puerto, que cruza por el medio como siempre
+        // Los senderos miden dos casillas de ancho: caben a pie y en coche.
+        //
+        // Las coordenadas estan en pixeles de la imagen y se pasan a casillas
+        // proporcionalmente; si se cambia el dibujo, se tocan estas listas.
+        const IMG_W = 1584;
+        const IMG_H = 672;
+        const aCasilla = ([ix, iy]) => [L.x + (ix / IMG_W) * L.w, L.y + (iy / IMG_H) * L.h];
+        const SENDERO_NORTE = [[735, 305], [800, 272], [868, 240], [878, 216], [840, 200], [795, 190]];
+        const SENDERO_SUR = [[845, 375], [838, 410], [772, 452], [724, 472], [790, 508], [850, 556], [872, 604], [860, 672]];
+        const ANCHO = 1.5;   // casillas a cada lado del eje: sendero de ~3
+        const PLAZA = { x0: 668, x1: 922, y0: 86, y1: 192 };
 
-        // EL MONTE ES UN MONTE: la masa central es roca maciza (no se anda ni
-        // se conduce por encima, y los coches tienen que rodearla). Solo se
-        // anda el borde, la ladera baja, y la calle del puerto que lo cruza.
-        const cx = L.x + L.w / 2;
-        const cy = L.y + L.h / 2;
+        const distSeg = (px, py, ax, ay, bx, by) => {
+          const dx = bx - ax;
+          const dy = by - ay;
+          const l2 = dx * dx + dy * dy || 1;
+          const t = Phaser.Math.Clamp(((px - ax) * dx + (py - ay) * dy) / l2, 0, 1);
+          return Math.hypot(px - (ax + dx * t), py - (ay + dy * t));
+        };
+        const cerca = (lista, tx, ty) => {
+          for (let i = 0; i < lista.length - 1; i++) {
+            const [ax, ay] = aCasilla(lista[i]);
+            const [bx, by] = aCasilla(lista[i + 1]);
+            if (distSeg(tx, ty, ax, ay, bx, by) <= ANCHO) return true;
+          }
+          return false;
+        };
+        const [pa, pb] = aCasilla([PLAZA.x0, PLAZA.y0]);
+        const [pc, pd] = aCasilla([PLAZA.x1, PLAZA.y1]);
+
         for (let y = L.y; y < L.y + L.h; y++) {
           for (let x = L.x; x < L.x + L.w; x++) {
             if (!this.inBounds(x, y) || this.roadMask[this.idx(x, y)] === 1) continue;
-            const nx = (x + 0.5 - cx) / (L.w / 2);
-            const ny = (y + 0.5 - cy) / (L.h / 2);
-            if (nx * nx + ny * ny < 0.5) this.solid[this.idx(x, y)] = 1;
+            const tx = x + 0.5;
+            const ty = y + 0.5;
+            const enPlaza = tx >= pa && tx <= pc && ty >= pb && ty <= pd;
+            if (enPlaza || cerca(SENDERO_NORTE, tx, ty) || cerca(SENDERO_SUR, tx, ty)) continue;
+            this.solid[this.idx(x, y)] = 1;
           }
         }
+        const [mx, my] = aCasilla([795, 140]);
+        lm.cima = { px: mx * TILE, py: my * TILE };
       } else if (L.type === 'isla') {
         // una bahia pequeña con una isla en medio, cerca del mar de
         // verdad, y un puente de tres casillas de ancho que la une con la
