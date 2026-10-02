@@ -69,6 +69,8 @@ export class SlotsScene extends Phaser.Scene {
         .on('pointerover', () => {
           if (this.indice === i) return;
           this.indice = i;
+          this.confirmando = null;
+          this.decir('');
           this.pintar();
           Audio.menuMove();
         })
@@ -164,8 +166,10 @@ export class SlotsScene extends Phaser.Scene {
 
     const hay = SaveSystem.hasSave(this.indice + 1);
     const enNube = this.nube && this.nube[this.indice + 1];
-    const opciones = [hay ? 'ENTER seguir' : 'ENTER empezar aqui'];
-    if (hay) opciones.push('N empezar de cero aqui', 'B borrar');
+    const nueva = this.modo === 'nueva';
+    const opciones = [hay ? (nueva ? 'ENTER empezar de cero (pide confirmar)' : 'ENTER seguir') : 'ENTER empezar aqui'];
+    if (hay && !nueva) opciones.push('N empezar de cero aqui');
+    if (hay) opciones.push('B borrar');
     if (enNube) opciones.push('T traer de tu cuenta');
     opciones.push('ESC volver');
     this.ayuda.setText(opciones.join('  ·  '));
@@ -202,6 +206,9 @@ export class SlotsScene extends Phaser.Scene {
 
   jugar() {
     const n = this.indice + 1;
+    // "Nueva partida" sobre una ranura ocupada NUNCA la carga ni la pisa en
+    // silencio: pide confirmar antes de borrarla.
+    if (this.modo === 'nueva' && SaveSystem.hasSave(n)) return this.nuevaAqui();
     Audio.menuSelect();
     SaveSystem.usarRanura(n);
 
@@ -221,7 +228,7 @@ export class SlotsScene extends Phaser.Scene {
 
     if (this.confirmando !== `nueva${n}`) {
       this.confirmando = `nueva${n}`;
-      this.decir(`Vuelve a pulsar N: se borra la partida ${n} y empiezas de cero`, COLORS.danger);
+      this.decir(`La ranura ${n} ya tiene una partida. Pulsa N (o ENTER) otra vez para BORRARLA y empezar de cero. Cambia de ranura o ESC para cancelar`, COLORS.danger);
       return;
     }
     SaveSystem.clear(n);

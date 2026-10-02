@@ -61,7 +61,12 @@ const SPAWN_MAX = 1500;
 const DESPAWN = 2400;
 const DISTANCIA_QUE_TE_PIERDEN = 620;
 const DETENCION_DIST = 48;
-const TIEMPO_PARA_DETENER = 3.6;
+const TIEMPO_PARA_DETENER = 1.5;
+// a que distancia (px) cuenta que un policia o un testigo te ha visto cometer un delito
+const VE_EL_DELITO = 420;
+const TESTIGO_VE = 260;
+// los coches de policia a la vista del jugador no se esfuman
+const A_LA_VISTA = 850;
 const BAJARSE_DIST = 180;
 
 // El furgon de asalto: solo con la busca al maximo, y trae cuatro dentro.
@@ -105,6 +110,58 @@ export class PoliceSystem {
     }
   }
 
+  // COMO EN SAN ANDREAS: un delito solo te pone estrellas si lo VE alguien.
+  //   - un policia (coche o agente a pie) con linea de vista: estrellas ya
+  //   - un civil cerca y con linea de vista: avisa a los 3 s, y solo si
+  //     sigue en pie (si lo callas antes, no hay aviso)
+  //   - nadie delante: nada
+  denunciar(x, y, nivelMinimo) {
+    if (this.vistoPorPolicia(x, y)) {
+      this.reportarCrimen(x, y, nivelMinimo);
+      return true;
+    }
+    const gente = this.scene.npcs ? this.scene.npcs.people : [];
+    for (const p of gente) {
+      if (p.down || p.enCoche) continue;
+      if (Phaser.Math.Distance.Between(p.x, p.y, x, y) > TESTIGO_VE) continue;
+      if (!this.lineOfSight(p.x, p.y, x, y)) continue;
+      this.avisos = this.avisos || [];
+      if (!this.avisos.some((a) => a.testigo === p)) {
+        this.avisos.push({ testigo: p, t: 3, x, y, nivel: nivelMinimo });
+      }
+      return false;
+    }
+    return false;
+  }
+
+  vistoPorPolicia(x, y) {
+    for (const u of this.units) {
+      const v = u.vehicle;
+      if (u.vehicle.occupied) continue;
+      if (Phaser.Math.Distance.Between(v.x, v.y, x, y) < VE_EL_DELITO
+        && this.lineOfSight(v.x, v.y, x, y)) return true;
+      for (const o of u.officers) {
+        if (o.down) continue;
+        if (Phaser.Math.Distance.Between(o.x, o.y, x, y) < VE_EL_DELITO
+          && this.lineOfSight(o.x, o.y, x, y)) return true;
+      }
+    }
+    return false;
+  }
+
+  atenderAvisos(dt) {
+    if (!this.avisos || this.avisos.length === 0) return;
+    for (let i = this.avisos.length - 1; i >= 0; i--) {
+      const a = this.avisos[i];
+      if (a.testigo.down) { this.avisos.splice(i, 1); continue; }
+      a.t -= dt;
+      if (a.t <= 0) {
+        this.avisos.splice(i, 1);
+        this.reportarCrimen(a.x, a.y, a.nivel);
+      }
+    }
+  }
+
   report(x, y, raise = 1) {
     GameState.raiseWanted(raise);
     this.lastKnown = { x, y };
@@ -120,6 +177,7 @@ export class PoliceSystem {
   update(dt, player, playerVehicle) {
     if (this.bustCooldown > 0) this.bustCooldown -= dt;
 
+    this.atenderAvisos(dt);
     this.cull(player);
     this.topUp(player);
 
@@ -724,7 +782,14 @@ export class PoliceSystem {
         if (u.officers.every((o) => o.down)) this.retirarSinCoche(i);
         continue;
       }
-      if (lejos || sobra || caducado) this.removeUnit(i);
+      // A3: NO SE ESFUMAN DELANTE DE TUS NARICES. Antes, al bajar la busca (o
+      // al sobrar coches) se borraban de golpe aunque estuvieran en pantalla.
+      // Ahora, si te quedan a la vista, siguen su camino y se quitan cuando
+      // ya no las ves.
+      const alaVista = Phaser.Math.Distance.Between(
+        u.vehicle.x, u.vehicle.y, player.x, player.y
+      ) < A_LA_VISTA;
+      if (lejos || ((sobra || caducado) && !alaVista)) this.removeUnit(i);
     }
   }
 

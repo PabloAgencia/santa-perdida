@@ -278,9 +278,7 @@ export class CombatSystem {
     // entera si queda alguien para contarlo: pegar un tiro en un callejon
     // vacio no deberia traerte una patrulla de la nada.
     this.scene.npcs.scare(player.x, player.y, arma.ruido || 500);
-    if (this.hayTestigos(player, 300)) {
-      this.scene.police.reportarCrimen(player.x, player.y, 1);
-    }
+    this.scene.police.denunciar(player.x, player.y, 1);
     return true;
   }
 
@@ -325,7 +323,7 @@ export class CombatSystem {
       GameState.bumpStat('bajas', 1);
       this.soltarLoQueLlevaba(ente);
       // cargarse a alguien delante de testigos tiene su precio
-      this.scene.police.reportarCrimen(ente.x, ente.y, ente.esPolicia ? 3 : 2);
+      this.scene.police.denunciar(ente.x, ente.y, ente.esPolicia ? 3 : 1);
 
       // CARGARSE AGENTES ESCALA. `reportarCrimen` PONE un nivel minimo, no
       // suma: sin esto te quedabas clavado en 3 por muchos que te llevaras
@@ -394,7 +392,15 @@ export class CombatSystem {
     this.pintarDisparo(origen, fin.x, fin.y);
     if (!Audio.soltar(sonido, 0.45)) Audio.crash(0.22);
     if (acierto) {
-      GameState.damage(dano, 'disparo');
+      // SI VAS EN UN COCHE, LA BALA LE DA AL COCHE, NO A TI. Si el coche
+      // revienta, ya es otra historia (ver DanoVehiculos).
+      const coche = this.scene.drivingVehicle;
+      if (coche) {
+        coche.hp = Math.max(0, coche.hp - dano * COMBATE.danoVehiculoPorDisparo * 1.5);
+        coche.syncSprite();
+      } else {
+        GameState.damage(dano, 'disparo');
+      }
       this.scene.cameras.main.shake(90, 0.003);
     }
     return acierto;

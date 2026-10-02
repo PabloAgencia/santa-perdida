@@ -311,7 +311,7 @@ export class CityScene extends Phaser.Scene {
       // uno solo ya daba 2. Ahora es el mismo criterio que un tiro delante de
       // testigos (`reportarCrimen`, ver CombatSystem): un atropello no es mas
       // grave que eso. Uno que no mata no avisa a nadie.
-      if (fatal) this.police.reportarCrimen(pedestrian.x, pedestrian.y, 1);
+      if (fatal) this.police.denunciar(pedestrian.x, pedestrian.y, 1);
       Audio.crash(Math.min(0.7, speed / 400));
       this.cameras.main.shake(fatal ? 180 : 110, fatal ? 0.005 : 0.003);
       EventBus.emit(EVT.NOTIFY, {
@@ -649,6 +649,8 @@ export class CityScene extends Phaser.Scene {
       if (v.speed < 2) {
         v.vx = 0;
         v.vy = 0;
+        // el parado con la barra de vida a la vista la repinta para que se esconda a su hora
+        if (v.vidaBarra.visible) v.syncSprite();
         continue;
       }
       v.update(dt, IDLE_INPUT);
@@ -794,19 +796,20 @@ export class CityScene extends Phaser.Scene {
         }
         if (!toca) continue;
 
-        if (v.speed > 120) {
+        if (v.speed > 80) {
+          // la farola se rompe y cae, y el coche apenas lo nota
           if (lamp.romper(v.x, v.y)) {
-            v.vx *= 0.72;
-            v.vy *= 0.72;
-            v.hp = Math.max(0, v.hp - 6);
-            Audio.crash(0.4);
-            if (v === this.drivingVehicle) this.cameras.main.shake(130, 0.0035);
+            v.vx *= 0.92;
+            v.vy *= 0.92;
+            v.hp = Math.max(0, v.hp - 1.5);
+            Audio.crash(0.25);
+            if (v === this.drivingVehicle) this.cameras.main.shake(90, 0.0015);
           }
         } else {
-          // despacio no la tiras: rebotas
+          // muy despacio no la tiras: te roza y ya
           const a = Math.atan2(v.y - lamp.y, v.x - lamp.x);
-          v.vx += Math.cos(a) * 70;
-          v.vy += Math.sin(a) * 70;
+          v.vx += Math.cos(a) * 25;
+          v.vy += Math.sin(a) * 25;
         }
       }
     }

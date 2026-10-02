@@ -1,6 +1,6 @@
 import { FASES } from '../world/personArt.js';
 import { Extremidades } from './Extremidades.js';
-import { VIDA } from '../config/weapons.js';
+import { VIDA, ARMAS } from '../config/weapons.js';
 import { GameState } from '../core/GameState.js';
 import { Ragdoll, piezaRagdoll } from './Ragdoll.js';
 
@@ -10,7 +10,7 @@ const RADIO = 9;
 // el arma. Asi la primera estrella se puede jugar corriendo, y tener tres
 // significa algo distinto a tener una.
 const TIRO = {
-  desdeBusca: 2,
+  desdeBusca: 1,
   alcance: 290,
   dano: 8,
   cadencia: 1.5,       // segundos entre tiros
@@ -115,12 +115,20 @@ export class Officer {
     return 'muerto';
   }
 
+  tuArmaEsDeFuego() {
+    const arma = ARMAS[GameState.armaActual];
+    return !!arma && !arma.cuerpo;
+  }
+
   // Dispara si le toca: solo con dos estrellas o mas, con el jugador a tiro y
   // sin pared en medio. Devuelve true si ademas debe quedarse quieto.
   intentarDisparar(dt, objetivo, dist) {
     this.recarga -= dt;
     const TIRO = this.tiro;
     if (GameState.wanted < TIRO.desdeBusca) return false;
+    // A UNA ESTRELLA SOLO DISPARAN SI LLEVAS UN ARMA DE FUEGO EN LA MANO
+    // (como en San Andreas): si vas a puños, vienen con la porra a detenerte.
+    if (GameState.wanted === 1 && !this.tuArmaEsDeFuego()) return false;
     if (dist > TIRO.alcance) return false;
 
     const combat = this.scene.combat;

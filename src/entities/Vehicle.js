@@ -251,7 +251,13 @@ export class Vehicle {
     this.shadow.setRotation(this.angle);
     this.shadow.setDepth(this.y - 1);
 
-    const tocado = this.hp < this.stats.maxHp;
+    // la barra sale al recibir daño y se esconde a los 2,5 s sin mas golpes
+    const ahora = this.scene.time.now;
+    if (this._hpVisto === undefined) this._hpVisto = this.hp;
+    if (this.hp < this._hpVisto) this._vidaDesde = ahora;
+    this._hpVisto = this.hp;
+    const tocado = this.hp < this.stats.maxHp
+      && this._vidaDesde !== undefined && ahora - this._vidaDesde < 2500;
     this.vidaFondo.setVisible(tocado);
     this.vidaBarra.setVisible(tocado);
     if (tocado) {
