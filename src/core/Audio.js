@@ -79,6 +79,8 @@ class GameAudio {
       'motor-2.mp3': 'motor-2',
       'motor-3.mp3': 'motor-3',
       'motor-4.mp3': 'motor-4',
+      'motor-5.mp3': 'motor-5',
+      'motor-6.mp3': 'motor-6',
       'motor-moto.mp3': 'motor-moto',
       'frenada.mp3': 'frenada',
       'choque.mp3': 'choque',
@@ -100,7 +102,15 @@ class GameAudio {
         const res = await fetch(`audio/${nombre}`);
         if (!res.ok) continue;
         this.muestras[clave] = await this.ctx.decodeAudioData(await res.arrayBuffer());
-        if (clave.startsWith('motor-')) this.tramosMotor[clave] = this._tramoEstable(this.muestras[clave]);
+        if (clave.startsWith('motor-')) {
+          const tramo = this._tramoEstable(this.muestras[clave]);
+          this.tramosMotor[clave] = tramo;
+          // el bucle se hace SIN COSTURA: se funde el final con el principio,
+          // asi no hay un "reinicio" audible en cada vuelta, que es lo que se
+          // oia sobre todo al ir a tope (el bucle da mas vueltas por segundo)
+          this.muestras[clave] = this._bucleSinCostura(this.muestras[clave], tramo);
+          this.tramosMotor[clave] = { ini: 0, fin: this.muestras[clave].duration, gan: tramo.gan };
+        }
       } catch (e) { /* si falla uno, el resto sigue */ }
     }
   }
@@ -115,7 +125,7 @@ class GameAudio {
   _tramoEstable(buf) {
     const d = buf.getChannelData(0);
     const sr = buf.sampleRate;
-    const largo = Math.floor(sr * 0.6);
+    const largo = Math.floor(sr * clamp(buf.duration * 0.4, 0.6, 2.0));
     if (d.length < largo * 1.2) return { ini: 0, fin: buf.duration, gan: 1 };
     const sub = Math.floor(sr * 0.1);
     let mejor = { puntos: Infinity, a: 0 };
@@ -158,6 +168,30 @@ class GameAudio {
     return { ini: ini / sr, fin: fin / sr, gan };
   }
 
+  // Recorta [ini, fin) de la muestra y funde el final con el principio con
+  // una curva de potencia constante, de modo que el ultimo instante enlaza con
+  // el primero sin salto. Devuelve un buffer nuevo, ya listo para `loop`.
+  _bucleSinCostura(buf, tramo) {
+    const sr = buf.sampleRate;
+    const d = buf.getChannelData(0);
+    const a = Math.floor(tramo.ini * sr);
+    const b = Math.floor(tramo.fin * sr);
+    const n = b - a;
+    if (n < sr * 0.3) return buf;
+    const xf = Math.min(Math.floor(sr * 0.15), Math.floor(n / 3));
+    const largo = n - xf;
+    const out = this.ctx.createBuffer(1, largo, sr);
+    const o = out.getChannelData(0);
+    for (let i = 0; i < largo; i++) o[i] = d[a + i];
+    for (let i = 0; i < xf; i++) {
+      const t = i / xf;
+      const entra = Math.sin(t * Math.PI / 2);
+      const sale = Math.cos(t * Math.PI / 2);
+      o[i] = d[a + i] * entra + d[a + largo + i] * sale;
+    }
+    return out;
+  }
+
   // El motor grabado se reproduce EN BUCLE y se le cambia la velocidad de
   // reproduccion segun las vueltas: asi suenan los motores en los juegos de
   // coches desde siempre, y con la caja de cambios de aqui da el subir y
@@ -183,14 +217,7 @@ class GameAudio {
     src.buffer = buf;
     src.loop = true;
     src.connect(this.motorGain);
-    const tramo = this.tramosMotor && this.tramosMotor[clave];
-    if (tramo && tramo.fin > tramo.ini) {
-      src.loopStart = tramo.ini;
-      src.loopEnd = tramo.fin;
-      src.start(0, tramo.ini);
-    } else {
-      src.start();
-    }
+    src.start();
     this.motorFuente = src;
   }
   // Suena una muestra suelta, con un poco de variacion de tono.
@@ -374,13 +401,19 @@ class GameAudio {
       const vueltas = this._vueltasContinuas(r2);
       // al pisar el acelerador sube un pelin (se nota que empujas), con un
       // tiempo de subida lento para que no sea un salto
+      // a tope (redline) el pedal ya no cambia nada: el sonido se queda FIJO
+      const libre = 1 - Math.pow(vueltas, 6);
       const empuje = throttle ? 1 : 0;
       this.empujeSuave = (this.empujeSuave || 0) + (empuje - (this.empujeSuave || 0)) * 0.08;
-      const tono = (perfil.tono || 1) * (0.8 + vueltas * 0.7 + this.empujeSuave * 0.03);
-      this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.1);
-      const NIVEL_RALENTI = 0.1;
-      const NIVEL_TOPE = 0.46;
-      const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * vueltas + this.empujeSuave * 0.03;
+      const push = this.empujeSuave * libre;
+      const tono = (perfil.tono || 1) * (0.85 + vueltas * 0.65 + push * 0.03);
+      this.motorFuente.playbackRate.setTargetAtTime(tono, t2, 0.12);
+      // VOLUMEN: antes 0,10 a 0,46 ("ensordecedor", Pablo): ahora menos de la
+      // mitad. El ralenti se oye como el de un coche normal parado y sube
+      // suave hasta un tope bajo.
+      const NIVEL_RALENTI = 0.07;
+      const NIVEL_TOPE = 0.19;
+      const nivel = NIVEL_RALENTI + (NIVEL_TOPE - NIVEL_RALENTI) * vueltas + push * 0.01;
       const tr = this.tramosMotor && this.tramosMotor[perfilMuestra];
       const gan = tr && tr.gan ? tr.gan : 1;
       this.motorGain.gain.setTargetAtTime(on ? nivel * (perfil.vol || 1) * gan : 0, t2, 0.12);

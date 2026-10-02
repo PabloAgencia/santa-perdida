@@ -28,8 +28,12 @@ export const ENGINES = {
                 muestra: 'motor-4', tono: 1 },
   rapido:     { base: 48, range: 92,  wave: 'triangle', body: 0.45, bright: 950, vol: 1.0,
                 muestra: 'motor-3', tono: 1 },
-  resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 0.95,
-                muestra: 'motor-1', tono: 0.88 },
+  // C4 (3-oct-2026): el sedan, el taxi y la patrulla sonaban fatal con
+  // motor-1 (Pablo). Ahora cada uno tiene su grabacion libre de derechos
+  // (Pixabay): motor-5, un V8 de ralenti limpio, y motor-6, un hot rod mas
+  // bronco para la patrulla.
+  resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 1.0,
+                muestra: 'motor-5', tono: 1.0 },
   // `aire` es la aspereza que se le suma POR ENCIMA de la grabacion. Solo la
   // lleva la moto: su grabacion no tiene nada por encima de 400 Hz (0%
   // medido) y sin esto es un zumbido grave, no una moto.
@@ -37,8 +41,8 @@ export const ENGINES = {
                 muestra: 'motor-moto', tono: 1.05, aire: 0.5, aireHz: 1100 },
   furgoneta:  { base: 28, range: 44,  wave: 'triangle', body: 0.9,  bright: 430, vol: 0.9,
                 muestra: 'motor-2', tono: 0.82 },
-  policia:    { base: 46, range: 86,  wave: 'triangle', body: 0.5,  bright: 880, vol: 0.9,
-                muestra: 'motor-1', tono: 1.08 },
+  policia:    { base: 46, range: 86,  wave: 'triangle', body: 0.5,  bright: 880, vol: 0.95,
+                muestra: 'motor-6', tono: 1.0 },
 };
 export const VEHICLES = {
   chinchorro: {

@@ -3,3 +3,8 @@ dice SONIDOS-QUE-BAJAR.txt (motor-loop.mp3, choque.mp3, frenada.mp3,
 disparo-pistola.mp3, disparo-escopeta.mp3, punetazo.mp3).
 
 El juego los detecta al arrancar. Lo que no este, se sigue sintetizando.
+
+MOTORES NUEVOS (3-oct-2026), de Pixabay, licencia Pixabay (uso comercial, sin atribucion):
+  motor-5.mp3   "Engine, motor (loopable)"  (freesound_community)  -> sedan y taxi
+  motor-6.mp3   "hot rod idle"  (u_z6v4xovwrs)                      -> patrulla
+  Recortados, nivelados y filtrados con ffmpeg/numpy. motor-1.mp3 ya no se usa.
