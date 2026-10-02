@@ -3,6 +3,7 @@ import { Audio } from '../core/Audio.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER, GIMNASIO } from '../config/balance.js';
 import { texturaDelJugador } from '../world/personArt.js';
+import { FisicaInterior } from '../world/interior.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -62,6 +63,17 @@ export class GimnasioScene extends Phaser.Scene {
       }).setOrigin(0.5);
       return { clave, x, y };
     });
+
+    // las fisicas: el banco de pesas, la cinta y el saco son macizos
+    this.fisica = new FisicaInterior(this);
+    {
+      const p = this.maquinas.find((m) => m.clave === 'pesas');
+      const c = this.maquinas.find((m) => m.clave === 'cinta');
+      const k = this.maquinas.find((m) => m.clave === 'saco');
+      this.fisica.rect(p.x, p.y - 12, 38, 46);
+      this.fisica.rect(c.x, c.y - 14, 44, 68);
+      this.fisica.rect(k.x, k.y, 34, 34);
+    }
 
     this.puerta = { x: s.x + s.w / 2, y: s.y + s.h - 6 };
     this.add.image(this.puerta.x, this.puerta.y, 'px').setDisplaySize(72, 12).setTint(0x6b4a2f);
@@ -143,8 +155,11 @@ export class GimnasioScene extends Phaser.Scene {
     const s = this.sala;
     if (dx || dy) {
       const len = Math.hypot(dx, dy);
-      this.px = Phaser.Math.Clamp(this.px + (dx / len) * PLAYER.walkSpeed * dt, s.x + 18, s.x + s.w - 18);
-      this.py = Phaser.Math.Clamp(this.py + (dy / len) * PLAYER.walkSpeed * dt, s.y + 48, s.y + s.h - 18);
+      const m = this.fisica.mover(
+        this.px, this.py, (dx / len) * PLAYER.walkSpeed * dt, (dy / len) * PLAYER.walkSpeed * dt
+      );
+      this.px = Phaser.Math.Clamp(m.x, s.x + 18, s.x + s.w - 18);
+      this.py = Phaser.Math.Clamp(m.y, s.y + 48, s.y + s.h - 18);
       this.jugador.setRotation(Math.atan2(dy, dx));
     }
     this.jugador.setPosition(this.px, this.py);

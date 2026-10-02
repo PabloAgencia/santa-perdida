@@ -1,6 +1,7 @@
 import { Vehicle } from '../entities/Vehicle.js';
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
-import { steerTo, forwardBlocked, peopleAhead, paredDelante } from './driving.js';
+import { steerTo, forwardBlocked, personaDelante, paredDelante } from './driving.js';
+import { Audio } from '../core/Audio.js';
 import { LINEA_PARADA } from './TrafficLights.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 
@@ -226,8 +227,36 @@ export class TrafficSystem {
 
     // Un peaton cruzando es para levantar el pie, no para clavarse: frenar en
     // seco atascaba la ciudad en cadena. El temerario ni eso.
-    const genteDelante = car.temerario ? false : peopleAhead(v, people || []);
-    let limite = genteDelante ? car.limit * 0.25 : car.limit;
+    // A11: SI HAY ALGUIEN PLANTADO EN LA CALLE, no se le atropella: el
+    // conductor pita, baja a paso de tortuga y se le echa hacia un lado para
+    // rebasarlo. Si no hay hueco, se para detras.
+    const estorbo = car.temerario ? null : personaDelante(v, people || []);
+    const genteDelante = !!estorbo;
+    let limite = genteDelante ? Math.min(car.limit * 0.25, 38) : car.limit;
+    let metaFinal = goal;
+    let frenarEnSeco = false;
+    if (estorbo) {
+      if (estorbo.dist < 160 && (car.pitaEn || 0) <= this.scene.time.now) {
+        car.pitaEn = this.scene.time.now + 2200;
+        if (Phaser.Math.Distance.Between(v.x, v.y, fx, fy) < 520) {
+          Audio.notes([392, 392], 0.13, 'square', 0.05);
+        }
+      }
+      const lado = Math.abs(estorbo.lat) < 4 ? (car.ladoRebase || (car.ladoRebase = Math.random() < 0.5 ? 1 : -1)) : estorbo.lado;
+      const ox = -Math.sin(v.angle) * lado;
+      const oy = Math.cos(v.angle) * lado;
+      const holgura = v.stats.width * 1.4 + 18;
+      const cx = estorbo.p.x + ox * holgura;
+      const cy = estorbo.p.y + oy * holgura;
+      if (this.map.isRoadPoint(cx, cy)) {
+        metaFinal = { x: cx + Math.cos(v.angle) * 60, y: cy + Math.sin(v.angle) * 60 };
+      } else {
+        // sin hueco por ese lado: se queda detras hasta que se aparte
+        frenarEnSeco = estorbo.dist < 70;
+      }
+    } else {
+      car.ladoRebase = 0;
+    }
     if (esperando) limite = 0;
 
     // --- contador de atasco ---
@@ -242,13 +271,17 @@ export class TrafficSystem {
 
     if (car.atasco > PACIENCIA) {
       car.maniobra = MANIOBRA;
-      car.giro = Math.random() < 0.5 ? 1 : -1;
+      // A5: la marcha atras con el volante girado hacia dar medio giro de
+      // golpe (se median 144 grados) y el coche acababa mirando para donde
+      // no tocaba. Si lo que tapa es otro coche, se retrocede RECTO; solo
+      // con un muro delante se gira un poco para sacar el morro.
+      car.giro = muro ? (Math.random() < 0.5 ? 1 : -1) : 0;
       car.atasco = 0;
       return;
     }
 
     if (car.fuera > 0.4) limite = Math.min(limite, v.stats.maxSpeed * 0.25);
-    v.update(dt, steerTo(v, goal.x, goal.y, muro ? limite * 0.3 : limite, cocheDelante || esperando || muro));
+    v.update(dt, steerTo(v, metaFinal.x, metaFinal.y, muro ? limite * 0.3 : limite, cocheDelante || esperando || muro || frenarEnSeco));
   }
 
   // ¿hay otro coche entrando en el mismo cruce por otra calle?
@@ -328,6 +361,30 @@ export class TrafficSystem {
       y: p.y + Math.sin(v.angle) * (MIRA_MINIMA - d),
     };
   }
+  // A10: LE ESTAS PEGANDO A UN COCHE. El conductor no se queda de brazos
+  // cruzados: o acelera y se larga, o se baja a pegarte. A cara o cruz.
+  reaccionAGolpe(vehicle, player) {
+    const car = this.cars.find((c) => c.vehicle === vehicle);
+    if (!car || car.reaccionado || !car.conductor) return;
+    car.reaccionado = true;
+
+    if (Math.random() < 0.5) {
+      car.temerario = true;
+      vehicle.temerario = true;
+      car.limit = vehicle.stats.maxSpeed * 0.85;
+      EventBus.emit(EVT.NOTIFY, { text: 'El conductor acelera y se larga', tone: 'dim' });
+      return;
+    }
+    const cond = this.soltarConductor(vehicle, player);
+    if (!cond) return;
+    vehicle.vx = 0;
+    vehicle.vy = 0;
+    vehicle.ai = false;
+    const i = this.cars.indexOf(car);
+    if (i >= 0) this.cars.splice(i, 1);
+    this.scene.npcs.expulsarConductor(cond, vehicle, player, true);
+  }
+
   // el jugador le roba el coche a alguien: el conductor se baja
   soltarConductor(vehicle, player) {
     const car = this.cars.find((c) => c.vehicle === vehicle);

@@ -309,6 +309,20 @@ export class CityMap {
           }
         }
         lm.cima = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
+
+        // EL MONTE ES UN MONTE: la masa central es roca maciza (no se anda ni
+        // se conduce por encima, y los coches tienen que rodearla). Solo se
+        // anda el borde, la ladera baja, y la calle del puerto que lo cruza.
+        const cx = L.x + L.w / 2;
+        const cy = L.y + L.h / 2;
+        for (let y = L.y; y < L.y + L.h; y++) {
+          for (let x = L.x; x < L.x + L.w; x++) {
+            if (!this.inBounds(x, y) || this.roadMask[this.idx(x, y)] === 1) continue;
+            const nx = (x + 0.5 - cx) / (L.w / 2);
+            const ny = (y + 0.5 - cy) / (L.h / 2);
+            if (nx * nx + ny * ny < 0.5) this.solid[this.idx(x, y)] = 1;
+          }
+        }
       } else if (L.type === 'isla') {
         // una bahia pequeña con una isla en medio, cerca del mar de
         // verdad, y un puente de tres casillas de ancho que la une con la

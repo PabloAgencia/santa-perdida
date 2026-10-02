@@ -91,7 +91,13 @@ export function forwardBlocked(vehicle, vehicles, extraRange = 0) {
 // dentro de un segundo: el cono de antes era tan corto y estrecho que el coche
 // solo "veia" al que ya tenia encima, cuando ya no daba tiempo a nada.
 export function peopleAhead(vehicle, people) {
-  if (!people) return false;
+  return !!personaDelante(vehicle, people);
+}
+
+// Lo mismo, pero devuelve QUIEN es y de que lado le queda (lado > 0 = a la
+// derecha del coche), para poder esquivarlo en vez de solo frenar.
+export function personaDelante(vehicle, people) {
+  if (!people) return null;
   const range = 70 + vehicle.speed * 0.8;
   const fx = Math.cos(vehicle.angle);
   const fy = Math.sin(vehicle.angle);
@@ -108,8 +114,11 @@ export function peopleAhead(vehicle, people) {
       const dy = py - vehicle.y;
       if (Math.hypot(dx, dy) > range) continue;
       if (dx * fx + dy * fy <= 0) continue;
-      if (Math.abs(-dx * fy + dy * fx) < ancho) return true;
+      const lat = -dx * fy + dy * fx;
+      if (Math.abs(lat) < ancho) {
+        return { p, lado: lat >= 0 ? -1 : 1, dist: Math.hypot(dx, dy), lat };
+      }
     }
   }
-  return false;
+  return null;
 }

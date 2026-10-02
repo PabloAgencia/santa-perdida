@@ -50,6 +50,16 @@ export class NegocioSystem {
         return da - db || a.px - b.px || a.py - b.py;
       });
 
+      // F1: DOS PROPIEDADES EN VENTA NO VAN PEGADAS. El piso del barrio coge el
+      // edificio mas centrado y el negocio cogia el siguiente, o sea el de al
+      // lado. Se prefiere uno a 1000 px o mas de los pisos; si el barrio no da
+      // para tanto, se pone donde se pueda.
+      const pisos = this.scene.pisos ? this.scene.pisos.pisos : [];
+      const lejos = (b) => pisos.every(
+        (p) => Phaser.Math.Distance.Between(p.x, p.y, b.px, b.py) >= 1000
+      );
+      candidatos.sort((x, y) => (lejos(y) ? 1 : 0) - (lejos(x) ? 1 : 0));
+
       for (const b of candidatos) {
         // saltar si ya tiene el cartel de otro sistema (un piso, la
         // armeria...): dos carteles en el mismo sitio no se leen

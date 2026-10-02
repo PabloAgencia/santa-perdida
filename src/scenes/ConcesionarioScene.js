@@ -4,6 +4,7 @@ import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER } from '../config/balance.js';
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
 import { texturaDelJugador } from '../world/personArt.js';
+import { FisicaInterior } from '../world/interior.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 const TITULO = 'Pricedown, Anton, Impact, sans-serif';
@@ -65,6 +66,10 @@ export class ConcesionarioScene extends Phaser.Scene {
       return { tipo, x: bx, y: by };
     });
 
+    // los coches de la sala no se atraviesan
+    this.fisica = new FisicaInterior(this);
+    for (const b of this.bahias) this.fisica.rect(b.x, b.y, 74, 46);
+
     // puerta de salida, abajo del todo, como en el escondite
     this.puerta = { x: s.x + s.w / 2, y: s.y + s.h - 6 };
     this.add.image(this.puerta.x, this.puerta.y, 'px')
@@ -113,8 +118,11 @@ export class ConcesionarioScene extends Phaser.Scene {
 
     if (dx || dy) {
       const len = Math.hypot(dx, dy);
-      this.px += (dx / len) * PLAYER.walkSpeed * dt;
-      this.py += (dy / len) * PLAYER.walkSpeed * dt;
+      const m = this.fisica.mover(
+        this.px, this.py, (dx / len) * PLAYER.walkSpeed * dt, (dy / len) * PLAYER.walkSpeed * dt
+      );
+      this.px = m.x;
+      this.py = m.y;
       this.px = Phaser.Math.Clamp(this.px, s.x + 18, s.x + s.w - 18);
       this.py = Phaser.Math.Clamp(this.py, s.y + 48, s.y + s.h - 18);
       this.jugador.setRotation(Math.atan2(dy, dx));

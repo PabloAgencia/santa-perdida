@@ -3,6 +3,7 @@ import { Audio } from '../core/Audio.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { COLORS, PLAYER } from '../config/balance.js';
 import { texturaDelJugador } from '../world/personArt.js';
+import { FisicaInterior } from '../world/interior.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -64,8 +65,16 @@ export class ClubScene extends Phaser.Scene {
     // LA BARRA: el camarero fijo, sin cartel encima (Pablo: "no hace falta
     // que ponga lo de la barra en la barra")
     const barra = { x: s.x + s.w * BARRA.fx, y: s.y + s.h * BARRA.fy };
-    this.add.image(barra.x, barra.y, 'ped-15-0').setDepth(barra.y);
+    const camarero = this.add.image(barra.x, barra.y, 'ped-15-0').setDepth(barra.y);
     this.barra = barra;
+
+    // LAS FISICAS: la barra, los reservados y las barras de baile son
+    // macizos; la gente tambien, y se la puede pegar (F o clic)
+    this.fisica = new FisicaInterior(this);
+    this.fisica.rect(barra.x, s.y + s.h * 0.5, 34, s.h * 0.62);
+    for (const p of PISTA) this.fisica.rect(s.x + s.w * p.fx, s.y + s.h * p.fy + 14, 26, 18);
+    for (const p of RESERVADOS) this.fisica.rect(s.x + s.w * p.fx + 28, s.y + s.h * p.fy, 46, 64);
+    this.fisica.gente(camarero);
 
     // LAS TRES BARRAS DE STRIPTEASE: una bailarina fija en cada una, con
     // balanceo Y cambiando de fotograma (los 4 de siempre) para que
@@ -80,6 +89,7 @@ export class ClubScene extends Phaser.Scene {
         duration: 420 + i * 60, yoyo: true, repeat: -1, ease: 'Sine.inOut',
       });
       this.animarBaile(spr, clave, 260 + i * 40);
+      this.fisica.gente(spr);
       return spr;
     });
 
@@ -89,9 +99,11 @@ export class ClubScene extends Phaser.Scene {
       const x = s.x + s.w * p.fx;
       const y = s.y + s.h * p.fy;
       const cliente = ['ped-2', 'ped-5', 'ped-8'][i % 3];
-      this.add.image(x - 10, y, `${cliente}-0`).setDepth(y).setScale(0.9);
+      const sCliente = this.add.image(x - 10, y, `${cliente}-0`).setDepth(y).setScale(0.9);
       const trabajadora = TRABAJADORAS[(i + 1) % TRABAJADORAS.length];
-      this.add.image(x + 10, y, `${trabajadora}-0`).setDepth(y + 1).setScale(0.9);
+      const sTrab = this.add.image(x + 10, y, `${trabajadora}-0`).setDepth(y + 1).setScale(0.9);
+      this.fisica.gente(sCliente);
+      this.fisica.gente(sTrab);
     }
 
     // MAS CLIENTELA SUELTA, de pie entre la pista y los reservados, para
@@ -104,7 +116,8 @@ export class ClubScene extends Phaser.Scene {
     SUELTOS.forEach((p, i) => {
       const x = s.x + s.w * p.fx;
       const y = s.y + s.h * p.fy;
-      this.add.image(x, y, `${CLAVES_SUELTOS[i]}-0`).setDepth(y).setScale(0.9);
+      const sSuelto = this.add.image(x, y, `${CLAVES_SUELTOS[i]}-0`).setDepth(y).setScale(0.9);
+      this.fisica.gente(sSuelto);
     });
 
     // LAS QUE SE MUEVEN DE VERDAD por la sala, cada una en su propio
@@ -122,7 +135,9 @@ export class ClubScene extends Phaser.Scene {
       const x0 = r.vertical ? fijaPx : s.x + s.w * r.desde;
       const y0 = r.vertical ? s.y + s.h * r.desde : fijaPx;
       const spr = this.add.image(x0, y0, `${r.clave}-0`).setDepth(1000 + i);
-      return { ...r, spr, fijaPx, t: i * 1.7, fase: 0, fotoT: 0 };
+      const reg = { ...r, spr, fijaPx, t: i * 1.7, fase: 0, fotoT: 0, caida: false };
+      this.fisica.gente(spr, () => { reg.caida = true; });
+      return reg;
     });
 
     this.puerta = { x: s.x + s.w / 2, y: s.y + s.h - 6 };
@@ -146,8 +161,9 @@ export class ClubScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys({
       up: 'W', down: 'S', left: 'A', right: 'D',
       upA: 'UP', downA: 'DOWN', leftA: 'LEFT', rightA: 'RIGHT',
-      usar: 'E', salir: 'ESC',
+      usar: 'E', salir: 'ESC', atacar: 'F',
     });
+    this.input.on('pointerdown', (p) => { if (p.leftButtonDown()) this.pegar(); });
 
     this.confirmacion = 0;
     this.saliendo = false;
@@ -186,7 +202,10 @@ export class ClubScene extends Phaser.Scene {
     const k = this.keys;
 
     const s0 = this.sala;
+    this.fisica.update(dt);
+    if (Phaser.Input.Keyboard.JustDown(k.atacar)) this.pegar();
     for (const r of this.paseando) {
+      if (r.caida) continue;
       r.t += dt;
       const recorrido = r.desde + (r.hasta - r.desde) * (Math.sin(r.t * 0.5) * 0.5 + 0.5);
       if (r.vertical) {
@@ -215,8 +234,11 @@ export class ClubScene extends Phaser.Scene {
     const s = this.sala;
     if (dx || dy) {
       const len = Math.hypot(dx, dy);
-      this.px = Phaser.Math.Clamp(this.px + (dx / len) * PLAYER.walkSpeed * dt, s.x + 18, s.x + s.w - 18);
-      this.py = Phaser.Math.Clamp(this.py + (dy / len) * PLAYER.walkSpeed * dt, s.y + 48, s.y + s.h - 18);
+      const m = this.fisica.mover(
+        this.px, this.py, (dx / len) * PLAYER.walkSpeed * dt, (dy / len) * PLAYER.walkSpeed * dt
+      );
+      this.px = Phaser.Math.Clamp(m.x, s.x + 18, s.x + s.w - 18);
+      this.py = Phaser.Math.Clamp(m.y, s.y + 48, s.y + s.h - 18);
       this.jugador.setRotation(Math.atan2(dy, dx));
     }
     this.jugador.setPosition(this.px, this.py);
@@ -240,6 +262,16 @@ export class ClubScene extends Phaser.Scene {
       else if (enPuerta) this.salir();
     }
     if (Phaser.Input.Keyboard.JustDown(k.salir)) this.salir();
+  }
+
+  // F o clic: un puñetazo. Si hay alguien delante, lo siente.
+  pegar() {
+    if (this.saliendo) return;
+    const dado = this.fisica.atacar(this.px, this.py, this.jugador.rotation);
+    this.tweens.add({
+      targets: this.jugador, scale: { from: 1.18, to: 1 }, duration: 120, ease: 'Sine.out',
+    });
+    return dado;
   }
 
   pedirCopa() {

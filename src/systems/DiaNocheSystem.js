@@ -13,15 +13,20 @@ const MINUTOS_POR_SEGUNDO = 2;
 // cuanto oscurece (0 = de dia claro, mas alto = mas de noche). Entre dos
 // puntos seguidos se interpola en linea recta; medianoche enlaza con las
 // 24h para que el ciclo no de un salto.
+// E1: la noche se jugaba a oscuras (azul casi negro al 58%). El velo es
+// MULTIPLY, asi que ahora es un azul LUNAR claro: la ciudad se ve, oscura y
+// azulada, y las farolas y los faros destacan por contraste en vez de ser lo
+// unico que se distingue.
+const NOCHE = 0x6b7cb8;
 const KEYFRAMES = [
-  { hora: 0, color: 0x0b1330, alpha: 0.58 },
-  { hora: 5, color: 0x0b1330, alpha: 0.58 },
+  { hora: 0, color: NOCHE, alpha: 0.76 },
+  { hora: 5, color: NOCHE, alpha: 0.76 },
   { hora: 6.5, color: 0xe8965a, alpha: 0.30 },
   { hora: 8, color: 0xffffff, alpha: 0 },
   { hora: 18, color: 0xffffff, alpha: 0 },
   { hora: 19.5, color: 0xe8965a, alpha: 0.30 },
-  { hora: 21.5, color: 0x0b1330, alpha: 0.58 },
-  { hora: 24, color: 0x0b1330, alpha: 0.58 },
+  { hora: 21.5, color: NOCHE, alpha: 0.76 },
+  { hora: 24, color: NOCHE, alpha: 0.76 },
 ];
 
 export class DiaNocheSystem {

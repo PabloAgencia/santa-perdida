@@ -199,12 +199,12 @@ export class NPCSystem {
   }
 
   // le han robado el coche: se baja y, o sale corriendo, o se encara
-  expulsarConductor(cond, vehicle, player) {
+  expulsarConductor(cond, vehicle, player, bravo = Math.random() < CONDUCTOR_BRAVO) {
     if (!cond) return;
     cond.bajarDe(vehicle);
     this.people.push(cond);
 
-    if (Math.random() < CONDUCTOR_BRAVO) {
+    if (bravo) {
       cond.rencor = true;
       cond.hostile = true;
       cond.chaseTarget = { x: player.x, y: player.y };

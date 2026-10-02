@@ -71,6 +71,22 @@ export class PisoSystem {
         return da - db || a.px - b.px || a.py - b.py;
       });
 
+      // F1: LOS PISOS NO VAN PEGADOS. El piso del centro caia a 600 px del
+      // atico de la torre. Se prefiere un edificio a 1300 px o mas de la
+      // torre y de los pisos ya puestos; si el barrio no da, el mas lejano
+      // que quede.
+      const torre = this.map.landmarks.find((l) => l.type === 'torre');
+      const sitiosFijos = this.pisos.map((p) => ({ x: p.x, y: p.y }));
+      if (torre) sitiosFijos.push({ x: torre.px, y: torre.py });
+      const holgura = (b) => Math.min(
+        Infinity, ...sitiosFijos.map((q) => Phaser.Math.Distance.Between(q.x, q.y, b.px, b.py))
+      );
+      candidatos.sort((x, y) => {
+        const hx = holgura(x) >= 1300 ? 1 : 0;
+        const hy = holgura(y) >= 1300 ? 1 : 0;
+        return hy - hx;
+      });
+
       for (const b of candidatos) {
         // saltar el edificio si ya tiene el cartel de otro sistema (un
         // negocio, la armeria...): dos carteles en el mismo sitio no se leen

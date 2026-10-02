@@ -10,8 +10,8 @@ import { GameState } from '../core/GameState.js';
 //
 //   sano      nada
 //   HUMEA     por debajo del 45% de chapa: humo gris saliendo del capo
-//   ARDE      por debajo del 18%: llamas y humo negro, y ademas PIERDE VIDA
-//             SOLO, asi que tienes unos segundos para bajarte
+//   ARDE      con la chapa a cero: llamas y humo negro, y seis segundos
+//             para bajarte y alejarte
 //   EXPLOTA   al agotarse o tras unos segundos ardiendo: fogonazo, empujon
 //             a lo que haya cerca, y el chasis se queda negro para siempre
 //
@@ -19,9 +19,9 @@ import { GameState } from '../core/GameState.js';
 // monumento a lo que has hecho, y estorba, que es la gracia.
 
 const HUMEA = 0.45;            // chapa por debajo de la cual sale humo
-const ARDE = 0.18;             // y por debajo de la cual prende
-const ARDE_SEGUNDOS = 5;       // desde que prende hasta que revienta
-const PIERDE_ARDIENDO = 9;     // puntos de chapa por segundo mientras arde
+const ARDE = 0;                // chapa a cero: sale fuego del capo
+const ARDE_SEGUNDOS = 6;       // desde que prende hasta que revienta: seis segundos para bajarse
+const PIERDE_ARDIENDO = 0;     // la chapa ya esta a cero: lo que manda es el reloj
 
 const QUEMA_AL_DE_DENTRO = 16; // vida por segundo al que sigue dentro
 
@@ -116,7 +116,7 @@ export class DanoVehiculos {
         if (v.occupied && conduciendo === v) {
           GameState.damage(QUEMA_AL_DE_DENTRO * dt, 'fuego');
         }
-        if (v.ardiendo >= ARDE_SEGUNDOS || v.hp <= 0) this.explotar(v, player);
+        if (v.ardiendo >= ARDE_SEGUNDOS) this.explotar(v, player);
         continue;
       }
 

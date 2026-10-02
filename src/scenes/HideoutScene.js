@@ -6,6 +6,7 @@ import { COLORS, PLAYER } from '../config/balance.js';
 import { texturaDelJugador } from '../world/personArt.js';
 import { ROPA } from '../config/aspecto.js';
 import { FACTIONS } from '../config/factions.js';
+import { FisicaInterior } from '../world/interior.js';
 
 // Pablo lo quiere todo en Pricedown, sin excepciones
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
@@ -96,6 +97,14 @@ export class HideoutScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
     this.armarioUI = null;
+
+    // los muebles no se atraviesan (cama, mesilla, mesa, sofa y armario)
+    this.fisica = new FisicaInterior(this);
+    this.fisica.rect(s.x + 90, s.y + 101, 100, 46);
+    this.fisica.rect(s.x + 57, s.y + 187, 40, 40);
+    this.fisica.rect(s.x + s.w - 100, s.y + 80, 120, 28);
+    this.fisica.rect(s.x + 295, s.y + 285, 150, 50);
+    this.fisica.rect(this.armario.x, this.armario.y, 40, 54);
 
     // luz de la bombilla. Con ilustracion se baja: el dibujo ya trae su
     // propia luz pintada y sumarle otra encima lo lavaba entero.
@@ -207,8 +216,11 @@ export class HideoutScene extends Phaser.Scene {
 
     if (dx || dy) {
       const len = Math.hypot(dx, dy);
-      this.px += (dx / len) * PLAYER.walkSpeed * dt;
-      this.py += (dy / len) * PLAYER.walkSpeed * dt;
+      const m = this.fisica.mover(
+        this.px, this.py, (dx / len) * PLAYER.walkSpeed * dt, (dy / len) * PLAYER.walkSpeed * dt
+      );
+      this.px = m.x;
+      this.py = m.y;
       this.px = Phaser.Math.Clamp(this.px, s.x + 18, s.x + s.w - 18);
       this.py = Phaser.Math.Clamp(this.py, s.y + 48, s.y + s.h - 18);
       this.jugador.setRotation(Math.atan2(dy, dx));

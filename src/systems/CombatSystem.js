@@ -186,6 +186,7 @@ export class CombatSystem {
       // `syncSprite()` se quedaba congelada en "entero" aunque el coche ya
       // estuviera hecho polvo a puñetazos.
       vehiculo.syncSprite();
+      if (this.scene.traffic) this.scene.traffic.reaccionAGolpe(vehiculo, player);
       if (!Audio.soltar('golpe', 0.6)) Audio.crash(0.22);
       this.marcarGolpe(player);
       return true;
@@ -263,6 +264,7 @@ export class CombatSystem {
         // arma (ver COMBATE.danoVehiculoPorDisparo en config/weapons.js)
         impacto.vehiculo.hp = Math.max(0, impacto.vehiculo.hp - arma.dano * COMBATE.danoVehiculoPorDisparo);
         impacto.vehiculo.syncSprite();
+        if (this.scene.traffic) this.scene.traffic.reaccionAGolpe(impacto.vehiculo, player);
         algunoDentro = true;
       }
       this.pintarDisparo(player, impacto.x, impacto.y);

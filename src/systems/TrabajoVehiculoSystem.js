@@ -1,6 +1,7 @@
 import { EventBus, EVT } from '../core/EventBus.js';
 import { GameState } from '../core/GameState.js';
 import { TILE } from '../config/balance.js';
+import { Pedestrian } from '../entities/Pedestrian.js';
 
 const REACH = 40;
 
@@ -54,12 +55,51 @@ export class TrabajoVehiculoSystem {
     return spots[Math.floor(Math.random() * spots.length)];
   }
 
+  // A LA AMBULANCIA SOLO SE LE PIDE IR A UN HOSPITAL. Se elige uno que no
+  // este pegado al herido; si todos lo estan, el mas lejano.
+  hospitalPara(desde) {
+    const hospitales = (this.scene.locales ? this.scene.locales.locales : [])
+      .filter((l) => l.cfg.clave === 'hospital');
+    if (hospitales.length === 0) return null;
+    const lejos = hospitales.filter(
+      (h) => Phaser.Math.Distance.Between(h.x, h.y, desde.x, desde.y) >= 12 * TILE
+    );
+    const lista = lejos.length > 0 ? lejos : [hospitales.reduce((a, b) =>
+      Phaser.Math.Distance.Between(a.x, a.y, desde.x, desde.y)
+        > Phaser.Math.Distance.Between(b.x, b.y, desde.x, desde.y) ? a : b)];
+    return lista[Math.floor(Math.random() * lista.length)];
+  }
+
+  // el pasajero que espera en la acera: hasta ahora el aro estaba vacio
+  ponerPasajero(x, y) {
+    this.quitarPasajero();
+    const skin = Math.floor(Math.random() * 12);
+    this.pasajero = new Pedestrian(this.scene, this.map, x, y, skin, null, null);
+    this.pasajero.sprite.setDepth(y);
+    if (this.tipo === 'ambulancia') this.pasajero.sprite.setTint(0xe8a0a0);
+    this.pasajero.syncSprite();
+  }
+
+  quitarPasajero() {
+    if (!this.pasajero) return;
+    this.pasajero.destroy();
+    this.pasajero = null;
+  }
+
   ofrecer(playerPos) {
     if (this.carrera) return null;
     const pickup = this.pickSpotFar(playerPos, 6);
     if (!pickup) return null;
-    const dropoff = this.pickSpotFar(pickup, 20);
+    let dropoff;
+    if (this.tipo === 'ambulancia') {
+      const hospital = this.hospitalPara(pickup);
+      if (!hospital) return null;
+      dropoff = { x: hospital.x, y: hospital.y, hospital: true };
+    } else {
+      dropoff = this.pickSpotFar(pickup, 20);
+    }
     if (!dropoff) return null;
+    this.ponerPasajero(pickup.x, pickup.y);
 
     const tiles = Math.round(
       Phaser.Math.Distance.Between(pickup.x, pickup.y, dropoff.x, dropoff.y) / TILE
@@ -68,7 +108,7 @@ export class TrabajoVehiculoSystem {
     this.carrera = {
       state: 'pickup',
       pickup: { x: pickup.x, y: pickup.y },
-      dropoff: { x: dropoff.x, y: dropoff.y },
+      dropoff: { x: dropoff.x, y: dropoff.y, hospital: !!dropoff.hospital },
       tiles,
       pay: Math.round(this.pagoBase + tiles * this.pagoPorTile),
       limit: Math.round(tiles * this.tiempoPorTile),
@@ -102,20 +142,26 @@ export class TrabajoVehiculoSystem {
     const t = this.target;
     const dist = Phaser.Math.Distance.Between(player.x, player.y, t.x, t.y);
 
+    const alcance = this.carrera.state === 'carrying' && t.hospital ? 64 : REACH;
     if (this.carrera.state === 'pickup' && dist < REACH) {
       this.carrera.state = 'carrying';
       this.carrera.elapsed = 0;
+      this.quitarPasajero();
       this.refreshMarker();
-      EventBus.emit(EVT.NOTIFY, { text: 'Recogido. Llevalo al punto marcado.', tone: 'objective' });
+      EventBus.emit(EVT.NOTIFY, {
+        text: this.tipo === 'ambulancia' ? 'Recogido. Llevalo al hospital.' : 'Recogido. Llevalo al punto marcado.',
+        tone: 'objective',
+      });
       return;
     }
 
-    if (this.carrera.state === 'carrying' && dist < REACH) this.finish();
+    if (this.carrera.state === 'carrying' && dist < alcance) this.finish();
   }
 
   cancelar() {
     if (!this.carrera) return;
     this.carrera = null;
+    this.quitarPasajero();
     this.ring.setVisible(false);
   }
 
@@ -149,6 +195,7 @@ export class TrabajoVehiculoSystem {
 
   objectiveText() {
     if (!this.carrera) return `J para ${this.nombre.toLowerCase()}`;
-    return this.carrera.state === 'pickup' ? 'Ve a recoger' : `Llevalo (${this.carrera.pay} €)`;
+    if (this.carrera.state === 'pickup') return 'Ve a recoger';
+    return this.tipo === 'ambulancia' ? `Al hospital (${this.carrera.pay} €)` : `Llevalo (${this.carrera.pay} €)`;
   }
 }
