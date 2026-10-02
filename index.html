@@ -9,7 +9,10 @@
      Pricedown es de Ray Larabie, no de Rockstar. Anton queda de repuesto. */
   @font-face {
     font-family: 'Pricedown';
-    src: url('fonts/pricedown.otf') format('opentype');
+    /* pricedown-limpia.otf = la misma fuente SIN ligaduras ni kerning: con ellos
+       la L, M, N, Q, R y otras sacaban un rabo largo que se enlazaba con la
+       letra siguiente. Hecha con fontTools a partir de pricedown.otf. */
+    src: url('fonts/pricedown-limpia.otf?v=2') format('opentype');
     font-weight: 400;
     font-display: block;
   }
