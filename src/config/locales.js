@@ -58,13 +58,54 @@ export const LOCALES = {
     clave: 'comida',
     nombre: 'Pollos Cluck',
     corto: 'COMIDA',
-    cuantos: 7,
-    separacion: 1300,
+    cuantos: 10,
+    separacion: 1100,
     precio: 18,
     enCoche: false,
     color: 0xe8b54a,
     // barato y sin tope: comer cura poco y engorda, como debe ser
     accion: 'comer',
+  },
+  // F2: COSAS QUE HACER EN CASI CUALQUIER PUNTO DEL MAPA. Tres sitios mas,
+  // repartidos por toda la ciudad como la comida: uno para comprar, uno para
+  // reparar el coche y uno para tomar algo. Mismo patron de siempre (te
+  // acercas, E, pagas, pasa algo): lo que cambia esta aqui.
+  tienda24: {
+    clave: 'tienda24',
+    nombre: 'Tienda 24h',
+    corto: 'TIENDA 24H',
+    cuantos: 9,
+    separacion: 1000,
+    precio: 35,
+    enCoche: false,
+    color: 0x7fd0e8,
+    // sin arma en la mano: compras un botiquin. Con un arma de fuego en la
+    // mano: es un ATRACO (cobras, pero te ven y sube la busca)
+    accion: 'tienda',
+  },
+  mecanico: {
+    clave: 'mecanico',
+    nombre: 'Taller mecanico',
+    corto: 'MECANICO',
+    cuantos: 6,
+    separacion: 1500,
+    precio: 60,
+    enCoche: true,
+    color: 0xe0a050,
+    // arregla la chapa, pero no pinta ni te quita la busca (eso es del taller
+    // de pintura): es la opcion barata
+    accion: 'reparar',
+  },
+  bar: {
+    clave: 'bar',
+    nombre: 'Bar',
+    corto: 'BAR',
+    cuantos: 7,
+    separacion: 1200,
+    precio: 12,
+    enCoche: false,
+    color: 0xd08a5a,
+    accion: 'beber',
   },
   // SISTEMA-PERSONAJE.txt punto 4: uno en el centro y otro en el comercial.
   // Se paga la cuota al entrar y dentro (GimnasioScene) estan las maquinas.

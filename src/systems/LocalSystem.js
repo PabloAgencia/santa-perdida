@@ -6,6 +6,7 @@ import { etiquetaFlotante } from '../world/etiquetas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
+import { ARMAS } from '../config/weapons.js';
 
 // LOS LOCALES: hospital, comisaria, taller de pintura y sitios de comida.
 //
@@ -134,6 +135,13 @@ export class LocalSystem {
     const cfg = local.cfg;
     if (cfg.accion === 'ninguna') return null;
 
+    // LA TIENDA 24H. Con un arma de fuego en la mano es un atraco (no hace
+    // falta dinero); sin ella, se compra un botiquin.
+    if (cfg.accion === 'tienda') {
+      const arma = ARMAS[GameState.armaActual];
+      if (arma && !arma.cuerpo) return this.atracar(local);
+    }
+
     if (cfg.precio > 0 && !GameState.canAfford(cfg.precio)) {
       return { texto: `${cfg.nombre}: ${cfg.precio} €. No te llega`, tono: 'danger' };
     }
@@ -160,6 +168,40 @@ export class LocalSystem {
       GameState.subirAtributo('grasa', CURAS.comidaEngorda);
       Audio.notes([523.25, 659.25], 0.08);
       return { texto: `+${CURAS.comida} de vida · ${cfg.precio} €`, tono: 'money' };
+    }
+
+    if (cfg.accion === 'tienda') {
+      if (GameState.health >= GameState.vidaMaxima) {
+        return { texto: 'No necesitas nada', tono: 'dim' };
+      }
+      GameState.spendMoney(cfg.precio, 'tienda');
+      GameState.heal(45);
+      Audio.notes([523.25, 659.25, 783.99], 0.07);
+      return { texto: `Botiquin: +45 de vida · ${cfg.precio} €`, tono: 'money' };
+    }
+
+    if (cfg.accion === 'beber') {
+      if (GameState.health >= GameState.vidaMaxima) {
+        return { texto: 'Estas entero, no te apetece', tono: 'dim' };
+      }
+      GameState.spendMoney(cfg.precio, 'bar');
+      GameState.heal(10);
+      Audio.notes([440, 523.25], 0.08);
+      return { texto: `Una copa: +10 de vida · ${cfg.precio} €`, tono: 'money' };
+    }
+
+    if (cfg.accion === 'reparar') {
+      if (!vehiculo) return null;
+      if (vehiculo.quemado) return { texto: 'Eso ya no tiene arreglo', tono: 'danger' };
+      if (vehiculo.hp >= vehiculo.stats.maxHp) {
+        return { texto: 'El coche esta como nuevo', tono: 'dim' };
+      }
+      GameState.spendMoney(cfg.precio, 'mecanico');
+      vehiculo.hp = vehiculo.stats.maxHp;
+      vehiculo.ardiendo = 0;
+      vehiculo.syncSprite();
+      Audio.notes([392, 523.25], 0.1);
+      return { texto: `Chapa arreglada · ${cfg.precio} €`, tono: 'money' };
     }
 
     if (cfg.accion === 'pintar') {
@@ -198,5 +240,23 @@ export class LocalSystem {
       };
     }
     return null;
+  }
+
+  // El atraco: te llevas lo de la caja y te ven. Cada tienda aguanta uno
+  // cada cinco minutos (de juego, por el reloj de la escena).
+  atracar(local) {
+    const ahora = this.scene.time.now;
+    if (local.robadaHasta && ahora < local.robadaHasta) {
+      return { texto: 'La caja esta vacia: ya la has limpiado hace poco', tono: 'dim' };
+    }
+    local.robadaHasta = ahora + 300000;
+    const botin = Phaser.Math.Between(120, 380);
+    GameState.addMoney(botin, 'atraco');
+    GameState.bumpStat('atracos', 1);
+    // el dependiente te ve: busca 2, y los que estaban cerca se asustan
+    if (this.scene.police) this.scene.police.reportarCrimen(local.x, local.y, 2);
+    if (this.scene.npcs) this.scene.npcs.scare(local.x, local.y, 500);
+    Audio.crash(0.3);
+    return { texto: `¡Atraco! +${botin} €`, tono: 'danger' };
   }
 }

@@ -251,6 +251,9 @@ export class UIScene extends Phaser.Scene {
     if (cfg.accion === 'comer') return `E para comer algo · ${cfg.precio} €`;
     if (cfg.accion === 'pintar') return `E para pintar el coche · ${cfg.precio} €`;
     if (cfg.accion === 'gimnasio') return `E para entrar al gimnasio · ${cfg.precio} €`;
+    if (cfg.accion === 'tienda') return `E botiquin · ${cfg.precio} €   (con un arma en la mano: ATRACAR)`;
+    if (cfg.accion === 'reparar') return `E para arreglar la chapa · ${cfg.precio} €`;
+    if (cfg.accion === 'beber') return `E para tomar algo · ${cfg.precio} €`;
     return '';
   }
 
