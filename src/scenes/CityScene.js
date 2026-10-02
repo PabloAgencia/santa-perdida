@@ -19,6 +19,7 @@ import { BajoMundoSystem, PRECIO_BUEN_RATO } from '../systems/BajoMundoSystem.js
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
+import { ArmasConfiscadasSystem } from '../systems/ArmasConfiscadasSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
 import { GruaSystem } from '../systems/GruaSystem.js';
@@ -98,6 +99,7 @@ export class CityScene extends Phaser.Scene {
 
     this.shops = new ShopSystem(this, this.map);
     this.locales = new LocalSystem(this, this.map);
+    this.armasConf = new ArmasConfiscadasSystem(this);
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
     this.mercado = new MercadoSystem(this, this.map);
@@ -564,6 +566,7 @@ export class CityScene extends Phaser.Scene {
         !this.enterHideout() &&
         !this.entrarEnPisoCerca() &&
         !this.entrarEnLaArmeria() &&
+        !this.armasConf.usar() &&
         !this.usarLocalCerca() &&
         !this.usarNegocioCerca() &&
         !this.iniciarGuerraCerca() &&
@@ -704,6 +707,7 @@ export class CityScene extends Phaser.Scene {
     Audio.siren(this.police.nivelSirena(this.player.x, this.player.y));
 
     this.jobs.update(dt, this.player.x, this.player.y);
+    this.armasConf.update(dt, this.player, !!this.drivingVehicle);
     this.taxista.update(dt, this.player, this.drivingVehicle);
     this.ambulanciaJob.update(dt, this.player, this.drivingVehicle);
     this.justiciero.update(dt, this.player);
@@ -879,8 +883,8 @@ export class CityScene extends Phaser.Scene {
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: busted ? 'TE HAN DETENIDO' : 'ESTAS MUERTO',
       subtitle: busted
-        ? `Sales limpio de comisaria. Fianza: ${fee} €`
-        : `Despiertas en el hospital. Te cobran ${fee} €`,
+        ? `Sales de comisaria sin armas. Fianza: ${fee} €`
+        : `Despiertas en el hospital sin armas. Te cobran ${fee} €`,
     });
 
     this.time.delayedCall(1500, () => {
@@ -895,7 +899,11 @@ export class CityScene extends Phaser.Scene {
         this.drivingVehicle = null;
         this.cameras.main.setFollowOffset(0, 0);
       }
-      const spot = this.findStartSpot({ x: this.player.x, y: this.player.y });
+      // B4: te despiertas en la comisaria (detenido) o en el hospital
+      // (muerto), y sin armas: se quedan en un aro rojo ahi al lado
+      const sitio = this.sitioDeDespertar(busted);
+      const spot = sitio ? sitio.spot : this.findStartSpot({ x: this.player.x, y: this.player.y });
+      if (sitio) this.armasConf.confiscar(busted ? 'busted' : 'muerto', sitio.marca);
       this.player.terminarRagdoll();
       this.player.setVisible(true);
 
@@ -907,6 +915,31 @@ export class CityScene extends Phaser.Scene {
       this.cameras.main.fadeIn(600, 0, 0, 0);
       this.respawning = false;
     });
+  }
+
+  // El local mas cercano del tipo que toca (comisaria / hospital): donde
+  // despiertas y, a unos pasos, el aro para recuperar las armas.
+  sitioDeDespertar(busted) {
+    const clave = busted ? 'comisaria' : 'hospital';
+    const lista = this.locales.locales.filter((l) => l.cfg.clave === clave);
+    if (lista.length === 0) return null;
+    let local = lista[0];
+    let mejor = Infinity;
+    for (const l of lista) {
+      const d = Phaser.Math.Distance.Between(l.x, l.y, this.player.x, this.player.y);
+      if (d < mejor) { mejor = d; local = l; }
+    }
+    // el aro, apartado de la puerta hacia fuera del edificio y en suelo libre
+    const base = Math.atan2(local.y - local.edificio.py, local.x - local.edificio.px);
+    let marca = { x: local.x, y: local.y };
+    for (const giro of [0, 0.8, -0.8, 1.6, -1.6, Math.PI]) {
+      const x = local.x + Math.cos(base + giro) * 78;
+      const y = local.y + Math.sin(base + giro) * 78;
+      if (this.map.isSolidBox(x, y, 16, 16) || this.map.isRoadPoint(x, y)) continue;
+      marca = { x, y };
+      break;
+    }
+    return { spot: { x: local.x, y: local.y }, marca };
   }
 
   // marcador giratorio en la puerta del escondite, como los de GTA
@@ -1488,6 +1521,7 @@ export class CityScene extends Phaser.Scene {
       healthMax: GameState.vidaMaxima,
       blindaje: GameState.blindaje,
       tiendaCerca: !!(this.shops && this.shops.cerca),
+      armasConfCerca: !!(this.armasConf && this.armasConf.cerca),
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
       concesionarioCerca: !!(this.concesionario && this.concesionario.cerca),
       guerraCerca: this.guerra && this.guerra.cerca ? FACTIONS[this.guerra.cerca.faction].name : null,

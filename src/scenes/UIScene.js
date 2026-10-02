@@ -509,6 +509,7 @@ export class UIScene extends Phaser.Scene {
     this.updateAliento(d.aliento ?? 1);
     this.accionTexto.setText(
       d.tiendaCerca ? 'E para entrar en la armeria'
+        : d.armasConfCerca ? 'E para recuperar tus armas · 500 €'
         : d.localCerca ? this.textoLocal(d.localCerca)
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)
         : d.gruaCerca ? (d.gruaCerca.cooldown
