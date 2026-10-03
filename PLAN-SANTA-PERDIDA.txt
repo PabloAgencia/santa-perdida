@@ -3664,3 +3664,11 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   GameState.habilidadArma (0-100), niveles 34 y 67, a 100 un 45% menos de
   dispersion y un 20% mas de cadencia (config/weapons.js, HABILIDAD).
   Probado por Pablo en local. Siguiente de IDEAS-3: robos de casas.
+
+[HECHO 3-oct, v53] EL MAPA GRANDE (PLAN-MAPA-GRANDE.txt). 640x512 casillas, casi
+  cuatro veces la ciudad de antes: rio con puentes, costa con bahia, sierra,
+  afueras con granjas, y cada barrio con su trazado (curvas en el
+  residencial, cuadricula en el centro, callejuelas en el Casco Viejo nuevo,
+  rejilla torcida en Los Rompientes). Calles dibujadas lisas y horneadas por
+  zonas; carreras por distancia; nombre del barrio en pantalla; partidas del
+  mapa viejo vuelven al escondite. Falta: aerodromo, tunel, costa en escalera.

@@ -88,3 +88,18 @@ RIESGOS
     muro; se comprueba que basta.
   - Carreras: salen de la red, se regeneran solas, pero hay que revisar que
     sigan siendo largas y con curvas.
+
+
+ESTADO (3-oct-2026, rama git mapa-grande, SIN publicar)
+  F1 HECHO  generador (src/world/GeneradorCiudad.js + config/ciudadGrande.js)
+            y la vista previa (herramientas/ver-mapa.mjs)
+  F2 HECHO  en el juego: red de conduccion del grafo, semaforos por angulo,
+            coches aparcados en su carril, apariciones cerca del jugador
+            (net.edgeCerca). Trafico y policia probados en 6 barrios: 0
+            atascados, 0 errores.
+  F3 HECHO  calles lisas horneadas por zonas; limpieza de solapes y muñones
+  F4 HECHO  sierra (pinos, peñascos, relieve), espuma, sombrillas, granjas y
+            campos. Aerodromo: no cabe, pendiente.
+  F5 EN CURSO  contenido x1,7; carga de 4,8 s a 2,6 s; partidas de otro
+            mapa vuelven al escondite (falta probarlo en Chrome). Falta:
+            carreras, nombre del barrio en el HUD, tunel, costa en escalera.
