@@ -4,6 +4,7 @@ import { COLORS } from '../config/balance.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { ARMAS } from '../config/weapons.js';
 import { texturaDelJugador } from '../world/personArt.js';
+import { TIRO, armasDeTiro } from './TiroScene.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 
@@ -60,6 +61,13 @@ export class ShopScene extends Phaser.Scene {
 
     this.decir(Phaser.Utils.Array.GetRandom(SALUDOS));
     this.pintar();
+
+    // al volver del campo de tiro hay otro dinero y otras armas en la lista
+    this.events.on('wake', () => {
+      this.montarLista();
+      this.pintar();
+      this.decir('¿Que tal la punteria?');
+    });
 
     this.teclas = this.input.keyboard.addKeys({
       arriba: 'UP', abajo: 'DOWN', w: 'W', s: 'S',
@@ -176,6 +184,11 @@ export class ShopScene extends Phaser.Scene {
       lleno: GameState.blindaje >= GameState.blindajeMaximo,
       comprar: () => GameState.darBlindaje(BLINDAJE.cantidad),
     });
+    lista.push({
+      nombre: 'Campo de tiro', precio: TIRO.precio,
+      detalle: 'la ronda, balas del campo · sube tu habilidad con cada arma',
+      campo: true,
+    });
     lista.push({ nombre: 'Salir de la tienda', precio: 0, salir: true });
     return lista;
   }
@@ -226,7 +239,7 @@ export class ShopScene extends Phaser.Scene {
     this.items.forEach((it, i) => {
       const op = this.lista[i];
       const elegido = i === this.indice;
-      const puede = op.salir || (GameState.canAfford(op.precio) && !op.lleno);
+      const puede = op.salir || (op.campo && armasDeTiro().length > 0 && GameState.canAfford(op.precio)) || (GameState.canAfford(op.precio) && !op.lleno);
       it.texto.setColor(elegido ? '#7fd08a' : puede ? COLORS.ink : '#6a6a6a');
       it.coste.setColor(puede ? COLORS.dim : '#8a5050');
     });
@@ -237,6 +250,24 @@ export class ShopScene extends Phaser.Scene {
   elegir() {
     const op = this.lista[this.indice];
     if (op.salir) return this.salir();
+
+    // el campo de tiro es otra sala: la armeria se duerme y vuelve al salir
+    if (op.campo) {
+      if (armasDeTiro().length === 0) {
+        Audio.menuBack();
+        this.decir('Sin un arma de fuego no hay nada que tirar. Compra una.');
+        return;
+      }
+      if (!GameState.canAfford(TIRO.precio)) {
+        Audio.menuBack();
+        this.decir(Phaser.Utils.Array.GetRandom(SIN_DINERO));
+        return;
+      }
+      Audio.menuSelect();
+      this.scene.sleep();
+      this.scene.launch('TiroScene');
+      return;
+    }
 
     // que no te dejen comprar tambien tiene sonido, y es el de volver: si
     // pulsar y que no pase nada suena igual que pulsar y que pase, no te

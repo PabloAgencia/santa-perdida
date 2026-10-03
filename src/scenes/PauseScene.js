@@ -164,7 +164,7 @@ export class PauseScene extends Phaser.Scene {
       ['MUSCULO', a.musculo, `pegas mas fuerte · vida maxima ${GameState.vidaMaxima}`],
       ['AGUANTE', a.aguante, 'cuanto corres seguido'],
       ['VOLANTE', a.volante, 'el coche agarra mejor en las curvas'],
-      ['PUNTERIA', a.punteria, 'cuando haya armas'],
+      ['PUNTERIA', a.punteria, 'dispara mas junto con todas las armas'],
       ['COMO TE MIRAN', a.atractivo, 'precios y encargos mejores'],
     ];
 

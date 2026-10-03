@@ -1,6 +1,7 @@
 import { EventBus, EVT } from './EventBus.js';
 import { ECONOMY, SAVE, BUSCA_MAXIMA } from '../config/balance.js';
 import { FACTION_KEYS, REP } from '../config/factions.js';
+import { nivelHabilidad } from '../config/weapons.js';
 import { ROPA, EFECTO_BANDA_PROPIA, EFECTO_BANDA_RIVAL } from '../config/aspecto.js';
 
 // FUENTE UNICA DE VERDAD. Ningun otro modulo guarda copias de estos datos
@@ -44,6 +45,8 @@ class GameStateClass {
     // compra. `null` de municion = no gasta (armas de cerca).
     this.armas = { puno: null };
     this.armaActual = 'puno';
+    // lo bien que manejas CADA arma de fuego (0-100), sube usandola
+    this.habilidadArma = {};
     // el chaleco se gasta antes que la vida, y no se recupera solo
     this.blindaje = 0;
     // LA ROPA (punto 23 del plan). 'calle' es gratis y siempre esta puesta
@@ -263,6 +266,21 @@ class GameStateClass {
     if (municion > 0) this.armas[clave] = (this.armas[clave] || 0) + municion;
     EventBus.emit(EVT.STATS_CHANGED, { arma: clave });
     return this.armas[clave];
+  }
+
+  habilidad(clave) {
+    return this.habilidadArma[clave] ?? 0;
+  }
+
+  // Sube la habilidad de UNA arma. Devuelve el nivel nuevo si ha cambiado de
+  // nivel (para avisar), o null si no.
+  subirHabilidad(clave, cantidad) {
+    const antes = this.habilidad(clave);
+    const ahora = Phaser.Math.Clamp(antes + cantidad, 0, 100);
+    this.habilidadArma[clave] = ahora;
+    const na = nivelHabilidad(antes);
+    const nd = nivelHabilidad(ahora);
+    return nd > na ? nd : null;
   }
 
   municion(clave = this.armaActual) {
@@ -565,6 +583,7 @@ class GameStateClass {
       atributos: this.atributos,
       armas: this.armas,
       armaActual: this.armaActual,
+      habilidadArma: this.habilidadArma,
       blindaje: this.blindaje,
       ropa: this.ropa,
       ropaComprada: this.ropaComprada,
@@ -594,6 +613,7 @@ class GameStateClass {
     this.atributos = Object.assign(this.atributos, data.atributos ?? {});
     this.armas = data.armas ?? { puno: null };
     this.armaActual = data.armaActual ?? 'puno';
+    this.habilidadArma = data.habilidadArma ?? {};
     this.blindaje = data.blindaje ?? 0;
     // partidas de antes del armario: de calle, la de siempre, y sin nada
     // comprado todavia

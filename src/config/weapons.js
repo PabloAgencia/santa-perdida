@@ -209,3 +209,27 @@ export const COMBATE = {
   comboBonusPorGolpe: 0.08,
   ventanaCombo: 1.1,
 };
+
+// HABILIDAD POR ARMA. Cada arma de fuego tiene su propio nivel (0-100) que
+// sube al acertar con ELLA y en el campo de tiro de la armeria. Al subir de
+// nivel esa arma, y solo esa, dispara mas junta y mas rapido. La punteria
+// general del personaje sigue ahi y se suma.
+export const HABILIDAD = {
+  porAcierto: 0.25,          // lo que sube al dar a alguien o a un coche
+  nombres: ['Novato', 'Curtido', 'Experto'],
+  // niveles en 34 y 67; a 100 tienes el maximo de las dos mejoras
+  mejoraDispersion: 0.45,    // hasta un 45% menos de desvio
+  mejoraCadencia: 0.2,       // hasta un 20% menos entre disparo y disparo
+};
+
+export function nivelHabilidad(valor) {
+  return valor >= 67 ? 2 : valor >= 34 ? 1 : 0;
+}
+
+export function factorDispersion(valor) {
+  return 1 - HABILIDAD.mejoraDispersion * (valor / 100);
+}
+
+export function factorCadencia(valor) {
+  return 1 - HABILIDAD.mejoraCadencia * (valor / 100);
+}

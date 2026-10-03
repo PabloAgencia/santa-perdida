@@ -1,4 +1,4 @@
-import { ARMAS, COMBATE, ORDEN_ARMAS } from '../config/weapons.js';
+import { ARMAS, COMBATE, ORDEN_ARMAS, HABILIDAD, factorCadencia, factorDispersion } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
@@ -118,6 +118,12 @@ export class CombatSystem {
     return arma.cuerpo ? null : { x: clic.x, y: clic.y, punto: true };
   }
 
+  // la cadencia del arma ya con la habilidad que llevas con ELLA
+  cadenciaDe(arma) {
+    if (arma.cuerpo) return arma.cadencia;
+    return arma.cadencia * factorCadencia(GameState.habilidad(arma.clave));
+  }
+
   atacar(player, enMovimiento, clic = null) {
     if (this.espera > 0) return false;
     const arma = this.arma;
@@ -128,7 +134,7 @@ export class CombatSystem {
       return false;
     }
 
-    this.espera = arma.cadencia;
+    this.espera = this.cadenciaDe(arma);
     const deClic = this.objetivoDeClic(clic, arma);
     const objetivo = deClic
       || (this.objetivo && !this.objetivo.down ? this.objetivo : this.buscarObjetivo(player));
@@ -165,7 +171,7 @@ export class CombatSystem {
       return false;
     }
 
-    this.espera = arma.cadencia * 1.25;   // se dispara mas lento al volante
+    this.espera = this.cadenciaDe(arma) * 1.25;   // se dispara mas lento al volante
     const objetivo = this.objetivoDeClic(clic, arma)
       || (this.objetivo && !this.objetivo.down
         ? this.objetivo
@@ -264,7 +270,8 @@ export class CombatSystem {
 
     // la punteria del personaje y estarse quieto cierran el tiro
     const punteria = GameState.atributo('punteria') / 100;
-    let dispersion = arma.dispersion * (1 - punteria * COMBATE.mejoraPorPunteria);
+    let dispersion = arma.dispersion * (1 - punteria * COMBATE.mejoraPorPunteria)
+      * factorDispersion(GameState.habilidad(arma.clave));
     if (enMovimiento) dispersion *= COMBATE.penalizacionEnMovimiento;
     dispersion *= torpeza;
 
@@ -298,7 +305,16 @@ export class CombatSystem {
       this.pintarDisparo(player, impacto.x, impacto.y);
     }
 
-    if (algunoDentro) GameState.subirAtributo('punteria', ENTRENAR.punteriaPorAcierto);
+    if (algunoDentro) {
+      GameState.subirAtributo('punteria', ENTRENAR.punteriaPorAcierto);
+      const nivel = GameState.subirHabilidad(arma.clave, HABILIDAD.porAcierto);
+      if (nivel !== null) {
+        EventBus.emit(EVT.NOTIFY, {
+          text: `${arma.nombre}: ya eres ${HABILIDAD.nombres[nivel]}. Dispara mas junto y mas rapido`,
+          tone: 'money',
+        });
+      }
+    }
     // cada arma con su disparo grabado; si no hay fichero, el ruido de antes
     if (!Audio.soltar(arma.sonido, arma.clave === 'sniper' ? 0.9 : 0.75)) {
       Audio.crash(arma.clave === 'escopeta' ? 0.5 : 0.3);
