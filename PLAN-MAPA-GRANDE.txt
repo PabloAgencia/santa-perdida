@@ -1,0 +1,90 @@
+PLAN: EL MAPA NUEVO DE SANTA PERDIDA                          3-oct-2026
+==========================================================================
+
+LO QUE PIDE PABLO
+  Mucho mas grande, y que no sea "un cuadrado y ya": calles irregulares y
+  distintas, barrios con forma propia.
+
+COMO ESTA HOY (leido en el codigo, no supuesto)
+  - 325 x 262 casillas de 32 px (10.400 x 8.384 px).
+  - Las calles son 13 rectas horizontales y 14 verticales de punta a punta
+    (config/city.js). Todas las manzanas miden lo mismo: 19 x 13 casillas.
+  - El mar es una raya recta abajo. No hay rio, ni costa, ni curvas.
+  - Los landmarks (casino, estadio, carcel...) van en coordenadas a mano.
+
+LO QUE YA AYUDA
+  - Coches, policia, carreras, taxi y ambulancia conducen sobre una RED de
+    tramos (RoadNetwork) con direccion libre: un tramo en diagonal o en
+    curva les vale igual. No hay que reescribir la conduccion.
+  - Los peatones buscan camino por casillas (A*): cualquier forma les vale.
+  - Tiendas, pisos, locales, negocios y hospitales se colocan SOLOS sobre
+    los edificios que haya. No tienen coordenadas fijas.
+
+LO QUE DA POR HECHO QUE TODO ES RECTO (hay que generalizarlo)
+  - La linea central pintada como casillas LINE_H / LINE_V.
+  - Pasos de cebra en dos orientaciones fijas (crossMask 1/2).
+  - Semaforos: "fase horizontal / fase vertical" por el dx del tramo
+    (TrafficLights.js y TrafficSystem.js lineas 219 y 289).
+  - Coches aparcados: horizontal o vertical (CityScene.js linea 232).
+  - Landmarks y manzanas en coordenadas fijas.
+
+COMO VA A SER LA CIUDAD
+  Tamaño: unas 640 x 512 casillas (20.480 x 16.384 px), casi CUATRO veces
+  la de ahora. Cruzarla a tope en coche, casi un minuto.
+
+  Forma:
+  - Costa irregular al sur y al este, con calas, puerto y playa.
+  - Un RIO que baja del norte y parte la ciudad, con puentes.
+  - Monte al norte (macizo, se pasa por carreteras que serpentean).
+  - Afueras y campo entre la ciudad y el monte: carreteras con curvas.
+  - Una autovia de circunvalacion con curvas, que une los barrios.
+
+  Cada barrio con su trazado propio, no solo su color:
+  - CENTRO: cuadricula apretada de manzanas pequeñas, y una AVENIDA EN
+    DIAGONAL que la cruza entera.
+  - CASCO VIEJO (nuevo): calles torcidas, angulos raros, plazas.
+  - RESIDENCIAL: calles en curva y calles sin salida, casas bajas.
+  - LOS ROMPIENTES: cuadricula torcida, inclinada, callejones.
+  - COMERCIAL: manzanas grandes con aparcamientos.
+  - INDUSTRIAL: manzanas enormes y calles largas y rectas.
+  - PUERTO: pegado a la costa, siguiendo su forma.
+
+COMO SE HACE POR DENTRO
+  1. Las calles pasan a ser un GRAFO: puntos y tramos con ancho. Cada barrio
+     tiene su generador de trazado; las arterias principales (autovia,
+     avenida diagonal, carretera del monte) van descritas en city.js.
+     Donde dos tramos se cruzan se crea un cruce solo.
+  2. La rejilla de casillas SE QUEDA para la logica (colisiones, peatones,
+     territorios): las calles se "estampan" en ella.
+  3. El dibujo de las calles pasa a ser VECTORIAL (asfalto, acera, linea
+     central, cebras), troceado por zonas como ya se hace con los
+     edificios: en diagonal se ve liso, no en escalera.
+  4. Los edificios siguen siendo rectangulos (las colisiones van por
+     casillas), pero se reparten por el hueco que deja cada manzana, sea
+     de la forma que sea, con fachada a la calle. Los huecos grandes del
+     interior: patios, aparcamientos, parques.
+  5. Los landmarks se colocan buscando sitio libre en su barrio, no con
+     coordenadas a mano.
+  6. La red de conduccion sale del grafo directamente. Semaforos por
+     ANGULO de llegada, no por horizontal/vertical.
+  7. Se escala lo que hay repartido: mas hospitales, tiendas, talleres...
+     para que la ciudad grande no quede vacia.
+
+POR FASES
+  F1. El generador nuevo, probado FUERA del juego: saca una imagen PNG del
+      mapa para verlo de un vistazo. Pablo da el visto bueno a la forma.
+  F2. Meterlo en el juego: CityMap con el generador nuevo, red de
+      conduccion del grafo, semaforos por angulo, coches aparcados.
+  F3. Dibujo vectorial de calles, aceras, cebras y minimapa.
+  F4. Edificios y landmarks en manzanas irregulares; identidad de barrio.
+  F5. Repaso de TODO lo que usa el mapa (policia, carreras, taxi,
+      ambulancia, encuentros, guerra de territorios, partidas guardadas) y
+      medir rendimiento con la ciudad grande. Despues, v53.
+
+RIESGOS
+  - Rendimiento: ya paso una vez. Se mide en cada fase (fps con game.step).
+  - Partidas guardadas: la posicion del jugador y los coches caen en otro
+    sitio. Ya existe el recolocado de la v51 para los que caen dentro de un
+    muro; se comprueba que basta.
+  - Carreras: salen de la red, se regeneran solas, pero hay que revisar que
+    sigan siendo largas y con curvas.

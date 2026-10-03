@@ -252,8 +252,12 @@ export class MissionSystem {
       : spots.filter((s) => Phaser.Math.Distance.Between(s.x, s.y, px, py) < 620);
     const punto = anchas[Math.floor(Math.random() * anchas.length)] || spots[0];
 
+    // la calle en la que nace, para que arranque mirando hacia donde va y
+    // huya por ella (antes salia mirando al este y con un tramo cualquiera
+    // de la ciudad como destino)
+    const calle = this.net.edgeMasCercano(punto.x, punto.y) || this.net.randomEdge();
     const tipo = VEHICLE_KEYS[Math.floor(Math.random() * VEHICLE_KEYS.length)];
-    const v = new Vehicle(this.scene, this.map, tipo, punto.x, punto.y, 0, {
+    const v = new Vehicle(this.scene, this.map, tipo, punto.x, punto.y, calle.angle, {
       color: Math.floor(Math.random() * VEHICLES[tipo].palette.length),
     });
     v.ai = true;
@@ -263,7 +267,7 @@ export class MissionSystem {
 
     this.blanco = {
       vehicle: v,
-      edge: this.net.randomEdge(),
+      edge: calle,
       huyendo: paso.tipo === 'seguir',
       gracia: 4,
     };

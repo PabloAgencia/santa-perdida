@@ -1,5 +1,6 @@
 import { CityMap } from '../world/CityMap.js';
 import { CITY } from '../config/city.js';
+import { CIUDAD_GRANDE } from '../config/ciudadGrande.js';
 import { TILE, PLAYER, CAMERA, SAVE } from '../config/balance.js';
 import { VEHICLE_KEYS, VEHICLES, ENGINES } from '../config/vehicles.js';
 import { Player } from '../entities/Player.js';
@@ -55,7 +56,8 @@ export class CityScene extends Phaser.Scene {
   }
 
   create() {
-    this.map = new CityMap(CITY).generate();
+    // CITY es la ciudad de antes (cuadricula); CIUDAD_GRANDE la nueva
+    this.map = new CityMap(CIUDAD_GRANDE).generate();
     this.vehicles = [];
     this.drivingVehicle = null;
     this.autosaveTimer = 0;
@@ -74,7 +76,7 @@ export class CityScene extends Phaser.Scene {
 
     this.player = new Player(this, this.map, 0, 0);
     this.jobs = new JobSystem(this, this.map);
-    this.net = new RoadNetwork(CITY);
+    this.net = new RoadNetwork(CITY, this.map);
     // el orden importa: el trafico pide conductores a los NPC al crearse
     this.npcs = new NPCSystem(this, this.map);
     this.lights = new TrafficLights(this, this.net);
@@ -226,12 +228,16 @@ export class CityScene extends Phaser.Scene {
     const wanted = 18;
     let placed = 0;
 
-    for (const s of spots) {
+    for (const s0 of spots) {
       if (placed >= wanted) break;
       const type = VEHICLE_KEYS[placed % VEHICLE_KEYS.length];
-      const horizontal = this.map.isRoadPoint(s.x - TILE * 2, s.y) &&
-        this.map.isRoadPoint(s.x + TILE * 2, s.y);
-      const angle = horizontal ? (Math.random() < 0.5 ? 0 : Math.PI) : (Math.random() < 0.5 ? Math.PI / 2 : -Math.PI / 2);
+      // en su carril y mirando hacia donde va la calle, sea en el angulo
+      // que sea (antes solo habia calles horizontales o verticales)
+      const edge = this.net.edgeMasCercano(s0.x, s0.y);
+      if (!edge) continue;
+      const pr = this.net.progreso(edge, s0.x, s0.y);
+      const s = this.net.pointAlong(edge, Phaser.Math.Clamp(pr.t, 0.25, 0.75));
+      const angle = edge.angle;
 
       if (this.map.isSolidBox(s.x, s.y, 34, 34)) continue;
       if (this.vehicles.some((v) => Phaser.Math.Distance.Between(v.x, v.y, s.x, s.y) < 160)) continue;
@@ -716,7 +722,7 @@ export class CityScene extends Phaser.Scene {
     if (this.drivingVehicle) {
       const v = this.drivingVehicle;
       this.player.setPosition(v.x, v.y);
-      Audio.engine(true, v.speed / v.stats.maxSpeed, up, ENGINES[v.stats.clase]);
+      Audio.engine(true, v.speed / v.stats.maxSpeed, up, ENGINES[v.stats.sonido || v.stats.clase]);
       Audio.skid(Math.max(0, (v.lateral - 45) / 190));
     } else {
       Audio.engine(false, 0, false);

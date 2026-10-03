@@ -111,7 +111,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   makeTileset() {
-    const count = 9;
+    const count = 10;
     const g = this.g();
     seed = 1337;
 
@@ -171,6 +171,11 @@ export class BootScene extends Phaser.Scene {
     // 8 pavimento interior de manzana
     base(T.ALLEY, 0x33363c);
     this.speckle(g, T.ALLEY * TILE, 0, 0x3a3e45, 18, 0.5);
+
+    // 9 roca del monte
+    base(T.ROCK, 0x3b342c);
+    this.speckle(g, T.ROCK * TILE, 0, 0x4a4137, 22, 0.7);
+    this.speckle(g, T.ROCK * TILE, 0, 0x2c2621, 16, 0.6);
 
     g.generateTexture('tiles', count * TILE, TILE);
     g.destroy();

@@ -187,3 +187,27 @@ G1. Al dar a NUEVA PARTIDA que salga algo de la historia: CINEMATICAS,
 7. Interiores con colisiones (A7), noche visible (E1).
 8. Carreras nuevas (C6), desmembrar (D4, D5), brazos perfectos (D1).
 9. Historia y cinematicas (G1): proyecto aparte, cuando haya cuota de sobra.
+
+
+=== H. APUNTES DEL 3-OCT (tras la v52) ===
+
+H1. INTERIORES Y EXTERIORES DE TODOS LOS LOCALES, CON SUS FISICAS.
+    Tiendas, bar, casino, mecanico, tienda24, etc.: hoy muchos son una imagen
+    incrustada sin logica (el mismo problema que A8 y A7). Hay que revisar
+    CADA local, por fuera (fachada, puerta, acera, que choque) y por dentro
+    (muebles, mostrador, paredes con colision, se puede pegar), con el estilo
+    de world/interior.js (FisicaInterior). Nada de imagen pegada de adorno.
+
+H2. EL CASINO DEBE SER UN CASINO DE VERDAD.
+    Ahora solo hay tragaperras (SlotsScene) y ni siquiera se entra bien.
+    Debe poder entrarse y jugar a: poker, blackjack, ruleta, caballos, craps,
+    etc. Orden barato (de IDEAS-3 punto 8): blackjack, craps, ruleta; luego
+    poker; caballos necesita carrera simulada aparte.
+
+H3. EL MAPA, MUCHO MAS ENORME Y DISTINTO (decidido por Pablo, va primero).
+    Que no sea un cuadrado y ya: calles irregulares y diferentes, barrios con
+    forma propia. Tanda con Opus.
+
+H4. TAXI: sonaba a tractor. Cambiado en la v53 (perfil propio `taxi` en
+    ENGINES, mas agudo y con menos cuerpo grave). Sin oir: Pablo debe decir
+    si ya suena a taxi.

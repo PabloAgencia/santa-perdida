@@ -23,9 +23,21 @@ export class TrafficLights {
     for (const n of net.nodes) {
       // solo los cruces de verdad: un tramo que sigue recto no necesita luz
       if (n.out.length < 3) continue;
-      this.cruces.set(n.id, { node: n, desfase: Math.random() * CICLO });
+      // el eje de referencia del cruce: el de su primera salida. Con calles
+      // en cualquier angulo ya no hay "horizontal" y "vertical": pasan a la
+      // vez los que llegan alineados con este eje, y luego los de traves.
+      const e0 = net.edges[n.out[0]];
+      this.cruces.set(n.id, { node: n, desfase: Math.random() * CICLO, ex: e0.dx, ey: e0.dy });
       this.dibujar(n);
     }
+  }
+
+  // ¿quien va por (dx, dy) hacia este cruce esta en la fase del eje de
+  // referencia? Es lo que antes era "va en horizontal".
+  faseDe(nodeId, dx, dy) {
+    const c = this.cruces.get(nodeId);
+    if (!c) return Math.abs(dx) > 0.5;
+    return Math.abs(dx * c.ex + dy * c.ey) >= 0.7071;
   }
 
   // 'verde' | 'ambar' | 'rojo' para quien llega al cruce `nodeId`
@@ -66,7 +78,7 @@ export class TrafficLights {
       }
       if (x === null) continue;
 
-      const horizontal = Math.abs(e.dx) > 0.5;
+      const horizontal = this.faseDe(n.id, e.dx, e.dy);
 
       const poste = this.scene.add.image(x, y, 'px')
         .setDisplaySize(5, 5).setTint(0x1b1f25).setDepth(-869);
@@ -78,6 +90,7 @@ export class TrafficLights {
       const bombilla = this.scene.add.image(x, y, 'px')
         .setDisplaySize(6, 6).setTint(0x3f9c5a).setDepth(-868);
 
+      if (this.scene.capaObjetos) this.scene.capaObjetos(-870, x, y).add([halo, poste, bombilla]);
       this.luces.push({ nodeId: n.id, horizontal, bombilla, halo, poste, estado: null });
     }
   }

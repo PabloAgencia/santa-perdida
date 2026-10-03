@@ -34,6 +34,11 @@ export const ENGINES = {
   // bronco para la patrulla.
   resistente: { base: 34, range: 58,  wave: 'triangle', body: 0.75, bright: 540, vol: 1.0,
                 muestra: 'motor-5', tono: 1.0 },
+  // El taxi tenia el motor del sedan y sonaba a tractor: demasiado cuerpo
+  // grave (body 0.75 sobre una base de 34 Hz) y tono bajo. Es un cuatro
+  // cilindros de trabajo: mas agudo, menos cuerpo y mas lleno de aire.
+  taxi:       { base: 46, range: 84,  wave: 'triangle', body: 0.35, bright: 820, vol: 1.0,
+                muestra: 'motor-5', tono: 1.28 },
   // `aire` es la aspereza que se le suma POR ENCIMA de la grabacion. Solo la
   // lleva la moto: su grabacion no tiene nada por encima de 400 Hz (0%
   // medido) y sin esto es un zumbido grave, no una moto.
@@ -113,6 +118,7 @@ export const VEHICLES = {
   taxi: {
     name: 'Taxi',
     clase: 'resistente',
+    sonido: 'taxi',
     length: 50, width: 23,
     maxSpeed: 285, accel: 142, brake: 315, reverseSpeed: 98,
     turnRate: 2.15, lateralRetention: 0.872,

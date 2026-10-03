@@ -310,7 +310,7 @@ export class PoliceSystem {
     let mejor = null;
     let mejorDist = Infinity;
     for (let i = 0; i < 60; i++) {
-      const edge = this.net.randomEdge();
+      const edge = this.net.edgeCerca(player.x, player.y, 900, 1600);
       const p = this.net.pointAlong(edge, 0.2 + Math.random() * 0.6);
       const d = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);
       if (d < 900 || d > 1600) continue;
@@ -558,7 +558,9 @@ export class PoliceSystem {
       case ESTADO.PERDIDO:
         if (u.timer <= 0) {
           u.state = ESTADO.VOLVIENDO;
-          u.edge = this.net.randomEdge();
+          // a la calle que tiene al lado, no a una cualquiera de la ciudad
+          u.edge = this.net.edgeMasCercano(u.vehicle.x, u.vehicle.y,
+            Math.cos(u.vehicle.angle), Math.sin(u.vehicle.angle));
         }
         break;
     }
@@ -625,7 +627,7 @@ export class PoliceSystem {
     }
 
     if (!goal) {
-      if (!u.edge) u.edge = this.net.randomEdge();
+      if (!u.edge) u.edge = this.net.edgeMasCercano(v.x, v.y, Math.cos(v.angle), Math.sin(v.angle));
       const target = this.net.exitPoint(u.edge);
       if (Phaser.Math.Distance.Between(v.x, v.y, target.x, target.y) < 52) {
         u.edge = this.net.nextEdge(u.edge) || this.net.randomEdge();
@@ -829,7 +831,7 @@ export class PoliceSystem {
     const normales = () => this.units.filter((u) => !u.roadblock && !u.furgon).length;
     while (normales() < this.wantedUnits() && attempts < 50) {
       attempts++;
-      const edge = this.net.randomEdge();
+      const edge = this.net.edgeCerca(player.x, player.y, SPAWN_MIN, SPAWN_MAX);
       const p = this.net.pointAlong(edge, 0.2 + Math.random() * 0.6);
       const dist = Phaser.Math.Distance.Between(p.x, p.y, player.x, player.y);
       if (dist < SPAWN_MIN || dist > SPAWN_MAX) continue;

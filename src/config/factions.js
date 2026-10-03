@@ -33,7 +33,7 @@ export const FACTIONS = {
     short: 'VERDIAL',
     color: 0x5a3f7a,
     accent: 0x9a7ac4,
-    zones: ['centro', 'comercial'],
+    zones: ['centro', 'comercial', 'casco'],
     lema: 'Dinero viejo que cobra proteccion con guantes',
     negocio: 'proteccion',
     jefe: { nombre: 'Adelina Verdial', alias: 'La Doña' },

@@ -11,6 +11,7 @@ export const T = {
   WATER: 6,
   DOCK: 7,
   ALLEY: 8,
+  ROCK: 9,     // monte macizo (la ciudad grande)
 };
 
 export const SOLID_TILES = new Set([T.WATER]);

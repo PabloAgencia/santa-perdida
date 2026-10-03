@@ -76,7 +76,7 @@ export class TrafficSystem {
     let attempts = 0;
     while (this.cars.length < MAX_CARS && attempts < 40) {
       attempts++;
-      const edge = this.net.randomEdge();
+      const edge = this.net.edgeCerca(fx, fy, SPAWN_MIN, SPAWN_MAX);
       const t = 0.15 + Math.random() * 0.7;
       const p = this.net.pointAlong(edge, t);
       const dist = Phaser.Math.Distance.Between(p.x, p.y, fx, fy);
@@ -216,7 +216,7 @@ export class TrafficSystem {
     if (this.lights && !car.temerario) {
       const antesDeLaLinea = alCruce > LINEA_PARADA - 40 && alCruce < LINEA_PARADA + 90;
       if (antesDeLaLinea && this.hayQuienDispute(car, nodo)) {
-        const luz = this.lights.estadoEn(car.edge.to, Math.abs(car.edge.dx) > 0.5);
+        const luz = this.lights.estadoEn(car.edge.to, this.lights.faseDe(car.edge.to, car.edge.dx, car.edge.dy));
         esperando = luz !== 'verde';
       }
     }
@@ -286,10 +286,11 @@ export class TrafficSystem {
 
   // ¿hay otro coche entrando en el mismo cruce por otra calle?
   hayQuienDispute(car, nodo) {
-    const miEje = Math.abs(car.edge.dx) > 0.5;
     for (const otro of this.cars) {
       if (otro === car || !otro.edge) continue;
-      if (Math.abs(otro.edge.dx) > 0.5 === miEje) continue;
+      // solo disputa el que entra de traves: el que va por mi misma calle
+      // (en mi sentido o en el contrario) no se me cruza
+      if (Math.abs(otro.edge.dx * car.edge.dx + otro.edge.dy * car.edge.dy) > 0.7071) continue;
       const d = Phaser.Math.Distance.Between(otro.vehicle.x, otro.vehicle.y, nodo.x, nodo.y);
       if (d < LINEA_PARADA + 70) return true;
     }

@@ -73,17 +73,41 @@ export const PintarCiudad = {
     return g;
   },
 
-  // enciende solo las zonas que se ven, con un margen de una zona
-  actualizarCapas() {
-    if (!this.capas) return;
-    const v = this.cameras.main.worldView;
-    const x0 = Math.floor(v.x / ZONA_DIBUJO) - 1;
-    const x1 = Math.floor(v.right / ZONA_DIBUJO) + 1;
-    const y0 = Math.floor(v.y / ZONA_DIBUJO) - 1;
-    const y1 = Math.floor(v.bottom / ZONA_DIBUJO) + 1;
-    for (const g of this.capas.values()) {
-      g.setVisible(g.zonaX >= x0 && g.zonaX <= x1 && g.zonaY >= y0 && g.zonaY <= y1);
+  // LAS IMAGENES SUELTAS POR ZONAS (farolas, semaforos, tejados). Phaser no
+  // descarta por su cuenta lo que queda fuera de la camara: con la ciudad
+  // grande pintaba trece mil imagenes de farola en cada fotograma. Metidas en
+  // una Layer por zona, apagar la zona las apaga todas de una vez.
+  capaObjetos(depth, x, y) {
+    if (!this.capasObj) this.capasObj = new Map();
+    const rx = Math.floor(x / ZONA_DIBUJO);
+    const ry = Math.floor(y / ZONA_DIBUJO);
+    const clave = `${depth}|${rx}|${ry}`;
+    let l = this.capasObj.get(clave);
+    if (!l) {
+      l = this.add.layer().setDepth(depth);
+      l.zonaX = rx;
+      l.zonaY = ry;
+      this.capasObj.set(clave, l);
     }
+    return l;
+  },
+
+  // enciende solo las zonas que pisa lo que se ve, mas un margen corto (no
+  // una zona entera a cada lado: eran 35 capas encendidas a la vez)
+  actualizarCapas() {
+    if (!this.capas && !this.capasObj) return;
+    const v = this.cameras.main.worldView;
+    const M = 320;
+    const x0 = Math.floor((v.x - M) / ZONA_DIBUJO);
+    const x1 = Math.floor((v.right + M) / ZONA_DIBUJO);
+    const y0 = Math.floor((v.y - M) / ZONA_DIBUJO);
+    const y1 = Math.floor((v.bottom + M) / ZONA_DIBUJO);
+    const clave = `${x0},${x1},${y0},${y1}`;
+    if (clave === this.zonasEncendidas) return;
+    this.zonasEncendidas = clave;
+    const ver = (g) => g.setVisible(g.zonaX >= x0 && g.zonaX <= x1 && g.zonaY >= y0 && g.zonaY <= y1);
+    if (this.capas) for (const g of this.capas.values()) ver(g);
+    if (this.capasObj) for (const l of this.capasObj.values()) ver(l);
   },
 
   pintarRect(x, y, w, h, tint, depth, alpha = 1) {
@@ -116,6 +140,7 @@ export const PintarCiudad = {
   // sueltas, y un blitter pinta miles de copias de la misma textura como si
   // fuera un solo objeto.
   drawCrosswalks() {
+    if (this.map.graph) return this.pintarMarcasGrandes();
     const m = this.map;
     const bh = this.add.blitter(0, 0, 'cebra-h').setDepth(-1900);
     const bv = this.add.blitter(0, 0, 'cebra-v').setDepth(-1900);
@@ -134,6 +159,53 @@ export const PintarCiudad = {
           ? bh.create(cx - anchoH / 2, cy - altoH / 2)
           : bv.create(cx - anchoV / 2, cy - altoV / 2);
         bob.alpha = 0.42;
+      }
+    }
+  },
+
+  // LA CIUDAD GRANDE: las calles van en cualquier angulo, asi que la linea
+  // central y las cebras ya no pueden ser casillas (LINE_H/LINE_V, cebra-h y
+  // cebra-v). Se pintan en las capas de dibujo por zonas, como los
+  // edificios: rectangulos girados con fillPoints.
+  pintarMarcasGrandes() {
+    const { nodos, tramos } = this.map.graph;
+    const rect = (cx, cy, ux, uy, largo, ancho, color, alpha) => {
+      const g = this.capaDibujo(-1900, cx, cy);
+      const lx = ux * largo / 2; const ly = uy * largo / 2;
+      const ax = -uy * ancho / 2; const ay = ux * ancho / 2;
+      g.fillStyle(color, alpha);
+      g.fillPoints([
+        { x: cx - lx - ax, y: cy - ly - ay }, { x: cx + lx - ax, y: cy + ly - ay },
+        { x: cx + lx + ax, y: cy + ly + ay }, { x: cx - lx + ax, y: cy - ly + ay },
+      ], true);
+    };
+
+    // la linea central, a trazos, sin meterse en los cruces
+    const TRAZO = 18;
+    const HUECO = 16;
+    for (const t of tramos) {
+      const A = nodos[t.a]; const B = nodos[t.b];
+      const ax = A.x * TILE; const ay = A.y * TILE;
+      const dx = B.x * TILE - ax; const dy = B.y * TILE - ay;
+      const largo = Math.hypot(dx, dy);
+      if (largo < 1) continue;
+      const ux = dx / largo; const uy = dy / largo;
+      const libre = (n) => (n.grado >= 3 || n.grado === 1 ? (t.ancho / 2 + 2.5) * TILE : 0);
+      const d0 = libre(A);
+      const d1 = largo - libre(B);
+      for (let d = d0; d + TRAZO <= d1; d += TRAZO + HUECO) {
+        const m = d + TRAZO / 2;
+        rect(ax + ux * m, ay + uy * m, ux, uy, TRAZO, 2, 0x9a8c4a, 0.85);
+      }
+    }
+
+    // las cebras: franjas en el sentido de la marcha, repartidas de lado a
+    // lado de la calzada
+    for (const c of this.map.cebras) {
+      const ux = Math.cos(c.ang); const uy = Math.sin(c.ang);
+      const ancho = c.ancho * TILE;
+      for (let s = -ancho / 2 + 10; s <= ancho / 2 - 10; s += 16) {
+        rect(c.x * TILE - uy * s, c.y * TILE + ux * s, ux, uy, 52, 8, 0xd8d4c8, 0.42);
       }
     }
   },
@@ -185,8 +257,8 @@ export const PintarCiudad = {
       // si no, el rectangulo de color de siempre.
       const claveTecho = `techo-${b.zone}`;
       if (this.textures.exists(claveTecho)) {
-        this.add.image(b.px, b.py, claveTecho)
-          .setDisplaySize(b.pw, b.ph).setDepth(-1200);
+        this.capaObjetos(-1199, b.px, b.py).add(this.add.image(b.px, b.py, claveTecho)
+          .setDisplaySize(b.pw, b.ph).setDepth(-1200));
         b.conFoto = true;
       } else {
         block(b.px, b.py, b.pw, b.ph, b.color, -1200);
@@ -286,6 +358,7 @@ export const PintarCiudad = {
         // importa es distinguir de un vistazo por donde se puede conducir.
         if (this.map.roadMask[this.map.idx(tx, ty)] === 1) c = [126, 132, 142];
         else if (tile === T.WATER) c = [26, 58, 78];
+        else if (tile === T.ROCK) c = [70, 62, 52];
         else if (this.map.isSolidTile(tx, ty)) c = [58, 54, 50];
         else if (tile === T.SIDEWALK) c = [86, 90, 98];
         else c = [40, 45, 48];
@@ -954,10 +1027,31 @@ export const PintarCiudad = {
     // Dos por tramo y alternando la acera, en vez de tres a cada lado. Antes
     // eran 310 farolas identicas y alineadas: conduciendo se veian veinte a
     // la vez, como los dientes de un peine.
+    // Con la ciudad grande los tramos van de cruce a cruce o son trocitos
+    // de curva: se reparten por DISTANCIA (una cada ~330 px de calle) y nunca
+    // dos a menos de 240 px, en vez de dos fijas por tramo.
     let turno = 0;
+    const SEP = 330;
+    const cubos = new Map();
+    const hayCerca = (x, y) => {
+      const cx = Math.floor(x / 256); const cy = Math.floor(y / 256);
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        for (const p of cubos.get(`${cx + dx},${cy + dy}`) || []) if (Math.hypot(p.x - x, p.y - y) < 240) return true;
+      }
+      return false;
+    };
+    const apuntar = (p) => {
+      const k = `${Math.floor(p.x / 256)},${Math.floor(p.y / 256)}`;
+      if (!cubos.has(k)) cubos.set(k, []);
+      cubos.get(k).push(p);
+    };
     for (const e of this.net.edges) {
       if (e.from > e.to) continue;
-      for (const t of [0.3, 0.72]) {
+      const n = Math.max(1, Math.round(e.length / SEP));
+      const ts = this.map.graph
+        ? Array.from({ length: n }, (_, i) => (i + 0.5) / n)
+        : [0.3, 0.72];
+      for (const t of ts) {
         const lane = this.net.pointAlong(e, t);
         // pointAlong da el punto del CARRIL; hay que volver al eje de la calle
         const cx = lane.x - e.rx * LANE_OFFSET;
@@ -974,7 +1068,10 @@ export const PintarCiudad = {
           const puntaX = x + Math.cos(haciaCalle) * 17;
           const puntaY = y + Math.sin(haciaCalle) * 17;
           if (this.map.isRoadPoint(puntaX, puntaY)) continue;
-          puntos.push({ x, y, haciaCalle });
+          if (hayCerca(x, y)) break;
+          const p = { x, y, haciaCalle };
+          apuntar(p);
+          puntos.push(p);
           break; // una por posicion: si cabe en la acera preferida, ahi se queda
         }
       }

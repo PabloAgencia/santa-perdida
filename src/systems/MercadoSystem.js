@@ -67,7 +67,7 @@ export class MercadoSystem {
 
       const punto = {
         x: puerta.x, y: puerta.y, edificio: b, zona,
-        nombre: CITY.zones[zona]?.label || zona,
+        nombre: this.map.cfg.zones[zona]?.label || zona,
         demanda: 0.8 + Math.random() * 0.5,
         refresco: Phaser.Math.Between(REFRESCO_ENTRE[0], REFRESCO_ENTRE[1]),
       };

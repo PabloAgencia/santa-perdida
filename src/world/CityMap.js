@@ -1,5 +1,6 @@
 import { T, CITY } from '../config/city.js';
 import { TILE } from '../config/balance.js';
+import { GeneradorCiudad } from './GeneradorCiudad.js';
 
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -142,6 +143,8 @@ export class CityMap {
   // ---------- generacion ----------
 
   generate() {
+    // la ciudad grande (config/ciudadGrande.js): la traza el generador
+    if (this.cfg.distritos) return this._generarGrande();
     const c = this.cfg;
 
     this.fillRect(0, 0, this.w, this.h, T.GRASS);
@@ -159,6 +162,79 @@ export class CityMap {
     this._collectSpots();
 
     return this;
+  }
+
+  // LA CIUDAD GRANDE. El generador hace el terreno, el grafo de calles, las
+  // aceras, las cebras y los edificios; aqui se pasa todo a lo que el resto
+  // del juego ya sabe leer (rejillas, buildings, landmarks, spots).
+  _generarGrande() {
+    const g = new GeneradorCiudad(this.cfg).generar();
+    this.generador = g;
+    this.grid.set(g.grid);
+    this.roadMask.set(g.roadMask);
+    this.crossMask.set(g.crossMask);
+    this.puenteMask = g.puenteMask;
+    // el grafo de calles: RoadNetwork lo convierte en carriles, y
+    // PintarCiudad dibuja con el las lineas y las cebras
+    this.graph = { nodos: g.nodos, tramos: g.tramos };
+    this.cebras = g.cebras;
+
+    // el barrio de cada casilla. El nombre de zona (residencial, centro...)
+    // es lo que leen bandas, peatones y misiones; el nombre propio del
+    // barrio (Casco Viejo, Los Pinares...) va aparte, para el HUD.
+    this.distritoGrid = new Uint8Array(this.w * this.h);
+    const ids = this.cfg.distritos.map((d) => this.zoneId(d.zona));
+    for (let i = 0; i < this.zoneGrid.length; i++) {
+      const d = g.distrito[i];
+      if (!d) continue;
+      this.zoneGrid[i] = ids[d - 1];
+      this.distritoGrid[i] = d;
+    }
+
+    for (const e of g.edificios) {
+      const b = this._addBuilding(e.tx, e.ty, e.w, e.h, e.zona);
+      b.distrito = e.distrito;
+    }
+
+    // el escondite: la casa con fachada mas cerca del centro de su barrio
+    const H = this.cfg.escondite;
+    let mejor = null;
+    let mejorD = Infinity;
+    for (const b of this.buildings) {
+      if (b.distrito !== H.distrito) continue;
+      const d = Math.hypot(b.tx + b.w / 2 - H.x, b.ty + b.h / 2 - H.y);
+      if (d < mejorD) { mejorD = d; mejor = b; }
+    }
+    if (mejor) {
+      this.hideout = mejor;
+      mejor.isHideout = true;
+      mejor.color = 0x6b4a2f;
+    }
+
+    // los landmarks con su sitio ya buscado; _placeLandmarks hace el resto
+    // igual que con la ciudad de antes
+    this.cfg = { ...this.cfg, landmarks: g.landmarks };
+    this._placeLandmarks();
+
+    // macizo: el agua (no los puentes, que ya son calle, ni los muelles que
+    // acaba de poner la grua o el faro), el monte y los edificios. Va
+    // DESPUES de los landmarks por eso mismo: el muelle tapa agua.
+    for (let i = 0; i < this.grid.length; i++) {
+      if (this.grid[i] === T.WATER || this.grid[i] === T.ROCK) this.solid[i] = 1;
+    }
+    for (const b of this.buildings) this.markSolidRect(b.tx, b.ty, b.w, b.h);
+    this._collectSpots();
+    return this;
+  }
+
+  // el nombre propio del barrio en un punto (en pixeles)
+  distritoAt(px, py) {
+    if (!this.distritoGrid) return null;
+    const tx = Math.floor(px / TILE);
+    const ty = Math.floor(py / TILE);
+    if (!this.inBounds(tx, ty)) return null;
+    const d = this.distritoGrid[this.idx(tx, ty)];
+    return d ? this.cfg.distritos[d - 1].nombre : null;
   }
 
   _placeLandmarks() {

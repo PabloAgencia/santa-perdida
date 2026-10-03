@@ -38,7 +38,7 @@ export class JusticieroSystem {
     let mejor = null;
     let mejorDist = Infinity;
     for (let i = 0; i < 60; i++) {
-      const edge = this.net.randomEdge();
+      const edge = this.net.edgeCerca(playerPos.x, playerPos.y, SPAWN_MIN, SPAWN_MAX);
       const p = this.net.pointAlong(edge, 0.2 + Math.random() * 0.6);
       const d = Phaser.Math.Distance.Between(p.x, p.y, playerPos.x, playerPos.y);
       if (d < SPAWN_MIN || d > SPAWN_MAX) continue;
@@ -56,7 +56,7 @@ export class JusticieroSystem {
     v.encendido = true;
     this.scene.vehicles.push(v);
 
-    this.fugitivo = { vehicle: v, edge: this.net.randomEdge(), gracia: GRACIA };
+    this.fugitivo = { vehicle: v, edge: mejor.edge, gracia: GRACIA };
     this.aro.setVisible(true);
     EventBus.emit(EVT.NOTIFY, { text: 'Fugitivo localizado. Dale alcance.', tone: 'objective' });
     return this.fugitivo;

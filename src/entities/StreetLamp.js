@@ -47,6 +47,11 @@ export class StreetLamp {
       .setTint(0xf2dfa8)
       .setRotation(angleHaciaCalle)
       .setDepth(-868);
+
+    // en la capa de su zona, que se apaga entera cuando la camara esta lejos
+    if (scene.capaObjetos) {
+      scene.capaObjetos(-870, x, y).add([this.light, this.sombra, this.arm, this.base, this.head]);
+    }
   }
 
   romper(desdeX, desdeY) {

@@ -9,11 +9,79 @@ export const LANE_OFFSET = 36;
 // necesidad de calcular rutas: al llegar a un cruce eligen salida.
 
 export class RoadNetwork {
-  constructor(cfg = CITY) {
+  constructor(cfg = CITY, map = null) {
     this.cfg = cfg;
     this.nodes = [];
     this.edges = [];
-    this.build();
+    if (map && map.graph) this.desdeGrafo(map.graph);
+    else this.build();
+    this.indexar();
+  }
+
+  // LOS TRAMOS POR CUBOS. Con la ciudad grande hay miles de tramos, y
+  // "sortear uno cualquiera y ver si cae cerca del jugador" ya casi nunca
+  // acierta (el trafico se quedaba vacio). Cada tramo se apunta en los cubos
+  // de 512 px que pisa su recorrido.
+  indexar() {
+    this.CUBO = 512;
+    this.cubos = new Map();
+    for (const e of this.edges) {
+      const a = this.entryPoint(e);
+      const b = this.exitPoint(e);
+      const pasos = Math.max(1, Math.ceil(e.length / (this.CUBO / 2)));
+      const vistos = new Set();
+      for (let i = 0; i <= pasos; i++) {
+        const x = a.x + (b.x - a.x) * (i / pasos);
+        const y = a.y + (b.y - a.y) * (i / pasos);
+        const k = `${Math.floor(x / this.CUBO)},${Math.floor(y / this.CUBO)}`;
+        if (vistos.has(k)) continue;
+        vistos.add(k);
+        if (!this.cubos.has(k)) this.cubos.set(k, []);
+        this.cubos.get(k).push(e);
+      }
+    }
+  }
+
+  // los tramos que pasan a menos de `radio` px (por cubos: aproximado)
+  edgesCerca(x, y, radio) {
+    const r = Math.ceil(radio / this.CUBO);
+    const cx = Math.floor(x / this.CUBO);
+    const cy = Math.floor(y / this.CUBO);
+    const out = new Set();
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        for (const e of this.cubos.get(`${cx + dx},${cy + dy}`) || []) out.add(e);
+      }
+    }
+    return [...out];
+  }
+
+  // Un tramo al azar cuyo centro quede entre `min` y `max` px de (x, y), para
+  // hacer aparecer coches fuera de la vista pero no en la otra punta. Si no
+  // hay ninguno, uno cualquiera (como antes).
+  edgeCerca(x, y, min, max) {
+    const lista = this.edgesCerca(x, y, max).filter((e) => {
+      const p = this.pointAlong(e, 0.5);
+      const d = Math.hypot(p.x - x, p.y - y);
+      return d >= min && d <= max;
+    });
+    if (lista.length === 0) return this.randomEdge();
+    return lista[Math.floor(Math.random() * lista.length)];
+  }
+
+  // LA CIUDAD GRANDE: el grafo ya viene hecho del generador (casillas con
+  // decimales). Cada tramo da dos carriles, uno por sentido.
+  desdeGrafo(graph) {
+    for (const n of graph.nodos) {
+      this.nodes.push({
+        id: this.nodes.length, tx: Math.floor(n.x), ty: Math.floor(n.y),
+        x: n.x * TILE, y: n.y * TILE, out: [],
+      });
+    }
+    for (const t of graph.tramos) {
+      this.addEdge(t.a, t.b);
+      this.addEdge(t.b, t.a);
+    }
   }
 
   build() {
@@ -156,7 +224,11 @@ export class RoadNetwork {
   edgeMasCercano(x, y, dirX = 0, dirY = 0) {
     let mejor = null;
     let mejorCoste = Infinity;
-    for (const e of this.edges) {
+    // primero los de alrededor; si no hay ninguno (lejos de toda calle),
+    // todos, como antes
+    let lista = this.cubos ? this.edgesCerca(x, y, 600) : this.edges;
+    if (lista.length === 0) lista = this.edges;
+    for (const e of lista) {
       const p = this.progreso(e, x, y);
       if (p.t < -0.1 || p.t > 1.1) continue;
       // un tramo que va al reves de como mira el coche se penaliza fuerte
@@ -186,7 +258,10 @@ export class RoadNetwork {
     const pesos = pool.map((id) => {
       const e = this.edges[id];
       const recto = e.dx * edge.dx + e.dy * edge.dy;   // 1 seguir, 0 girar
-      const peso = recto > 0.7 ? 6 : 1;
+      let peso = recto > 0.7 ? 6 : 1;
+      // una calle sin salida solo se coge de vez en cuando: hay que dar la
+      // vuelta al fondo y eso atasca
+      if (this.nodes[e.to].out.length === 1) peso *= 0.05;
       total += peso;
       return peso;
     });
