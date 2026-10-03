@@ -178,6 +178,7 @@ export class CityMap {
     // PintarCiudad dibuja con el las lineas y las cebras
     this.graph = { nodos: g.nodos, tramos: g.tramos };
     this.cebras = g.cebras;
+    this.campos = g.campos;
 
     // el barrio de cada casilla. El nombre de zona (residencial, centro...)
     // es lo que leen bandas, peatones y misiones; el nombre propio del

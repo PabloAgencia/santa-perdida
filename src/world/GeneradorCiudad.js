@@ -152,6 +152,7 @@ export class GeneradorCiudad {
     this.marcarCebras();
     this.reservarLandmarks();
     this.levantarEdificios();
+    this.afueras();
     return this;
   }
 
@@ -915,6 +916,67 @@ export class GeneradorCiudad {
             if (this.roadMask[i]) this.crossMask[i] = 1;
           }
         }
+      }
+    }
+  }
+
+  // ---------- 10. las afueras: granjas y campos ----------
+  //
+  // En el campo no hay manzanas: alguna casa de labor pegada a la carretera
+  // (cada 40 casillas de carretera, mas o menos) y campos de cultivo en lo
+  // que queda libre. Los campos solo se dibujan; no estorban.
+  afueras() {
+    const rngA = mulberry32(this.cfg.seed + 777);
+    this.campos = [];
+    const libre = (x, y) => {
+      if (!this.dentro(x, y)) return false;
+      const i = this.idx(x, y);
+      return this.tierra[i] && !this.roca[i] && !this.roadMask[i] && !this.ocupado[i] && this.grid[i] === T.GRASS;
+    };
+    const rectLibre = (x, y, w, h, margen) => {
+      for (let yy = y - margen; yy < y + h + margen; yy++) {
+        for (let xx = x - margen; xx < x + w + margen; xx++) if (!libre(xx, yy)) return false;
+      }
+      return true;
+    };
+    const marcar = (x, y, w, h, v) => {
+      for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) this.ocupado[this.idx(xx, yy)] = v;
+    };
+    // las casas de labor, a 6 casillas del eje de la carretera
+    for (const t of this.tramos) {
+      const A = this.nodos[t.a]; const B = this.nodos[t.b];
+      const largo = Math.hypot(B.x - A.x, B.y - A.y);
+      // un intento por cada 40 casillas de carretera; los trozos de curva son
+      // mas cortos, asi que en ellos el intento sale con su parte de suerte
+      const n = Math.max(1, Math.floor(largo / 40));
+      const suerte = Math.min(1, largo / 40) * 0.55;
+      for (let k = 0; k < n; k++) {
+        if (rngA() > suerte) continue;
+        const f = (k + 0.5) / n;
+        const mx = A.x + (B.x - A.x) * f; const my = A.y + (B.y - A.y) * f;
+        const d = this.distritoEn(mx, my);
+        if (!d || !d.rural) continue;
+        const ux = (B.x - A.x) / largo; const uy = (B.y - A.y) / largo;
+        const lado = rngA() < 0.5 ? 1 : -1;
+        const w = 4 + Math.floor(rngA() * 2); const h = 3 + Math.floor(rngA() * 2);
+        const x = Math.round(mx - uy * 6 * lado - w / 2);
+        const y = Math.round(my + ux * 6 * lado - h / 2);
+        if (!rectLibre(x, y, w, h, 1)) continue;
+        this.edificios.push({ tx: x, ty: y, w, h, zona: d.zona, distrito: d.nombre });
+        marcar(x, y, w, h, 2);
+        for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) this.grid[this.idx(xx, yy)] = T.ALLEY;
+      }
+    }
+    // los campos: rectangulos en lo que queda, a 2 casillas de todo
+    for (let y = 2; y < this.h - 16; y += 3) {
+      for (let x = 2; x < this.w - 22; x += 3) {
+        const d = this.distritoEn(x, y);
+        if (!d || !d.rural || !libre(x, y)) continue;
+        const w = 10 + Math.floor(rngA() * 12);
+        const h = 8 + Math.floor(rngA() * 8);
+        if (!rectLibre(x, y, w, h, 2)) continue;
+        this.campos.push({ x, y, w, h, tipo: Math.floor(rngA() * 3), vertical: rngA() < 0.5 });
+        marcar(x, y, w, h, 5);
       }
     }
   }

@@ -128,7 +128,7 @@ export const PintarCiudad = {
     const rt = this.add.renderTexture(ox, oy, Z + S * 2, Z + S * 2).setOrigin(0, 0).setDepth(-1940);
     // la zona y sus ocho vecinas: un trozo de calle asignado a la de al lado
     // puede asomar dentro de esta, y la imagen recorta lo que se sale
-    for (const pasada of ['fondo', 'bordillo', 'asfalto', 'marcas']) {
+    for (const pasada of ['terreno', 'fondo', 'bordillo', 'asfalto', 'marcas']) {
       for (let dy = -1; dy <= 1; dy++) {
         for (let dx = -1; dx <= 1; dx++) {
           const g = this.callesG.get(`${pasada}|${zx + dx}|${zy + dy}`);
@@ -144,18 +144,34 @@ export const PintarCiudad = {
     if (!this.callesRT) this.callesRT = new Map();
     const v = this.cameras.main.worldView;
     const Z = ZONA_CALLE;
-    const M = 260;
+    // se hornea con margen, antes de que la zona entre en pantalla, y COMO
+    // MUCHO UNA por fotograma (cada una cuesta unos 35 ms: tres de golpe al
+    // cruzar una esquina eran un tiron). Primero la que tiene la camara
+    // encima, luego las demas.
+    const M = 560;
     const x0 = Math.floor((v.x - M) / Z); const x1 = Math.floor((v.right + M) / Z);
     const y0 = Math.floor((v.y - M) / Z); const y1 = Math.floor((v.bottom + M) / Z);
     const clave = `${x0},${x1},${y0},${y1}`;
-    if (clave === this.callesEncendidas) return;
+    if (clave === this.callesEncendidas && this.callesCompletas) return;
     this.callesEncendidas = clave;
+    const faltan = [];
     for (let zy = y0; zy <= y1; zy++) {
-      for (let zx = x0; zx <= x1; zx++) {
-        const k = `${zx},${zy}`;
-        if (!this.callesRT.has(k)) this.callesRT.set(k, this.hornearZonaCalle(zx, zy));
-      }
+      for (let zx = x0; zx <= x1; zx++) if (!this.callesRT.has(`${zx},${zy}`)) faltan.push([zx, zy]);
     }
+    const cx = v.centerX / Z; const cy = v.centerY / Z;
+    faltan.sort((a, b) => Math.hypot(a[0] + 0.5 - cx, a[1] + 0.5 - cy) - Math.hypot(b[0] + 0.5 - cx, b[1] + 0.5 - cy));
+    // al arrancar (o tras un salto largo, que deja la camara en un sitio sin
+    // nada horneado) se hacen las que se ven de una vez: ahi hay fundido
+    const deGolpe = !faltan.length ? 0 : faltan.filter(([zx, zy]) => {
+      const vx0 = Math.floor(v.x / Z); const vx1 = Math.floor(v.right / Z);
+      const vy0 = Math.floor(v.y / Z); const vy1 = Math.floor(v.bottom / Z);
+      return zx >= vx0 && zx <= vx1 && zy >= vy0 && zy <= vy1;
+    }).length;
+    const cuantas = deGolpe >= 2 ? deGolpe : 1;
+    for (const [zx, zy] of faltan.slice(0, cuantas)) {
+      this.callesRT.set(`${zx},${zy}`, this.hornearZonaCalle(zx, zy));
+    }
+    this.callesCompletas = faltan.length <= cuantas;
     // las que quedan a mas de una zona de lo que se ve, fuera
     for (const [k, rt] of this.callesRT) {
       const [zx, zy] = k.split(',').map(Number);
@@ -216,7 +232,104 @@ export const PintarCiudad = {
   // el bordillo. Los cruces y las curvas se redondean con un circulo en cada
   // nodo. Los tramos largos se trocean para que cada trozo caiga en la capa
   // de su zona (si no, al apagar una zona desapareceria media calle).
+  // EL TERRENO DE LA CIUDAD GRANDE, horneado con las calles (va en la
+  // primera pasada, por debajo del asfalto):
+  //   - la sierra con relieve (sombra al sur de cada borde, luz al norte),
+  //     pinos y peñascos
+  //   - espuma donde el agua toca tierra
+  //   - sombrillas y toallas en la arena, menos en el puerto y el poligono
+  //   - los campos de cultivo de las afueras, a surcos
+  pintarTerreno() {
+    const m = this.map;
+    const rnd = buildingRng(7, 11);
+    const capa = (x, y) => this.capaCalle('terreno', x, y);
+    const esRoca = (tx, ty) => m.inBounds(tx, ty) && m.getTile(tx, ty) === T.ROCK;
+    const cercaDeCalle = (tx, ty) => {
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        if (m.inBounds(tx + dx, ty + dy) && m.roadMask[m.idx(tx + dx, ty + dy)]) return true;
+      }
+      return false;
+    };
+    const COLORES = [0xd9584a, 0x4a8fd9, 0xe8b54a, 0x49b39c, 0xe6e1d4];
+    for (let ty = 0; ty < m.h; ty++) {
+      for (let tx = 0; tx < m.w; tx++) {
+        const tile = m.getTile(tx, ty);
+        const x = tx * TILE; const y = ty * TILE;
+        if (tile === T.ROCK) {
+          const g = capa(x, y);
+          if (!esRoca(tx, ty + 1)) { g.fillStyle(0x1c1814, 0.75); g.fillRect(x, y + TILE - 10, TILE, 10); }
+          if (!esRoca(tx, ty - 1)) { g.fillStyle(0x5e5244, 0.8); g.fillRect(x, y, TILE, 4); }
+          if (!esRoca(tx + 1, ty)) { g.fillStyle(0x231e19, 0.5); g.fillRect(x + TILE - 5, y, 5, TILE); }
+          const r = rnd();
+          if (cercaDeCalle(tx, ty)) continue;
+          if (r < 0.24) {
+            const rad = 9 + rnd() * 7;
+            const cx = x + 16 + (rnd() - 0.5) * 10; const cy = y + 16 + (rnd() - 0.5) * 10;
+            g.fillStyle(0x05060a, 0.35); g.fillCircle(cx + 4, cy + 5, rad);
+            g.fillStyle(0x1f2e1e, 1); g.fillCircle(cx, cy, rad);
+            g.fillStyle(0x2f4630, 1); g.fillCircle(cx - 2, cy - 2, rad * 0.55);
+          } else if (r < 0.31) {
+            const rad = 5 + rnd() * 7;
+            const cx = x + 16 + (rnd() - 0.5) * 12; const cy = y + 16 + (rnd() - 0.5) * 12;
+            g.fillStyle(0x05060a, 0.3); g.fillCircle(cx + 3, cy + 4, rad);
+            g.fillStyle(0x5b5246, 1); g.fillCircle(cx, cy, rad);
+            g.fillStyle(0x70665a, 1); g.fillCircle(cx - rad * 0.3, cy - rad * 0.3, rad * 0.45);
+          } else if (r < 0.42) {
+            g.fillStyle(rnd() < 0.5 ? 0x463d33 : 0x2e2822, 0.8);
+            g.fillRect(x + rnd() * 16, y + rnd() * 16, 8 + rnd() * 10, 4 + rnd() * 6);
+          }
+        } else if (tile === T.WATER) {
+          if (m.puenteMask && m.puenteMask[m.idx(tx, ty)]) continue;
+          const tierra = (dx, dy) => m.inBounds(tx + dx, ty + dy)
+            && m.getTile(tx + dx, ty + dy) !== T.WATER && !m.roadMask[m.idx(tx + dx, ty + dy)];
+          const g = capa(x, y);
+          g.fillStyle(0x6f9aac, 0.45);
+          if (tierra(0, -1)) g.fillRect(x, y, TILE, 5);
+          if (tierra(0, 1)) g.fillRect(x, y + TILE - 5, TILE, 5);
+          if (tierra(-1, 0)) g.fillRect(x, y, 5, TILE);
+          if (tierra(1, 0)) g.fillRect(x + TILE - 5, y, 5, TILE);
+        } else if (tile === T.SAND) {
+          const zona = m.zoneNames[m.zoneGrid[m.idx(tx, ty)]];
+          if (zona === 'puerto' || zona === 'industrial') continue;
+          if (rnd() > 0.035) continue;
+          const g = capa(x, y);
+          const cx = x + 16; const cy = y + 16;
+          // la toalla, y encima la sombrilla con su sombra y sus gajos
+          g.fillStyle(COLORES[Math.floor(rnd() * COLORES.length)], 0.9);
+          g.fillRect(cx + 4, cy - 2, 9, 18);
+          g.fillStyle(0x05060a, 0.3); g.fillCircle(cx + 5, cy + 6, 13);
+          g.fillStyle(COLORES[Math.floor(rnd() * COLORES.length)], 1); g.fillCircle(cx, cy, 13);
+          g.fillStyle(0xf2efe6, 1);
+          for (let k = 0; k < 4; k++) {
+            const a0 = (k / 4) * Math.PI * 2;
+            g.slice(cx, cy, 13, a0, a0 + Math.PI / 4, false);
+            g.fillPath();
+          }
+          g.fillStyle(0x2a2e35, 1); g.fillCircle(cx, cy, 2);
+        }
+      }
+    }
+    // los campos de cultivo, a surcos (troceados en cuadros de 512 px para
+    // que cada trozo caiga en su zona)
+    const TIPOS = [[0x4f4a2a, 0x3f3b21], [0x3e5226, 0x2f401c], [0x5e4a2e, 0x4b3a24]];
+    for (const c of m.campos || []) {
+      const [base, surco] = TIPOS[c.tipo];
+      const x = c.x * TILE; const y = c.y * TILE; const w = c.w * TILE; const h = c.h * TILE;
+      for (let yy = y; yy < y + h; yy += 512) {
+        for (let xx = x; xx < x + w; xx += 512) {
+          const ww = Math.min(512, x + w - xx); const hh = Math.min(512, y + h - yy);
+          const g = capa(xx + ww / 2, yy + hh / 2);
+          g.fillStyle(base, 1); g.fillRect(xx, yy, ww, hh);
+          g.fillStyle(surco, 1);
+          if (c.vertical) for (let k = xx + 4; k < xx + ww; k += 12) g.fillRect(k, yy, 4, hh);
+          else for (let k = yy + 4; k < yy + hh; k += 12) g.fillRect(xx, k, ww, 4);
+        }
+      }
+    }
+  },
+
   pintarCallesVector() {
+    this.pintarTerreno();
     const { nodos, tramos } = this.map.graph;
     const m = this.map;
     const COLOR = {
