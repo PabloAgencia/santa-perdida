@@ -96,6 +96,25 @@ export class UIScene extends Phaser.Scene {
 
     this.buildBigMessage(w, h);
 
+    // EL NOMBRE DEL BARRIO al entrar en uno, abajo a la derecha, y se va solo
+    this.distritoTexto = this.add.text(w - 26, h - 74, '', {
+      fontFamily: FONT, stroke: '#05060a', strokeThickness: 6,
+      fontSize: '38px', color: '#e6e1d4',
+    }).setOrigin(1, 1).setAlpha(0).setDepth(50);
+    this.onDistrito = ({ nombre }) => {
+      this.tweens.killTweensOf(this.distritoTexto);
+      this.distritoTexto.setText(nombre).setAlpha(0);
+      this.tweens.chain({
+        targets: this.distritoTexto,
+        tweens: [
+          { alpha: 1, duration: 350 },
+          { alpha: 1, duration: 2300 },
+          { alpha: 0, duration: 700 },
+        ],
+      });
+    };
+    EventBus.on(EVT.DISTRITO, this.onDistrito);
+
     this.onHud = (d) => this.updateHud(d);
     this.onMoney = (d) => this.setMoney(d.money);
     this.onNotify = (n) => this.notify(n);
@@ -110,6 +129,7 @@ export class UIScene extends Phaser.Scene {
       EventBus.off(EVT.MONEY_CHANGED, this.onMoney);
       EventBus.off(EVT.NOTIFY, this.onNotify);
       EventBus.off(EVT.BIG_MESSAGE, this.onBig);
+      EventBus.off(EVT.DISTRITO, this.onDistrito);
     });
   }
 

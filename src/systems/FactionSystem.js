@@ -15,6 +15,13 @@ export class FactionSystem {
   }
 
   update(dt, x, y) {
+    // el barrio por su nombre (Casco Viejo, Los Pinares...), como el letrero
+    // de San Andreas al cambiar de zona
+    const distrito = this.map.distritoAt ? this.map.distritoAt(x, y) : null;
+    if (distrito && distrito !== this.distrito) {
+      this.distrito = distrito;
+      EventBus.emit(EVT.DISTRITO, { nombre: distrito });
+    }
     const owner = this.ownerAt(x, y);
     if (owner === this.current) return;
 

@@ -26,6 +26,7 @@ export const EVT = {
   PED_HIT: 'ped:hit',
   FACTION_CHANGED: 'faction:changed',
   TERRITORY_ENTERED: 'faction:territory',
+  DISTRITO: 'mapa:distrito',
   WANTED_CHANGED: 'wanted:changed',
   PLAYER_HURT: 'player:hurt',
   PLAYER_BUSTED: 'player:busted',

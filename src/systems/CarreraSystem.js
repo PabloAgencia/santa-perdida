@@ -19,6 +19,15 @@ const N_CARRERAS = 4;
 // con su cruce de salida, para que la medalla de una sea comparable).
 const TRAMOS_MIN = 22;
 const TRAMOS_MAX = 28;
+// LA CIUDAD GRANDE: alli una curva son muchos tramos cortos, asi que la
+// carrera se mide en DISTANCIA (lo que median 22-28 tramos de la cuadricula
+// de antes) y los puntos de control van solo en los cruces de verdad, o cada
+// 900 px si la curva es larga. `puntoEdge[k]` dice en que tramo acaba cada
+// punto, para poder comparar con los rivales, que van tramo a tramo.
+const DIST_MIN = 15000;
+const DIST_MAX = 21000;
+const PUNTO_MIN = 350;
+const PUNTO_MAX = 900;
 const SEGUNDOS_POR_GIRO = 1.1;     // lo que cuesta cada curva sobre la media
 const RIVALES = 3;
 const TIPOS_RIVAL = ['chinchorro', 'velagt', 'taxi', 'bastion', 'centella'];
@@ -83,14 +92,14 @@ export class CarreraSystem {
 
       const ruta = this.generarRuta(n);
       if (!ruta) continue;
-      const { puntos, edges, distancia, giros } = ruta;
+      const { puntos, edges, distancia, giros, puntoEdge, acum } = ruta;
 
       const id = `carrera-${Math.round(n.x)}-${Math.round(n.y)}`;
       const extra = giros * SEGUNDOS_POR_GIRO;
       const tOro = distancia / (VEL_MEDIA * RITMO_ORO) + extra;
       const tPlata = distancia / (VEL_MEDIA * RITMO_PLATA) + extra * 1.3;
       const tBronce = distancia / (VEL_MEDIA * RITMO_BRONCE) + extra * 1.7;
-      this.carreras.push({ id, x: n.x, y: n.y, puntos, edges, distancia, giros, tOro, tPlata, tBronce });
+      this.carreras.push({ id, x: n.x, y: n.y, puntos, edges, distancia, giros, tOro, tPlata, tBronce, puntoEdge, acum });
       this.pintar(n);
     }
   }
@@ -104,18 +113,30 @@ export class CarreraSystem {
       const salidas = nodoInicial.out;
       if (!salidas || salidas.length === 0) return null;
       let edge = this.net.edges[salidas[Math.floor(rnd() * salidas.length)]];
+      const grande = !!this.map.graph;
       const objetivo = TRAMOS_MIN + Math.floor(rnd() * (TRAMOS_MAX - TRAMOS_MIN + 1));
+      const distObjetivo = DIST_MIN + rnd() * (DIST_MAX - DIST_MIN);
       const visitados = new Set([edge.from]);
       const edges = [];
       const puntos = [];
+      const puntoEdge = [];
+      const acum = [];
       let distancia = 0;
+      let desdePunto = 0;
       let giros = 0;
 
-      while (edges.length < objetivo) {
+      while (grande ? distancia < distObjetivo && edges.length < 600 : edges.length < objetivo) {
+        acum.push(distancia);
         edges.push(edge);
-        puntos.push(this.net.exitPoint(edge));
         distancia += edge.length;
+        desdePunto += edge.length;
         visitados.add(edge.to);
+        const cruce = this.net.nodes[edge.to].out.length >= 3;
+        if (!grande || (cruce && desdePunto >= PUNTO_MIN) || desdePunto >= PUNTO_MAX) {
+          puntos.push(this.net.exitPoint(edge));
+          puntoEdge.push(edges.length - 1);
+          desdePunto = 0;
+        }
 
         const salidasNodo = this.net.nodes[edge.to].out
           .map((id) => this.net.edges[id])
@@ -136,7 +157,13 @@ export class CarreraSystem {
         if (elegida.dx * edge.dx + elegida.dy * edge.dy < 0.7) giros++;
         edge = elegida;
       }
-      if (edges.length >= TRAMOS_MIN) return { puntos, edges, distancia, giros };
+      // la meta siempre al final del ultimo tramo
+      if (puntoEdge[puntoEdge.length - 1] !== edges.length - 1) {
+        puntos.push(this.net.exitPoint(edges[edges.length - 1]));
+        puntoEdge.push(edges.length - 1);
+      }
+      const larga = grande ? distancia >= DIST_MIN : edges.length >= TRAMOS_MIN;
+      if (larga) return { puntos, edges, distancia, giros, puntoEdge, acum };
     }
     return null;
   }
@@ -314,7 +341,21 @@ export class CarreraSystem {
         v.vy = Math.sin(v.angle) * 40;
         r.parado = 0;
       }
-      v.update(dt, steerTo(v, goal.x, goal.y, r.limite, bloqueado && v.speed > 40));
+      // FRENAR ANTES DE LA CURVA. A tope en un giro cerrado se pasaba de
+      // largo, se abria 400 px fuera de la calle y daba la vuelta entera
+      // (medido en la ciudad grande, donde hay giros de mas de 100 grados).
+      // Se frena segun lo cerrado del giro y lo que falta para el cruce.
+      let limite = r.limite;
+      const sig = edges[r.idx + 1];
+      if (sig) {
+        const giro = Math.acos(Phaser.Math.Clamp(sig.dx * car.edge.dx + sig.dy * car.edge.dy, -1, 1));
+        if (giro > 0.6) {
+          const restante = Math.max(0, (1 - prog.t) * prog.largo);
+          const enCurva = Math.max(110, 360 - giro * 120);
+          limite = Math.min(limite, enCurva + restante * 0.55);
+        }
+      }
+      v.update(dt, steerTo(v, goal.x, goal.y, limite, bloqueado && v.speed > 40));
     }
     a.puesto = this.puestoActual();
   }
@@ -324,19 +365,24 @@ export class CarreraSystem {
     const a = this.activa;
     if (!a) return 1;
     const edges = a.def.edges;
-    const yo = a.checkpoint + (() => {
-      const p = a.puntos[Math.min(a.checkpoint, a.puntos.length - 1)];
-      const ant = a.puntos[a.checkpoint - 1] || this.net.entryPoint(edges[0]);
-      const tot = Phaser.Math.Distance.Between(ant.x, ant.y, p.x, p.y) || 1;
-      const falta = Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, p.x, p.y);
-      return Phaser.Math.Clamp(1 - falta / tot, 0, 1);
-    })();
+    const { puntoEdge, acum } = a.def;
+    // lo recorrido, en px de ruta: hasta el final del tramo del ultimo punto
+    // de control pasado, mas la parte del trecho hasta el siguiente
+    const finDe = (i) => acum[i] + edges[i].length;
+    const k = Math.min(a.checkpoint, a.puntos.length - 1);
+    const base = a.checkpoint > 0 ? finDe(puntoEdge[a.checkpoint - 1]) : 0;
+    const trecho = finDe(puntoEdge[k]) - base;
+    const p = a.puntos[k];
+    const ant = a.puntos[a.checkpoint - 1] || this.net.entryPoint(edges[0]);
+    const tot = Phaser.Math.Distance.Between(ant.x, ant.y, p.x, p.y) || 1;
+    const falta = Phaser.Math.Distance.Between(this.scene.player.x, this.scene.player.y, p.x, p.y);
+    const yo = base + trecho * Phaser.Math.Clamp(1 - falta / tot, 0, 1);
     let delante = 0;
     for (const r of a.rivales) {
-      let m = 99;
+      let m = Infinity;
       if (!r.fin) {
         const prog = this.net.progreso(edges[r.idx], r.v.x, r.v.y);
-        m = r.idx + Phaser.Math.Clamp(prog.t, 0, 1);
+        m = acum[r.idx] + edges[r.idx].length * Phaser.Math.Clamp(prog.t, 0, 1);
       }
       if (m > yo) delante++;
     }
