@@ -3655,3 +3655,12 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
 
   PENDIENTE DE PABLO: decir por cual empezamos. Cada uno de estos es una
   tanda entera, asi que no se arranca solo.
+
+
+[HECHO 3-oct, v52] CAMPO DE TIRO + HABILIDAD POR ARMA (IDEAS-3 puntos 2 y 3).
+  Campo de tiro: opcion en el mostrador de la armeria (TiroScene.js), 40 EUR
+  por ronda de 30 s, balas gratis, medallas con premio solo la primera vez por
+  arma, tope de 5 puntos de habilidad por arma y dia. Habilidad por arma:
+  GameState.habilidadArma (0-100), niveles 34 y 67, a 100 un 45% menos de
+  dispersion y un 20% mas de cadencia (config/weapons.js, HABILIDAD).
+  Probado por Pablo en local. Siguiente de IDEAS-3: robos de casas.
