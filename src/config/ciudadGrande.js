@@ -5,6 +5,9 @@
 import { CITY } from './city.js';
 
 export const CIUDAD_GRANDE = {
+  // que mapa es: va en la partida guardada. Si una partida se guardo en
+  // otro mapa, al cargarla vuelves a tu escondite (ver CityScene.create)
+  id: 'grande-1',
   width: 640,
   height: 512,
   seed: 20261003,
@@ -20,6 +23,11 @@ export const CIUDAD_GRANDE = {
     ancho: 8,
     puntos: [[300, -6], [292, 50], [262, 112], [280, 182], [242, 250], [262, 330], [246, 400], [255, 470], [252, 520]],
   },
+
+  // cuanto mas contenido repartido (hospitales, armerias, corazones...) que
+  // en la ciudad de antes: casi cuatro veces el area, pero no hace falta
+  // cuatro veces de todo para que no quede vacia
+  escalaContenido: 1.7,
 
   // tu escondite: la casa mas cerca de este punto de ese barrio
   escondite: { distrito: 'Lomas del Norte', x: 120, y: 150 },

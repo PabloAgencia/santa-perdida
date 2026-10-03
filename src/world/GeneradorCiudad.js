@@ -197,24 +197,38 @@ export class GeneradorCiudad {
       }
     }
 
-    // el rio corta la tierra (y la roca: baja del monte)
+    // el rio corta la tierra (y la roca: baja del monte). De paso se apunta
+    // que casillas quedan cerca del rio (para no confundir su agua con la
+    // del mar) y por donde pasa en cada fila (para saber en que orilla cae
+    // cada casilla sin recorrer el rio entero cada vez).
+    this.cercaRio = new Uint8Array(this.w * this.h);
+    this.rioX = new Float32Array(this.h).fill(NaN);
     for (let k = 0; k < this.rio.length - 1; k++) {
       const [ax, ay] = this.rio[k];
       const [bx, by] = this.rio[k + 1];
       const r = c.rio.ancho / 2;
-      const x0 = Math.floor(Math.min(ax, bx) - r - 1);
-      const x1 = Math.ceil(Math.max(ax, bx) + r + 1);
-      const y0 = Math.floor(Math.min(ay, by) - r - 1);
-      const y1 = Math.ceil(Math.max(ay, by) + r + 1);
+      const R = r + 3;
+      const x0 = Math.floor(Math.min(ax, bx) - R - 1);
+      const x1 = Math.ceil(Math.max(ax, bx) + R + 1);
+      const y0 = Math.floor(Math.min(ay, by) - R - 1);
+      const y1 = Math.ceil(Math.max(ay, by) + R + 1);
       for (let y = y0; y <= y1; y++) {
         for (let x = x0; x <= x1; x++) {
           if (!this.dentro(x, y)) continue;
-          if (distSeg(x + 0.5, y + 0.5, ax, ay, bx, by) > r) continue;
+          const d = distSeg(x + 0.5, y + 0.5, ax, ay, bx, by);
+          if (d > R) continue;
           const i = this.idx(x, y);
+          this.cercaRio[i] = 1;
+          if (d > r) continue;
           this.tierra[i] = 0;
           this.roca[i] = 0;
           this.grid[i] = T.WATER;
         }
+      }
+      for (let y = Math.max(0, Math.ceil(Math.min(ay, by))); y <= Math.min(this.h - 1, Math.floor(Math.max(ay, by))); y++) {
+        if (!Number.isNaN(this.rioX[y])) continue;
+        const t = by === ay ? 0 : (y - ay) / (by - ay);
+        this.rioX[y] = ax + (bx - ax) * t;
       }
     }
   }
@@ -254,17 +268,8 @@ export class GeneradorCiudad {
   // -1 si queda al oeste del rio, 1 al este. El rio baja de norte a sur, asi
   // que basta con buscar su x a la misma altura.
   ladoDelRio(x, y) {
-    let rx = null;
-    for (let k = 0; k < this.rio.length - 1; k++) {
-      const [ax, ay] = this.rio[k];
-      const [bx, by] = this.rio[k + 1];
-      if ((y >= ay && y <= by) || (y >= by && y <= ay)) {
-        const t = by === ay ? 0 : (y - ay) / (by - ay);
-        rx = ax + (bx - ax) * t;
-        break;
-      }
-    }
-    if (rx === null) return 1;
+    const rx = this.rioX[Math.max(0, Math.min(this.h - 1, Math.floor(y)))];
+    if (Number.isNaN(rx)) return 1;
     return x < rx ? -1 : 1;
   }
 
@@ -599,7 +604,31 @@ export class GeneradorCiudad {
   // Un final de calle (grado 1) mira hacia delante: si a menos de `largo`
   // casillas hay otra calle, y el camino es tierra firme, se une a ella.
   alargarSinSalida(largo) {
-    const tramos = () => [...this.tramosMap.values()];
+    // los tramos por cubos de 8 casillas, para no mirar la ciudad entera en
+    // cada paso de cada calle sin salida
+    const CUBO = 8;
+    const cubos = new Map();
+    const apuntar = (t) => {
+      const A = this.nodos[t.a]; const B = this.nodos[t.b];
+      const x0 = Math.floor(Math.min(A.x, B.x) / CUBO); const x1 = Math.floor(Math.max(A.x, B.x) / CUBO);
+      const y0 = Math.floor(Math.min(A.y, B.y) / CUBO); const y1 = Math.floor(Math.max(A.y, B.y) / CUBO);
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+        const k = `${x},${y}`;
+        if (!cubos.has(k)) cubos.set(k, []);
+        cubos.get(k).push(t);
+      }
+    };
+    for (const t of this.tramosMap.values()) apuntar(t);
+    const tramosCerca = (px, py) => {
+      const out = [];
+      const cx = Math.floor(px / CUBO); const cy = Math.floor(py / CUBO);
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        for (const t of cubos.get(`${cx + dx},${cy + dy}`) || []) {
+          if (this.tramosMap.get(this.tramoKey(t.a, t.b)) === t) out.push(t);
+        }
+      }
+      return out;
+    };
     for (const n of this.nodos) {
       if (n.muerto || n.vec.size !== 1) continue;
       const v = this.nodos[[...n.vec][0]];
@@ -614,7 +643,7 @@ export class GeneradorCiudad {
         const tx = Math.floor(px); const ty = Math.floor(py);
         if (!this.dentro(tx, ty) || !this.tierra[this.idx(tx, ty)] || this.roca[this.idx(tx, ty)]) break;
         if (this.enReserva(px, py, 4)) break;
-        for (const t of tramos()) {
+        for (const t of tramosCerca(px, py)) {
           if (t.a === n.id || t.b === n.id) continue;
           const A = this.nodos[t.a]; const B = this.nodos[t.b];
           if (distSeg(px, py, A.x, A.y, B.x, B.y) < 0.7) {
@@ -637,6 +666,10 @@ export class GeneradorCiudad {
       this.ponerTramo(t.a, id, tipo);
       this.ponerTramo(id, t.b, tipo);
       this.ponerTramo(n.id, id, this.tipoDe(n.id, v.id));
+      for (const k of [this.tramoKey(t.a, id), this.tramoKey(id, t.b), this.tramoKey(n.id, id)]) {
+        const nuevo = this.tramosMap.get(k);
+        if (nuevo) apuntar(nuevo);
+      }
     }
   }
 
@@ -1060,13 +1093,7 @@ export class GeneradorCiudad {
       for (let xx = x; xx < x + w; xx++) {
         const i = this.idx(xx, yy);
         if (this.tierra[i]) continue;
-        let rio = false;
-        for (let k = 0; k < this.rio.length - 1 && !rio; k++) {
-          const [ax, ay] = this.rio[k];
-          const [bx, by] = this.rio[k + 1];
-          if (distSeg(xx + 0.5, yy + 0.5, ax, ay, bx, by) < this.cfg.rio.ancho / 2 + 3) rio = true;
-        }
-        if (rio) return false;
+        if (this.cercaRio[i]) return false;
         agua++;
       }
     }

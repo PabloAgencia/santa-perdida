@@ -55,7 +55,7 @@ export class ShopSystem {
     const barriosPuestos = new Set();
     for (const pasada of [1, 2]) {
       for (const b of candidatos) {
-        if (this.tiendas.length >= TIENDAS) break;
+        if (this.tiendas.length >= Math.round(TIENDAS * this.map.escalaContenido)) break;
         if (pasada === 1 && barriosPuestos.has(b.zone)) continue;
         if (this.tiendas.some((t) => Phaser.Math.Distance.Between(t.x, t.y, b.px, b.py) < SEPARACION)) continue;
         const puerta = this.puertaDe(b);

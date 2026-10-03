@@ -47,6 +47,8 @@ class GameStateClass {
     this.armaActual = 'puno';
     // lo bien que manejas CADA arma de fuego (0-100), sube usandola
     this.habilidadArma = {};
+    // en que mapa se guardo la partida (config/ciudadGrande.js, `id`)
+    this.mapa = null;
     // el chaleco se gasta antes que la vida, y no se recupera solo
     this.blindaje = 0;
     // LA ROPA (punto 23 del plan). 'calle' es gratis y siempre esta puesta
@@ -584,6 +586,7 @@ class GameStateClass {
       armas: this.armas,
       armaActual: this.armaActual,
       habilidadArma: this.habilidadArma,
+      mapa: this.mapa,
       blindaje: this.blindaje,
       ropa: this.ropa,
       ropaComprada: this.ropaComprada,
@@ -614,6 +617,7 @@ class GameStateClass {
     this.armas = data.armas ?? { puno: null };
     this.armaActual = data.armaActual ?? 'puno';
     this.habilidadArma = data.habilidadArma ?? {};
+    this.mapa = data.mapa ?? null;
     this.blindaje = data.blindaje ?? 0;
     // partidas de antes del armario: de calle, la de siempre, y sin nada
     // comprado todavia

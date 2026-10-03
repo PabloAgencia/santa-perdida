@@ -122,6 +122,39 @@ export class CityScene extends Phaser.Scene {
     this.hurtCooldown = 0;
     this.buildMinimapTexture();
 
+    // UNA PARTIDA DE OTRO MAPA. Las posiciones guardadas (tu, tus coches, el
+    // encargo a medias) eran del mapa de antes y aqui caen en cualquier
+    // sitio: en el rio, en el monte, en medio de un campo. Se vuelve al
+    // escondite y los coches se aparcan en las calles de al lado. Los pisos y
+    // negocios van por barrio, no por posicion, y se conservan.
+    const idMapa = this.map.cfg.id || 'cuadricula';
+    const otroMapa = loaded && GameState.mapa !== idMapa;
+    GameState.mapa = idMapa;
+    if (otroMapa) {
+      GameState.inVehicleId = null;
+      GameState.job = null;
+      const inicio = this.findStartSpot();
+      const huecos = this.map.roadSpots
+        .filter((s) => !this.map.isSolidBox(s.x, s.y, 34, 34))
+        .sort((p, q) => Phaser.Math.Distance.Between(p.x, p.y, inicio.x, inicio.y)
+          - Phaser.Math.Distance.Between(q.x, q.y, inicio.x, inicio.y));
+      let h = 0;
+      for (const v of GameState.vehicles) {
+        // cada coche en su hueco, separados para que no salgan montados
+        while (h < huecos.length && GameState.vehicles.some((o) => o !== v && o._sitio
+          && Phaser.Math.Distance.Between(o._sitio.x, o._sitio.y, huecos[h].x, huecos[h].y) < 120)) h++;
+        const s = huecos[h++] || inicio;
+        v._sitio = s;
+        v.x = s.x;
+        v.y = s.y;
+      }
+      for (const v of GameState.vehicles) delete v._sitio;
+      GameState.player = { x: inicio.x, y: inicio.y, angle: 0 };
+      this.time.delayedCall(1200, () => EventBus.emit(EVT.NOTIFY, {
+        text: 'Santa Perdida ha cambiado: has vuelto a tu escondite', tone: 'objective',
+      }));
+    }
+
     if (loaded && GameState.vehicles.length > 0) {
       for (const v of GameState.vehicles) {
         // F4: una partida guardada con el mapa de antes podia dejar el coche

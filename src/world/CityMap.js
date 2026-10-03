@@ -38,6 +38,8 @@ export class CityMap {
     this.zoneIds = {};
 
     this.rng = mulberry32(cfg.seed);
+    // cuanto se multiplica lo que se reparte por la ciudad (ver ciudadGrande)
+    this.escalaContenido = cfg.escalaContenido || 1;
   }
 
   // ---------- utilidades de rejilla ----------

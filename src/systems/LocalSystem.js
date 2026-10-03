@@ -30,7 +30,8 @@ export class LocalSystem {
   colocar() {
     for (const cfg of Object.values(LOCALES)) {
       const sitios = repartirPorBarrios(this.map, {
-        cuantos: cfg.cuantos,
+        // los unicos (el concesionario...) siguen siendo uno
+        cuantos: cfg.cuantos > 1 ? Math.round(cfg.cuantos * this.map.escalaContenido) : cfg.cuantos,
         separacion: cfg.separacion,
         ocupados: this.scene.edificiosOcupados,
         // algunos solo van en ciertos barrios (el gimnasio: centro y comercial)

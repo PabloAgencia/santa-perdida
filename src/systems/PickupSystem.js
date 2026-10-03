@@ -197,7 +197,7 @@ export class PickupSystem {
     // repartidos: nada de tres corazones en el mismo callejon
     Phaser.Utils.Array.Shuffle(sitios);
     for (const p of sitios) {
-      if (elegidos.length >= CORAZONES) break;
+      if (elegidos.length >= Math.round(CORAZONES * this.map.escalaContenido)) break;
       if (elegidos.some((q) => Phaser.Math.Distance.Between(q.x, q.y, p.x, p.y) < SEPARACION_CORAZONES)) continue;
       elegidos.push(p);
     }
@@ -260,7 +260,7 @@ export class PickupSystem {
   plantarMaquinas() {
     const spots = Phaser.Utils.Array.Shuffle(this.map.sidewalkSpots.slice());
     for (const s of spots) {
-      if (this.maquinas.length >= MAQUINAS) break;
+      if (this.maquinas.length >= Math.round(MAQUINAS * this.map.escalaContenido)) break;
       if (this.maquinas.some((m) => Phaser.Math.Distance.Between(m.x, m.y, s.x, s.y) < SEPARACION_MAQUINAS)) continue;
 
       // ¿hay pared pegada? se mira a los cuatro lados
