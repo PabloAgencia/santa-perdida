@@ -521,7 +521,11 @@ export class GeneradorCiudad {
     // f) en los barrios con calles sin salida (residencial, casco), quitar
     // algunos tramos sin romper la red
     this.abrirSinSalidas();
-    // g) los nodos de paso en linea recta sobran: se juntan sus tramos
+    // g) calles que se solapan (pasan a menos de una calzada y no se cruzan
+    // en un cruce): se quita la mas corta, y los muñones que queden
+    this.quitarSolapes();
+    this.podarMuñones(10);
+    // h) los nodos de paso en linea recta sobran: se juntan sus tramos
     this.simplificarRectas();
     this.compactar();
   }
@@ -612,7 +616,14 @@ export class GeneradorCiudad {
         for (const t of tramos()) {
           if (t.a === n.id || t.b === n.id) continue;
           const A = this.nodos[t.a]; const B = this.nodos[t.b];
-          if (distSeg(px, py, A.x, A.y, B.x, B.y) < 0.7) { mejor = { t, px, py }; break; }
+          if (distSeg(px, py, A.x, A.y, B.x, B.y) < 0.7) {
+            // solo si la corta con angulo: rozandola en paralelo saldria una
+            // mancha de asfalto el doble de ancha
+            const tl = Math.hypot(B.x - A.x, B.y - A.y) || 1;
+            const coseno = Math.abs(((B.x - A.x) * ux + (B.y - A.y) * uy) / tl);
+            if (coseno < 0.85) mejor = { t, px, py };
+            break;
+          }
         }
       }
       if (!mejor) continue;
@@ -689,6 +700,98 @@ export class GeneradorCiudad {
     }
     // los nodos que se han quedado solos
     for (const n of this.nodos) if (n.vec.size === 0) n.muerto = true;
+  }
+
+  quitarSolapes() {
+    const distSegSeg = (a, b, c, d) => Math.min(
+      distSeg(a.x, a.y, c.x, c.y, d.x, d.y), distSeg(b.x, b.y, c.x, c.y, d.x, d.y),
+      distSeg(c.x, c.y, a.x, a.y, b.x, b.y), distSeg(d.x, d.y, a.x, a.y, b.x, b.y),
+    );
+    for (let vuelta = 0; vuelta < 3; vuelta++) {
+      const lista = [...this.tramosMap.values()];
+      const CUBO = 20;
+      const cubos = new Map();
+      lista.forEach((t, i) => {
+        const A = this.nodos[t.a]; const B = this.nodos[t.b];
+        const k = `${Math.floor((A.x + B.x) / 2 / CUBO)},${Math.floor((A.y + B.y) / 2 / CUBO)}`;
+        if (!cubos.has(k)) cubos.set(k, []);
+        cubos.get(k).push(i);
+      });
+      let quitados = 0;
+      for (let i = 0; i < lista.length; i++) {
+        const t = lista[i];
+        if (!this.tramosMap.has(this.tramoKey(t.a, t.b))) continue;
+        const A = this.nodos[t.a]; const B = this.nodos[t.b];
+        const cx = Math.floor((A.x + B.x) / 2 / CUBO);
+        const cy = Math.floor((A.y + B.y) / 2 / CUBO);
+        let rival = null;
+        let local = null;
+        for (let dy = -1; dy <= 1 && !rival; dy++) {
+          for (let dx = -1; dx <= 1 && !rival; dx++) {
+            for (const j of cubos.get(`${cx + dx},${cy + dy}`) || []) {
+              const u = lista[j];
+              if (u === t || !this.tramosMap.has(this.tramoKey(u.a, u.b))) continue;
+              if (distSegSeg(A, B, this.nodos[u.a], this.nodos[u.b]) >= 5.5) continue;
+              // los trozos de la MISMA calle (o de la que sale del mismo
+              // cruce) estan cerca por fuerza: solo es solape si por la red
+              // quedan lejos
+              if (!local) local = this.cercaPorLaRed([t.a, t.b], 14);
+              if (local.has(u.a) || local.has(u.b)) continue;
+              rival = u;
+              break;
+            }
+          }
+        }
+        if (!rival) continue;
+        // se va el mas corto (las arterias, nunca)
+        const largo = (x) => Math.hypot(this.nodos[x.a].x - this.nodos[x.b].x, this.nodos[x.a].y - this.nodos[x.b].y);
+        let va = largo(t) <= largo(rival) ? t : rival;
+        if (va.tipo !== 'calle') va = va === t ? rival : t;
+        if (va.tipo !== 'calle') continue;
+        if (!this.conectadoSin(va.a, va.b)) continue;
+        this.quitarTramo(va.a, va.b);
+        quitados++;
+      }
+      if (quitados === 0) break;
+    }
+    for (const n of this.nodos) if (n.vec.size === 0) n.muerto = true;
+  }
+
+  // los nodos a menos de `max` casillas de recorrido por la red
+  cercaPorLaRed(desde, max) {
+    const dist = new Map(desde.map((d) => [d, 0]));
+    const cola = [...desde];
+    while (cola.length) {
+      const a = cola.shift();
+      const da = dist.get(a);
+      for (const b of this.nodos[a].vec) {
+        const d = da + Math.hypot(this.nodos[a].x - this.nodos[b].x, this.nodos[a].y - this.nodos[b].y);
+        if (d > max) continue;
+        if (dist.has(b) && dist.get(b) <= d) continue;
+        dist.set(b, d);
+        cola.push(b);
+      }
+    }
+    return dist;
+  }
+
+  // los finales de calle muy cortos (un muñon de 3 casillas que asoma de un
+  // cruce) sobran: se quitan, y si eso deja otro muñon, tambien
+  podarMuñones(largoMin) {
+    let cambio = true;
+    while (cambio) {
+      cambio = false;
+      for (const n of this.nodos) {
+        if (n.muerto || n.vec.size !== 1) continue;
+        const v = [...n.vec][0];
+        const V = this.nodos[v];
+        if (Math.hypot(V.x - n.x, V.y - n.y) >= largoMin) continue;
+        if (this.tipoDe(n.id, v) !== 'calle') continue;
+        this.quitarTramo(n.id, v);
+        n.muerto = true;
+        cambio = true;
+      }
+    }
   }
 
   // Un nodo de grado 2 en el que la calle casi no gira no hace falta: se

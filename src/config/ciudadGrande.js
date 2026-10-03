@@ -54,9 +54,9 @@ export const CIUDAD_GRANDE = {
   //   patio       probabilidad de edificio en el interior de la manzana
   distritos: [
     { nombre: 'Lomas del Norte', zona: 'residencial', x: 140, y: 125, lado: -1,
-      trazado: { angulo: 8, sepA: 25, sepB: 20, curva: 6, ondulacion: 0.05, irregular: 0.2, quitar: 0.14 }, patio: 0.15 },
+      trazado: { angulo: 8, sepA: 25, sepB: 20, curva: 3.5, ondulacion: 0.04, irregular: 0.2, quitar: 0.14 }, patio: 0.15 },
     { nombre: 'Los Pinares', zona: 'residencial', x: 115, y: 250, lado: -1,
-      trazado: { angulo: -12, sepA: 24, sepB: 19, curva: 5, ondulacion: 0.06, irregular: 0.2, quitar: 0.12 }, patio: 0.15 },
+      trazado: { angulo: -12, sepA: 24, sepB: 19, curva: 3, ondulacion: 0.045, irregular: 0.2, quitar: 0.12 }, patio: 0.15 },
     { nombre: 'Gran Via Oeste', zona: 'comercial', x: 140, y: 395, lado: -1,
       trazado: { angulo: 4, sepA: 34, sepB: 26, irregular: 0.2 }, patio: 0.6 },
     { nombre: 'Campos de Poniente', zona: 'afueras', x: 45, y: 160, lado: -1, rural: true, peso: 0.8,

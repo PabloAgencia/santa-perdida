@@ -7,6 +7,9 @@ import { LANE_OFFSET } from './RoadNetwork.js';
 
 // lado de la zona de dibujo, en pixeles
 const ZONA_DIBUJO = 2048;
+// las calles horneadas van en zonas mas pequeñas: cada imagen son 4 MB de
+// memoria de video y solo se tienen las de alrededor de la camara
+const ZONA_CALLE = 1024;
 
 // Sorteo atado a la posicion del edificio: la ciudad sale siempre igual, pero
 // cada edificio tiene sus propios detalles. Se ha venido con el pintado porque
@@ -51,6 +54,10 @@ export const PintarCiudad = {
   // que rasterizar, y como los edificios no se solapan entre si, dentro de
   // cada grupo basta con respetar el orden en que se pintan.
   cuboDe(depth) {
+    // las calles de la ciudad grande, por debajo de todo lo demas: primero
+    // el fondo (acera, arcen, agua bajo el puente) y luego el asfalto
+    if (depth <= -1960) return -1960;
+    if (depth <= -1930) return -1930;
     if (depth <= -1240) return -1250;
     if (depth <= -1195) return -1200;
     if (depth <= -1000) return -1150;
@@ -92,9 +99,77 @@ export const PintarCiudad = {
     return l;
   },
 
+  // LAS CALLES HORNEADAS. Un dibujo (Graphics) se vuelve a teselar entero
+  // en cada fotograma, y las calles lisas son miles de poligonos: el casco
+  // viejo pasaba de 11 a 26 ms por fotograma. Asi que las calles se dibujan
+  // en Graphics que NO estan en pantalla, una por pasada y por zona de 1.024
+  // px, y solo cuando la camara se acerca a una zona se "hornean" en una
+  // imagen (RenderTexture) que se pinta como una sola textura. Al alejarse,
+  // la imagen se borra para no comerse la memoria de video.
+  capaCalle(pasada, x, y) {
+    if (!this.callesG) this.callesG = new Map();
+    const Z = ZONA_CALLE;
+    const clave = `${pasada}|${Math.floor(x / Z)}|${Math.floor(y / Z)}`;
+    let g = this.callesG.get(clave);
+    if (!g) {
+      g = this.make.graphics({ x: 0, y: 0 }, false);
+      this.callesG.set(clave, g);
+    }
+    return g;
+  },
+
+  hornearZonaCalle(zx, zy) {
+    const Z = ZONA_CALLE;
+    // 2 px de solape con las vecinas por cada lado: con el suavizado de la
+    // textura, el borde exacto dejaba una raya fina entre zona y zona
+    const S = 2;
+    const ox = zx * Z - S;
+    const oy = zy * Z - S;
+    const rt = this.add.renderTexture(ox, oy, Z + S * 2, Z + S * 2).setOrigin(0, 0).setDepth(-1940);
+    // la zona y sus ocho vecinas: un trozo de calle asignado a la de al lado
+    // puede asomar dentro de esta, y la imagen recorta lo que se sale
+    for (const pasada of ['fondo', 'bordillo', 'asfalto', 'marcas']) {
+      for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+          const g = this.callesG.get(`${pasada}|${zx + dx}|${zy + dy}`);
+          if (g) rt.draw(g, -ox, -oy);
+        }
+      }
+    }
+    return rt;
+  },
+
+  actualizarCalles() {
+    if (!this.callesG) return;
+    if (!this.callesRT) this.callesRT = new Map();
+    const v = this.cameras.main.worldView;
+    const Z = ZONA_CALLE;
+    const M = 260;
+    const x0 = Math.floor((v.x - M) / Z); const x1 = Math.floor((v.right + M) / Z);
+    const y0 = Math.floor((v.y - M) / Z); const y1 = Math.floor((v.bottom + M) / Z);
+    const clave = `${x0},${x1},${y0},${y1}`;
+    if (clave === this.callesEncendidas) return;
+    this.callesEncendidas = clave;
+    for (let zy = y0; zy <= y1; zy++) {
+      for (let zx = x0; zx <= x1; zx++) {
+        const k = `${zx},${zy}`;
+        if (!this.callesRT.has(k)) this.callesRT.set(k, this.hornearZonaCalle(zx, zy));
+      }
+    }
+    // las que quedan a mas de una zona de lo que se ve, fuera
+    for (const [k, rt] of this.callesRT) {
+      const [zx, zy] = k.split(',').map(Number);
+      if (zx < x0 - 1 || zx > x1 + 1 || zy < y0 - 1 || zy > y1 + 1) {
+        rt.destroy();
+        this.callesRT.delete(k);
+      }
+    }
+  },
+
   // enciende solo las zonas que pisa lo que se ve, mas un margen corto (no
   // una zona entera a cada lado: eran 35 capas encendidas a la vez)
   actualizarCapas() {
+    this.actualizarCalles();
     if (!this.capas && !this.capasObj) return;
     const v = this.cameras.main.worldView;
     const M = 320;
@@ -130,6 +205,130 @@ export const PintarCiudad = {
     const tileset = tilemap.addTilesetImage('tiles');
     this.ground = tilemap.createLayer(0, tileset, 0, 0);
     this.ground.setDepth(-2000);
+    if (this.map.graph) this.pintarCallesVector();
+  },
+
+  // LAS CALLES DIBUJADAS, NO EN CASILLAS. La rejilla sigue mandando para
+  // chocar y para los peatones, pero vista en casillas una calle en diagonal
+  // es una escalera. Encima del suelo se pinta cada tramo como una banda lisa:
+  // primero el fondo (la acera en la ciudad, el arcen del color del terreno
+  // en el campo y el monte, el agua debajo de un puente), luego el asfalto y
+  // el bordillo. Los cruces y las curvas se redondean con un circulo en cada
+  // nodo. Los tramos largos se trocean para que cada trozo caiga en la capa
+  // de su zona (si no, al apagar una zona desapareceria media calle).
+  pintarCallesVector() {
+    const { nodos, tramos } = this.map.graph;
+    const m = this.map;
+    const COLOR = {
+      acera: 0x3c3f46, asfalto: 0x25272d, bordillo: 0x4b4f58,
+      [T.GRASS]: 0x2f3a2c, [T.SAND]: 0x5a5142, [T.WATER]: 0x16303d, [T.ROCK]: 0x3b342c,
+      puente: 0x3a3c42, baranda: 0x6a6e78,
+    };
+    // cada pasada va en su propio dibujo, y al hornear la zona se pintan por
+    // orden: todos los fondos, todos los bordillos, todo el asfalto
+    const PASADA = { [-1960]: 'fondo', [-1931]: 'bordillo', [-1930]: 'asfalto' };
+    const banda = (depth, ax, ay, bx, by, radio, color) => {
+      const largo = Math.hypot(bx - ax, by - ay);
+      const n = Math.max(1, Math.ceil(largo / 480));
+      const ux = (bx - ax) / (largo || 1);
+      const uy = (by - ay) / (largo || 1);
+      const px = -uy * radio;
+      const py = ux * radio;
+      for (let i = 0; i < n; i++) {
+        const x0 = ax + (bx - ax) * (i / n); const y0 = ay + (by - ay) * (i / n);
+        const x1 = ax + (bx - ax) * ((i + 1) / n); const y1 = ay + (by - ay) * ((i + 1) / n);
+        const g = this.capaCalle(PASADA[depth], (x0 + x1) / 2, (y0 + y1) / 2);
+        g.fillStyle(color, 1);
+        g.fillPoints([
+          { x: x0 + px, y: y0 + py }, { x: x1 + px, y: y1 + py },
+          { x: x1 - px, y: y1 - py }, { x: x0 - px, y: y0 - py },
+        ], true);
+      }
+    };
+    const circulo = (depth, x, y, r, color) => {
+      const g = this.capaCalle(PASADA[depth], x, y);
+      g.fillStyle(color, 1);
+      g.fillCircle(x, y, r);
+    };
+    // que hay a los lados de un tramo: se mira a 3,5 casillas del eje
+    const fondoDe = (t, A, B) => {
+      const mx = (A.x + B.x) / 2; const my = (A.y + B.y) / 2;
+      const dx = B.x - A.x; const dy = B.y - A.y;
+      const l = Math.hypot(dx, dy) || 1;
+      const i = m.idx(Math.floor(mx), Math.floor(my));
+      if (m.puenteMask && m.puenteMask[i]) return 'puente';
+      for (const lado of [1, -1]) {
+        const sx = Math.floor(mx - (dy / l) * 3.6 * lado);
+        const sy = Math.floor(my + (dx / l) * 3.6 * lado);
+        if (!m.inBounds(sx, sy)) continue;
+        const tile = m.getTile(sx, sy);
+        if (tile === T.SIDEWALK) return 'acera';
+        if (m.roadMask[m.idx(sx, sy)]) continue;
+        if (COLOR[tile] !== undefined) return tile;
+      }
+      return 'acera';
+    };
+
+    const fondoNodo = new Map();
+    for (const t of tramos) {
+      const A = nodos[t.a]; const B = nodos[t.b];
+      const ax = A.x * TILE; const ay = A.y * TILE;
+      const bx = B.x * TILE; const by = B.y * TILE;
+      const mitad = (t.ancho / 2) * TILE;
+      const fondo = fondoDe(t, A, B);
+      t.fondo = fondo;
+      if (fondo === 'acera') {
+        banda(-1960, ax, ay, bx, by, mitad + 2.5 * TILE, COLOR.acera);
+      } else if (fondo === 'puente') {
+        banda(-1960, ax, ay, bx, by, mitad + 1.2 * TILE, COLOR[T.WATER]);
+        banda(-1960, ax, ay, bx, by, mitad + 0.35 * TILE, COLOR.baranda);
+      } else {
+        banda(-1960, ax, ay, bx, by, mitad + 1.0 * TILE, COLOR[fondo]);
+      }
+      for (const id of [t.a, t.b]) {
+        const prev = fondoNodo.get(id);
+        if (prev !== 'acera') fondoNodo.set(id, fondo === 'puente' ? prev || 'puente' : fondo);
+      }
+    }
+    // los nodos: el redondeo de cruces, curvas y fondos de saco. El radio
+    // del mayor tramo que llega.
+    const radioNodo = new Map();
+    for (const t of tramos) {
+      for (const id of [t.a, t.b]) radioNodo.set(id, Math.max(radioNodo.get(id) || 0, (t.ancho / 2) * TILE));
+    }
+    for (const n of nodos) {
+      const r = radioNodo.get(n.id);
+      if (!r) continue;
+      const fondo = fondoNodo.get(n.id);
+      if (fondo === 'acera') circulo(-1960, n.x * TILE, n.y * TILE, r + 2.5 * TILE, COLOR.acera);
+      else if (fondo !== 'puente' && COLOR[fondo] !== undefined) circulo(-1960, n.x * TILE, n.y * TILE, r + 1.0 * TILE, COLOR[fondo]);
+    }
+
+    // el bordillo y el asfalto van en la MISMA capa, asi que primero todos
+    // los bordillos y despues todo el asfalto: si no, el bordillo de una
+    // calle se pintaba por encima del asfalto de la otra en cada cruce
+    for (const pasada of ['bordillo', 'asfalto']) {
+      for (const t of tramos) {
+        const A = nodos[t.a]; const B = nodos[t.b];
+        const mitad = (t.ancho / 2) * TILE;
+        if (pasada === 'bordillo') {
+          if (t.fondo === 'acera') banda(-1931, A.x * TILE, A.y * TILE, B.x * TILE, B.y * TILE, mitad + 3, COLOR.bordillo);
+        } else {
+          banda(-1930, A.x * TILE, A.y * TILE, B.x * TILE, B.y * TILE, mitad,
+            t.fondo === 'puente' ? COLOR.puente : COLOR.asfalto);
+        }
+      }
+      for (const n of nodos) {
+        const r = radioNodo.get(n.id);
+        if (!r) continue;
+        const fondo = fondoNodo.get(n.id);
+        if (pasada === 'bordillo') {
+          if (fondo === 'acera') circulo(-1931, n.x * TILE, n.y * TILE, r + 3, COLOR.bordillo);
+        } else {
+          circulo(-1930, n.x * TILE, n.y * TILE, r, fondo === 'puente' ? COLOR.puente : COLOR.asfalto);
+        }
+      }
+    }
   },
 
   // los pasos de peatones se pintan donde el mapa dice que estan, asi que lo
@@ -170,7 +369,7 @@ export const PintarCiudad = {
   pintarMarcasGrandes() {
     const { nodos, tramos } = this.map.graph;
     const rect = (cx, cy, ux, uy, largo, ancho, color, alpha) => {
-      const g = this.capaDibujo(-1900, cx, cy);
+      const g = this.capaCalle('marcas', cx, cy);
       const lx = ux * largo / 2; const ly = uy * largo / 2;
       const ax = -uy * ancho / 2; const ay = ux * ancho / 2;
       g.fillStyle(color, alpha);
