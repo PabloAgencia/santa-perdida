@@ -3819,3 +3819,35 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   SIGUIENTE (G1, resto): escribir las misiones que faltan del Acto 2
   (13-15 de la biblia), el Acto 2.5 de El Duque, y el Acto 3 con Anzures,
   todas con su dialogo y mirando "COMO HABLA CADA UNO".
+
+[HECHO 4-oct, v61] TODO EL ARTE QUE FALTA, PEDIDO; Y LA CIUDAD LISTA PARA QUE NO SE REPITA.
+  Pablo: "genera todos los prompts necesarios, incluso mas vehiculos, y
+  sobre todo los de mas casas por fuera, que no haya casas exactamente
+  iguales una pegada a la otra".
+  · EL PROBLEMA DE FONDO: un solo tejado por barrio. Las 902 casas de Los
+    Pinares y Lomas del Norte eran la misma foto, estirada en los edificios
+    alargados (957 de 3.469), y el Casco Viejo y las Afueras no tenian.
+  · PintarCiudad.elegirTecho: varias imagenes por barrio, cuadradas
+    (techo-<barrio>-cN) y alargadas 2:3 (techo-<barrio>-aN), cada una con
+    giro (0/90/180/270; las alargadas segun la orientacion del edificio).
+    Reparto fijo por sitio y mirando a los vecinos pegados: medido con la
+    unica foto que hay hoy, de 3.895 pares pegados solo 2 coinciden en
+    imagen y giro; con variantes, ninguno.
+  · herramientas/preparar-sprites.py entiende las variantes (las alargadas
+    salen a 128x192 aunque vengan apaisadas), tienda24/bar/mecanico, casco y
+    afueras, peaton-17 a 28 y jefe-consul/chispa/dona. Probado con imagenes
+    falsas en una carpeta aparte.
+  · 8 VEHICULOS NUEVOS ya en la calle y en el concesionario (dibujados por
+    codigo hasta que lleguen sus fotos): Pulga, Ranchera, Mulero (pickup),
+    Sierra 4x4, Senador, Duna (descapotable), Mosquito (scooter), Titan
+    (camion). Concesionario en DOS filas (con 15 en una se montaban) y elige
+    la plaza mas cercana. Las medallas de las carreras se siguen midiendo
+    con los 7 modelos de antes (si no, el camion las abarataba un 9%).
+  · Peatones: NPCSystem usa ped-16 a ped-27 en cuanto existan (ped-12..15
+    siguen siendo del club). Los jefes salen en persona donde dan encargos
+    si existe jefe-<id>-0. Mapa: marca-casino si existe.
+  · PROMPTS-PARA-GEMINI.txt, "LA TANDA GRANDE": 98 prompts (64 tejados de
+    barrio, cada uno descrito distinto; 3 de locales; 9 vehiculos; 15
+    personas; 7 marcas). No repite lo que ya estaba pendiente del 27-sep
+    (18 tejados, Centella, atico), que sigue debajo; la del club se marca
+    como hecha.

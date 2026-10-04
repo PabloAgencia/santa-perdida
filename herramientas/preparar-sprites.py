@@ -292,22 +292,50 @@ def preparar_edificios(hechos):
         # uno por negocio (seis, cada uno de un comercio distinto)
         'negocio-conflictivo', 'negocio-residencial', 'negocio-comercial',
         'negocio-industrial', 'negocio-puerto', 'negocio-centro',
-        # el club de El Duque (HISTORIA-SANTA-PERDIDA.txt); todavia sin
-        # ClubScene.js ni negocio propio, pero el tejado ya esta
+        # el club de El Duque (HISTORIA-SANTA-PERDIDA.txt)
         'club',
+        # 4-oct-2026: los locales que faltaban y los dos barrios del mapa
+        # grande que no tenian tejado (Casco Viejo y Afueras)
+        'tienda24', 'bar', 'mecanico', 'casco', 'afueras',
     ]
+    # LAS VARIANTES DE CADA BARRIO (4-oct-2026, "que no haya casas iguales
+    # una pegada a la otra"): <barrio>-c1, -c2... cuadradas y <barrio>-a1,
+    # -a2... alargadas (2:3). PintarCiudad.elegirTecho las reparte.
+    BARRIOS = ('centro', 'residencial', 'comercial', 'industrial', 'conflictivo',
+               'puerto', 'casco', 'afueras')
+    variante = re.compile(r'^(%s)-([ca])(\d+)$' % '|'.join(BARRIOS))
     for fichero in sorted(os.listdir(carpeta)):
         if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
             continue
         clave = os.path.splitext(fichero)[0].lower().strip()
         clave = ALIAS.get(clave, clave)
-        if clave not in TEJADOS:
+        m = variante.match(clave)
+        if clave not in TEJADOS and not m:
             print(f'  ! "{fichero}" no cuadra con ningun tejado conocido '
-                  f'({", ".join(TEJADOS)})')
+                  f'({", ".join(TEJADOS)}, o <barrio>-c1 / <barrio>-a1)')
             continue
 
         img = Image.open(os.path.join(carpeta, fichero)).convert('RGBA')
         an, al = img.size
+        if m and m.group(2) == 'a':
+            # ALARGADA: de pie (mas alta que ancha) y recortada a 2:3
+            if an > al:
+                img = img.rotate(90, expand=True)
+                an, al = img.size
+            m_an = int(an * (1 - MARGEN * 2))
+            m_al = int(al * (1 - MARGEN * 2))
+            if m_al / m_an > 1.5:
+                m_al = int(m_an * 1.5)
+            else:
+                m_an = int(m_al / 1.5)
+            img = img.crop(((an - m_an) // 2, (al - m_al) // 2,
+                            (an + m_an) // 2, (al + m_al) // 2))
+            img = img.resize((128, 192), Image.LANCZOS)
+            nombre = f'techo-{clave}.png'
+            img.save(os.path.join(DESTINO, nombre))
+            hechos.append(nombre)
+            print(f'  {fichero}: tejado alargado de {m.group(1)} a 128x192 px')
+            continue
         # el tejado se estira sobre la manzana, asi que se recorta cuadrado y
         # se le quita el borde de fuera (donde cae la marca)
         lado = int(min(an, al) * (1 - MARGEN * 2))
@@ -347,6 +375,13 @@ PERSONAJES = {
     'peaton-14': 'ped-13',
     'peaton-15': 'ped-14',
     'peaton-16': 'ped-15',
+    # 4-oct-2026: mas gente por la calle (NPCSystem.PIELES_CALLE los usa en
+    # cuanto existen) y los tres jefes en persona, plantados donde dan los
+    # encargos (MissionSystem)
+    **{f'peaton-{n}': f'ped-{n - 1}' for n in range(17, 29)},
+    'jefe-consul': 'jefe-consul',
+    'jefe-chispa': 'jefe-chispa',
+    'jefe-dona': 'jefe-dona',
 }
 
 # El lienzo es de 32 px, pero la persona ocupa 23: es lo que mide la que

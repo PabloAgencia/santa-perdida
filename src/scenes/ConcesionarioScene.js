@@ -50,17 +50,24 @@ export class ConcesionarioScene extends Phaser.Scene {
       fontFamily: TITULO, stroke: '#05060a', strokeThickness: 4, fontSize: '30px', color: '#bcd6ee',
     }).setOrigin(0.5);
 
-    // todos los modelos del concesionario, en fila, cada uno con su plaza
-    // (se reparten solos segun cuantos haya en VEHICLE_KEYS)
+    // todos los modelos del concesionario, cada uno con su plaza (se reparten
+    // solos segun cuantos haya en VEHICLE_KEYS). En DOS filas de hasta ocho:
+    // con los modelos del 4-oct ya eran quince y en una fila se montaban.
+    const porFila = Math.min(8, Math.ceil(VEHICLE_KEYS.length / 2));
     this.bahias = VEHICLE_KEYS.map((tipo, i) => {
-      const bx = s.x + (s.w / (VEHICLE_KEYS.length + 1)) * (i + 1);
-      const by = s.y + 150;
-      this.add.image(bx, by, 'px').setDisplaySize(96, 64).setTint(0x15171b).setAlpha(0.7);
-      this.add.image(bx, by, `veh-${tipo}-0`).setRotation(Math.PI / 2).setScale(0.92);
+      const fila = Math.floor(i / porFila);
+      const enFila = Math.min(porFila, VEHICLE_KEYS.length - fila * porFila);
+      const col = i % porFila;
+      const bx = s.x + (s.w / (enFila + 1)) * (col + 1);
+      const by = s.y + (fila === 0 ? 112 : 236);
+      this.add.image(bx, by, 'px').setDisplaySize(62, 86).setTint(0x15171b).setAlpha(0.7);
+      // de pie (morro arriba) y a escala para que el camion quepa en su plaza
+      const esc = Math.min(0.92, 76 / VEHICLES[tipo].length);
+      this.add.image(bx, by, `veh-${tipo}-0`).setRotation(-Math.PI / 2).setScale(esc);
       this.add.text(bx, by + 52, VEHICLES[tipo].name.toUpperCase(), {
-        fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '13px', color: COLORS.ink,
+        fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '12px', color: COLORS.ink,
       }).setOrigin(0.5);
-      this.add.text(bx, by + 70, `${VEHICLES[tipo].price} €`, {
+      this.add.text(bx, by + 67, `${VEHICLES[tipo].price} €`, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '13px', color: COLORS.money,
       }).setOrigin(0.5);
       return { tipo, x: bx, y: by };
@@ -68,7 +75,7 @@ export class ConcesionarioScene extends Phaser.Scene {
 
     // los coches de la sala no se atraviesan
     this.fisica = new FisicaInterior(this);
-    for (const b of this.bahias) this.fisica.rect(b.x, b.y, 74, 46);
+    for (const b of this.bahias) this.fisica.rect(b.x, b.y, 40, 70);
 
     // puerta de salida, abajo del todo, como en el escondite
     this.puerta = { x: s.x + s.w / 2, y: s.y + s.h - 6 };
@@ -129,9 +136,14 @@ export class ConcesionarioScene extends Phaser.Scene {
     }
     this.jugador.setPosition(this.px, this.py);
 
-    const bahia = this.bahias.find(
-      (b) => Phaser.Math.Distance.Between(this.px, this.py, b.x, b.y) < 60
-    );
+    // la MAS cercana: con dos filas las plazas estan juntas y la primera de
+    // la lista a menos de 60 px podia ser la de al lado
+    let bahia = null;
+    let dBahia = 60;
+    for (const b of this.bahias) {
+      const d = Phaser.Math.Distance.Between(this.px, this.py, b.x, b.y);
+      if (d < dBahia) { dBahia = d; bahia = b; }
+    }
     const enPuerta = Phaser.Math.Distance.Between(this.px, this.py, this.puerta.x, this.puerta.y) < 46;
 
     if (this.confirmacion > 0) {

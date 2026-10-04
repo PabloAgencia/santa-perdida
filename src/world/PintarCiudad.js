@@ -527,6 +527,65 @@ export const PintarCiudad = {
   // tejado, ventanas, portal...) y con 313 edificios eso eran casi cuatro mil
   // objetos en la escena, solo para cosas que NO se mueven nunca. Agrupados
   // por profundidad son doce objetos y se dibujan de una pasada.
+  // QUE TEJADO LLEVA CADA EDIFICIO (Pablo, 4-oct: "que no haya casas
+  // exactamente iguales una pegada a la otra"). Antes habia UNA imagen por
+  // barrio (`techo-residencial`...) y las 900 casas del residencial eran la
+  // misma foto, estirada aunque el edificio fuera alargado.
+  //
+  // Ahora cada barrio puede tener varias, de dos formas:
+  //   techo-<barrio>-c1, -c2...   CUADRADAS, para edificios casi cuadrados
+  //   techo-<barrio>-a1, -a2...   ALARGADAS (2:3, mas altas que anchas), para
+  //                               los que miden mucho mas de un lado
+  // (la de siempre, `techo-<barrio>`, cuenta como una cuadrada mas). Y cada
+  // imagen se puede girar: las cuadradas 0/90/180/270, las alargadas 0/180
+  // (o 90/270 si el edificio es apaisado). Una imagen da asi hasta cuatro
+  // tejados distintos.
+  //
+  // El reparto es fijo (sale del sitio del edificio) y mira a los vecinos ya
+  // repartidos: si el que toca coincide en imagen Y giro con uno pegado (a
+  // menos de 48 px), prueba el siguiente. Devuelve { clave, giro } o null.
+  elegirTecho(b) {
+    if (!this.techosPorBarrio) {
+      this.techosPorBarrio = {};
+      this.techosPuestos = [];
+      for (const k of this.textures.getTextureKeys()) {
+        const m = /^techo-([a-z]+)(?:-([ca])(\d+))?$/.exec(k);
+        if (!m || !(m[1] in (this.map.cfg.zones || {}))) continue;
+        const t = (this.techosPorBarrio[m[1]] = this.techosPorBarrio[m[1]] || { c: [], a: [] });
+        t[m[2] || 'c'].push(k);
+      }
+      for (const t of Object.values(this.techosPorBarrio)) { t.c.sort(); t.a.sort(); }
+    }
+    const t = this.techosPorBarrio[b.zone];
+    if (!t) return null;
+    const largo = Math.max(b.pw, b.ph) / Math.min(b.pw, b.ph);
+    const apaisado = b.pw > b.ph;
+    // alargado de verdad: la imagen cuadrada se deformaria demasiado
+    const forma = largo >= 1.3 && t.a.length ? 'a' : 'c';
+    const lista = t[forma].length ? t[forma] : t.c.length ? t.c : t.a;
+    // las combinaciones posibles de imagen y giro para este edificio
+    const opciones = [];
+    for (const clave of lista) {
+      const giros = forma === 'c' ? [0, 1, 2, 3] : apaisado ? [1, 3] : [0, 2];
+      for (const g of giros) opciones.push({ clave, giro: g });
+    }
+    if (!opciones.length) return null;
+    const rnd = buildingRng(b.tx + 7, b.ty + 13);
+    const inicio = Math.floor(rnd() * opciones.length);
+    const pegados = this.techosPuestos.filter((o) =>
+      Math.abs(o.b.px - b.px) < (o.b.pw + b.pw) / 2 + 48 &&
+      Math.abs(o.b.py - b.py) < (o.b.ph + b.ph) / 2 + 48);
+    let elegido = opciones[inicio];
+    for (let i = 0; i < opciones.length; i++) {
+      const op = opciones[(inicio + i) % opciones.length];
+      // con mas de una imagen, ni siquiera la misma girada al lado
+      const choca = pegados.some((o) => o.clave === op.clave && (lista.length > 1 || o.giro === op.giro));
+      if (!choca) { elegido = op; break; }
+    }
+    this.techosPuestos.push({ b, clave: elegido.clave, giro: elegido.giro });
+    return elegido;
+  },
+
   drawBuildings() {
     const block = (x, y, w, h, tint, depth, alpha = 1) =>
       this.pintarRect(x, y, w, h, tint, depth, alpha);
@@ -567,10 +626,13 @@ export const PintarCiudad = {
       // EL TEJADO. Si hay imagen preparada para el barrio, se usa esa (una
       // sola imagen por edificio, que eso si lo aguanta la ciudad grande);
       // si no, el rectangulo de color de siempre.
-      const claveTecho = `techo-${b.zone}`;
-      if (this.textures.exists(claveTecho)) {
-        this.capaObjetos(-1199, b.px, b.py).add(this.add.image(b.px, b.py, claveTecho)
-          .setDisplaySize(b.pw, b.ph).setDepth(-1200));
+      const techo = this.elegirTecho(b);
+      if (techo) {
+        // girada 90º la imagen se pinta con el ancho y el alto cambiados
+        const girado = techo.giro % 2 === 1;
+        this.capaObjetos(-1199, b.px, b.py).add(this.add.image(b.px, b.py, techo.clave)
+          .setDisplaySize(girado ? b.ph : b.pw, girado ? b.pw : b.ph)
+          .setRotation(techo.giro * Math.PI / 2).setDepth(-1200));
         b.conFoto = true;
       } else {
         block(b.px, b.py, b.pw, b.ph, b.color, -1200);

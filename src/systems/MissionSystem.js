@@ -83,7 +83,11 @@ export class MissionSystem {
           this.scene.add.image(punto.x, punto.y + 4, 'shadow')
             .setScale(0.32).setAlpha(0.45).setDepth(punto.y - 3)
         );
-        const contacto = this.scene.add.image(punto.x, punto.y, `gang-${key}-0`)
+        // el jefe en persona si ya tiene su sprite (`jefe-consul`...,
+        // PROMPTS-PARA-GEMINI.txt); si no, uno de su banda
+        const jefe = `jefe-${JEFE_BANDA[key]}-0`;
+        const contacto = this.scene.add.image(punto.x, punto.y,
+          this.scene.textures.exists(jefe) ? jefe : `gang-${key}-0`)
           .setDepth(punto.y);
         objetos.push(contacto);
         this.scene.tweens.add({

@@ -1,4 +1,4 @@
-import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
+import { VEHICLES } from '../config/vehicles.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
@@ -46,7 +46,12 @@ const CHECKPOINT_ALCANCE = 50;
 // cortes salen de ahi: cualquier coche saca bronce sin esfuerzo, uno normal
 // saca plata conduciendo como el trafico, y el oro pide o un coche rapido o
 // cortar mejor las curvas que la IA (que frena mucho antes de cada una).
-const VEL_MEDIA = (VEHICLE_KEYS.reduce((s, k) => s + VEHICLES[k].maxSpeed, 0) / VEHICLE_KEYS.length) * 0.95;
+// La media se toma de los SIETE modelos con los que se midio (no de
+// VEHICLE_KEYS entero): al meter el camion y el scooter el 4-oct, la media
+// de todos bajaba un 9% y las medallas salian mas baratas sin que nadie lo
+// hubiera decidido.
+const MODELOS_MEDIDOS = ['chinchorro', 'velagt', 'centella', 'bastion', 'avispa', 'carguero', 'taxi'];
+const VEL_MEDIA = (MODELOS_MEDIDOS.reduce((s, k) => s + VEHICLES[k].maxSpeed, 0) / MODELOS_MEDIDOS.length) * 0.95;
 const RITMO_ORO = 1.15;
 const RITMO_PLATA = 0.75;
 const RITMO_BRONCE = 0.55;

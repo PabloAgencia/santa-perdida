@@ -27,7 +27,15 @@ const TOPE_DURO = 34;       // vivos + cuerpos, para no crecer sin fin
 const SPAWN_MIN = 260;
 const SPAWN_MAX = 900;
 const DESPAWN = 1500;
-const SKINS = 12;
+// LA GENTE DE LA CALLE: ped-0 a ped-11 (los dibujados y sus fotos) y, si
+// existen, ped-16 a ped-27 (los del 4-oct-2026). Los ped-12 a ped-15 NO:
+// son las trabajadoras de El Terciopelo y viven dentro del club.
+const PIELES_POSIBLES = [...Array(12).keys(), ...Array.from({ length: 12 }, (_, i) => 16 + i)];
+let pielesCalle = null;
+function pielAlAzar(scene) {
+  if (!pielesCalle) pielesCalle = PIELES_POSIBLES.filter((n) => scene.textures.exists(`ped-${n}-0`));
+  return pielesCalle[Math.floor(Math.random() * pielesCalle.length)];
+}
 const DOWN_LIFETIME = 22;
 
 // uno de cada seis conductores a los que les robas el coche se encara
@@ -165,7 +173,7 @@ export class NPCSystem {
       // se descartan casi siempre
       if (owner !== aqui && Math.random() < 0.7) continue;
       const faction = owner && Math.random() < GANG_CHANCE ? owner : null;
-      const skin = Math.floor(Math.random() * SKINS);
+      const skin = pielAlAzar(this.scene);
       this.people.push(
         new Pedestrian(this.scene, this.map, s.x, s.y, skin, faction, this.pathfinder)
       );
@@ -180,7 +188,7 @@ export class NPCSystem {
   // vuelva hostil, que combata) lo hace el mismo camino que a cualquier
   // otro de banda, updateHostility y checkAttacks.
   crearPandillero(x, y, faction) {
-    const skin = Math.floor(Math.random() * SKINS);
+    const skin = pielAlAzar(this.scene);
     const p = new Pedestrian(this.scene, this.map, x, y, skin, faction, this.pathfinder);
     p.armado = true;
     this.people.push(p);
@@ -192,7 +200,7 @@ export class NPCSystem {
   // uno al volante de cada coche del trafico. No entra en la lista de gente:
   // si no, su propio coche le veria como un peaton al que atropellar.
   crearConductor(vehicle) {
-    const skin = Math.floor(Math.random() * SKINS);
+    const skin = pielAlAzar(this.scene);
     const cond = new Pedestrian(this.scene, this.map, vehicle.x, vehicle.y, skin, null, this.pathfinder);
     cond.sentarEn(vehicle);
     return cond;

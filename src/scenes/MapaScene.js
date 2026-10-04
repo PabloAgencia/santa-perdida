@@ -187,7 +187,9 @@ export class MapaScene extends Phaser.Scene {
     for (const n of city.negocios ? city.negocios.negocios : []) {
       if (!GameState.conoce(n.clave)) continue;
       const tuyo = GameState.esDueno(n.clave);
-      this.marca(n.x, n.y, tuyo ? 0xe8b54a : 0x8fd694, n.cfg.nombre, tuyo ? 11 : 9, 'marca-negocio');
+      // el casino, con su ficha de casino si ya existe (marca-casino)
+      const icono = n.clave === 'negocio-casino' && this.textures.exists('marca-casino') ? 'marca-casino' : 'marca-negocio';
+      this.marca(n.x, n.y, tuyo ? 0xe8b54a : 0x8fd694, n.cfg.nombre, tuyo ? 11 : 9, icono);
     }
     const puertaConcesionario = city.concesionario && city.concesionario.puerta;
     if (puertaConcesionario && GameState.conoce('concesionario')) {

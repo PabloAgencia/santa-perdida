@@ -164,6 +164,92 @@ export const VEHICLES = {
     maxHp: 240, price: 0,
     palette: [0xe8e4dc, 0xdcd6c8],
   },
+  // ---- LOS MODELOS DEL 4-OCT-2026 (Pablo: "incluso mas vehiculos") -------
+  // Que la calle no sean siempre los mismos siete. Nombres propios de Santa
+  // Perdida, ninguna marca real. Se dibujan por codigo segun su `clase`
+  // hasta que lleguen sus imagenes (PROMPTS-PARA-GEMINI.txt).
+
+  // el utilitario de ciudad: pequeño, gasta poco, se aparca en cualquier sitio
+  pulga: {
+    name: 'Pulga',
+    clase: 'barato',
+    length: 38, width: 19,
+    maxSpeed: 230, accel: 135, brake: 300, reverseSpeed: 95,
+    turnRate: 2.9, lateralRetention: 0.87,
+    maxHp: 80, price: 2200,
+    palette: [0xc8c4b4, 0x8a2a24, 0x2f5a7a, 0xd8b84a, 0x3a5a3a],
+  },
+  // la ranchera familiar de los noventa: larga, blanda, con sitio para todo
+  ranchera: {
+    name: 'Ranchera',
+    clase: 'resistente',
+    length: 54, width: 23,
+    maxSpeed: 280, accel: 135, brake: 305, reverseSpeed: 98,
+    turnRate: 2.0, lateralRetention: 0.88,
+    maxHp: 150, price: 3800,
+    palette: [0x6b5a44, 0x3a4a5a, 0x7a2e2a, 0xa8a49b, 0x2e3a2e],
+  },
+  // la pickup del campo y de las obras: fuerte, de suspension dura
+  mulero: {
+    name: 'Mulero',
+    clase: 'resistente',
+    length: 56, width: 25,
+    maxSpeed: 290, accel: 150, brake: 300, reverseSpeed: 100,
+    turnRate: 1.95, lateralRetention: 0.89,
+    maxHp: 175, price: 5200,
+    palette: [0x8a3a2a, 0x2f4a3a, 0xc8c0a8, 0x24262c, 0x5a6b7a],
+  },
+  // el todoterreno de quien quiere que le vean: alto, pesado y caro
+  sierra: {
+    name: 'Sierra 4x4',
+    clase: 'resistente',
+    length: 52, width: 26,
+    maxSpeed: 320, accel: 190, brake: 330, reverseSpeed: 105,
+    turnRate: 1.9, lateralRetention: 0.885,
+    maxHp: 200, price: 9500,
+    palette: [0x15171b, 0xe8e4dc, 0x3a4a3a, 0x5a5e66, 0x6a1a20],
+  },
+  // la berlina negra de los que mandan (la Doña no va en otra cosa)
+  senador: {
+    name: 'Senador',
+    clase: 'resistente',
+    length: 58, width: 24,
+    maxSpeed: 360, accel: 210, brake: 360, reverseSpeed: 108,
+    turnRate: 1.95, lateralRetention: 0.875,
+    maxHp: 165, price: 11000,
+    palette: [0x0f1014, 0x2a2a3a, 0x4a1a24, 0x3a3d42, 0xd8d4cc],
+  },
+  // el descapotable de los sesenta: precioso, rapido y de papel
+  duna: {
+    name: 'Duna',
+    clase: 'rapido',
+    length: 50, width: 22,
+    maxSpeed: 390, accel: 225, brake: 380, reverseSpeed: 110,
+    turnRate: 2.3, lateralRetention: 0.865,
+    maxHp: 85, price: 12500,
+    palette: [0xd8c8a0, 0x8ac0c8, 0xb8262c, 0x2a3a5a, 0xe8e4dc],
+  },
+  // el scooter de reparto: cabe por cualquier sitio y no aguanta nada
+  mosquito: {
+    name: 'Mosquito',
+    clase: 'moto',
+    length: 26, width: 12,
+    maxSpeed: 260, accel: 270, brake: 330, reverseSpeed: 60,
+    turnRate: 3.9, lateralRetention: 0.74,
+    maxHp: 35, price: 1500,
+    palette: [0x8ac0a0, 0xd8384a, 0xe8e4dc, 0x2a2d33, 0xe8b54a],
+  },
+  // el camion de caja: lento como un dia sin pan, pero no lo para nadie
+  titan: {
+    name: 'Titan',
+    clase: 'furgoneta',
+    length: 74, width: 30,
+    maxSpeed: 185, accel: 70, brake: 210, reverseSpeed: 70,
+    turnRate: 1.35, lateralRetention: 0.93,
+    maxHp: 280, price: 7000,
+    palette: [0xe8e4dc, 0x3a5a7a, 0xa8342a, 0x5a5e66, 0xd8a83a],
+  },
+
   // LA FURGONETA DE LOS ROBOS (como la Boxville negra de San Andreas): solo
   // la aparca RoboSystem, en el residencial. `especial` = no sale como
   // trafico ni aparcada por ahi, SIN ser de la policia (la marca `police`
