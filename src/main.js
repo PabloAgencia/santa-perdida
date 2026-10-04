@@ -12,7 +12,8 @@ import { MercadoScene } from './scenes/MercadoScene.js';
 import { ConcesionarioScene } from './scenes/ConcesionarioScene.js';
 import { GimnasioScene } from './scenes/GimnasioScene.js';
 import { TiroScene } from './scenes/TiroScene.js';
-import { PrologoScene } from './scenes/PrologoScene.js';
+import { CinematicaScene } from './scenes/CinematicaScene.js';
+import { PersonajesScene } from './scenes/PersonajesScene.js';
 import { ClubScene } from './scenes/ClubScene.js';
 import { LocalScene } from './scenes/LocalScene.js';
 import { CasinoScene } from './scenes/CasinoScene.js';
@@ -47,7 +48,7 @@ const game = new Phaser.Game({
   scene: [
     BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene,
     ShopScene, MapaScene, ProgresoScene, MercadoScene, ConcesionarioScene, GimnasioScene, TiroScene,
-    PrologoScene, ClubScene, LocalScene, CasinoScene, RoboCasaScene,
+    CinematicaScene, PersonajesScene, ClubScene, LocalScene, CasinoScene, RoboCasaScene,
   ],
 });
 

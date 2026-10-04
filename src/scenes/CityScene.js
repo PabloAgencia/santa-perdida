@@ -22,6 +22,7 @@ import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
 import { RoboSystem } from '../systems/RoboSystem.js';
 import { ROBO } from '../config/robos.js';
+import { CINEMATICAS } from '../config/cinematicas.js';
 import { ArmasConfiscadasSystem } from '../systems/ArmasConfiscadasSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
@@ -215,14 +216,46 @@ export class CityScene extends Phaser.Scene {
     // La primera vez que se juega una partida de cero, antes de nada:
     // HISTORIA-SANTA-PERDIDA.txt. `loaded` ya dice si esto viene de un
     // guardado (`SaveSystem.load()` de arriba) o de `GameState.reset()`.
-    if (!loaded && !GameState.flags.prologoVisto) this.abrirPrologo();
+    // Tambien una partida CARGADA que aun no lo haya visto y no tenga ninguna
+    // mision hecha (las empezadas antes de que existiera el prologo, 4-oct):
+    // la historia todavia no ha empezado para ella. Con misiones hechas ya no
+    // se fuerza; se puede ver desde PERSONAJES (tecla P).
+    const sinMisiones = Object.keys(GameState.flags.misiones || {}).length === 0;
+    if (!GameState.flags.prologoVisto && (!loaded || sinMisiones)) this.abrirPrologo();
   }
 
+  // EL PROLOGO (config/cinematicas.js): la llegada de Cero a Santa Perdida.
+  // Solo una vez por partida (`flags.prologoVisto`).
   abrirPrologo() {
+    this.verCinematica(CINEMATICAS.prologo, () => {
+      GameState.flags.prologoVisto = true;
+      SaveSystem.save();
+    });
+  }
+
+  // UNA CINEMATICA ENCIMA DE LA CIUDAD (CinematicaScene): la ciudad y el HUD
+  // se quedan en pausa y en silencio, y al acabar se reanuda todo y se
+  // llama a `alAcabar` (que la mision arranque, por ejemplo).
+  verCinematica(planos, alAcabar = null) {
+    if (!planos || planos.length === 0) {
+      if (alAcabar) alAcabar();
+      return;
+    }
     this.captureState();
+    Audio.engine(false, 0, false);
+    Audio.skid(0);
+    Audio.siren(0);
     this.scene.pause();
     this.scene.pause('UIScene');
-    this.scene.launch('PrologoScene');
+    this.scene.launch('CinematicaScene', {
+      planos,
+      alAcabar: () => {
+        this.scene.resume('UIScene');
+        this.scene.resume();
+        this.cameras.main.fadeIn(400, 0, 0, 0);
+        if (alAcabar) alAcabar();
+      },
+    });
   }
 
   // Sin `desde`, el de siempre: el escondite del principio. Con `desde`

@@ -6,6 +6,7 @@ import { Vehicle } from '../entities/Vehicle.js';
 import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
 import { steerTo } from './driving.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
+import { CINEMATICAS, FONDO_BANDA, JEFE_BANDA } from '../config/cinematicas.js';
 
 const ALCANCE = 42;
 
@@ -175,12 +176,31 @@ export class MissionSystem {
   }
 
   intentarEmpezar(x, y) {
-    if (this.activa) return false;
+    if (this.activa || this.hablando) return false;
     const dador = this.dadorCerca(x, y);
     if (!dador) return false;
 
-    this.empezar(dador.mision);
+    // PRIMERO SE HABLA (APUNTES G1): quien te da el encargo te lo cuenta en
+    // una cinematica (config/cinematicas.js) y la mision arranca al acabar.
+    // Antes la intro salia como un cartel de texto encima del juego.
+    const def = dador.mision;
+    if (this.scene.verCinematica) {
+      this.hablando = true;
+      this.scene.verCinematica(this.dialogoDe(def), () => {
+        this.hablando = false;
+        this.empezar(def);
+      });
+    } else {
+      this.empezar(def);
+    }
     return true;
+  }
+
+  // el dialogo de la mision; si no tiene uno escrito, su `intro` en boca
+  // del jefe de la banda, en su decorado
+  dialogoDe(def) {
+    if (CINEMATICAS[def.id]) return CINEMATICAS[def.id];
+    return [{ fondo: FONDO_BANDA[def.faccion], quien: JEFE_BANDA[def.faccion], texto: def.intro }];
   }
 
   empezar(def) {
@@ -191,9 +211,11 @@ export class MissionSystem {
       tiempo: 0,
       llevaCarga: false,
     };
+    // el nombre de la mision, como en los GTA al acabar de hablar; lo que
+    // hay que hacer ya lo dice el primer paso (prepararPaso)
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: def.nombre.toUpperCase(),
-      subtitle: def.intro,
+      subtitle: FACTIONS[def.faccion].jefe.alias,
       color: '#e8b54a',
     });
     EventBus.emit(EVT.MISSION_START, { mision: def });

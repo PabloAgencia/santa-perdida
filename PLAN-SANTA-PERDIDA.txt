@@ -3780,3 +3780,42 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   el reloj sigue al doble como siempre. Probado: 21:00 no arranca, 22:30 si
   (450 s restantes), 1 min/s robando y 2 min/s al acabar.
   Casino: Pablo no quiere tocar topes ni reglas ("que este guapo y ya").
+
+[HECHO 4-oct, v60] G1 (PRIMERA PARTE): CINEMATICAS, DIALOGOS Y EL REPARTO CON NOMBRE.
+  Pablo: "darle coherencia, que siga un hilo, los personajes, la historia
+  de cada uno y su personalidad... dales nombres y personalidad".
+  · CinematicaScene.js: franjas de cine, decorado con movimiento lento,
+    retrato y placa del color de la banda (mote grande, nombre real
+    debajo), texto letra a letra con pitidos en el tono de cada uno, ENTER
+    sigue / ESC salta. Decorados por codigo (ciudad, carretera, muelle,
+    barrio, despacho) y retratos por codigo (world/retratos.js); si existe
+    `cine-<x>` o `retrato-<id>` en arte/, manda la imagen.
+  · config/cinematicas.js: PROLOGO nuevo (la llegada en autobus, el muelle,
+    Ferro, el Consul y el nombre "Cero") y el dialogo de las 13 misiones,
+    cada uno cuadrado con los pasos reales de su mision. Textos con tildes
+    (van en Georgia; Pricedown no las tiene, por eso placas sin tilde).
+  · Las misiones arrancan al acabar su dialogo (MissionSystem); la que no
+    tenga dialogo usa su intro en boca del jefe.
+  · config/personajes.js: 18 personajes con nombre y apellidos, edad,
+    oficio, de donde viene, como es, que quiere y que esconde (esto ultimo
+    no se enseña). Nombres nuevos: Ivan Renco, Gonzalo Empedrado, Anselmo
+    Sacau, Julian Salaverri, Iñigo Anzures, Amador Lozano (Puro), Paco
+    Iturbe, Fermin Lasarte (El Duque), Custodio FERRAN. "Custodia del
+    Faro" pasa a Remedios Galan (se llamaba casi igual que el Abuelo).
+  · PAUSA > PERSONAJES (PersonajesScene.js): expediente de los que conoces
+    (los que te han hablado, los de tus misiones hechas y el prologo). Los
+    que aun no han salido no aparecen (no se revienta el Acto 3). P = ver
+    el prologo otra vez.
+  · El prologo sale tambien al cargar una partida sin ninguna mision hecha
+    (la de Pablo, empezada antes de que existiera).
+  · HISTORIA-SANTA-PERDIDA.txt: secciones "NOMBRES COMPLETOS" y "COMO
+    HABLA CADA UNO" (la voz de cada personaje, y el hilo ya sembrado).
+  · PROMPTS-PARA-GEMINI.txt: 14 prompts (9 retratos y 5 decorados).
+  Probado en Chrome: prologo, los tres decorados con su gente, una mision
+  que arranca al acabar su dialogo (y no se puede empezar dos veces),
+  PERSONAJES con los 9, P ver prologo, sin errores. Partida de Pablo:
+  reputacion con Los Amarres devuelta tras una prueba (-4 -> igual), sin
+  "conocidos" de prueba, prologo sin marcar para que lo vea el.
+  SIGUIENTE (G1, resto): escribir las misiones que faltan del Acto 2
+  (13-15 de la biblia), el Acto 2.5 de El Duque, y el Acto 3 con Anzures,
+  todas con su dialogo y mirando "COMO HABLA CADA UNO".

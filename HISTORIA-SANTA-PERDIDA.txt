@@ -196,6 +196,107 @@ SR. ANZURES — no es de ninguna banda ni de Santa Perdida. Representa al
 
 
 ================================================================================
+NOMBRES COMPLETOS  (4-oct-2026)
+================================================================================
+Pablo: "dales nombres y personalidad... que tengan su nombre, su
+personalidad y todo bien trabajado". Todo el reparto tiene ya nombre y
+apellidos, edad, de donde viene, como es, que quiere y que esconde, en
+src/config/personajes.js (es la ficha que se ve en el juego, en la pausa,
+PERSONAJES). Lo que estaba solo como mote aqui ha recibido nombre:
+
+  Baltasar Roig, "El Consul" (64) .......... jefe de Los Amarres
+  Marina Roig (36) ......................... su hija
+  Ramiro Sotelo, "Ferro" (44) .............. capataz de los muelles
+  Anselmo Sacau, "Sacau" (57) .............. gruista del puerto (NUEVO NOMBRE)
+  Nando Ecija, "Chispa" (23) ............... jefe de la Cuadrilla
+  Valeria Moron, "Vale" (23) ............... su mano derecha
+  Custodio Ferran, "El Abuelo" (69) ........ el veterano (NUEVO APELLIDO)
+  Ivan Renco, "Renco" (20) ................. el soplon (NUEVO NOMBRE)
+  Adelina Verdial, "La Doña" (62) .......... jefa de Casa Verdial
+  Maximo Verdial (31) ...................... su hijo
+  Gonzalo Empedrado, "El Licenciado" (54) .. el abogado (NUEVO NOMBRE)
+  Julian Salaverri, "El Inspector" (50) .... comisaria central (NUEVO NOMBRE)
+  Iñigo Anzures (48) ....................... Consorcio Poniente (NUEVO NOMBRE)
+  Amador Lozano, "Puro" (58) ............... mecanico del taller de pintura
+  Teresa Alba (33) ......................... la periodista
+  Remedios Galan, "La del faro" (77) ....... antes "Custodia del Faro": se
+                                             llamaba casi igual que el Abuelo
+                                             (Custodio) y en la misma ciudad
+                                             eso confundia
+  Paco Iturbe, "El Pregonero" (61) ......... puesto del mercado
+  Fermin Lasarte, "El Duque" (52) .......... dueño de El Terciopelo
+  DJ Marejada ............................. (sin ficha todavia: no sale en
+                                             pantalla hasta que haya radio)
+
+  Detalles que se han sumado al escribir las fichas (y que ya son canon):
+    · El Consul empezo descargando cajas en el mismo muelle que hoy manda.
+    · Marina estudio fuera y volvio por su padre.
+    · Ferro se llama asi porque "nunca se dobla".
+    · El Abuelo trabajo en la fabrica de redes; sabe quien compro los
+      terrenos de la fabrica cuando cerro y nunca lo ha contado (gancho
+      para el Acto 3: el Consorcio lleva mas tiempo aqui de lo que parece).
+    · Renco entro en la cuadrilla con quince años; Chispa le enseño a robar
+      su primera moto.
+    · Salaverri llego queriendo limpiar la ciudad y lleva doce años
+      cobrando de Casa Verdial; guarda una libreta de cada sobre.
+    · Remedios es la viuda del ultimo farero y apunta cada barco que entra
+      sin luces.
+    · Paco Iturbe le debe dinero a Casa Verdial.
+    · El Duque sabe mas de las cuentas de la Doña que la propia Doña.
+    · Teresa Alba tiene una fuente dentro de Casa Verdial.
+
+
+================================================================================
+COMO HABLA CADA UNO  (4-oct-2026, al escribir las primeras cinematicas)
+================================================================================
+Pablo: "es importantisimo darle coherencia, que siga un hilo, los personajes,
+la historia de cada uno y su personalidad". Para que un personaje suene
+IGUAL en la mision 1 y en la 50, aqui esta su voz. Cualquier dialogo nuevo
+(config/cinematicas.js) se escribe mirando esto primero.
+
+  EL CONSUL — trata de USTED a todo el mundo, incluido Cero, y llama
+    "socio" a cualquiera (hasta a quien va a hundir). Frases largas, con
+    calma, como si redactara un tratado. Nunca grita: cuando se pone serio,
+    acorta las frases ("Llegamos tarde, Cero. Y yo no llego tarde nunca").
+    A su hija la llama "hija" y le contesta sin explicarle nada: ese es su
+    punto ciego.
+  MARINA — seca, pocas palabras, siempre una pregunta incomoda. Al principio
+    desconfia de Cero ("¿otro de la calle?"); lo que de verdad la inquieta es
+    su padre ("¿desde cuando trabajamos para gente de fuera?").
+  FERRO — tutea, bruto y directo, frases cortas. Habla mal del "viejo" en
+    cuanto el Consul no esta delante. Amenaza sin rodeos.
+  SACAU — (aun sin dialogo) cotilla y gracioso, nunca da nada gratis.
+  CHISPA — tutea, habla de barrio ("pijo", "currar", "tio"), con humor
+    hasta que algo le toca de cerca; entonces se le rompe la voz ("Era mi
+    amigo"). Protege al barrio por encima de todo: "no quiero sangre en el
+    barrio".
+  VALE — la cabeza fria: hechos y consecuencias, sin adornos ("Si se lo
+    rompe uno de los nuestros, mañana tenemos a Casa Verdial en la puerta").
+  EL ABUELO — frases de antes, siempre con el pasado del barrio y las
+    fabricas cerradas. Melancolico, nunca da ordenes.
+  RENCO — nervioso, se le traba la lengua, se justifica ("me obligaron...
+    eran de fuera").
+  LA DOÑA — trata de USTED, cortesia perfecta, ofrece cafe. Dice lo peor con
+    la voz mas suave ("No quiero que le pase nada. Quiero que su coche
+    aparezca en el fondo del puerto"). Nunca dice una amenaza con todas las
+    letras.
+  LICENCIADO EMPEDRADO — de usted, lenguaje de abogado ("por las vias
+    adecuadas", "no nos llame"): todo para que nada quede en un papel.
+  CERO — no habla NUNCA. Lo que hace habla por el.
+
+  EL HILO QUE YA ESTA SEMBRADO (en las cinematicas de las 13 misiones):
+    · El Consul tiene un trato con "gente de fuera" que paga el triple, y
+      Marina empieza a notarlo (carrera-muelle, ultimo-viaje).
+    · Ferro cree que el viejo se ha ablandado y juega por su cuenta
+      (la-duda-de-ferro): semilla del golpe de mano del Acto 3.
+    · Renco vendia a "los de fuera" (el-soplon, lo-que-hizo-renco).
+    · La Doña mira el puerto con ganas (bien-llevado), primera pista de su
+      plan, que en el Acto 3 resultara no ser solo suyo (Anzures).
+    · "Gente de fuera" lo dicen ya el Consul, Marina, Renco y la intro de
+      Chispa: cuando aparezca Anzures, el jugador lo habra oido tres veces.
+
+
+================================================================================
 PERSONAJES NEUTRALES — LA CIUDAD DE TODOS LOS DIAS
 ================================================================================
 Estos no pelean por ningun barrio, pero le dan cuerpo a Santa Perdida y
@@ -224,7 +325,7 @@ LA PERIODISTA, TERESA ALBA — free-lance, lleva meses detras de un
   el sistema de camara de fotos que ya estaba en la lista de pendientes
   (IDEAS-3-COMPLETISTA).
 
-CUSTODIA DEL FARO — una mujer mayor que vive sola en el faro
+REMEDIOS GALAN, "LA DEL FARO" — una mujer mayor que vive sola en el faro
   (`landmark-faro.jpg`) desde hace decadas y ve todo lo que entra y sale
   del puerto de noche sin que nadie la note a ella. Personaje de una sola
   mision pero memorable, al estilo de los personajes "de un rato" de los
@@ -551,9 +652,9 @@ general; dan lore y algo de dinero, no hacen falta para ningun final)
     "sin preguntar de donde salen".
 53. deudas-viejas (Puro) — un favor personal, de antes de que existiera
     el taller.
-54. lo-que-se-ve-desde-el-faro (Custodia del Faro) — algo que solo ella
+54. lo-que-se-ve-desde-el-faro (Remedios, la del faro) — algo que solo ella
     pudo ver, una noche cualquiera de las de antes del Acto 3.
-55. el-faro-no-miente (Custodia del Faro) — segunda visita, ya con una
+55. el-faro-no-miente (Remedios, la del faro) — segunda visita, ya con una
     pista real sobre el Consorcio (encaja mejor a partir del Acto 3).
 56. el-rumor-del-mercado (Pregonero del Mercado) — el primero en enterarse
     de todo, siempre, y el ultimo en decirlo si no le conviene.
@@ -621,7 +722,7 @@ QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
      mas el final nuevo del Consorcio. Necesita, como minimo, una pantalla
      de resumen de final (reutilizar BIG_MESSAGE a pantalla completa).
   5. PERSONAJES NEUTRALES CON ENCARGO PROPIO: Puro, DJ Marejada, Teresa
-     Alba la periodista, la Custodia del Faro, el Pregonero del Mercado.
+     Alba la periodista, Remedios la del faro, el Pregonero del Mercado.
      Cada uno puede dar 1-2 misiones sueltas, al margen de las tres
      bandas, del estilo "stranger missions" de los GTA de toda la vida.
   6. MAPA VIVO (bloque aparte, sigue en pie de la version anterior de este

@@ -54,7 +54,313 @@ YA HECHO (no hace falta volver a generarlo)
 
 
 ################################################################################
-#  LA TANDA DE AHORA (27-sep-2026, noche): EL CLUB              6 PROMPTS
+#  LA TANDA DE AHORA (4-oct-2026): LAS CINEMATICAS            14 PROMPTS
+################################################################################
+Para la historia (APUNTES G1). Las cinematicas YA FUNCIONAN: retratos y
+decorados se dibujan por codigo mientras no haya imagen. En cuanto estas
+existan, salen solas en su lugar (no hay que tocar nada del juego).
+
+  9 retratos   los que hablan en el prologo y en las 13 misiones
+  5 decorados  ciudad, carretera, muelle, barrio y despacho
+
+Cada retrato describe al personaje TAL COMO ES en HISTORIA-SANTA-PERDIDA.txt
+(aspecto y caracter): que la cara cuente lo mismo que dice el personaje.
+Lo importante es que el mismo personaje se reconozca siempre: si una tirada
+sale bien pero con otra cara, mejor repetirla que mezclar dos versiones.
+
+DONDE SE DEJA CADA COSA
+   retrato-consul.png ... retrato-empedrado.png   sprites\originales\cine\
+   cine-ciudad.png ... cine-despacho.png          sprites\originales\cine\
+   Vale .png o .jpg. Dejalas y avisame: las paso yo a arte\ y a lista.json.
+
+--------------------------------------------------------------------------------
+  retrato-consul.png                El Consul, jefe de Los Amarres
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his mid sixties, the boss of the city's port and its smuggling.
+Neat silver-grey hair combed back, a thick grey moustache, tanned weathered
+skin, heavy-lidded patient eyes that have seen every deal. Dark navy
+three-piece suit, white shirt, burgundy tie. Calm, polite, a little smug:
+he speaks as if every sentence were an international treaty and calls
+everyone "partner". Faint smile, never in a hurry.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-marina.png                Marina Roig, la hija del Consul
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A woman in her mid thirties, the real brains of her father's port
+business. Long straight dark brown hair, sharp dark eyes, light olive skin,
+almost no make-up. Dark green work jacket over a simple top. Serious, dry,
+sceptical expression: she distrusts everyone her father brings in, and
+lately she distrusts her father too.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-ferro.png                 Ferro, capataz de los muelles
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A burly man in his forties, foreman of the docks. Shaved head, short
+black beard, broad neck, tanned brown skin, a small scar on one eyebrow.
+Grey-blue work overalls over a tight t-shirt. Hard, impatient, aggressive
+stare: a brute who thinks his old boss has gone soft.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-chispa.png                Chispa, jefe de la Cuadrilla
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A young man of about twenty-three, leader of a street crew from a poor
+hillside neighbourhood. Short messy dark brown hair, light olive skin, a
+cocky half-smile with tired eyes, a thin gold chain. Orange tracksuit
+jacket half zipped. Charismatic and joking, but fiercely protective of
+his neighbourhood.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-vale.png                  Vale, la mano derecha de Chispa
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A young woman of about twenty-three, the cold head of the street crew.
+Black hair pulled back in a tight ponytail, brown skin, calm calculating
+eyes, small hoop earrings. Dark rust-red hoodie. Unimpressed, alert,
+completely in control.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-abuelo.png                El Abuelo, el veterano del barrio
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+An old man near seventy, the memory of a poor neighbourhood whose
+factories closed long ago. Bald on top with white hair on the sides, a
+thick white moustache, deep wrinkles, light skin. Old brown cardigan over
+a checked shirt. Melancholic and kind, a little sad smile.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-renco.png                 Renco, el soplon de la cuadrilla
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A nervous young man of about twenty, the informer of the street crew.
+Light brown hair under a dark baseball cap, pale skin, darting guilty
+eyes, sweat on the forehead. A brand-new grey hoodie that looks too
+expensive for him. Scared and cornered.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-dona.png                  La Dona, jefa de Casa Verdial
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+An elegant woman in her early sixties, head of an old-money family that
+runs protection rackets with paperwork and smiles. Grey hair in a perfect
+low bun, fair skin, a string of pearls, discreet earrings. Deep purple
+tailored jacket. Perfect manners, soft polite smile, cold eyes: she never
+raises her voice because she never needs to.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-empedrado.png             El Licenciado Empedrado, abogado
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A thin man in his fifties, the family's lawyer. Dark hair slicked and
+neatly parted, thin rectangular glasses, fair skin, clean shaven. Charcoal
+suit, white shirt, dark tie. Careful and cold, a faint courteous smile:
+everything he does is designed so that nothing can ever be proved on
+paper.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  cine-ciudad.png                   La ciudad de noche desde el mar
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A small coastal Spanish-style city at night seen from the sea: a
+skyline of mid-height buildings with warm lit windows, a hill behind it,
+a red and white lighthouse on the right shore, a full moon, stars, the
+city lights reflected on calm dark water. Melancholic and beautiful.
+
+--------------------------------------------------------------------------------
+  cine-carretera.png                La carretera de la costa al amanecer
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A coastal road at dawn, warm orange and pink sky, the sun rising over
+the sea on the right. On the road, seen from behind, an old regional bus
+driving away with its red tail lights on. A green road sign at the side,
+WITHOUT any readable text. A feeling of arriving somewhere new with
+nothing.
+
+--------------------------------------------------------------------------------
+  cine-muelle.png                   El muelle de noche (Los Amarres)
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A harbour dock at night: stacks of rusty shipping containers in red,
+blue and green, a big yellow port crane with a red warning light, dock
+lamps throwing pools of warm light, dark water with reflections, wooden
+planks and iron bollards in the foreground. Smuggling atmosphere, quiet
+and tense.
+
+--------------------------------------------------------------------------------
+  cine-barrio.png                   El barrio alto (la Cuadrilla)
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A poor hillside neighbourhood at dusk: old run-down apartment blocks
+with small balconies, some windows lit, clothes hanging on lines between
+buildings, a graffiti-covered wall at street level (graffiti shapes only,
+NO readable words), a metal barrel with a fire burning in it, warm orange
+glow against a purple sky.
+
+--------------------------------------------------------------------------------
+  cine-despacho.png                 El despacho de La Dona
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+An elegant old-money office at night: a large window behind a heavy
+wooden desk, through the window the city lights and a port crane far
+away, heavy dark red velvet curtains, striped burgundy wallpaper, a green
+banker's lamp on the desk, a porcelain coffee cup and a leather folder.
+Quiet, rich and quietly menacing.
+
+
+################################################################################
+#  TANDA ANTERIOR (27-sep-2026, noche): EL CLUB              6 PROMPTS
 ################################################################################
 Pedido por Pablo para HISTORIA-SANTA-PERDIDA.txt (seccion "EL BAJO MUNDO"):
 el club de El Duque, por fuera y por dentro, y cuatro personajes distintos

@@ -26,9 +26,9 @@ export class PauseScene extends Phaser.Scene {
     // 42: la ultima caia en h/2+180, fuera del panel, y el aviso estaba en
     // h/2+148, o sea PISANDO las opciones.
     this.add.image(w / 2, h / 2, 'px')
-      .setDisplaySize(440, 372).setTint(0x0d1014).setAlpha(0.95);
+      .setDisplaySize(440, 412).setTint(0x0d1014).setAlpha(0.95);
 
-    this.add.text(w / 2, h / 2 - 152, 'PAUSA', {
+    this.add.text(w / 2, h / 2 - 172, 'PAUSA', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 6,
       fontSize: '42px', color: '#e8b54a',
     }).setOrigin(0.5);
@@ -39,13 +39,15 @@ export class PauseScene extends Phaser.Scene {
       { label: 'CAMBIAR DE PARTIDA', accion: () => this.aLasRanuras() },
       { label: 'EMPEZAR DE CERO AQUI', accion: () => this.nueva() },
       { label: 'ESTADISTICAS', accion: () => this.verAtributos() },
+      // la gente de Santa Perdida que ya conoces (PersonajesScene)
+      { label: 'PERSONAJES', accion: () => this.verPersonajes() },
       { label: 'CONTROLES', accion: () => this.controles() },
       { label: 'VOLVER AL MENU', accion: () => this.alMenu() },
     ];
 
     this.indice = 0;
     this.items = this.opciones.map((op, i) =>
-      this.add.text(w / 2, h / 2 - 98 + i * 36, op.label, {
+      this.add.text(w / 2, h / 2 - 118 + i * 36, op.label, {
         fontFamily: FONT, stroke: '#05060a', strokeThickness: 4,
         fontSize: '24px', color: COLORS.ink,
       }).setOrigin(0.5).setInteractive({ useHandCursor: true })
@@ -66,7 +68,7 @@ export class PauseScene extends Phaser.Scene {
       fontSize: '22px', color: '#e8b54a',
     }).setOrigin(0.5);
 
-    this.aviso = this.add.text(w / 2, h / 2 + 152, 'ESC para seguir jugando', {
+    this.aviso = this.add.text(w / 2, h / 2 + 178, 'ESC para seguir jugando', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
       fontSize: '14px', color: COLORS.dim,
     }).setOrigin(0.5);
@@ -80,6 +82,9 @@ export class PauseScene extends Phaser.Scene {
       entrar: 'ENTER', espacio: 'SPACE', salir: 'ESC',
     });
     this.input.keyboard.addCapture('UP,DOWN,W,S,ENTER,SPACE,ESC');
+    // al volver de PERSONAJES, el ESC con el que se cerro no puede cerrar
+    // tambien la pausa
+    this.events.on('resume', () => this.input.keyboard.resetKeys());
   }
 
   pintar() {
@@ -204,6 +209,11 @@ export class PauseScene extends Phaser.Scene {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2,
       fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5));
+  }
+
+  verPersonajes() {
+    this.scene.pause();
+    this.scene.launch('PersonajesScene');
   }
 
   controles() {
