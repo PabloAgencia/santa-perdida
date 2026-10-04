@@ -99,6 +99,13 @@ export class LocalSystem {
     // el nombre, como un rotulo sobre el propio edificio, no flotando en
     // la acera
     etiquetaFlotante(this.scene, f.rotulo.x, f.rotulo.y, local.cfg.corto, local.cfg.color);
+
+    // DE NOCHE SE ENCIENDE: un resplandor del color del local en su puerta,
+    // como un escaparate iluminado, para encontrarlo desde lejos. Aqui solo
+    // se apunta donde va: lo pinta UIScene.pintarLucesNoche POR ENCIMA del
+    // velo de la noche (pintado en la ciudad, el velo lo apagaba entero).
+    this.luces = this.luces || [];
+    this.luces.push({ x: local.x, y: local.y, color: local.cfg.color });
   }
 
   // LA FACHADA (APUNTES H1). Antes el local era un edificio cualquiera con

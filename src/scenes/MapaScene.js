@@ -88,6 +88,28 @@ export class MapaScene extends Phaser.Scene {
     return p;
   }
 
+  // Un icono de mapa hecho por codigo: circulo de color, borde oscuro y una
+  // letra. Para los sitios que no tienen dibujo propio. Se fabrica una vez y
+  // se queda en las texturas del juego; devuelve su clave.
+  iconoLetra(clave, color, letra) {
+    if (this.textures.exists(clave)) return clave;
+    const T = 32;
+    const rt = this.make.renderTexture({ width: T, height: T }, false);
+    const g = this.make.graphics({}, false);
+    g.fillStyle(0x05060a, 1).fillCircle(T / 2, T / 2, T / 2);
+    g.fillStyle(color, 1).fillCircle(T / 2, T / 2, T / 2 - 3);
+    rt.draw(g);
+    const t = this.make.text({
+      x: T / 2, y: T / 2 + 1, text: letra,
+      style: { fontFamily: 'Arial Black, Arial, sans-serif', fontSize: letra.length > 1 ? '13px' : '17px', color: '#f2efe6', stroke: '#05060a', strokeThickness: 3 },
+    }, false).setOrigin(0.5);
+    rt.draw(t);
+    rt.saveTexture(clave);
+    g.destroy();
+    t.destroy();
+    return clave;
+  }
+
   // EL TEXTO BUSCA HUECO. Antes cada etiqueta se plantaba al lado de su punto
   // sin mirar, y dos sitios cercanos (la grua del puerto y un contacto de
   // trabajo, por ejemplo) salian con los nombres uno encima del otro y no se
@@ -146,12 +168,17 @@ export class MapaScene extends Phaser.Scene {
     // negocio y no habia forma de encontrarlo luego. Los que tienen "sitio
     // descubierto" salen cuando los has visto; desguaces y carreras, que no
     // lo tienen, salen siempre (son cuatro de cada, como los landmarks).
+    // tienda 24h, mecanico y bar usaban el dibujo de la comida o del taller
+    // de pintura, y en el mapa no se distinguian: ahora llevan uno propio,
+    // un circulo de su color con su inicial (ver iconoLetra)
     const ICONO_LOCAL = {
       hospital: 'marca-hospital', comisaria: 'marca-comisaria',
       taller: 'marca-taller', comida: 'marca-comida',
       gimnasio: 'marca-gimnasio',
       club: 'marca-club',
-      tienda24: 'marca-comida', mecanico: 'marca-taller', bar: 'marca-comida',
+      tienda24: this.iconoLetra('marca-tienda24', 0x7fd0e8, '24'),
+      mecanico: this.iconoLetra('marca-mecanico', 0xe0a050, 'M'),
+      bar: this.iconoLetra('marca-bar', 0xd08a5a, 'B'),
     };
     for (const l of city.locales ? city.locales.locales : []) {
       if (!GameState.conoce(l.clave)) continue;
@@ -181,6 +208,21 @@ export class MapaScene extends Phaser.Scene {
     for (const t of city.guerra ? city.guerra.puntos : []) {
       const f = FACTIONS[t.faction];
       this.marca(t.x, t.y, f ? f.accent : 0xd9584a, `Territorio ${f ? f.short : ''}`, 9);
+    }
+
+    // LOS ROBOS (RoboSystem): las furgonetas siempre, como los desguaces; y
+    // con el robo en marcha, las casas que quedan y los almacenes
+    const robos = city.robos;
+    if (robos) {
+      const furgo = this.iconoLetra('marca-furgoneta', 0x2a2d33, 'R');
+      for (const v of robos.furgonetas) {
+        if (city.vehicles.includes(v) && !v.quemado) this.marca(v.x, v.y, 0x2a2d33, 'Furgoneta (de noche)', 9, furgo);
+      }
+      if (robos.activo) {
+        for (const c of robos.activo.casas) if (!c.vacia) this.marca(c.x, c.y, 0xf2d84a, null, 7);
+        const alm = this.iconoLetra('marca-almacen', 0xe8b54a, '€');
+        for (const a of robos.almacenes) this.marca(a.x, a.y, 0xe8b54a, 'Almacen', 10, alm);
+      }
     }
 
     // LOS SITIOS PRIVADOS de BajoMundoSystem: pedido explicito de Pablo,
@@ -220,8 +262,12 @@ export class MapaScene extends Phaser.Scene {
         }).setOrigin(1, 0);
     }
 
+    // el nombre del barrio de verdad (el mismo que sale abajo a la derecha
+    // al entrar en el, FactionSystem): el tipo de zona ("Residencial") solo
+    // si el mapa no tiene barrios con nombre
     const zona = city.map.zoneAt(city.player.x, city.player.y);
-    const nombre = zona ? (city.map.cfg.zones[zona] || {}).label || zona : '';
+    const distrito = city.map.distritoAt ? city.map.distritoAt(city.player.x, city.player.y) : null;
+    const nombre = distrito || (zona ? (city.map.cfg.zones[zona] || {}).label || zona : '');
     this.add.text(this.x0, this.y0 + this.alto + 14, `Estas en ${nombre}`, {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 3,
       fontSize: '15px', color: COLORS.objective,

@@ -24,6 +24,11 @@ export class UIScene extends Phaser.Scene {
     this.veloNoche = this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setBlendMode(Phaser.BlendModes.MULTIPLY)
       .setTint(0xffffff).setAlpha(0);
+    // LAS LUCES DE LOS LOCALES, justo encima del velo (ver pintarLucesNoche)
+    this.lucesNoche = [];
+    for (let i = 0; i < 16; i++) {
+      this.lucesNoche.push(this.add.image(0, 0, 'lamp').setBlendMode(Phaser.BlendModes.ADD).setVisible(false));
+    }
     this.relojTexto = this.add.text(16, 38, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '14px', color: '#a49c8a',
     }).setOrigin(0, 0);
@@ -483,6 +488,37 @@ export class UIScene extends Phaser.Scene {
 
   setMoney(money) {
     this.moneyText.setText(`${money.toLocaleString('es-ES')} €`);
+  }
+
+  update() {
+    this.pintarLucesNoche();
+  }
+
+  // DE NOCHE, LOS LOCALES ENCENDIDOS (LocalSystem.luces). El velo de la noche
+  // es una sola imagen que oscurece la pantalla entera por encima de la
+  // ciudad: cualquier luz pintada en la ciudad queda apagada por el. Asi que
+  // estas se pintan aqui, en la pantalla, encima del velo, siguiendo a la
+  // camara de la ciudad en cada fotograma. Solo las que se ven (hay 16
+  // preparadas, de sobra para lo que cabe en pantalla).
+  pintarLucesNoche() {
+    const city = this.scene.get('CityScene');
+    const luces = city && city.locales && city.locales.luces;
+    const noche = Phaser.Math.Clamp(this.veloNoche.alpha / 0.76, 0, 1);
+    let n = 0;
+    if (luces && noche > 0.02) {
+      const cam = this.cityCam;
+      const v = cam.worldView;
+      const M = 120;
+      for (const l of luces) {
+        if (n >= this.lucesNoche.length) break;
+        if (l.x < v.x - M || l.x > v.right + M || l.y < v.y - M || l.y > v.bottom + M) continue;
+        const img = this.lucesNoche[n++];
+        const tam = 180 * cam.zoom;
+        img.setPosition((l.x - v.x) * cam.zoom + cam.x, (l.y - v.y) * cam.zoom + cam.y)
+          .setDisplaySize(tam, tam).setTint(l.color).setAlpha(noche * 0.75).setVisible(true);
+      }
+    }
+    for (let i = n; i < this.lucesNoche.length; i++) this.lucesNoche[i].setVisible(false);
   }
 
   updateDiaNoche(velo) {

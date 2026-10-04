@@ -3750,3 +3750,21 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   Ojo: la noche son 5 min reales y el almacen mas cercano puede quedar a
   ~11.000 px del residencial (~1 min de furgoneta). Si Pablo lo ve justo,
   acercar un almacen o alargar la noche durante el robo.
+
+[HECHO 4-oct, v57] PULIDO PROPUESTO POR CLAUDE (Pablo: "si se te ocurre alguna
+  mejora, dila y hazla").
+  · DE NOCHE LOS LOCALES SE ENCIENDEN: un halo de su color en la puerta.
+    Ojo, leccion: el velo de la noche (UIScene.veloNoche) es UNA imagen
+    MULTIPLY encima de toda la ciudad, asi que cualquier luz pintada en
+    CityScene queda apagada por el. Estas se pintan en UIScene, encima del
+    velo, siguiendo la camara (UIScene.pintarLucesNoche, 16 de reserva).
+    Si algun dia se quieren farolas o faros que brillen de verdad, mismo
+    truco.
+  · MAPA (M): iconos propios para tienda 24h, mecanico y bar (antes usaban
+    el de comida/taller), hechos por codigo (MapaScene.iconoLetra); las
+    furgonetas del robo siempre, y con el robo en marcha las casas y los
+    almacenes. Abajo pone el barrio de verdad ("Lomas del Norte") y no el
+    tipo de zona ("Residencial"), igual que el HUD.
+  · El cartel del casino en la calle decia "SE VENDE 20000 €" y no se
+    entendia que se entra a jugar: ahora "CASINO FORTUNA / ABIERTO" (lo de
+    comprarlo se ve en el despacho).

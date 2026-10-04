@@ -126,6 +126,9 @@ export class NegocioSystem {
   }
 
   textoCartel(n) {
+    // el casino se ENTRA (CasinoScene): "SE VENDE" en su puerta no decia
+    // que dentro se juega. Que se vende lo cuenta el despacho de dentro.
+    if (n.cfg === NEGOCIO_CASINO && !GameState.esDueno(n.clave)) return 'CASINO FORTUNA\nABIERTO';
     if (!GameState.esDueno(n.clave)) return `SE VENDE\n${n.cfg.precio} €`;
     if (n.ataque) return `${n.cfg.corto}\n¡EN PELIGRO!`;
     return `${n.cfg.corto}\n${Math.round(GameState.caja(n.clave))} €`;
