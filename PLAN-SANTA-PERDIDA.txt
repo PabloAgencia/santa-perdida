@@ -20,7 +20,7 @@ El bucle que tiene que funcionar antes que nada:
 ================================================================================
 
 1.1  MOTOR: Phaser 3
-     Por que: es web, igual que BitFall, asi que se publica igual (git push a
+     Por que: es web, igual que Eldritch Blocks, asi que se publica igual (git push a
      GitHub -> Cloudflare Pages) y se empaqueta igual con Capacitor para Play
      Store. Pero ya trae hechas las fisicas, las colisiones, el mapa por
      casillas y la camara, que es casi la mitad del trabajo que no se ve.
@@ -28,7 +28,7 @@ El bucle que tiene que funcionar antes que nada:
 1.2  SIN PASO DE COMPILACION (nada de Vite ni webpack)
      Phaser vive dentro del proyecto en vendor/phaser.min.js y el codigo propio
      usa modulos ES nativos del navegador.
-     Por que: mismo flujo de publicacion que BitFall, cero dependencias que
+     Por que: mismo flujo de publicacion que Eldritch Blocks, cero dependencias que
      mantener, y funciona sin internet (necesario para la app de Android).
 
 1.3  FUENTE UNICA DE VERDAD: el modulo GameState
@@ -215,7 +215,7 @@ Objetivo: que parezca un juego indie de verdad, no una demo.
 
 20-sep-2026 (domingo)
   - Decidido motor (Phaser 3.90) y forma de publicar (sin compilacion, como
-    BitFall). Existe Phaser 4, pero es una reescritura reciente: se usa la 3.90
+    Eldritch Blocks). Existe Phaser 4, pero es una reescritura reciente: se usa la 3.90
     a proposito, que es la estable y la documentada.
   - Escrito este plan.
   - Fase 1 practicamente terminada en una sesion.
@@ -730,7 +730,7 @@ DECIMOCUARTA TANDA (21-sep-2026, noche): lo que Pablo vio jugando
   CUENTAS Y PARTIDAS EN LA NUBE (`core/Cloud.js` y `core/AccountUI.js`)
      - Registro con CORREO Y CONTRASENA (minimo 6, sin confirmar el correo).
        Desde el menu principal: "ENTRAR CON TU CORREO" / "MI CUENTA".
-     - Supabase, el MISMO proyecto que el marcador de BitFall
+     - Supabase, el MISMO proyecto que el marcador de Eldritch Blocks
        (ivwlobdksywgsxhblppk), con tabla propia `santa_state`, con clave
        (jugador, ranura): subir la 2 no toca la 1 ni la 3. El SQL entero
        esta en `supabase-cuentas.sql` dentro de la carpeta del juego.
@@ -743,7 +743,7 @@ DECIMOCUARTA TANDA (21-sep-2026, noche): lo que Pablo vio jugando
        eso lo decide el jugador en TUS PARTIDAS con la tecla T.
      - La partida se sube sola al guardar, como mucho una vez cada 20 s.
      - Se puede borrar la cuenta desde el propio juego. Borra la nube, no lo
-       guardado en este navegador. OJO: borra tambien la partida de BitFall,
+       guardado en este navegador. OJO: borra tambien la partida de Eldritch Blocks,
        porque la cuenta es la misma para los dos juegos.
      COMPROBADO de punta a punta: registro; las tres ranuras viajan por
      separado (35 EUR en la 1 y 535 en la 2, cada una en su sitio); borrada

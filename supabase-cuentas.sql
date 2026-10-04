@@ -1,7 +1,7 @@
 -- ════════════════════════════════════════════════════════════════
 --  SANTA PERDIDA — Cuentas y partidas guardadas en la nube
 --  Pegar entero en Supabase → SQL Editor → Run
---  Proyecto: ivwlobdksywgsxhblppk (el mismo que el marcador de BitFall)
+--  Proyecto: ivwlobdksywgsxhblppk (el mismo que el marcador de Eldritch Blocks)
 -- ════════════════════════════════════════════════════════════════
 --
 --  Cada jugador tiene TRES ranuras de partida, como los GTA de siempre.
@@ -94,7 +94,7 @@ create trigger santa_state_updated_at
 --  el juego. Borra al usuario que la llama y nada más: el auth.uid() lo
 --  pone el servidor a partir del token, no se puede falsificar.
 --
---  OJO: la cuenta es la misma para BitFall y para Santa Perdida, asi que
+--  OJO: la cuenta es la misma para Eldritch Blocks y para Santa Perdida, asi que
 --  borra lo de los dos juegos.
 create or replace function public.borrar_mi_cuenta()
 returns void
