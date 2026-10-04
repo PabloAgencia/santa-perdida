@@ -3771,3 +3771,12 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · El cartel del casino en la calle decia "SE VENDE 20000 €" y no se
     entendia que se entra a jugar: ahora "CASINO FORTUNA / ABIERTO" (lo de
     comprarlo se ve en el despacho).
+
+[HECHO 4-oct, v59] ROBOS: AJUSTE CON LO QUE CONFIRMO PABLO.
+  Pablo: el premio de 10.000 € = aguante infinito, SI. El robo dura 8 horas,
+  de 22:00 a 06:00 (antes estaba de 20:00). Como en San Andreas 1 minuto de
+  juego = 1 segundo real, durante el robo el reloj va a la mitad del nuestro
+  (ROBO.ritmoReloj 0,5): las 8 horas son 8 minutos reales. Fuera del robo,
+  el reloj sigue al doble como siempre. Probado: 21:00 no arranca, 22:30 si
+  (450 s restantes), 1 min/s robando y 2 min/s al acabar.
+  Casino: Pablo no quiere tocar topes ni reglas ("que este guapo y ya").

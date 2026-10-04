@@ -1,8 +1,11 @@
 // LOS ROBOS DE CASAS (IDEAS-DE-LOS-GTA-3, punto 1), a lo San Andreas.
 //
 // LO QUE ES DE SAN ANDREAS TAL CUAL:
-//   · hay una furgoneta especial; subirte a ella DE NOCHE (20:00 a 06:00)
-//     empieza el robo, de dia no pasa nada
+//   · hay una furgoneta especial; subirte a ella DE NOCHE (22:00 a 06:00,
+//     ocho horas: confirmado por Pablo) empieza el robo, de dia no pasa nada
+//   · durante el robo el reloj va al ritmo de San Andreas (1 minuto de juego
+//     por segundo real): las ocho horas son ocho minutos de verdad. Fuera
+//     del robo, nuestro reloj va al doble (DiaNocheSystem)
 //   · durante el robo salen marcadas casas a las que se puede entrar
 //   · dentro, a oscuras, cuanto mas ruido haces mas se llena la barra; si
 //     se llena, el de la casa se despierta y llama a la policia
@@ -11,14 +14,16 @@
 //     furgoneta; con algo en brazos no se corre
 //   · lo de la furgoneta se cobra al llevarla al almacen
 //   · al amanecer (06:00) se acaba: lo que no hayas vendido se pierde
-//   · robar 10.000 € en total da aguante infinito (no te cansas de correr)
+//   · robar 10.000 € en total da aguante infinito (no te cansas de correr;
+//     confirmado por Pablo el 4-oct)
 //
 // LO QUE ES NUESTRO (no sale del juego original, se puede tocar a gusto):
 // los numeros de abajo: capacidad, valores, cuanto ruido hace cada cosa.
 
 export const ROBO = {
-  horaEmpieza: 20,       // de 20:00...
+  horaEmpieza: 22,       // de 22:00...
   horaAcaba: 6,          // ...a 06:00
+  ritmoReloj: 0.5,       // el reloj del robo, frente al normal (2 min/s -> 1 min/s)
   furgonetas: 2,         // cuantas hay aparcadas por la ciudad
   capacidad: 8,          // objetos que caben en la furgoneta
   casasMarcadas: 12,     // las casas que salen marcadas al empezar

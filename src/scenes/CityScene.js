@@ -21,6 +21,7 @@ import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
 import { RoboSystem } from '../systems/RoboSystem.js';
+import { ROBO } from '../config/robos.js';
 import { ArmasConfiscadasSystem } from '../systems/ArmasConfiscadasSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
@@ -714,7 +715,8 @@ export class CityScene extends Phaser.Scene {
       this.player.update(dt, { left, right, up, down, run: k.run.isDown && !this.robos.cargando });
     }
 
-    this.diaNoche.update(dt);
+    // con un robo en marcha el reloj va al ritmo de San Andreas (config/robos.js)
+    this.diaNoche.update(this.robos.activo ? dt * ROBO.ritmoReloj : dt);
     this.lights.update(dt, this.player.x, this.player.y);
 
     // Para el trafico tu tambien eres un peaton cuando vas a pie: antes no

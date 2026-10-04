@@ -212,8 +212,8 @@ export class RoboCasaScene extends Phaser.Scene {
     const dt = Math.min(delta / 1000, 0.05);
     const k = this.keys;
     const s = this.sala;
-    // la noche sigue (2 minutos de mundo por segundo, como DiaNocheSystem)
-    GameState.avanzarReloj(dt * 2);
+    // la noche sigue, al ritmo del robo (config/robos.js, ritmoReloj)
+    GameState.avanzarReloj(dt * 2 * ROBO.ritmoReloj);
     const m = GameState.minutoDelDia;
     this.reloj.setText(`${String(Math.floor(m / 60)).padStart(2, '0')}:${String(Math.floor(m % 60)).padStart(2, '0')}`);
 

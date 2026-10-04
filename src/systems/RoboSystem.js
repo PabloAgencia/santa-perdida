@@ -101,7 +101,7 @@ export class RoboSystem {
       return;
     }
     if (!esDeNoche()) {
-      EventBus.emit(EVT.NOTIFY, { text: 'Furgoneta de mudanzas: vuelve de noche (20:00 a 06:00)', tone: 'dim' });
+      EventBus.emit(EVT.NOTIFY, { text: 'Furgoneta de mudanzas: vuelve de noche (22:00 a 06:00)', tone: 'dim' });
       return;
     }
     this.empezar(v);
@@ -309,7 +309,8 @@ export class RoboSystem {
     if (!r) return null;
     const h = GameState.minutoDelDia;
     const hasta6 = (ROBO.horaAcaba * 60 - h + 1440) % 1440;
-    const segundos = hasta6 / 2;   // DiaNocheSystem: 2 minutos de mundo por segundo
+    // DiaNocheSystem va a 2 minutos de mundo por segundo; en el robo, a la mitad
+    const segundos = hasta6 / (2 * ROBO.ritmoReloj);
     let target = null;
     let texto;
     if (this.cargando) {
