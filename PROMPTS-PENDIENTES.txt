@@ -1,0 +1,2687 @@
+PROMPTS PENDIENTES DE GENERAR  -  Santa Perdida               (4-oct-2026)
+================================================================================
+
+AQUI ESTA TODO LO QUE FALTA, Y SOLO ESO: 132 imagenes.
+Lo que ya esta hecho no sale. Cada bloque de abajo es un prompt COMPLETO:
+se copia entero, se pega en Gemini y ya. Si sale torcido, se repite.
+
+COMO SE GUARDA CADA UNA
+  Con el nombre EXACTO que pone encima de su prompt, en la carpeta que dice
+  la lista de abajo, dentro de:
+      E:\Escritorio\GTA PRUEBA\sprites\originales\<carpeta>\ 
+  (la carpeta "cine" hay que crearla). Vale .png o .jpg.
+  Cuando las tengas, avisame: yo las preparo y salen solas en el juego.
+  No hace falta hacerlas todas: cada una que llegue ya se nota.
+
+POR DONDE EMPEZAR, SI NO DA TIEMPO A TODO
+  1. Tejados de residencial, casco, centro y comercial (los que mas se ven).
+  2. Los vehiculos.
+  3. Los retratos y decorados de las cinematicas.
+  4. El resto.
+
+LA LISTA PARA IR TACHANDO  ([ ] = falta)
+
+  EDIFICIOS  ->  sprites\originales\edificios\   (86)
+    [ ] residencial-c1.png       [ ] residencial-c2.png       [ ] residencial-c3.png
+    [ ] residencial-c4.png       [ ] residencial-c5.png       [ ] residencial-c6.png
+    [ ] residencial-a1.png       [ ] residencial-a2.png       [ ] residencial-a3.png
+    [ ] residencial-a4.png       [ ] casco-c1.png             [ ] casco-c2.png
+    [ ] casco-c3.png             [ ] casco-c4.png             [ ] casco-c5.png
+    [ ] casco-c6.png             [ ] casco-a1.png             [ ] casco-a2.png
+    [ ] casco-a3.png             [ ] casco-a4.png             [ ] centro-c1.png
+    [ ] centro-c2.png            [ ] centro-c3.png            [ ] centro-c4.png
+    [ ] centro-c5.png            [ ] centro-c6.png            [ ] centro-a1.png
+    [ ] centro-a2.png            [ ] centro-a3.png            [ ] centro-a4.png
+    [ ] comercial-c1.png         [ ] comercial-c2.png         [ ] comercial-c3.png
+    [ ] comercial-c4.png         [ ] comercial-c5.png         [ ] comercial-c6.png
+    [ ] comercial-a1.png         [ ] comercial-a2.png         [ ] comercial-a3.png
+    [ ] comercial-a4.png         [ ] conflictivo-c1.png       [ ] conflictivo-c2.png
+    [ ] conflictivo-c3.png       [ ] conflictivo-c4.png       [ ] conflictivo-a1.png
+    [ ] conflictivo-a2.png       [ ] conflictivo-a3.png       [ ] industrial-c1.png
+    [ ] industrial-c2.png        [ ] industrial-c3.png        [ ] industrial-c4.png
+    [ ] industrial-a1.png        [ ] industrial-a2.png        [ ] industrial-a3.png
+    [ ] puerto-c1.png            [ ] puerto-c2.png            [ ] puerto-c3.png
+    [ ] puerto-c4.png            [ ] puerto-a1.png            [ ] puerto-a2.png
+    [ ] puerto-a3.png            [ ] afueras-c1.png           [ ] afueras-c2.png
+    [ ] afueras-a1.png           [ ] tienda24.png             [ ] bar.png
+    [ ] mecanico.png             [ ] armeria.png              [ ] taller.png
+    [ ] comida.png               [ ] gimnasio.png             [ ] concesionario.png
+    [ ] desguace.png             [ ] piso-conflictivo.png     [ ] piso-residencial.png
+    [ ] piso-comercial.png       [ ] piso-industrial.png      [ ] piso-puerto.png
+    [ ] piso-centro.png          [ ] negocio-conflictivo.png  [ ] negocio-residencial.png
+    [ ] negocio-comercial.png    [ ] negocio-industrial.png   [ ] negocio-puerto.png
+    [ ] negocio-centro.png       [ ] interior-piso-atico.png
+
+  COCHES  ->  sprites\originales\coches\   (10)
+    [ ] mudanzas.png             [ ] pulga.png                [ ] ranchera.png
+    [ ] mulero.png               [ ] sierra.png               [ ] senador.png
+    [ ] duna.png                 [ ] mosquito.png             [ ] titan.png
+    [ ] centella.png
+
+  PERSONAJES  ->  sprites\originales\personajes\   (15)
+    [ ] peaton-17.png            [ ] peaton-18.png            [ ] peaton-19.png
+    [ ] peaton-20.png            [ ] peaton-21.png            [ ] peaton-22.png
+    [ ] peaton-23.png            [ ] peaton-24.png            [ ] peaton-25.png
+    [ ] peaton-26.png            [ ] peaton-27.png            [ ] peaton-28.png
+    [ ] jefe-consul.png          [ ] jefe-chispa.png          [ ] jefe-dona.png
+
+  ICONOS  ->  sprites\originales\iconos\   (7)
+    [ ] marca-tienda24.png       [ ] marca-mecanico.png       [ ] marca-bar.png
+    [ ] marca-casino.png         [ ] marca-club.png           [ ] marca-furgoneta.png
+    [ ] marca-almacen.png
+
+  CINE  ->  sprites\originales\cine\   (14)
+    [ ] retrato-consul.png       [ ] retrato-marina.png       [ ] retrato-ferro.png
+    [ ] retrato-chispa.png       [ ] retrato-vale.png         [ ] retrato-abuelo.png
+    [ ] retrato-renco.png        [ ] retrato-dona.png         [ ] retrato-empedrado.png
+    [ ] cine-ciudad.png          [ ] cine-carretera.png       [ ] cine-muelle.png
+    [ ] cine-barrio.png          [ ] cine-despacho.png
+
+
+LOS PROMPTS, uno detras de otro
+================================================================================
+
+################################################################################
+#  LA TANDA GRANDE (4-oct-2026): TODO LO QUE FALTA                98 PROMPTS
+################################################################################
+Pablo: "genera todos los prompts necesarios, incluso mas vehiculos, y sobre
+todo los de mas casas por fuera, que no haya casas exactamente iguales una
+pegada a la otra, que todo se vea bien diferente".
+
+LO QUE HAY EN ESTA TANDA
+   64 tejados de barrio   varios por barrio, cuadrados y alargados
+    3 tejados con uso     tienda 24h, bar y mecanico (los locales de
+                          la v54 que aun no tenian)
+    9 vehiculos          los 8 modelos nuevos y la furgoneta de
+                          los robos
+   15 personas           12 peatones nuevos y los 3 jefes en persona
+    7 marcas del mapa     los sitios que aun salian como un circulo
+                          con letra
+
+EL JUEGO YA ESTA PREPARADO PARA TODO ESTO: cada cosa que llegue sale sola
+en su sitio, y lo que no llegue se sigue dibujando por codigo.
+  · Los tejados se reparten de forma que DOS CASAS PEGADAS NUNCA LLEVAN EL
+    MISMO, y ademas cada uno se gira (0, 90, 180 o 270 grados): un solo
+    dibujo da hasta cuatro tejados distintos. Cuantos mas haya de un barrio,
+    mas variado sale.
+  · Los ALARGADOS (los -a) son para los edificios mucho mas largos que
+    anchos (casi mil de los 3.469 de la ciudad): con uno cuadrado estirado
+    se deformaba.
+  · Los 8 coches nuevos YA circulan por la ciudad y se venden en el
+    concesionario (dibujados por codigo hasta que lleguen sus imagenes).
+  · Los jefes salen en persona donde dan los encargos.
+
+OJO: MAS ABAJO SIGUEN PENDIENTES LAS TANDAS DEL 27-SEP, que no se repiten
+aqui: 18 tejados (armeria, taller de pintura, Pollos Cluck, gimnasio,
+concesionario, desguace, los seis pisos y los seis negocios), el Centella y
+el interior del atico. Siguen valiendo tal cual. Y la de las cinematicas
+(retratos y decorados), justo debajo de esta.
+
+POR DONDE EMPEZAR, SI NO DA TIEMPO A TODO
+  1. Tejados de residencial, casco, centro y comercial: son 2.538 edificios,
+     tres de cada cuatro de la ciudad. Con 3 o 4 de cada ya se nota mucho.
+  2. Los vehiculos nuevos.
+  3. El resto, en el orden que quieras.
+
+SI UNA TIRADA SALE MAL
+  · Sale en perspectiva (se ven paredes): repetir añadiendo al principio
+    "Strictly top-down, NO walls visible".
+  · Sale con texto o letras: repetir, a veces lo pone igual.
+  · Dos variantes del mismo barrio se parecen demasiado: repetir una.
+
+DONDE SE DEJA CADA COSA (con el nombre EXACTO que va encima de cada prompt)
+   tejados (de barrio y con uso)  sprites\originales\edificios\
+   vehiculos                      sprites\originales\coches\
+   personas                       sprites\originales\personajes\
+   marcas del mapa                sprites\originales\iconos\
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+================================================================================
+  TEJADOS DE BARRIO
+================================================================================
+
+~~~~ LOS PINARES Y LOMAS DEL NORTE: CASAS DE FAMILIA ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  residencial-c1.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a red clay tile hip roof (four slopes meeting at a short ridge in the middle), one small white chimney, an old TV antenna.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-c2.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a flat white roof terrace with potted plants in the corners, two folding chairs, a clothes line with colourful laundry and a solar water heater.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-c3.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a pitched roof of dark brown tiles with two square skylights and a satellite dish near one edge.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-c4.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a flat roof turned into a little garden: green planters, a wooden pergola with climbing vines and a small table.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-c5.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: grey slate tiles with an L-shaped ridge, a red brick chimney and a few patches of moss.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-c6.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: sun-faded terracotta tiles with a few newer replaced tiles in a brighter orange, a white water tank and a small solar panel.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-a1.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: three terraced houses in a row sharing one long roof, each house with a slightly different tile colour (orange, red, brown) and its own small chimney.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-a2.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long flat roof divided by low walls into four private terraces, each one different: plants, a parasol, a barbecue, laundry.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-a3.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long pitched roof of red tiles with the ridge running top to bottom, one dormer window in the middle and gutters along both edges.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  residencial-a4.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow family house in a quiet Mediterranean residential neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: half orange clay tiles and half flat terrace with a clothes line and a striped parasol.
+
+COLOUR: warm terracotta, cream and sun-faded orange, with touches of green from plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ CASCO VIEJO: EL PUEBLO ANTIGUO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  casco-c1.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: very old uneven terracotta tiles darkened by age, moss and lichen in the gaps, a crooked stone chimney.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-c2.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a tiled roof around a small square inner courtyard (patio) in the middle, the courtyard with a little tree and a tiled fountain.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-c3.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a flat terrace floored with old red tiles, many geranium pots along the edges and an old wooden water tank.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-c4.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a roof with three different heights, each level a different tone of terracotta, with small steps between them.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-c5.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a tiled roof with a little square lookout tower (mirador) in the middle that has its own small four-sided tiled roof.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-c6.png                          cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a patched old roof: some missing tiles replaced with rusty metal sheets, a bent TV antenna, a plastic bucket.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-a1.png                          alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long narrow old town house whose roof steps down in three levels from top to bottom, each with old tiles.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-a2.png                          alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof with a narrow inner courtyard running along the middle, full of plants in pots.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-a3.png                          alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a row of old houses stuck together, each roof a different tile colour and a slightly different height.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  casco-a4.png                          alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow very old house in the historic old town of a Spanish coastal town, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long flat terrace covered by a pergola with grapevines, with old tiles visible underneath.
+
+COLOUR: aged dark terracotta, ochre and brown, with green moss and lichen.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ CENTRO: OFICINAS, PISOS ALTOS Y DINERO VIEJO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  centro-c1.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a concrete flat roof with a neat grid of air conditioning units, one big round water tank and a cluster of antennas.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-c2.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a modern office tower roof with a large glass skylight in the centre, a metal maintenance walkway around it and a rail for the window-cleaning crane along the edge.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-c3.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a luxury apartment rooftop with a rectangular swimming pool, wooden deck, sun loungers and potted palms.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-c4.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: an elegant 1920s building with a grey zinc mansard roof, round dormer windows all around the edges and a small dome in one corner.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-c5.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a flat roof with the metal frame of a big billboard seen from above (only the back structure, no image on it) and ventilation ducts.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-c6.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE tall city-centre building, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a rooftop restaurant terrace: tables with white tablecloths, cream parasols and strings of light bulbs.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-a1.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow tall city-centre building, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long concrete roof with a lift motor room box at one end and rows of air conditioning units along its length.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-a2.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow tall city-centre building, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long glass atrium skylight running down the middle of the roof, with concrete on both sides.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-a3.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow tall city-centre building, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long elegant zinc mansard roof with a row of dormer windows on both long sides.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  centro-a4.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow tall city-centre building, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof covered with neat rows of dark blue solar panels and a small service hut.
+
+COLOUR: concrete greys, zinc grey, dark glass, with some brass and green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ GRAN VIA OESTE: TIENDAS Y CENTROS COMERCIALES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  comercial-c1.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a shop roof with four large square skylights and a row of big ventilation units.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-c2.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a supermarket roof: a big light grey flat roof with a line of round ventilation fans and a loading edge on one side.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-c3.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a cafe roof terrace with parasols in different colours, tables and big plant pots.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-c4.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a cinema building roof: dark roof with a big rectangular box (the projection hall) in the middle and vents around it.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-c5.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a cross-shaped glass skylight dividing the roof into four parts, like a small shopping gallery.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-c6.png                      cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a rooftop car park with painted parking bays (all empty, no cars) and a ramp in one corner.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-a1.png                      alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long shopping block roof made of several shop roofs in a row, each a slightly different colour, separated by low walls.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-a2.png                      alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long mall roof with a barrel-vaulted glass skylight running down the whole length.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-a3.png                      alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof with the backs of big shop signs along one edge (only metal frames, no text) and air conditioning units.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  comercial-a4.png                      alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow shop or shopping building on a busy commercial avenue, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof with a rooftop bar terrace at one end (parasols, stools) and storage boxes at the other end.
+
+COLOUR: light greys and beiges with touches of bright shop colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ LOS ROMPIENTES: EL BARRIO ALTO QUE SE QUEDO SIN NADA ~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  conflictivo-c1.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: cracked patched asphalt with several satellite dishes, a rusty water tank and black rubbish bags in a corner.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-c2.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: clothes lines full of laundry, plastic chairs and a makeshift shack built from corrugated metal sheets.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-c3.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a roof covered in graffiti shapes (colourful shapes only, NO readable words), a broken skylight and rain puddles.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-c4.png                    cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: an old mattress, a pile of car tyres and a barbecue made from a cut metal barrel.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-a1.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long tenement roof with a row of water tanks and a tangle of old TV antennas and cables.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-a2.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof with an unfinished concrete extension at one end, steel rebar sticking up, bricks and cement bags.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  conflictivo-a3.png                    alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow run-down apartment block in a poor hillside neighbourhood, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof divided by low walls, each section used differently: laundry, plants in buckets, junk.
+
+COLOUR: dirty greys, rust brown, faded blue plastic, washed-out colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ POLIGONO SUR: NAVES Y FABRICAS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  industrial-c1.png                     cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE industrial building in an industrial estate, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a sawtooth factory roof: parallel rows of slanted roof sections with skylights.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-c2.png                     cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE industrial building in an industrial estate, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a rusty corrugated metal roof with three big round ventilation fans.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-c3.png                     cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE industrial building in an industrial estate, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: three cylindrical silos seen from above (round tops) connected by pipes, on a concrete roof.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-c4.png                     cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE industrial building in an industrial estate, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a workshop flat roof with stacked wooden pallets, an overhead crane rail and an extraction chimney.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-a1.png                     alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow industrial building in an industrial estate, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long warehouse with a corrugated metal roof and a line of translucent panels down the middle.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-a2.png                     alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow industrial building in an industrial estate, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long factory with a sawtooth roof and one tall round chimney stack near one end.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  industrial-a3.png                     alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow industrial building in an industrial estate, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long roof with a conveyor housing running along the middle and vents on both sides.
+
+COLOUR: metal greys, rust orange, faded green paint, concrete.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ EL PUERTO: ALMACENES, LONJA Y CASETAS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  puerto-c1.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE harbour building on the docks, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a fishermen's shed with a wooden plank roof, fishing nets drying on it and a few crates.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-c2.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE harbour building on the docks, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a metal warehouse roof painted blue-grey, with rust streaks and a big square hatch.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-c3.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE harbour building on the docks, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a fish market roof of white panels with long ventilation ridges.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-c4.png                         cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE harbour building on the docks, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a harbour office flat roof with a small radar dish, antennas and a flagpole (no flag text).
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-a1.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow harbour building on the docks, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long dockside warehouse with an arched (curved) metal roof.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-a2.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow harbour building on the docks, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long boat shed roof with a row of skylights.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  puerto-a3.png                         alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow harbour building on the docks, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long cold-storage building with a row of white refrigeration units on the roof.
+
+COLOUR: weathered blue-grey, rust, salt-bleached wood, white.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+~~~~ ALTOS DE LA SIERRA: GRANJAS EN LAS AFUERAS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+--------------------------------------------------------------------------------
+  afueras-c1.png                        cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE farm building in the countryside outside the town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: an old farmhouse with uneven clay tiles around a dusty courtyard with a stone well.
+
+COLOUR: earthy browns, faded red, straw yellow, green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  afueras-c2.png                        cuadrado 1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE farm building in the countryside outside the town, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a barn with a faded red corrugated metal roof and a skylight.
+
+COLOUR: earthy browns, faded red, straw yellow, green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  afueras-a1.png                        alargado 2:3
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 2:3 aspect ratio (taller than wide), not square.
+Top-down aerial view of ONE long narrow farm building in the countryside outside the town, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA Chinatown
+Wars. The building is long: its LONG side runs from the top to the bottom of
+the image. NO perspective, NO tilt, the walls are NOT visible: only the roof,
+filling the whole image edge to edge.
+
+THE ROOF: a long stable or barn roof of old clay tiles with a ridge running top to bottom.
+
+COLOUR: earthy browns, faded red, straw yellow, green.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+================================================================================
+  TEJADOS CON USO (locales, pisos y negocios)
+================================================================================
+
+--------------------------------------------------------------------------------
+  tienda24.png                          Tienda 24h  1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE small 24-hour convenience store, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a flat roof with a big illuminated light-blue lightbox frame along the front edge (no text), air conditioning units and a small storage hut.
+
+COLOUR: white and light blue.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  bar.png                               Bar  1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE old neighbourhood bar, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a tiled roof with a small flat terrace with beer crates, a chimney and a neon tube shape along the front edge (no text).
+
+COLOUR: warm brown and orange.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+--------------------------------------------------------------------------------
+  mecanico.png                          Taller mecanico  1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of ONE car mechanic workshop, seen from DIRECTLY ABOVE at a perfect
+90-degree overhead angle - a map view, like the city in GTA Chinatown Wars.
+The camera is high in the sky pointing straight down. NO perspective, NO
+tilt, the walls of the building are NOT visible: only the roof, filling the
+whole image edge to edge.
+
+THE ROOF: a corrugated metal roof with oil stains, a big extraction fan, a pile of old tyres on one corner of the roof.
+
+COLOUR: grey metal and orange.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading, colours a
+little muted so they read well both by day and at night. NOT photorealistic,
+NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people,
+NO animals, NO cars, NO street, pavement or ground around the building.
+
+================================================================================
+  VEHICULOS
+================================================================================
+El juego les cambia el color de la chapa para tener cinco de cada: por eso
+se pide UN solo color normal (no blanco, no negro), salvo la furgoneta de los
+robos, que es negra a proposito.
+
+--------------------------------------------------------------------------------
+  mudanzas.png                          Furgoneta de mudanzas (los robos)
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a black moving van seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Boxy black box van with a separate cab at the front and a big plain cargo box at the back, a roof hatch on the box. Completely black, no writing. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  pulga.png                             Pulga, el utilitario
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a tiny city car from the 2000s seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Very short round hatchback, two doors, a small sunroof. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  ranchera.png                          Ranchera familiar
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a 1990s family estate car seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Long boxy estate car with roof rails and a long roof down to the back. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  mulero.png                            Mulero, la pickup
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a pickup truck seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Pickup truck with a cab at the front and an open cargo bed at the back holding a couple of sacks. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  sierra.png                            Sierra 4x4
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a big off-road SUV seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Tall square off-roader with roof rack, spare wheel on the back and black wheel arches. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  senador.png                           Senador, la berlina de lujo
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a long luxury saloon car seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Long elegant four-door saloon with chrome details and tinted rear windows. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  duna.png                              Duna, descapotable de los sesenta
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a 1960s convertible seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Classic open-top roadster with the roof down: two seats with cream leather visible from above, chrome bumpers and long curved fenders. Body painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  mosquito.png                          Mosquito, el scooter
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a small delivery scooter with its rider seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+A small scooter seen from above with a rider wearing a helmet and a square delivery box on the back. Scooter painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+--------------------------------------------------------------------------------
+  titan.png                             Titan, el camion
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a medium box truck seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like the cars in GTA Chinatown Wars - like a map or a
+blueprint. Only the roof, the bonnet and the tops of the wheels are visible,
+NO side of the vehicle, NO perspective, NO tilt. The front points RIGHT.
+Truck with a square cab at the front and a long plain white cargo box at the back, roof vents on the box, no writing. The cab painted in ONE plain medium colour. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no logos, no number plates with text, no watermark, no
+border, the vehicle centered and filling most of the image.
+
+================================================================================
+  PERSONAS
+================================================================================
+Mismo truco de siempre: la buena es la que se ve DESDE ARRIBA (coronilla y
+hombros). Si sale de pie, la de espaldas suele valer recortada.
+
+--------------------------------------------------------------------------------
+  peaton-17.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of an old woman pulling a shopping trolley, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Grey hair in a bun seen from above, a dark floral cardigan, a tartan shopping trolley beside her. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-18.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a tourist with a backpack, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A big red backpack on the shoulders, a white sun hat, light blue shirt. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-19.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a construction worker, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A yellow hard hat, a high-visibility orange vest over a grey shirt. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-20.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a businesswoman, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Dark hair in a neat ponytail, a dark grey suit jacket, holding a leather briefcase. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-21.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a food delivery rider walking, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A big square green delivery backpack, a black cap. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-22.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a teenager, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Messy dyed blue hair, an oversized purple hoodie, headphones around the neck. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-23.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a fisherman, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A dark wool cap, a yellow raincoat, a fishing rod over one shoulder. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-24.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a cook in his break, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A white chef jacket and a white chef cap seen from above, an apron. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-25.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a nurse, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Light blue hospital scrubs, a stethoscope around the neck, dark hair tied up. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-26.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a retired old man, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A flat beret cap, a brown jacket, holding a walking stick. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-27.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of a young woman in sportswear, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. A pink tracksuit, a high ponytail, a water bottle in one hand. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  peaton-28.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of an office worker, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Short grey hair, a white shirt with rolled sleeves and a loose tie, carrying a coffee cup. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  jefe-consul.png                       
+--------------------------------------------------------------------------------
+Top-down sprite of EL CONSUL, a powerful old port boss in his sixties, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Neat silver-grey hair combed back, an expensive dark navy three-piece suit, broad shoulders, standing very calm. He must look important and different from the ordinary people. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  jefe-chispa.png                       
+--------------------------------------------------------------------------------
+Top-down sprite of CHISPA, a young street crew leader, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Short messy dark brown hair, an orange tracksuit jacket, a thin gold chain, cocky posture. He must look different from the ordinary people. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+--------------------------------------------------------------------------------
+  jefe-dona.png                         
+--------------------------------------------------------------------------------
+Top-down sprite of LA DONA, an elegant old-money crime boss in her sixties, seen from DIRECTLY ABOVE at a perfect 90 degree
+overhead angle, like a security camera on the ceiling looking straight down.
+Only the top of the head, the shoulders and the tips of the shoes are
+visible. NO face, NO perspective, NO tilt. This is NOT a front view and NOT
+a back view: the camera is on the ceiling pointing straight down at the
+floor. Standing still, facing RIGHT. Grey hair in a perfect low bun, a deep purple tailored jacket, a string of pearls. She must look elegant and different from the ordinary people. Pixel art, chunky readable
+pixels, dark muted night-time palette, strong dark outline around the
+silhouette so it reads at a small size. Plain flat magenta background
+(#FF00FF), no shadow, no text, no watermark, no border, the figure centered
+and filling most of the image.
+
+================================================================================
+  MARCAS DEL MAPA
+================================================================================
+
+--------------------------------------------------------------------------------
+  marca-tienda24.png                    
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a 24-hour convenience store: a light blue rounded square badge with a small white shopping basket silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-mecanico.png                    
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a car mechanic: an orange rounded square badge with a small white car jack or spanner and wheel silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-bar.png                         
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a bar: a warm brown rounded square badge with a small white beer glass silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-casino.png                      
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a casino: a gold rounded square badge with a small white playing card (spade symbol) silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-club.png                        
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a nightclub: a pink rounded square badge with a small white cocktail glass silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-furgoneta.png                   
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a burglary van: a black rounded square badge with a small white van silhouette and a small white mask shape inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+--------------------------------------------------------------------------------
+  marca-almacen.png                     
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Flat map marker icon for a warehouse where stolen goods are sold: a gold rounded square badge with a small white cardboard box silhouette inside it. Simple shapes, thick dark outline,
+flat colours, no gradients, no shading detail, no 3D. It has to be readable
+when shown at 16 pixels wide. Centered, filling almost the whole image, plain
+flat magenta background (#FF00FF), no shadow, no text, no watermark, no
+border.
+
+
+################################################################################
+#  TAMBIEN PENDIENTE (4-oct-2026): LAS CINEMATICAS            14 PROMPTS
+################################################################################
+Para la historia (APUNTES G1). Las cinematicas YA FUNCIONAN: retratos y
+decorados se dibujan por codigo mientras no haya imagen. En cuanto estas
+existan, salen solas en su lugar (no hay que tocar nada del juego).
+
+  9 retratos   los que hablan en el prologo y en las 13 misiones
+  5 decorados  ciudad, carretera, muelle, barrio y despacho
+
+Cada retrato describe al personaje TAL COMO ES en HISTORIA-SANTA-PERDIDA.txt
+(aspecto y caracter): que la cara cuente lo mismo que dice el personaje.
+Lo importante es que el mismo personaje se reconozca siempre: si una tirada
+sale bien pero con otra cara, mejor repetirla que mezclar dos versiones.
+
+DONDE SE DEJA CADA COSA
+   retrato-consul.png ... retrato-empedrado.png   sprites\originales\cine\
+   cine-ciudad.png ... cine-despacho.png          sprites\originales\cine\
+   Vale .png o .jpg. Dejalas y avisame: las paso yo a arte\ y a lista.json.
+
+--------------------------------------------------------------------------------
+  retrato-consul.png                El Consul, jefe de Los Amarres
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his mid sixties, the boss of the city's port and its smuggling.
+Neat silver-grey hair combed back, a thick grey moustache, tanned weathered
+skin, heavy-lidded patient eyes that have seen every deal. Dark navy
+three-piece suit, white shirt, burgundy tie. Calm, polite, a little smug:
+he speaks as if every sentence were an international treaty and calls
+everyone "partner". Faint smile, never in a hurry.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-marina.png                Marina Roig, la hija del Consul
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A woman in her mid thirties, the real brains of her father's port
+business. Long straight dark brown hair, sharp dark eyes, light olive skin,
+almost no make-up. Dark green work jacket over a simple top. Serious, dry,
+sceptical expression: she distrusts everyone her father brings in, and
+lately she distrusts her father too.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-ferro.png                 Ferro, capataz de los muelles
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A burly man in his forties, foreman of the docks. Shaved head, short
+black beard, broad neck, tanned brown skin, a small scar on one eyebrow.
+Grey-blue work overalls over a tight t-shirt. Hard, impatient, aggressive
+stare: a brute who thinks his old boss has gone soft.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-chispa.png                Chispa, jefe de la Cuadrilla
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A young man of about twenty-three, leader of a street crew from a poor
+hillside neighbourhood. Short messy dark brown hair, light olive skin, a
+cocky half-smile with tired eyes, a thin gold chain. Orange tracksuit
+jacket half zipped. Charismatic and joking, but fiercely protective of
+his neighbourhood.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-vale.png                  Vale, la mano derecha de Chispa
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A young woman of about twenty-three, the cold head of the street crew.
+Black hair pulled back in a tight ponytail, brown skin, calm calculating
+eyes, small hoop earrings. Dark rust-red hoodie. Unimpressed, alert,
+completely in control.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-abuelo.png                El Abuelo, el veterano del barrio
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+An old man near seventy, the memory of a poor neighbourhood whose
+factories closed long ago. Bald on top with white hair on the sides, a
+thick white moustache, deep wrinkles, light skin. Old brown cardigan over
+a checked shirt. Melancholic and kind, a little sad smile.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-renco.png                 Renco, el soplon de la cuadrilla
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A nervous young man of about twenty, the informer of the street crew.
+Light brown hair under a dark baseball cap, pale skin, darting guilty
+eyes, sweat on the forehead. A brand-new grey hoodie that looks too
+expensive for him. Scared and cornered.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark burnt orange, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-dona.png                  La Dona, jefa de Casa Verdial
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+An elegant woman in her early sixties, head of an old-money family that
+runs protection rackets with paperwork and smiles. Grey hair in a perfect
+low bun, fair skin, a string of pearls, discreet earrings. Deep purple
+tailored jacket. Perfect manners, soft polite smile, cold eyes: she never
+raises her voice because she never needs to.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-empedrado.png             El Licenciado Empedrado, abogado
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A thin man in his fifties, the family's lawyer. Dark hair slicked and
+neatly parted, thin rectangular glasses, fair skin, clean shaven. Charcoal
+suit, white shirt, dark tie. Careful and cold, a faint courteous smile:
+everything he does is designed so that nothing can ever be proved on
+paper.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  cine-ciudad.png                   La ciudad de noche desde el mar
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A small coastal Spanish-style city at night seen from the sea: a
+skyline of mid-height buildings with warm lit windows, a hill behind it,
+a red and white lighthouse on the right shore, a full moon, stars, the
+city lights reflected on calm dark water. Melancholic and beautiful.
+
+--------------------------------------------------------------------------------
+  cine-carretera.png                La carretera de la costa al amanecer
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A coastal road at dawn, warm orange and pink sky, the sun rising over
+the sea on the right. On the road, seen from behind, an old regional bus
+driving away with its red tail lights on. A green road sign at the side,
+WITHOUT any readable text. A feeling of arriving somewhere new with
+nothing.
+
+--------------------------------------------------------------------------------
+  cine-muelle.png                   El muelle de noche (Los Amarres)
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A harbour dock at night: stacks of rusty shipping containers in red,
+blue and green, a big yellow port crane with a red warning light, dock
+lamps throwing pools of warm light, dark water with reflections, wooden
+planks and iron bollards in the foreground. Smuggling atmosphere, quiet
+and tense.
+
+--------------------------------------------------------------------------------
+  cine-barrio.png                   El barrio alto (la Cuadrilla)
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+A poor hillside neighbourhood at dusk: old run-down apartment blocks
+with small balconies, some windows lit, clothes hanging on lines between
+buildings, a graffiti-covered wall at street level (graffiti shapes only,
+NO readable words), a metal barrel with a fire burning in it, warm orange
+glow against a purple sky.
+
+--------------------------------------------------------------------------------
+  cine-despacho.png                 El despacho de La Dona
+--------------------------------------------------------------------------------
+Create a LANDSCAPE image, 16:9 aspect ratio (1920x1080).
+STYLE: painted cinematic background like the illustrated cutscene and
+loading art of GTA San Andreas: bold shapes, painterly, moody lighting,
+2000s crime-game atmosphere. NOT photorealistic, NOT a 3D render, NOT a
+photo.
+COMPOSITION, VERY IMPORTANT: the top 12% and the bottom 35% of the image
+will be covered (black cinema bars at the top, a dialogue box at the
+bottom). Put everything important in the middle band. The bottom part can
+be just ground, floor or water.
+MUST NOT CONTAIN: NO people, NO text, letters, numbers, logos or
+watermark.
+An elegant old-money office at night: a large window behind a heavy
+wooden desk, through the window the city lights and a port crane far
+away, heavy dark red velvet curtains, striped burgundy wallpaper, a green
+banker's lamp on the desk, a porcelain coffee cup and a leather folder.
+Quiet, rich and quietly menacing.
+
+
+################################################################################
+#  TANDA ANTERIOR (27-sep-2026, aun pendiente): TODOS LOS DEMAS TEJADOS  18 PROMPTS
+################################################################################
+Pablo: "tenemos los interiores... pero tambien deberiamos hacer los
+exteriores. A ver si piensas bien en todo". Repasado el codigo entero, esto
+es TODO lo que sigue con un tejado generico de barrio (o un dibujo por
+codigo, en el caso del hospital y la comisaria, ya resueltos) en vez de uno
+propio:
+
+   armeria, taller, comida, gimnasio, concesionario    5   (el 2o intento
+                                                            de esta tanda:
+                                                            se quedaron sin
+                                                            escribir la vez
+                                                            pasada)
+   los seis pisos, uno por barrio                      6   (a juego con su
+                                                            interior, que ya
+                                                            tiene uno cada uno)
+   los seis negocios, uno por barrio                   6   (cada uno de un
+                                                            comercio distinto)
+   el desguace (los cuatro comparten el mismo)          1
+
+Con esto, TODO edificio en el que se puede entrar o hacer algo tiene su
+propio tejado. Lo que queda generico a proposito: los edificios normales de
+relleno (no se puede interactuar con ellos) y los landmarks, que ya tienen
+su propia lamina desde antes.
+
+MISMO TRATAMIENTO QUE UN TEJADO DE BARRIO: se recorta al cuadrado del medio
+y se estira sobre el edificio que le toque (cualquier tamaño). El codigo YA
+SABE buscarlas (`techo-<clave>`): en cuanto esten, salen solas. Sin ellas,
+cada uno sigue con el tejado de su barrio de siempre — no se rompe nada.
+
+DONDE SE DEJA CADA COSA (todas en sprites\originales\edificios\, NO con los
+iconos del mapa: esos ya existen y son otra cosa)
+   armeria.png              taller.png            comida.png
+   gimnasio.png              concesionario.png     desguace.png
+   piso-conflictivo.png      piso-residencial.png  piso-comercial.png
+   piso-industrial.png       piso-puerto.png       piso-centro.png
+   negocio-conflictivo.png   negocio-residencial.png  negocio-comercial.png
+   negocio-industrial.png    negocio-puerto.png    negocio-centro.png
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+
+--------------------------------------------------------------------------------
+  armeria.png                     tejado de la armeria             1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small gun shop roof, seen from DIRECTLY ABOVE at a
+perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the building are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a flat reinforced-looking roof, dark green-grey metal panels, a
+couple of stacked sandbags in one corner, a small satellite dish, a
+security camera housing, an air vent.
+
+COLOUR: dark green-grey metal, sandy sandbags, muted steel.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO weapons lying visible.
+
+
+--------------------------------------------------------------------------------
+  taller.png                      tejado del taller de pintura     1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small car paint-shop garage roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a corrugated metal garage roof with a row of skylights down the
+middle, a big extractor fan, a stack of paint drums in one corner (muted
+colours, no readable labels), faded paint stains on the metal.
+
+COLOUR: weathered grey-blue corrugated metal, muted paint-drum colours
+(red, yellow, blue), rust streaks.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  comida.png                      tejado del sitio de comida       1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small fried-chicken takeaway roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat red-and-white striped roof, a big rooftop ornament shaped
+like a fried chicken drumstick (no letters on it, just the shape), a couple
+of small extractor vents, a folded-up red awning frame visible at one edge.
+
+COLOUR: red and white stripes, warm golden-brown drumstick shape, muted
+metal vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  gimnasio.png                    tejado del gimnasio (por fuera)  1:1
+--------------------------------------------------------------------------------
+OJO: esta es la fachada vista DESDE FUERA, distinta de interior-gimnasio.png
+(el interior, ya hecho).
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small gym building roof, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls of the building are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a flat dark roof with several large air-conditioning units (a gym
+needs a lot of cooling), a small painted circle marking on the roof like an
+old basketball hoop backboard seen from above, amber accent stripes along
+one edge.
+
+COLOUR: dark grey roof, amber/orange accents, muted metal AC units.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  concesionario.png               tejado del concesionario         1:1
+--------------------------------------------------------------------------------
+OJO: esta es la fachada vista DESDE FUERA, distinta de
+interior-concesionario.png (el interior, ya hecho, que es la sala de venta).
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small car dealership showroom roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls of the building are NOT visible,
+only the roof, filling the whole image edge to edge.
+
+LAYOUT: a flat pale roof with a big skylight grid running down the middle
+(the showroom floor is lit from above), a string of small triangular
+pennant flags along one edge (plain colours, no writing), a rooftop AC unit.
+
+COLOUR: pale grey-blue roof, glass skylight reflections, faded multicolour
+pennants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO cars visible through the skylight.
+
+
+--------------------------------------------------------------------------------
+  desguace.png                    tejado del desguace              1:1
+--------------------------------------------------------------------------------
+Los cuatro desguaces de la ciudad comparten este mismo tejado.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small scrapyard office roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls of the building are NOT visible, only
+the roof, filling the whole image edge to edge.
+
+LAYOUT: a rusty corrugated metal roof, a stack of old tyres in one corner,
+a couple of oil drums, patches of rust and grime, a bare bulb light fixture.
+
+COLOUR: rusty brown-orange corrugated metal, black tyres, muted grime.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO wrecked cars (esos van en el patio, no en este tejado).
+
+
+################################################################################
+#  LOS SEIS PISOS                                                6 PROMPTS
+################################################################################
+Cada uno a juego con su interior (ya hecho) y su precio: cuanto mas caro,
+mas se nota por fuera. Las descripciones vienen de config/pisos.js.
+
+
+--------------------------------------------------------------------------------
+  piso-conflictivo.png     Altillo en Los Rompientes    1.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a run-down small apartment roof above a bar, seen
+from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view,
+like the city in GTA Chinatown Wars. The camera is high in the sky pointing
+straight down. NO perspective, NO tilt, the walls are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a patched corrugated roof with mismatched panels, a wonky TV
+antenna, a clothesline with a couple of hanging clothes, a small rusty AC
+unit, a satellite dish tilted at an odd angle.
+
+COLOUR: faded rust-brown and grey patched metal, muted washing-line colours.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-residencial.png     Piso en Residencial          3.500 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of an ordinary small apartment building roof, seen
+from DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view,
+like the city in GTA Chinatown Wars. The camera is high in the sky pointing
+straight down. NO perspective, NO tilt, the walls are NOT visible, only the
+roof, filling the whole image edge to edge.
+
+LAYOUT: a plain tiled roof, a water tank on short legs, a cluster of TV
+antennas, a clothesline, a couple of small potted plants near the access
+hatch.
+
+COLOUR: warm terracotta tile, weathered grey water tank, green plants.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-comercial.png       Estudio sobre la tienda      5.000 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small flat roof above a row of shops, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a flat grey roof, a small rooftop terrace with a folding chair and
+a couple of potted plants, an AC unit, a narrow rooftop access door seen
+from above.
+
+COLOUR: cool grey roof, warm terracotta pots, faded folding chair.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-industrial.png      Nave en el poligono          7.500 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a cold industrial warehouse roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a wide corrugated metal roof with a row of skylights, thick
+ventilation ducts running across it, a large exhaust fan, faint rust
+streaks.
+
+COLOUR: cold grey-blue corrugated metal, dark ducts, muted rust.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  piso-puerto.png          Almacen del puerto           11.000 €   1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a big dockside warehouse roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a large flat roof with tar-paper texture, thick pipework running
+along one edge, a couple of large vents, faint oil stains, a rooftop
+walkway railing along one side.
+
+COLOUR: dark tar-grey roof, rusty pipework, muted oil stains.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO ships.
+
+
+--------------------------------------------------------------------------------
+  piso-centro.png          Apartamento del Centro       16.000 €   1:1
+--------------------------------------------------------------------------------
+Esta es LA RECOMPENSA: el piso mas caro del juego. Tiene que notarse de un
+vistazo que es mejor que los otros cinco.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a luxury penthouse rooftop terrace, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof and
+terrace, filling the whole image edge to edge.
+
+LAYOUT: a polished dark roof deck with a small rectangular plunge pool in
+the middle, a couple of built-in bench seats, neat rows of planters with
+trimmed hedges around the edge, a glass safety railing all around.
+
+COLOUR: dark polished decking, turquoise pool water, deep green hedges,
+warm wood tones.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+################################################################################
+#  LOS SEIS NEGOCIOS                                             6 PROMPTS
+################################################################################
+Cada uno de un comercio distinto (config/negocios.js). El de mas renta
+(Joyeria) tiene que notarse mas cuidado que el mas barato (Locutorio).
+
+
+--------------------------------------------------------------------------------
+  negocio-conflictivo.png   Locutorio Los Rompientes    2.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small phone-call-shop roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a cheap flat roof with a cluster of mismatched satellite dishes and
+antennas wired together, a small AC unit, patched tar paper.
+
+COLOUR: dull grey tar roof, weathered white and grey satellite dishes.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-residencial.png   Lavanderia Buenavista       3.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small laundromat roof, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a map view, like the city in GTA
+Chinatown Wars. The camera is high in the sky pointing straight down. NO
+perspective, NO tilt, the walls are NOT visible, only the roof, filling the
+whole image edge to edge.
+
+LAYOUT: a flat pale-blue roof, a row of steam vents releasing a light haze,
+a small water tank, faint damp streaks running down from the vents.
+
+COLOUR: pale blue-grey roof, white steam haze, muted metal vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-comercial.png     Boutique Verdial            5.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a stylish clothing boutique roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a smart dark-purple roof, a small rooftop garden strip with neat
+trimmed shrubs along one edge, a folded outdoor umbrella, a discreet
+skylight.
+
+COLOUR: deep purple roof, muted green shrubs, warm wood umbrella pole.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-industrial.png    Almacen del Poligono        7.000 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a smuggling warehouse roof, seen from DIRECTLY
+ABOVE at a perfect 90-degree overhead angle - a map view, like the city in
+GTA Chinatown Wars. The camera is high in the sky pointing straight down.
+NO perspective, NO tilt, the walls are NOT visible, only the roof, filling
+the whole image edge to edge.
+
+LAYOUT: a wide corrugated roof, a couple of tarpaulin-covered mounds near
+one edge (crates hidden under a tarp), a vent stack, faint rust streaks.
+
+COLOUR: dark green-grey corrugated metal, olive tarpaulin, muted rust.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+--------------------------------------------------------------------------------
+  negocio-puerto.png        Lonja del Muelle            9.200 €    1:1
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of a small dockside fish-market roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a pale roof with a few coils of thick rope, a stack of empty
+fish crates near one edge, a couple of ice-machine vents, damp patches.
+
+COLOUR: pale weathered roof, muted rope brown, cool blue-grey ice vents.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles, NO boats.
+
+
+--------------------------------------------------------------------------------
+  negocio-centro.png        Joyeria del Centro          12.000 €   1:1
+--------------------------------------------------------------------------------
+Esta es LA RECOMPENSA de los negocios: el mas caro con diferencia. Tiene que
+notarse de un vistazo que es el mas lujoso de los seis.
+
+Create a SQUARE image, 1:1 aspect ratio.
+Top-down aerial view of an upscale jewellery-store roof, seen from
+DIRECTLY ABOVE at a perfect 90-degree overhead angle - a map view, like the
+city in GTA Chinatown Wars. The camera is high in the sky pointing straight
+down. NO perspective, NO tilt, the walls are NOT visible, only the roof,
+filling the whole image edge to edge.
+
+LAYOUT: a dark polished roof with a gold decorative trim along the edges, a
+domed glass skylight in the centre, a discreet security camera, a couple of
+ornamental potted topiary shapes near the access hatch.
+
+COLOUR: deep charcoal roof, gold trim, warm glass dome glow, deep green
+topiary.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT a photo.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO people.
+NO vehicles.
+
+
+################################################################################
+#  EL TECHO DE PRECIOS NUEVO (27-sep-2026)                       2 PROMPTS
+################################################################################
+La otra mitad del ajuste de economia (ver PLAN-SANTA-PERDIDA.txt, bloque N):
+tres cosas nuevas, mas caras que nada que hubiera antes, para que siga
+habiendo algo que de verdad cueste conseguir. Dos de las tres (el Casino
+como negocio y el atico de la Torre Sombra) van en landmarks que YA TIENEN
+su lamina — no hace falta pedir nada nuevo para ellos. Solo faltan estas
+dos:
+
+DONDE SE DEJA CADA COSA
+   centella.png              ->  sprites\originales\coches\
+   interior-piso-atico.png   ->  sprites\originales\edificios\
+   Vale .png o .jpg. Dejalas y avisame: los preparadores los paso yo.
+
+
+--------------------------------------------------------------------------------
+  centella.png                    el coche mas caro del juego      16:9
+--------------------------------------------------------------------------------
+Create a WIDE LANDSCAPE image in 16:9 aspect ratio, not square.
+Top-down sprite of a sleek exotic supercar seen from DIRECTLY ABOVE at a
+perfect 90 degree overhead angle, like the cars in GTA Chinatown Wars —
+like a map or a blueprint. Only the roof and the tops of the wheels are
+visible, NO side of the vehicle, NO perspective, NO tilt. The front of the
+car points RIGHT. Low, wide, aggressive supercar silhouette: a long sloped
+bonnet, a narrow low cabin set well back, wide rear haunches, a small
+rear spoiler. Pixel art, chunky readable pixels, muted palette, strong dark
+outline around the silhouette. Plain flat magenta background (#FF00FF), no
+shadow, no text, no watermark, no border, the vehicle centered and filling
+most of the image.
+
+
+--------------------------------------------------------------------------------
+  interior-piso-atico.png    Atico de la Torre Sombra    28.000 €   8:5
+--------------------------------------------------------------------------------
+El piso mas caro con diferencia. Mismo esquema que los otros seis interiores
+de piso (una sola sala, vista cenital), pero se nota de un vistazo que es un
+atico de lujo en lo alto de un rascacielos, no un piso normal.
+
+OJO CON ESTA: el juego pone tres cosas encima en sitios EXACTOS (la cama
+para dormir, el garaje para sacar el coche, y la puerta). Si el dibujo las
+pone en otro sitio, el jugador aparece durmiendo en la pared o al lado del
+garaje que no es.
+
+Create a LANDSCAPE image in 8:5 aspect ratio (a bit wider than tall), not
+square.
+Top-down interior of a luxury penthouse apartment, seen from DIRECTLY ABOVE
+at a perfect 90-degree overhead angle - a floor-plan view, like the
+interiors in GTA Chinatown Wars. The camera is mounted on the ceiling
+looking straight down at the floor. NO walls seen from the front, NO
+perspective, NO tilt, NO vanishing point.
+
+FORMAT: landscape 8:5. The floor fills the entire image edge to edge, no
+border, no margin.
+
+LAYOUT - this part matters, the game places furniture and a car at each
+exact spot below, and nothing else should be drawn there:
+- AT 15% of the width, 27% of the height: a large double bed with dark
+  premium bedding, seen from above.
+- AT 50% of the width, 13% of the height: an indoor parking spot for a
+  single car (a clean rectangular marked area, like a private garage bay
+  built into the penthouse) — leave it visually empty, the game places the
+  car sprite there.
+- BOTTOM CENTRE EDGE (around 50% of the width, from 96% of the height to
+  the bottom edge): a stretch of floor left completely clear and open,
+  that is the door.
+- The rest of the floor can carry penthouse atmosphere: floor-to-ceiling
+  windows along one edge showing the city skyline far below, a sunken
+  lounge area with a low sofa, a bar cart, a thick rug, a glass coffee
+  table - but nothing blocking the bed, the parking spot or the doorway.
+
+LIGHT: warm evening light through the windows, soft lamp glow.
+COLOUR: dark polished floor, warm wood and gold accents, deep blue night
+sky through the windows, city lights in the distance.
+STYLE: hand-painted 2D game art, bold dark outlines, flat shading. NOT
+photorealistic, NOT a 3D render, NOT isometric.
+MUST NOT CONTAIN: NO text, letters, numbers, painted words, signs with
+readable writing or watermark. NO people. NO car (the game places its own
+sprite on the parking spot). Nothing on top of the bed, the parking spot or
+the doorway.
+
+
