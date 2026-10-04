@@ -191,7 +191,7 @@ G1. Al dar a NUEVA PARTIDA que salga algo de la historia: CINEMATICAS,
 
 === H. APUNTES DEL 3-OCT (tras la v52) ===
 
-H1. INTERIORES Y EXTERIORES DE TODOS LOS LOCALES, CON SUS FISICAS.
+H1. [HECHO 4-oct, v54: ver PLAN] INTERIORES Y EXTERIORES DE TODOS LOS LOCALES, CON SUS FISICAS.
     Tiendas, bar, casino, mecanico, tienda24, etc.: hoy muchos son una imagen
     incrustada sin logica (el mismo problema que A8 y A7). Hay que revisar
     CADA local, por fuera (fachada, puerta, acera, que choque) y por dentro

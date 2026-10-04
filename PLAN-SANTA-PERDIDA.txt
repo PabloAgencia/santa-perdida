@@ -3672,3 +3672,24 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   rejilla torcida en Los Rompientes). Calles dibujadas lisas y horneadas por
   zonas; carreras por distancia; nombre del barrio en pantalla; partidas del
   mapa viejo vuelven al escondite. Falta: aerodromo, tunel, costa en escalera.
+
+[HECHO 4-oct, v54] H1: LOS LOCALES POR DENTRO Y POR FUERA (APUNTES seccion H).
+  Por fuera: cada local lleva fachada en el lado de su puerta (toldo a rayas
+  de su color, puerta de cristal, felpudo) y el rotulo sobre el tejado en vez
+  de flotando en la acera; mecanico y taller, persiana de garaje y franjas
+  amarillas en la entrada. Todo pintado encima del edificio (ya macizo).
+  Por dentro: tienda 24h, Pollos Cluck, bar y hospital se entran (gratis; con
+  busca no). Una sola escena, LocalScene.js, y las salas en
+  config/interiores.js, dibujadas por codigo: cada mueble que se ve es el
+  rectangulo que choca. Lo que se compraba en la acera se compra en el
+  mostrador (misma funcion, LocalSystem.servir: precios iguales). Gente
+  paseando, sentada mirando a su mesa, pacientes en las camas; se les pega.
+  Logica: si tumbas al que atiende, nadie te cobra; tumbar a alguien = 1
+  estrella al salir. ATRACO (tienda): E compra SIEMPRE; con arma de fuego,
+  clic/F junto al mostrador = encañonar: suelta la caja en 4 tandas mientras
+  sigas delante, los clientes huyen por un camino que rodea los muebles
+  (rejilla de distancias a la puerta), 2 estrellas al salir, 5 min sin caja.
+  Mecanico y taller: fundido a negro mientras trabajan, coche quieto.
+  Probado en Chrome: las cuatro salas, compra, atraco (+360, 0 clientes
+  dentro de muebles), mostrador que frena, 1 y 2 estrellas al salir, mecanico.
+  Siguiente: H2, el casino de verdad.

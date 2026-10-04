@@ -266,14 +266,14 @@ export class UIScene extends Phaser.Scene {
 
   // el texto de "E para..." de hospital, taller y comida (la comisaria no
   // tiene accion, asi que ni entra aqui: ver CityScene.usarLocalCerca)
+  // (tienda, comida, bar y hospital se entran: lo que se compra se ve
+  // dentro, en el mostrador de LocalScene)
   textoLocal(cfg) {
-    if (cfg.accion === 'curar') return `E para curarte · ${cfg.precio} €`;
-    if (cfg.accion === 'comer') return `E para comer algo · ${cfg.precio} €`;
+    if (['curar', 'comer', 'tienda', 'beber'].includes(cfg.accion)) return `E para entrar · ${cfg.nombre}`;
     if (cfg.accion === 'pintar') return `E para pintar el coche · ${cfg.precio} €`;
     if (cfg.accion === 'gimnasio') return `E para entrar al gimnasio · ${cfg.precio} €`;
-    if (cfg.accion === 'tienda') return `E botiquin · ${cfg.precio} €   (con un arma en la mano: ATRACAR)`;
+    if (cfg.accion === 'club') return `E para entrar · ${cfg.nombre} · ${cfg.precio} €`;
     if (cfg.accion === 'reparar') return `E para arreglar la chapa · ${cfg.precio} €`;
-    if (cfg.accion === 'beber') return `E para tomar algo · ${cfg.precio} €`;
     return '';
   }
 

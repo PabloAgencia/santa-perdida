@@ -6,7 +6,6 @@ import { etiquetaFlotante } from '../world/etiquetas.js';
 import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
-import { ARMAS } from '../config/weapons.js';
 
 // LOS LOCALES: hospital, comisaria, taller de pintura y sitios de comida.
 //
@@ -87,13 +86,96 @@ export class LocalSystem {
 
   pintar(local) {
     this.pintarEdificioDeUso(local);
+    const f = this.pintarFachada(local);
+    // el aro en la puerta: es el sitio donde se pulsa E, como las entradas
+    // de los GTA. Algo mas pequeño que antes, ahora que la fachada ya dice
+    // que es una tienda.
     const aro = this.scene.add.image(local.x, local.y, 'ring')
-      .setDisplaySize(58, 58).setTint(local.cfg.color).setDepth(6);
+      .setDisplaySize(44, 44).setTint(local.cfg.color).setDepth(6);
     this.scene.tweens.add({
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1050, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    etiquetaFlotante(this.scene, local.x, local.y - 32, local.cfg.corto, local.cfg.color);
+    // el nombre, como un rotulo sobre el propio edificio, no flotando en
+    // la acera
+    etiquetaFlotante(this.scene, f.rotulo.x, f.rotulo.y, local.cfg.corto, local.cfg.color);
+  }
+
+  // LA FACHADA (APUNTES H1). Antes el local era un edificio cualquiera con
+  // un aro delante: nada decia desde la calle que alli hubiera una tienda.
+  // Ahora el lado de la puerta lleva lo que lleva un local de verdad:
+  //   tiendas, bar, comida...  un toldo a rayas de su color y la puerta
+  //   mecanico y taller       una persiana de garaje y el suelo pintado a
+  //                           franjas amarillas y negras, por donde se entra
+  //                           con el coche
+  // Todo va pintado encima del edificio y de la acera (no es un objeto
+  // nuevo que haya que esquivar): el edificio ya es macizo y la acera se
+  // sigue pisando.
+  pintarFachada(local) {
+    const b = local.edificio;
+    const s = this.scene;
+    // de que lado del edificio cae la puerta, y hacia donde mira (n)
+    let n;
+    if (local.y > b.py + b.ph / 2) n = { x: 0, y: 1 };
+    else if (local.y < b.py - b.ph / 2) n = { x: 0, y: -1 };
+    else if (local.x > b.px) n = { x: 1, y: 0 };
+    else n = { x: -1, y: 0 };
+    const horizontal = n.y !== 0;               // la fachada corre de lado a lado
+    const lado = horizontal ? b.pw : b.ph;
+    // el punto del borde del edificio frente a la puerta
+    const bx = horizontal ? local.x : b.px + n.x * b.pw / 2;
+    const by = horizontal ? b.py + n.y * b.ph / 2 : local.y;
+    const D = -880;
+    const rect = (cx, cy, largo, ancho, color, alpha = 1, dz = 0) => {
+      // largo = a lo largo de la fachada; ancho = hacia la calle
+      const w = horizontal ? largo : ancho;
+      const h = horizontal ? ancho : largo;
+      s.pintarRect(cx, cy, w, h, color, D + dz, alpha);
+    };
+    const en = (a, fuera) => ({   // a = a lo largo, fuera = hacia la calle
+      x: bx + (horizontal ? a : 0) + n.x * fuera,
+      y: by + (horizontal ? 0 : a) + n.y * fuera,
+    });
+
+    const enCoche = local.cfg.enCoche;
+    if (enCoche) {
+      const L = Math.min(lado - 10, 72);
+      // la persiana, en el borde del tejado
+      let p = en(0, -5);
+      rect(p.x, p.y, L, 10, 0x6a6f76);
+      for (let i = -3; i <= 3; i++) {
+        p = en(0, -5 + i * 1.3);
+        rect(p.x, p.y, L - 4, 1, 0x3a3f46, 0.8, 1);
+      }
+      // el suelo de la entrada: franjas amarillas y negras
+      p = en(0, 9);
+      rect(p.x, p.y, L, 14, 0x15181d, 0.9, 1);
+      for (let a = -L / 2 + 5; a < L / 2; a += 12) {
+        p = en(a, 9);
+        rect(p.x, p.y, 6, 12, 0xe8c040, 0.9, 2);
+      }
+    } else {
+      const L = Math.min(lado - 10, 104);
+      // sombra del toldo sobre la acera
+      let p = en(4, 12);
+      rect(p.x, p.y, L, 16, 0x05060a, 0.35);
+      // el toldo: rayas de su color y crema
+      const raya = 10;
+      for (let a = -L / 2, i = 0; a < L / 2; a += raya, i++) {
+        p = en(a + raya / 2, 7);
+        rect(p.x, p.y, Math.min(raya, L / 2 - a), 14, i % 2 ? 0xf2efe6 : local.cfg.color, 1, 1);
+      }
+      // el faldon del toldo, mas oscuro
+      p = en(0, 14.5);
+      rect(p.x, p.y, L, 3, 0x05060a, 0.45, 2);
+      // la puerta de cristal, en el borde, y el felpudo delante
+      p = en(0, -2);
+      rect(p.x, p.y, 22, 4, 0x9fd8f0, 0.9, 3);
+      p = en(0, 21);
+      rect(p.x, p.y, 20, 7, 0x3a2a20, 0.9, 1);
+    }
+    // donde va el rotulo: sobre el tejado, pegado a la fachada
+    return { rotulo: en(0, -20) };
   }
 
   // Un coche del oficio aparcado en la puerta. No es decoracion: se roba
@@ -131,66 +213,21 @@ export class LocalSystem {
     }
   }
 
+  // Lo que se usa SIN entrar: el mecanico y el taller de pintura, desde el
+  // coche. Tienda, comida, bar y hospital ya no pasan por aqui: se entra
+  // (LocalScene) y se compra en el mostrador, atraco incluido.
   // Devuelve un texto para el aviso, o null si no ha pasado nada.
   usar(local, vehiculo) {
     const cfg = local.cfg;
     if (cfg.accion === 'ninguna') return null;
-
-    // LA TIENDA 24H. Con un arma de fuego en la mano es un atraco (no hace
-    // falta dinero); sin ella, se compra un botiquin.
-    if (cfg.accion === 'tienda') {
-      const arma = ARMAS[GameState.armaActual];
-      if (arma && !arma.cuerpo) return this.atracar(local);
-    }
-
     if (cfg.precio > 0 && !GameState.canAfford(cfg.precio)) {
       return { texto: `${cfg.nombre}: ${cfg.precio} €. No te llega`, tono: 'danger' };
     }
+    return this.usarEnCoche(cfg, vehiculo);
+  }
 
-    if (cfg.accion === 'curar') {
-      // solo salud, como en los demas GTA: el chaleco se compra aparte, en
-      // la armeria (o se encuentra por la calle)
-      if (GameState.health >= GameState.vidaMaxima) {
-        return { texto: 'Estas entero', tono: 'dim' };
-      }
-      GameState.spendMoney(cfg.precio, 'hospital');
-      GameState.heal(GameState.vidaMaxima);
-      Audio.notes([392, 523.25, 659.25], 0.1);
-      return { texto: `Curado · ${cfg.precio} €`, tono: 'money' };
-    }
-
-    if (cfg.accion === 'comer') {
-      if (GameState.health >= GameState.vidaMaxima) {
-        return { texto: 'No te cabe mas', tono: 'dim' };
-      }
-      GameState.spendMoney(cfg.precio, 'comida');
-      GameState.heal(CURAS.comida);
-      // comer engorda: es el contrapeso de curarse barato
-      GameState.subirAtributo('grasa', CURAS.comidaEngorda);
-      Audio.notes([523.25, 659.25], 0.08);
-      return { texto: `+${CURAS.comida} de vida · ${cfg.precio} €`, tono: 'money' };
-    }
-
-    if (cfg.accion === 'tienda') {
-      if (GameState.health >= GameState.vidaMaxima) {
-        return { texto: 'No necesitas nada', tono: 'dim' };
-      }
-      GameState.spendMoney(cfg.precio, 'tienda');
-      GameState.heal(45);
-      Audio.notes([523.25, 659.25, 783.99], 0.07);
-      return { texto: `Botiquin: +45 de vida · ${cfg.precio} €`, tono: 'money' };
-    }
-
-    if (cfg.accion === 'beber') {
-      if (GameState.health >= GameState.vidaMaxima) {
-        return { texto: 'Estas entero, no te apetece', tono: 'dim' };
-      }
-      GameState.spendMoney(cfg.precio, 'bar');
-      GameState.heal(10);
-      Audio.notes([440, 523.25], 0.08);
-      return { texto: `Una copa: +10 de vida · ${cfg.precio} €`, tono: 'money' };
-    }
-
+  // el mecanico y el taller de pintura: se usan desde el coche
+  usarEnCoche(cfg, vehiculo) {
     if (cfg.accion === 'reparar') {
       if (!vehiculo) return null;
       if (vehiculo.quemado) return { texto: 'Eso ya no tiene arreglo', tono: 'danger' };
@@ -242,22 +279,61 @@ export class LocalSystem {
     }
     return null;
   }
+}
 
-  // El atraco: te llevas lo de la caja y te ven. Cada tienda aguanta uno
-  // cada cinco minutos (de juego, por el reloj de la escena).
-  atracar(local) {
-    const ahora = this.scene.time.now;
-    if (local.robadaHasta && ahora < local.robadaHasta) {
-      return { texto: 'La caja esta vacia: ya la has limpiado hace poco', tono: 'dim' };
-    }
-    local.robadaHasta = ahora + 300000;
-    const botin = Phaser.Math.Between(120, 380);
-    GameState.addMoney(botin, 'atraco');
-    GameState.bumpStat('atracos', 1);
-    // el dependiente te ve: busca 2, y los que estaban cerca se asustan
-    if (this.scene.police) this.scene.police.reportarCrimen(local.x, local.y, 2);
-    if (this.scene.npcs) this.scene.npcs.scare(local.x, local.y, 500);
-    Audio.crash(0.3);
-    return { texto: `¡Atraco! +${botin} €`, tono: 'danger' };
+// LO QUE SE COMPRA EN EL MOSTRADOR: curarse, comer, el botiquin, la copa.
+// Vivia dentro de LocalSystem.usar, cuando todo pasaba en la acera; ahora
+// lo llama tambien LocalScene, desde dentro del local, y asi el precio y lo
+// que cura no pueden ir por separado. Devuelve null si la accion no es de
+// mostrador (el taller y el mecanico van aparte, en coche).
+export function servir(cfg) {
+  const deMostrador = ['curar', 'comer', 'tienda', 'beber'];
+  if (!deMostrador.includes(cfg.accion)) return null;
+
+  if (cfg.precio > 0 && !GameState.canAfford(cfg.precio)) {
+    return { texto: `${cfg.nombre}: ${cfg.precio} €. No te llega`, tono: 'danger' };
   }
+
+  if (cfg.accion === 'curar') {
+    // solo salud, como en los demas GTA: el chaleco se compra aparte, en
+    // la armeria (o se encuentra por la calle)
+    if (GameState.health >= GameState.vidaMaxima) {
+      return { texto: 'Estas entero', tono: 'dim' };
+    }
+    GameState.spendMoney(cfg.precio, 'hospital');
+    GameState.heal(GameState.vidaMaxima);
+    Audio.notes([392, 523.25, 659.25], 0.1);
+    return { texto: `Curado · ${cfg.precio} €`, tono: 'money' };
+  }
+
+  if (cfg.accion === 'comer') {
+    if (GameState.health >= GameState.vidaMaxima) {
+      return { texto: 'No te cabe mas', tono: 'dim' };
+    }
+    GameState.spendMoney(cfg.precio, 'comida');
+    GameState.heal(CURAS.comida);
+    // comer engorda: es el contrapeso de curarse barato
+    GameState.subirAtributo('grasa', CURAS.comidaEngorda);
+    Audio.notes([523.25, 659.25], 0.08);
+    return { texto: `+${CURAS.comida} de vida · ${cfg.precio} €`, tono: 'money' };
+  }
+
+  if (cfg.accion === 'tienda') {
+    if (GameState.health >= GameState.vidaMaxima) {
+      return { texto: 'No necesitas nada', tono: 'dim' };
+    }
+    GameState.spendMoney(cfg.precio, 'tienda');
+    GameState.heal(45);
+    Audio.notes([523.25, 659.25, 783.99], 0.07);
+    return { texto: `Botiquin: +45 de vida · ${cfg.precio} €`, tono: 'money' };
+  }
+
+  // beber
+  if (GameState.health >= GameState.vidaMaxima) {
+    return { texto: 'Estas entero, no te apetece', tono: 'dim' };
+  }
+  GameState.spendMoney(cfg.precio, 'bar');
+  GameState.heal(10);
+  Audio.notes([440, 523.25], 0.08);
+  return { texto: `Una copa: +10 de vida · ${cfg.precio} €`, tono: 'money' };
 }

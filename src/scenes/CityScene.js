@@ -31,6 +31,7 @@ import { FACTIONS } from '../config/factions.js';
 import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
+import { SE_ENTRA } from '../config/interiores.js';
 import { GameState } from '../core/GameState.js';
 import { SaveSystem } from '../core/SaveSystem.js';
 import { EventBus, EVT } from '../core/EventBus.js';
@@ -400,6 +401,13 @@ export class CityScene extends Phaser.Scene {
       this.cameras.main.fadeIn(420, 0, 0, 0);
       if (datos && datos.sacarCocheDe) this.sacarCocheDelGaraje(datos.sacarCocheDe, puerta);
       if (datos && datos.cocheComprado) this.entregarCocheComprado(datos.cocheComprado, puerta);
+      // lo que hiciste dentro de un local (LocalScene): un atraco (2) o
+      // tumbar a alguien delante de todos (1). Los de dentro ya han avisado:
+      // sales con la policia de camino y la gente de la puerta se aparta.
+      if (datos && datos.delito && puerta) {
+        if (this.police) this.police.reportarCrimen(puerta.x, puerta.y, datos.delito);
+        if (this.npcs) this.npcs.scare(puerta.x, puerta.y, 500);
+      }
     };
     this.onDead = () => {
       // sale despedido hacia atras y un poco a un lado, no siempre igual
@@ -1127,6 +1135,45 @@ export class CityScene extends Phaser.Scene {
       GameState.spendMoney(local.cfg.precio, 'club');
       this.interiorDoor = { x: local.x, y: local.y, edificio: local.edificio };
       this.abrirInterior({}, 'ClubScene');
+      return true;
+    }
+
+    // TIENDA 24H, COMIDA, BAR Y HOSPITAL (APUNTES H1): se entra, y lo que
+    // se compra o se atraca pasa dentro, en el mostrador (LocalScene). Aqui
+    // no se cobra nada: entrar es gratis.
+    if (SE_ENTRA.includes(local.cfg.clave)) {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no puedes entrar', tone: 'danger' });
+        return true;
+      }
+      this.interiorDoor = { x: local.x, y: local.y, edificio: local.edificio };
+      this.abrirInterior({ local }, 'LocalScene');
+      return true;
+    }
+
+    // EL MECANICO Y EL TALLER DE PINTURA: se entra con el coche por la
+    // persiana. Fundido a negro mientras se trabaja, como en los GTA, y el
+    // coche quieto en la puerta.
+    if (local.cfg.enCoche && this.drivingVehicle) {
+      if (this.enTaller) return true;
+      const v = this.drivingVehicle;
+      const precio = local.cfg.precio;
+      if (precio > 0 && !GameState.canAfford(precio)) {
+        EventBus.emit(EVT.NOTIFY, { text: `${local.cfg.nombre}: ${precio} €. No te llega`, tone: 'danger' });
+        return true;
+      }
+      this.enTaller = true;
+      v.vx = 0;
+      v.vy = 0;
+      this.cameras.main.fadeOut(300, 0, 0, 0);
+      this.time.delayedCall(700, () => {
+        this.enTaller = false;
+        v.vx = 0;
+        v.vy = 0;
+        const resultado = this.locales.usar(local, v);
+        if (resultado) EventBus.emit(EVT.NOTIFY, { text: resultado.texto, tone: resultado.tono });
+        this.cameras.main.fadeIn(360, 0, 0, 0);
+      });
       return true;
     }
 
