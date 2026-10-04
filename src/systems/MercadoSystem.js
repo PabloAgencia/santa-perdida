@@ -57,11 +57,12 @@ export class MercadoSystem {
     Phaser.Utils.Array.Shuffle(candidatos);
 
     for (const zona of ZONAS) {
-      const b = candidatos.find(
-        (c) => c.zone === zona &&
-          !this.puntos.some((p) => Phaser.Math.Distance.Between(p.x, p.y, c.px, c.py) < SEPARACION) &&
-          this.puertaDe(c)
-      );
+      const vale = (c, min) => c.zone === zona && c.pw >= min && c.ph >= min &&
+        !this.puntos.some((p) => Phaser.Math.Distance.Between(p.x, p.y, c.px, c.py) < SEPARACION) &&
+        this.puertaDe(c);
+      // un desguace necesita patio: primero un edificio de 3 casillas o mas,
+      // y solo si en ese barrio no hay ninguno, uno de 2
+      const b = candidatos.find((c) => vale(c, TILE * 3)) || candidatos.find((c) => vale(c, TILE * 2));
       if (!b) continue;
       const puerta = this.puertaDe(b);
 
@@ -89,13 +90,81 @@ export class MercadoSystem {
 
   pintar(p) {
     this.pintarTejado(p);
+    if (!this.scene.textures.exists('techo-desguace')) this.pintarPatio(p);
+    // la entrada, la misma del mecanico: franjas amarillas por donde se
+    // mete el coche (LocalSystem.pintarFachada)
+    const f = this.scene.locales
+      ? this.scene.locales.pintarFachada({ x: p.x, y: p.y, edificio: p.edificio, cfg: { enCoche: true, color: 0xc87f4a } })
+      : { rotulo: { x: p.x, y: p.y - 32 } };
     const aro = this.scene.add.image(p.x, p.y, 'ring')
       .setDisplaySize(58, 58).setTint(0xc87f4a).setDepth(6);
     this.scene.tweens.add({
       targets: aro, scale: { from: 0.85, to: 1.1 },
       duration: 1100, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
-    etiquetaFlotante(this.scene, p.x, p.y - 32, 'DESGUACE', 0xc87f4a);
+    etiquetaFlotante(this.scene, f.rotulo.x, f.rotulo.y, 'DESGUACE', 0xc87f4a);
+  }
+
+  // EL PATIO DEL DESGUACE (pulido B del PLAN). Eran cuatro edificios
+  // normales con un cartel, identicos. Ahora el "tejado" es un patio vallado
+  // de grava con coches siniestrados apilados, cada desguace con su propio
+  // monton (sale del sitio del edificio, asi que siempre es el mismo). El
+  // edificio sigue siendo macizo: es un patio cerrado, no se entra andando.
+  pintarPatio(p) {
+    const s = this.scene;
+    const b = p.edificio;
+    let semilla = (b.tx * 73856093) ^ (b.ty * 19349663);
+    const rnd = () => {
+      semilla = (semilla * 1103515245 + 12345) & 0x7fffffff;
+      return semilla / 0x7fffffff;
+    };
+    const D = -885;
+    const x0 = b.px - b.pw / 2;
+    const y0 = b.py - b.ph / 2;
+    s.pintarRect(b.px, b.py, b.pw - 2, b.ph - 2, 0x5e594e, D);
+    // manchas de aceite y grava
+    for (let i = 0; i < (b.pw * b.ph) / 900; i++) {
+      s.pintarRect(x0 + rnd() * b.pw, y0 + rnd() * b.ph, 3 + rnd() * 8, 2 + rnd() * 6,
+        rnd() < 0.3 ? 0x2a2620 : 0x7a7466, D + 1, 0.6);
+    }
+    // los coches: filas de chatarra, unos en horizontal y otros en vertical
+    const COLORES = [0x6a2a24, 0x2f4a63, 0x6d6a5c, 0x3d3f45, 0x55402f, 0x8a7a4a, 0x4a5b6b];
+    const paso = 30;
+    for (let y = y0 + 16; y < y0 + b.ph - 14; y += paso) {
+      for (let x = x0 + 18; x < x0 + b.pw - 16; x += paso) {
+        if (rnd() < 0.28) continue;   // huecos para que no sea una cuadricula
+        const horiz = rnd() < 0.6;
+        const w = horiz ? 24 : 12;
+        const h = horiz ? 12 : 24;
+        const cx = x + (rnd() - 0.5) * 6;
+        const cy = y + (rnd() - 0.5) * 6;
+        const color = COLORES[Math.floor(rnd() * COLORES.length)];
+        s.pintarRect(cx + 2, cy + 3, w, h, 0x05060a, D + 2, 0.45);
+        s.pintarRect(cx, cy, w, h, color, D + 3);
+        // la luna, rota y oscura
+        s.pintarRect(cx + (horiz ? 3 : 0), cy + (horiz ? 0 : -3), horiz ? 7 : 8, horiz ? 8 : 7, 0x1d2128, D + 4, 0.85);
+        // otro encima, a veces: la pila
+        if (rnd() < 0.35) {
+          const c2 = COLORES[Math.floor(rnd() * COLORES.length)];
+          s.pintarRect(cx + 2, cy - 2, w - 4, h - 4, c2, D + 5);
+          s.pintarRect(cx + 2, cy - 2, w - 10 > 0 ? w - 10 : 4, 3, 0x1d2128, D + 6, 0.7);
+        }
+      }
+    }
+    // la valla de chapa, con sus postes
+    const valla = 0x8a8f96;
+    s.pintarRect(b.px, y0 + 1.5, b.pw, 3, valla, D + 7);
+    s.pintarRect(b.px, y0 + b.ph - 1.5, b.pw, 3, valla, D + 7);
+    s.pintarRect(x0 + 1.5, b.py, 3, b.ph, valla, D + 7);
+    s.pintarRect(x0 + b.pw - 1.5, b.py, 3, b.ph, valla, D + 7);
+    for (let x = x0; x <= x0 + b.pw; x += 16) {
+      s.pintarRect(x, y0 + 1.5, 4, 4, 0x3a3f46, D + 8);
+      s.pintarRect(x, y0 + b.ph - 1.5, 4, 4, 0x3a3f46, D + 8);
+    }
+    for (let y = y0; y <= y0 + b.ph; y += 16) {
+      s.pintarRect(x0 + 1.5, y, 4, 4, 0x3a3f46, D + 8);
+      s.pintarRect(x0 + b.pw - 1.5, y, 4, 4, 0x3a3f46, D + 8);
+    }
   }
 
   update(dt, player, drivingVehicle) {

@@ -2749,9 +2749,12 @@ esa noche, primera hecha ya:
     (cobra, bloquea comprar un segundo), se sale y aparece en la calle
     con `deTuyo`, se guarda en la partida.
 
- B. PENDIENTE. Los cuatro desguaces del mercado (MercadoSystem, 52a
-    tanda) son un cartel "DESGUACE" y un anillo, los cuatro identicos.
-    Con cuatro repetidos por el mapa se nota mas que en un sitio unico.
+ B. HECHO (4-oct, v58). Los desguaces eran un cartel "DESGUACE" y un
+    anillo sobre un edificio normal. Ahora el tejado es un patio vallado de
+    grava con coches siniestrados apilados (MercadoSystem.pintarPatio, cada
+    uno su monton, sacado del sitio del edificio), la entrada de franjas
+    del mecanico y el rotulo encima. Eligen edificio de 3 casillas o mas
+    (antes caian en uno de 64x64 y el rotulo tapaba medio patio).
  C. PENDIENTE. La grua del puerto sigue siendo solo un cartel de texto
     ("SE COMPRAN X, Y, Z") sobre el landmark, sin mas elaboracion.
  D. PENDIENTE DE PABLO. El puenteo de coches (punto 18) es solo una barra
