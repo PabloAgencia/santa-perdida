@@ -3693,3 +3693,34 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   Probado en Chrome: las cuatro salas, compra, atraco (+360, 0 clientes
   dentro de muebles), mostrador que frena, 1 y 2 estrellas al salir, mecanico.
   Siguiente: H2, el casino de verdad.
+
+[HECHO 4-oct, v55] H2: EL CASINO DE VERDAD (APUNTES seccion H).
+  Ojo, lo que habia: SlotsScene NO eran tragaperras, es la pantalla de
+  ranuras de partida. El casino no tenia ningun juego: solo era el negocio
+  de 20.000 € que se compraba en la acera.
+  Ahora la puerta del Casino Fortuna ENTRA (CasinoScene.js, sala 1040x560
+  por codigo, mesas que chocan, croupiers y clientela a la que se pega).
+  Comprar el casino y cobrar su caja: en el DESPACHO del fondo (mismas
+  funciones de NegocioSystem). Juegos (src/casino/, base comun en comun.js,
+  el dinero siempre por GameState, apuesta cobrada al empezar):
+    · blackjack (2 mesas): 6 barajas, banca se planta en 17, BJ paga 3 a 2,
+      doblar con dos cartas; sin separar ni seguro
+    · ruleta europea: un cero, orden real de la rueda, rojo/negro, par/
+      impar, 1-18/19-36, docenas 2 a 1, pleno 35 a 1
+    · craps: linea de pase (7/11 gana, 2/3/12 pierde, punto antes que 7)
+    · videopoker Jotas o mas, tabla 9/6
+    · caballos: 6 por carrera, cuotas sacadas de la probabilidad real de
+      cada uno menos un 15% para la casa; el ganador se sortea con esas
+      mismas probabilidades
+    · tragaperras: 3 rodillos, tabla MEDIDA (93,1% de retorno sumando las
+      216 combinaciones con sus pesos). Si se toca, volver a medir.
+  Levantarse a mitad de jugada la resuelve (nunca devuelve ni regala).
+  Probado en Chrome: 24 comprobaciones de reglas (manos de blackjack,
+  jugadas de poker, tiradas de craps, apuestas de ruleta, premios) todas
+  bien; 30 manos de blackjack, 20 giros, 15 rondas de craps, 20 de poker,
+  3 carreras y 30 tiradas jugadas sin un error; la bola cae en el numero que
+  sale. Ojo al probar: las animaciones de Phaser (tweens) van por la hora
+  real, no por los game.step empujados a mano: la ruleta parece tardar
+  mucho en la pestaña oculta y no es un fallo.
+  Pendiente para Pablo: jugarlo y decir topes de apuesta (5.000 en mesas,
+  1.000 en maquinas) y si quiere separar/seguro en el blackjack.

@@ -32,6 +32,7 @@ import { CombatSystem } from '../systems/CombatSystem.js';
 import { ARMAS } from '../config/weapons.js';
 import { ENTRENAR } from '../config/balance.js';
 import { SE_ENTRA } from '../config/interiores.js';
+import { claveNegocio } from '../config/negocios.js';
 import { GameState } from '../core/GameState.js';
 import { SaveSystem } from '../core/SaveSystem.js';
 import { EventBus, EVT } from '../core/EventBus.js';
@@ -1188,6 +1189,18 @@ export class CityScene extends Phaser.Scene {
     if (!this.negocios || !this.negocios.cerca) return false;
     const n = this.negocios.cerca;
 
+    // EL CASINO (APUNTES H2): su puerta es para ENTRAR. Comprarlo y cobrar
+    // la caja se hace dentro, en el despacho (CasinoScene).
+    if (n.clave === claveNegocio('casino')) {
+      if (GameState.wanted > 0) {
+        EventBus.emit(EVT.NOTIFY, { text: 'Con la policia detras no te dejan pasar', tone: 'danger' });
+        return true;
+      }
+      this.interiorDoor = { x: n.x, y: n.y, edificio: n.edificio };
+      this.abrirInterior({ negocio: n }, 'CasinoScene');
+      return true;
+    }
+
     if (!GameState.esDueno(n.clave)) {
       const que = this.negocios.comprar(n);
       if (que === 'sin-dinero') {
@@ -1654,6 +1667,7 @@ export class CityScene extends Phaser.Scene {
       negocioCerca: this.negocios && this.negocios.cerca
         ? {
           nombre: this.negocios.cerca.cfg.nombre,
+          esCasino: this.negocios.cerca.clave === claveNegocio('casino'),
           precio: this.negocios.cerca.cfg.precio,
           esTuyo: GameState.esDueno(this.negocios.cerca.clave),
           enAtaque: !!this.negocios.cerca.ataque,

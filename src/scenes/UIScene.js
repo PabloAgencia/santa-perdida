@@ -279,6 +279,8 @@ export class UIScene extends Phaser.Scene {
 
   // el texto de "E para..." de los negocios
   textoNegocio(n) {
+    // el casino se compra y se cobra dentro, en el despacho
+    if (n.esCasino) return n.enAtaque ? `${n.nombre}: ¡te lo estan atacando!` : `E para entrar · ${n.nombre}`;
     if (!n.esTuyo) return `E para comprar ${n.nombre} · ${n.precio} €`;
     if (n.enAtaque) return `${n.nombre}: ¡te lo estan atacando!`;
     if (n.caja <= 0) return `${n.nombre}: la caja esta vacia`;

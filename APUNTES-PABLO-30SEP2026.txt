@@ -198,7 +198,7 @@ H1. [HECHO 4-oct, v54: ver PLAN] INTERIORES Y EXTERIORES DE TODOS LOS LOCALES, C
     (muebles, mostrador, paredes con colision, se puede pegar), con el estilo
     de world/interior.js (FisicaInterior). Nada de imagen pegada de adorno.
 
-H2. EL CASINO DEBE SER UN CASINO DE VERDAD.
+H2. [HECHO 4-oct, v55: ver PLAN] EL CASINO DEBE SER UN CASINO DE VERDAD.
     Ahora solo hay tragaperras (SlotsScene) y ni siquiera se entra bien.
     Debe poder entrarse y jugar a: poker, blackjack, ruleta, caballos, craps,
     etc. Orden barato (de IDEAS-3 punto 8): blackjack, craps, ruleta; luego
