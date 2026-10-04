@@ -533,7 +533,8 @@ export class UIScene extends Phaser.Scene {
     this.updateBlindaje(d.blindaje ?? 0);
     this.updateAliento(d.aliento ?? 1);
     this.accionTexto.setText(
-      d.tiendaCerca ? 'E para entrar en la armeria'
+      d.roboTexto ? d.roboTexto
+        : d.tiendaCerca ? 'E para entrar en la armeria'
         : d.armasConfCerca ? 'E para recuperar tus armas · 500 €'
         : d.localCerca ? this.textoLocal(d.localCerca)
         : d.negocioCerca ? this.textoNegocio(d.negocioCerca)

@@ -3724,3 +3724,29 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   mucho en la pestaña oculta y no es un fallo.
   Pendiente para Pablo: jugarlo y decir topes de apuesta (5.000 en mesas,
   1.000 en maquinas) y si quiere separar/seguro en el blackjack.
+
+[HECHO 4-oct, v56] ROBOS DE CASAS (IDEAS-3 punto 1), a lo San Andreas.
+  config/robos.js (reglas y numeros), systems/RoboSystem.js (la calle),
+  scenes/RoboCasaScene.js (dentro). Dos furgonetas de mudanzas negras
+  aparcadas en el residencial (`especial` en vehicles.js: ni trafico ni
+  policia). Subirte DE NOCHE (20:00-06:00) empieza el robo; de dia avisa.
+  12 casas marcadas cerca (aro amarillo). Dentro, a oscuras con linterna:
+  barra de ruido (andar poco, SHIFT mucho, C agachado nada, chocar
+  corriendo de golpe); llena = el vecino se despierta, huye por la puerta
+  (rodeando muebles: el camino de LocalScene paso a FisicaInterior.pasoHacia
+  y lo usan los dos) y llama: 2 estrellas al salir y casa apagada. Una cosa
+  cada vez, en brazos (caja visible, sin correr, mas lento si pesa), E junto
+  a la furgoneta la carga (8 caben). Se vende en uno de los 3 almacenes
+  (poligono/puerto), el mas cercano. A las 06:00 se acaba y se pierde lo no
+  vendido; morir o ser detenido tambien lo acaba. El reloj sigue dentro.
+  10.000 € robados en total = aguante infinito (GameState.flags).
+  DE SAN ANDREAS (seguro): furgoneta de noche, ruido, vecino que llama,
+  en brazos, almacen, amanecer. DE MEMORIA, A CONFIRMAR CON PABLO: que el
+  premio sea a los 10.000 € y sea aguante infinito. NUESTRO: capacidad 8,
+  valores, ruido.
+  Probado en Chrome: de dia no empieza, de noche si; entrar, coger, salir
+  con ello, cargar, despertar al vecino (2 estrellas), vender (+260). La
+  partida de Pablo se dejo como estaba (dinero, stats, flags, hora).
+  Ojo: la noche son 5 min reales y el almacen mas cercano puede quedar a
+  ~11.000 px del residencial (~1 min de furgoneta). Si Pablo lo ve justo,
+  acercar un almacen o alargar la noche durante el robo.

@@ -20,6 +20,7 @@ import { BajoMundoSystem, PRECIO_BUEN_RATO } from '../systems/BajoMundoSystem.js
 import { ShopSystem } from '../systems/ShopSystem.js';
 import { PisoSystem } from '../systems/PisoSystem.js';
 import { LocalSystem } from '../systems/LocalSystem.js';
+import { RoboSystem } from '../systems/RoboSystem.js';
 import { ArmasConfiscadasSystem } from '../systems/ArmasConfiscadasSystem.js';
 import { ConcesionarioSystem } from '../systems/ConcesionarioSystem.js';
 import { NegocioSystem } from '../systems/NegocioSystem.js';
@@ -103,6 +104,7 @@ export class CityScene extends Phaser.Scene {
 
     this.shops = new ShopSystem(this, this.map);
     this.locales = new LocalSystem(this, this.map);
+    this.robos = new RoboSystem(this, this.map);
     this.armasConf = new ArmasConfiscadasSystem(this);
     this.concesionario = new ConcesionarioSystem(this, this.map);
     this.grua = new GruaSystem(this, this.map);
@@ -405,6 +407,7 @@ export class CityScene extends Phaser.Scene {
       // lo que hiciste dentro de un local (LocalScene): un atraco (2) o
       // tumbar a alguien delante de todos (1). Los de dentro ya han avisado:
       // sales con la policia de camino y la gente de la puerta se aparta.
+      if (datos && datos.robo) this.robos.alSalirDeCasa(datos.robo);
       if (datos && datos.delito && puerta) {
         if (this.police) this.police.reportarCrimen(puerta.x, puerta.y, datos.delito);
         if (this.npcs) this.npcs.scare(puerta.x, puerta.y, 500);
@@ -623,11 +626,14 @@ export class CityScene extends Phaser.Scene {
       // entregarlo en la grua; solo si ninguno aplica el E te baja como siempre
       if (this.drivingVehicle) {
         if (
+          !this.robos.usar() &&
           !this.entrarEnPisoCerca() && !this.entregarEnGruaCerca() &&
           !this.venderEnDesguaceCerca() && !this.empezarCarreraCerca() &&
           !this.pasarBuenRatoCerca()
         ) this.exitVehicle();
       } else if (
+        // el robo va primero: con algo en brazos el E solo sirve para la furgoneta
+        !this.robos.usar() &&
         !this.missions.intentarEmpezar(this.player.x, this.player.y) &&
         !this.encuentros.intentarHablar(this.player.x, this.player.y) &&
         !this.enterHideout() &&
@@ -704,7 +710,8 @@ export class CityScene extends Phaser.Scene {
       GameState.bumpStat('metersDriven', metros);
       GameState.subirAtributo('volante', metros * ENTRENAR.volantePorMetro);
     } else {
-      this.player.update(dt, { left, right, up, down, run: k.run.isDown });
+      // con algo robado en brazos no se corre (RoboSystem)
+      this.player.update(dt, { left, right, up, down, run: k.run.isDown && !this.robos.cargando });
     }
 
     this.diaNoche.update(dt);
@@ -754,6 +761,7 @@ export class CityScene extends Phaser.Scene {
     this.mercado.update(dt, this.player, this.drivingVehicle);
     this.carreras.update(dt, this.player, this.drivingVehicle);
     this.guerra.update(dt, this.player, !!this.drivingVehicle);
+    this.robos.update(dt, this.player, this.drivingVehicle);
     this.combat.update(dt, this.player, !this.drivingVehicle, this.drivingVehicle);
     this.danos.update(dt, this.vehicles, this.player, this.drivingVehicle);
     this.encanonar();
@@ -1582,6 +1590,8 @@ export class CityScene extends Phaser.Scene {
   // ninguno lo esta, el que conduzcas ahora mismo (taxi, ambulancia,
   // patrulla), o si no, el reparto de siempre
   trabajoActual() {
+    const robo = this.robos && this.robos.objetivo(this.player);
+    if (robo) return robo;
     if (this.encuentros.activo) {
       return {
         objective: this.encuentros.objectiveText(), remaining: this.encuentros.remainingTime(),
@@ -1641,6 +1651,7 @@ export class CityScene extends Phaser.Scene {
       tiendaCerca: !!(this.shops && this.shops.cerca),
       armasConfCerca: !!(this.armasConf && this.armasConf.cerca),
       localCerca: this.locales && this.locales.cerca ? this.locales.cerca.cfg : null,
+      roboTexto: this.robos && this.robos.activo ? this.robos.textoAccion() : '',
       concesionarioCerca: !!(this.concesionario && this.concesionario.cerca),
       guerraCerca: this.guerra && this.guerra.cerca ? FACTIONS[this.guerra.cerca.faction].name : null,
       guerraActiva: this.guerra && this.guerra.activo

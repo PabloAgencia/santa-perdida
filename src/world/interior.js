@@ -113,4 +113,64 @@ export class FisicaInterior {
   update(dt) {
     if (this.recarga > 0) this.recarga -= dt;
   }
+
+  // EL CAMINO HASTA UN PUNTO (la puerta, casi siempre) sin atravesar
+  // muebles ni paredes. Una rejilla de 10 px sobre la sala y, desde el
+  // destino, cuantos pasos hay hasta cada casilla libre. Quien huye baja
+  // siempre a la casilla vecina con menos pasos, asi rodea lo que haya en
+  // medio. Se calcula una vez por destino (lo usan LocalScene y
+  // RoboCasaScene).
+  pasoHacia(sala, destino, x, y) {
+    const C = 10;
+    const cols = Math.ceil(sala.w / C);
+    const filas = Math.ceil(sala.h / C);
+    const clave = `${Math.round(destino.x)},${Math.round(destino.y)}`;
+    this.campos = this.campos || new Map();
+    let dist = this.campos.get(clave);
+    if (!dist) {
+      dist = new Int32Array(cols * filas).fill(-1);
+      const libre = (i, j) => {
+        const px = sala.x + i * C + C / 2;
+        const py = sala.y + j * C + C / 2;
+        return !this.rects.some((q) => {
+          const cx = Phaser.Math.Clamp(px, q.x, q.x + q.w);
+          const cy = Phaser.Math.Clamp(py, q.y, q.y + q.h);
+          return Math.hypot(px - cx, py - cy) < 8;
+        });
+      };
+      const di0 = Phaser.Math.Clamp(Math.floor((destino.x - sala.x) / C), 0, cols - 1);
+      const dj0 = Phaser.Math.Clamp(Math.floor((destino.y - sala.y) / C), 0, filas - 1);
+      dist[dj0 * cols + di0] = 0;
+      const cola = [[di0, dj0]];
+      for (let k = 0; k < cola.length; k++) {
+        const [i, j] = cola[k];
+        for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const ni = i + a;
+          const nj = j + b;
+          if (ni < 0 || nj < 0 || ni >= cols || nj >= filas) continue;
+          if (dist[nj * cols + ni] >= 0 || !libre(ni, nj)) continue;
+          dist[nj * cols + ni] = dist[j * cols + i] + 1;
+          cola.push([ni, nj]);
+        }
+      }
+      this.campos.set(clave, dist);
+    }
+    if (Math.hypot(destino.x - x, destino.y - y) < 20) return destino;
+    const i = Phaser.Math.Clamp(Math.floor((x - sala.x) / C), 0, cols - 1);
+    const j = Phaser.Math.Clamp(Math.floor((y - sala.y) / C), 0, filas - 1);
+    let mejor = null;
+    let mejorD = dist[j * cols + i] >= 0 ? dist[j * cols + i] : Infinity;
+    for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+      const ni = i + a;
+      const nj = j + b;
+      if (ni < 0 || nj < 0 || ni >= cols || nj >= filas) continue;
+      const d = dist[nj * cols + ni];
+      if (d < 0) continue;
+      // en diagonal solo si las dos rectas de al lado tambien estan libres
+      if (a && b && (dist[j * cols + ni] < 0 || dist[nj * cols + i] < 0)) continue;
+      if (d < mejorD) { mejorD = d; mejor = [ni, nj]; }
+    }
+    if (!mejor) return destino;
+    return { x: sala.x + mejor[0] * C + C / 2, y: sala.y + mejor[1] * C + C / 2 };
+  }
 }

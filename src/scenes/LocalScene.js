@@ -476,66 +476,6 @@ export class LocalScene extends Phaser.Scene {
     this.confirmacion = 3;
   }
 
-  // EL CAMINO HASTA LA PUERTA. Una rejilla de 10 px sobre la sala y, desde la
-  // puerta, cuantos pasos hay hasta cada casilla sin pisar ningun mueble. El
-  // que huye baja siempre a la casilla vecina con menos pasos, asi rodea las
-  // estanterias en vez de atravesarlas. Se calcula una vez, al primer susto.
-  caminoAPuerta() {
-    if (this.distPuerta) return this.distPuerta;
-    const s = this.sala;
-    const C = 10;
-    const cols = s.w / C;
-    const filas = s.h / C;
-    const dist = new Int32Array(cols * filas).fill(-1);
-    const libre = (i, j) => !this.fisica.rects.some((q) => {
-      const x = s.x + i * C + C / 2;
-      const y = s.y + j * C + C / 2;
-      const cx = Phaser.Math.Clamp(x, q.x, q.x + q.w);
-      const cy = Phaser.Math.Clamp(y, q.y, q.y + q.h);
-      return Math.hypot(x - cx, y - cy) < 8;
-    });
-    const cola = [];
-    const pi = Math.floor((this.puerta.x - s.x) / C);
-    const pj = filas - 1;
-    dist[pj * cols + pi] = 0;
-    cola.push([pi, pj]);
-    for (let k = 0; k < cola.length; k++) {
-      const [i, j] = cola[k];
-      for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const ni = i + di;
-        const nj = j + dj;
-        if (ni < 0 || nj < 0 || ni >= cols || nj >= filas) continue;
-        if (dist[nj * cols + ni] >= 0 || !libre(ni, nj)) continue;
-        dist[nj * cols + ni] = dist[j * cols + i] + 1;
-        cola.push([ni, nj]);
-      }
-    }
-    this.distPuerta = { dist, cols, filas, C };
-    return this.distPuerta;
-  }
-
-  // el siguiente punto hacia la puerta desde (x, y)
-  pasoHaciaPuerta(x, y) {
-    const { dist, cols, filas, C } = this.caminoAPuerta();
-    const s = this.sala;
-    const i = Phaser.Math.Clamp(Math.floor((x - s.x) / C), 0, cols - 1);
-    const j = Phaser.Math.Clamp(Math.floor((y - s.y) / C), 0, filas - 1);
-    let mejor = null;
-    let mejorD = dist[j * cols + i] >= 0 ? dist[j * cols + i] : Infinity;
-    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
-      const ni = i + di;
-      const nj = j + dj;
-      if (ni < 0 || nj < 0 || ni >= cols || nj >= filas) continue;
-      const d = dist[nj * cols + ni];
-      if (d < 0) continue;
-      // en diagonal solo si las dos rectas de al lado tambien estan libres
-      if (di && dj && (dist[j * cols + ni] < 0 || dist[nj * cols + i] < 0)) continue;
-      if (d < mejorD) { mejorD = d; mejor = [ni, nj]; }
-    }
-    if (!mejor) return this.puerta;
-    return { x: s.x + mejor[0] * C + C / 2, y: s.y + mejor[1] * C + C / 2 };
-  }
-
   // los que pasean, los que se van corriendo y los que estan quietos
   moverClientes(dt) {
     for (const c of this.clientes) {
@@ -544,7 +484,7 @@ export class LocalScene extends Phaser.Scene {
       let vel = 0;
       if (c.huyendo) {
         destino = Phaser.Math.Distance.Between(c.spr.x, c.spr.y, this.puerta.x, this.puerta.y) < 20
-          ? this.puerta : this.pasoHaciaPuerta(c.spr.x, c.spr.y);
+          ? this.puerta : this.fisica.pasoHacia(this.sala, this.puerta, c.spr.x, c.spr.y);
         vel = PLAYER.walkSpeed * 1.5;
       } else if (c.hasta) {
         c.t += dt * 0.35;

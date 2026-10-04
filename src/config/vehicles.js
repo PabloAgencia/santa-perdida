@@ -164,7 +164,21 @@ export const VEHICLES = {
     maxHp: 240, price: 0,
     palette: [0xe8e4dc, 0xdcd6c8],
   },
+  // LA FURGONETA DE LOS ROBOS (como la Boxville negra de San Andreas): solo
+  // la aparca RoboSystem, en el residencial. `especial` = no sale como
+  // trafico ni aparcada por ahi, SIN ser de la policia (la marca `police`
+  // haria que al subirte se tratara como robar una patrulla).
+  mudanzas: {
+    name: 'Furgoneta de mudanzas',
+    clase: 'furgoneta',
+    especial: true,
+    length: 62, width: 27,
+    maxSpeed: 215, accel: 92, brake: 240, reverseSpeed: 82,
+    turnRate: 1.55, lateralRetention: 0.915,
+    maxHp: 170, price: 0,
+    palette: [0x1c1d21, 0x24262b],
+  },
 };
 
 // el coche patrulla no sale como trafico ni aparcado: lo saca la policia
-export const VEHICLE_KEYS = Object.keys(VEHICLES).filter((k) => !VEHICLES[k].police);
+export const VEHICLE_KEYS = Object.keys(VEHICLES).filter((k) => !VEHICLES[k].police && !VEHICLES[k].especial);

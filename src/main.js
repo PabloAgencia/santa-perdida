@@ -16,6 +16,7 @@ import { PrologoScene } from './scenes/PrologoScene.js';
 import { ClubScene } from './scenes/ClubScene.js';
 import { LocalScene } from './scenes/LocalScene.js';
 import { CasinoScene } from './scenes/CasinoScene.js';
+import { RoboCasaScene } from './scenes/RoboCasaScene.js';
 
 // Phaser dibuja el texto sobre el lienzo una sola vez: si la fuente no esta
 // cargada antes de arrancar, los titulos salen con la de repuesto y ya no se
@@ -46,7 +47,7 @@ const game = new Phaser.Game({
   scene: [
     BootScene, MenuScene, SlotsScene, CityScene, UIScene, HideoutScene, PauseScene,
     ShopScene, MapaScene, ProgresoScene, MercadoScene, ConcesionarioScene, GimnasioScene, TiroScene,
-    PrologoScene, ClubScene, LocalScene, CasinoScene,
+    PrologoScene, ClubScene, LocalScene, CasinoScene, RoboCasaScene,
   ],
 });
 

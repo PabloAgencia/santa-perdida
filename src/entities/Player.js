@@ -317,7 +317,8 @@ export class Player {
 
     if (quiereCorrer && !this.sinFuelle) {
       this.running = true;
-      this.aliento = Math.max(0, this.aliento - dt);
+      // el premio de los robos (RoboSystem): con aguante infinito no se gasta
+      if (!GameState.flags.aguanteInfinito) this.aliento = Math.max(0, this.aliento - dt);
       GameState.subirAtributo('aguante', ENTRENAR.aguantePorSegundoCorriendo * dt);
       if (GameState.subirAtributo('grasa', ENTRENAR.grasaPorSegundoCorriendo * dt)) {
         this.actualizarCuerpo();
