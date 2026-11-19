@@ -37,6 +37,7 @@ import { ENTRENAR } from '../config/balance.js';
 import { SE_ENTRA } from '../config/interiores.js';
 import { claveNegocio } from '../config/negocios.js';
 import { GameState } from '../core/GameState.js';
+import { RadioSystem } from '../systems/RadioSystem.js';
 import { SaveSystem } from '../core/SaveSystem.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { Audio } from '../core/Audio.js';
@@ -122,6 +123,7 @@ export class CityScene extends Phaser.Scene {
     });
     this.justiciero = new JusticieroSystem(this, this.map, this.net);
     this.diaNoche = new DiaNocheSystem();
+    this.radio = new RadioSystem();
     this.encuentros = new EncuentroSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);
@@ -755,6 +757,7 @@ export class CityScene extends Phaser.Scene {
 
     // con un robo en marcha el reloj va al ritmo de San Andreas (config/robos.js)
     this.diaNoche.update(this.robos.activo ? dt * ROBO.ritmoReloj : dt);
+    this.radio.update(dt, !!this.drivingVehicle);
     this.lights.update(dt, this.player.x, this.player.y);
 
     // Para el trafico tu tambien eres un peaton cuando vas a pie: antes no
@@ -1679,6 +1682,21 @@ export class CityScene extends Phaser.Scene {
     }
   }
 
+  // los que van a por ti, para el minimapa (puntos rojos, como en los GTA):
+  // la gente hostil cercana y los coches de una escena de mision
+  enemigosEnMapa() {
+    const p = this.player;
+    const lista = [];
+    for (const q of this.npcs.people) {
+      if (q.down || !q.hostile) continue;
+      if (Math.abs(q.x - p.x) > 1400 || Math.abs(q.y - p.y) > 1400) continue;
+      lista.push({ x: q.x, y: q.y });
+    }
+    const e = this.missions && this.missions.escena && this.missions.escena.e;
+    if (e) for (const c of e.persecutores) if (c.v.hp > 0) lista.push({ x: c.v.x, y: c.v.y, coche: true });
+    return lista;
+  }
+
   emitHud() {
     const trabajo = this.trabajoActual();
     EventBus.emit(EVT.HUD_TICK, {
@@ -1754,6 +1772,7 @@ export class CityScene extends Phaser.Scene {
       mission: this.missions.estado() || this.carreras.estado(),
       siguiente: this.carreras.siguientePunto(),
       police: this.police.units.map((u) => ({ x: u.vehicle.x, y: u.vehicle.y })),
+      enemigos: this.enemigosEnMapa(),
       contactos: this.missions.puntos().concat(this.encuentros.puntos()),
       diaNoche: this.diaNoche.velo(),
     });

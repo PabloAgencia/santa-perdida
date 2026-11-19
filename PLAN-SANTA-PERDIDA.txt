@@ -3936,3 +3936,18 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · Probado en el navegador: oleadas que salen y disparan, escolta que te
     embiste y te dispara, camion blindado con el triple de vida y huyendo,
     coche que prende cerca, reintentar desde el punto de control.
+
+[HECHO 19-nov, v66] MAREJADA FM Y ENEMIGOS EN EL MINIMAPA.
+  · La radio del coche (config/radio.js + RadioSystem): DJ Marejada habla
+    cada 35-55 s mientras conduces. Ambiente y anuncios de los sitios del
+    juego (Pollos Cluck, Casino Fortuna, El Terciopelo, el taller de Puro...),
+    NOTICIAS de lo que has hecho (17, una vez cada una: la llegada de Cero, el
+    coche del fondo del puerto, Renco, Ferro o Sacau muertos, el articulo de
+    Teresa, cada camino del Acto 4, la muerte del Consul o de Chispa...) y
+    narracion en directo de las persecuciones de 3, 4 y 5 estrellas. Rotulo
+    abajo, en Pricedown como todo el HUD.
+  · Puntos rojos en el minimapa para la gente hostil y los coches de una
+    escena; el rotulo de la mision dice la oleada, cuantos quedan y cuantos
+    coches te siguen.
+  · Probado: sale la noticia al subir al coche, dos puntos rojos con dos
+    perseguidores, rotulo con "2 coches detras", sin errores.

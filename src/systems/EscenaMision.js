@@ -208,6 +208,20 @@ export class EscenaMision {
     }
   }
 
+  // lo que se añade al rotulo de la mision: oleada y cuantos quedan
+  resumen() {
+    const e = this.e;
+    if (!e) return '';
+    const partes = [];
+    if (e.paso.oleadas) {
+      const vivos = e.enemigos.filter((p) => !p.down).length;
+      partes.push(`oleada ${e.oleada}/${e.paso.oleadas.total || 3}${vivos ? ' · quedan ' + vivos : ''}`);
+    }
+    const coches = e.persecutores.filter((q) => q.v.hp > 0).length;
+    if (coches) partes.push(`${coches} ${coches === 1 ? 'coche' : 'coches'} detras`);
+    return partes.length ? '  ·  ' + partes.join('  ·  ') : '';
+  }
+
   // ¿quedan enemigos a pie vivos? (para los pasos que piden limpiar la zona)
   enemigosVivos() {
     return this.e ? this.e.enemigos.filter((p) => !p.down).length : 0;

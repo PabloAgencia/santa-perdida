@@ -1,3 +1,6 @@
+import { EVT_RADIO } from '../systems/RadioSystem.js';
+import { Audio } from '../core/Audio.js';
+import { sinTildes } from '../config/personajes.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { GameState } from '../core/GameState.js';
 import { COLORS, TILE, BUSCA_MAXIMA } from '../config/balance.js';
@@ -132,14 +135,47 @@ export class UIScene extends Phaser.Scene {
     EventBus.on(EVT.MONEY_CHANGED, this.onMoney);
     EventBus.on(EVT.NOTIFY, this.onNotify);
     EventBus.on(EVT.BIG_MESSAGE, this.onBig);
+    this.onRadio = (r) => this.mostrarRadio(r);
+    EventBus.on(EVT_RADIO, this.onRadio);
+    this.buildRadio(w, h);
 
     this.events.once('shutdown', () => {
+      EventBus.off(EVT_RADIO, this.onRadio);
       EventBus.off(EVT.HUD_TICK, this.onHud);
       EventBus.off(EVT.MONEY_CHANGED, this.onMoney);
       EventBus.off(EVT.NOTIFY, this.onNotify);
       EventBus.off(EVT.BIG_MESSAGE, this.onBig);
       EventBus.off(EVT.DISTRITO, this.onDistrito);
     });
+  }
+
+  // MAREJADA FM (RadioSystem): un rotulo abajo en el centro con la emisora y
+  // la frase del locutor, que entra, se queda lo que tarda en leerse y se va
+  buildRadio(w, h) {
+    this.radioCaja = this.add.container(w / 2, h - 118).setAlpha(0).setDepth(40);
+    this.radioFondo = this.add.image(0, 0, 'px').setTint(0x05060a).setAlpha(0.62);
+    this.radioEmisora = this.add.text(0, -22, '', {
+      fontFamily: FONT, fontSize: '14px', color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
+    }).setOrigin(0.5);
+    this.radioTexto = this.add.text(0, 6, '', {
+      fontFamily: FONT, fontSize: '17px', color: '#f2efe6',
+      stroke: '#05060a', strokeThickness: 3, align: 'center', wordWrap: { width: Math.min(700, w - 80) },
+    }).setOrigin(0.5, 0);
+    this.radioCaja.add([this.radioFondo, this.radioEmisora, this.radioTexto]);
+  }
+
+  mostrarRadio(r) {
+    this.radioEmisora.setText((r.noticia ? 'ULTIMA HORA · ' : '') + r.emisora);
+    this.radioTexto.setText(sinTildes(r.texto).replace(/[¿¡]/g, ''));
+    const alto = this.radioTexto.height + 44;
+    this.radioFondo.setDisplaySize(Math.min(740, this.scale.width - 40), alto).setPosition(0, alto / 2 - 34);
+    this.tweens.killTweensOf(this.radioCaja);
+    this.radioCaja.setAlpha(0);
+    // lo que se tarda en leer: unas 14 letras por segundo, entre 6 y 14 s
+    const dura = Math.max(6000, Math.min(14000, r.texto.length * 70));
+    this.tweens.add({ targets: this.radioCaja, alpha: 1, duration: 350 });
+    this.tweens.add({ targets: this.radioCaja, alpha: 0, duration: 600, delay: dura });
+    Audio.notes(r.noticia ? [659.25, 523.25, 659.25] : [523.25, 659.25], 0.07, 'triangle', 0.05);
   }
 
   // EL MINIMAPA. Antes era la ciudad entera encogida en una esquina: con el
@@ -411,6 +447,24 @@ export class UIScene extends Phaser.Scene {
         if (!punto.conIcono) punto.setTint(contactos[i].color);
       } else {
         punto.setVisible(false);
+      }
+    });
+
+    // los enemigos: puntos rojos (los coches, algo mas grandes)
+    const enemigos = d.enemigos || [];
+    this.mapEnemigos = this.mapEnemigos || [];
+    while (this.mapEnemigos.length < enemigos.length) {
+      const dot = this.add.image(0, 0, 'px').setTint(0xe8463a);
+      this.mapEnemigos.push(dot);
+      this.mapaMundo.add(dot);
+    }
+    this.mapEnemigos.forEach((dot, i) => {
+      if (i < enemigos.length) {
+        const q = this.toMinimap(enemigos[i].x, enemigos[i].y);
+        const t = enemigos[i].coche ? 8 : 5;
+        dot.setPosition(q.x, q.y).setDisplaySize(t, t).setVisible(true);
+      } else {
+        dot.setVisible(false);
       }
     });
 

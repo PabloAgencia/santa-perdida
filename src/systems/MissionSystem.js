@@ -590,7 +590,7 @@ export class MissionSystem {
     const paso = this.pasoActual;
     return {
       nombre: this.activa.def.nombre,
-      texto: paso ? paso.texto : '',
+      texto: paso ? paso.texto + this.escena.resumen() : '',
       restante: paso && paso.limite ? Math.max(0, this.activa.tiempo) : null,
       objetivo: this.objetivo || (this.blanco ? { x: this.blanco.vehicle.x, y: this.blanco.vehicle.y } : null),
       pasoActual: this.activa.paso + 1,
