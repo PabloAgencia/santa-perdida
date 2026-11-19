@@ -31,7 +31,7 @@ const RESERVADOS = [
   { fx: 0.86, fy: 0.48 },
   { fx: 0.86, fy: 0.74 },
 ];
-// las cuatro trabajadoras (peaton-13 a 16 en PROMPTS-PARA-GEMINI.txt)
+// las cuatro trabajadoras (peaton-13 a 16 en PROMPTS-PENDIENTES.txt)
 const TRABAJADORAS = ['ped-12', 'ped-13', 'ped-14', 'ped-15'];
 const PRECIO_COPA = 15;
 const CURA_COPA = 12;

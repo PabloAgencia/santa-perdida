@@ -167,7 +167,7 @@ export const VEHICLES = {
   // ---- LOS MODELOS DEL 4-OCT-2026 (Pablo: "incluso mas vehiculos") -------
   // Que la calle no sean siempre los mismos siete. Nombres propios de Santa
   // Perdida, ninguna marca real. Se dibujan por codigo segun su `clase`
-  // hasta que lleguen sus imagenes (PROMPTS-PARA-GEMINI.txt).
+  // hasta que lleguen sus imagenes (PROMPTS-PENDIENTES.txt).
 
   // el utilitario de ciudad: pequeño, gasta poco, se aparca en cualquier sitio
   pulga: {

@@ -84,6 +84,14 @@ def quitar_magenta(img):
     rgb = np.array(img)[:, :, :3].astype(float)
     magenta = np.array([255.0, 0.0, 255.0])
     cerca = np.sqrt(((rgb - magenta) ** 2).sum(axis=2)) < 120
+    # 19-nov-2026: Gemini a veces da un magenta apagado, (200, 70, 175), que
+    # se quedaba fuera y dejaba el fondo pegado (el senador, la enfermera). Se
+    # mide el color real del borde y, si es magenta-ish, se quita tambien.
+    borde = np.concatenate([rgb[:4].reshape(-1, 3), rgb[-4:].reshape(-1, 3),
+                            rgb[:, :4].reshape(-1, 3), rgb[:, -4:].reshape(-1, 3)])
+    fondo = np.median(borde, axis=0)
+    if fondo[0] > 150 and fondo[2] > 130 and fondo[1] < 120:
+        cerca = cerca | (np.sqrt(((rgb - fondo) ** 2).sum(axis=2)) < 75)
     if cerca.mean() < 0.12:
         return None
 
@@ -273,6 +281,24 @@ def preparar_coches(vehiculos, hechos):
         print(f'  {fichero}: {len(v["paleta"])} colores de {v["largo"]}x{v["ancho"]} px')
 
 
+def recortar_borde_blanco(img):
+    """19-nov-2026: Gemini a veces deja el tejado en medio de un lienzo blanco
+    (sobre todo los alargados). Se recorta el marco casi blanco de alrededor
+    para que no salgan franjas blancas en el tejado del juego."""
+    a = np.asarray(img.convert('RGB')).astype(np.int16)
+    blanco = (a[:, :, 0] > 232) & (a[:, :, 1] > 232) & (a[:, :, 2] > 232)
+    filas = np.where((~blanco).mean(axis=1) > 0.02)[0]
+    cols = np.where((~blanco).mean(axis=0) > 0.02)[0]
+    if len(filas) == 0 or len(cols) == 0:
+        return img
+    y0, y1, x0, x1 = filas[0], filas[-1] + 1, cols[0], cols[-1] + 1
+    an, al = img.size
+    if x0 > an * 0.01 or y0 > al * 0.01 or x1 < an * 0.99 or y1 < al * 0.99:
+        print(f'    (recortado el borde blanco: {an}x{al} -> {x1 - x0}x{y1 - y0})')
+        return img.crop((int(x0), int(y0), int(x1), int(y1)))
+    return img
+
+
 def preparar_edificios(hechos):
     carpeta = os.path.join(ORIGEN, 'edificios')
     if not os.path.isdir(carpeta):
@@ -317,7 +343,7 @@ def preparar_edificios(hechos):
                   f'({", ".join(TEJADOS)}, o <barrio>-c1 / <barrio>-a1)')
             continue
 
-        img = Image.open(os.path.join(carpeta, fichero)).convert('RGBA')
+        img = recortar_borde_blanco(Image.open(os.path.join(carpeta, fichero)).convert('RGBA'))
         an, al = img.size
         if m and m.group(2) == 'a':
             # ALARGADA: de pie (mas alta que ancha) y recortada a 2:3

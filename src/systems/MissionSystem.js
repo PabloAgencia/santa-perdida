@@ -105,7 +105,7 @@ export class MissionSystem {
             .setScale(0.32).setAlpha(0.45).setDepth(punto.y - 3)
         );
         // el jefe en persona si ya tiene su sprite (`jefe-consul`...,
-        // PROMPTS-PARA-GEMINI.txt); si no, uno de su banda
+        // PROMPTS-PENDIENTES.txt); si no, uno de su banda
         // (si la mision la da otra persona, `dador`, su sprite y su nombre)
         const quienDa = mision.dador || JEFE_BANDA[key];
         const sprite = this.scene.textures.exists(`jefe-${quienDa}-0`) ? `jefe-${quienDa}-0`
