@@ -1359,6 +1359,11 @@ export const PintarCiudad = {
       const x = spot.x + (rnd() - 0.5) * 14;
       const y = spot.y + (rnd() - 0.5) * 14;
       const tipo = rnd();
+      // un objeto macizo no puede tapar un paso estrecho: si la casilla tiene
+      // pared pegada por varios lados (callejon de una casilla), no se pone
+      const sol = (ox, oy) => this.map.isSolidTile(spot.tx + ox, spot.ty + oy);
+      if ((sol(-1, 0) && sol(1, 0)) || (sol(0, -1) && sol(0, 1))) continue;
+      const macizo = (px, py, r) => this.map.agregarProp(px, py, r);
       const img = (ox, oy, w, h, tint, depth, alpha = 1) =>
         this.pintarRect(x + ox, y + oy, w, h, tint, depth, alpha);
 
@@ -1366,6 +1371,7 @@ export const PintarCiudad = {
         // arbol: sombra, copa y tronco asomando
         this.pintarCirculo(x + 4, y + 5, 15, 0x05060a, -880, 0.4);
         img(0, 0, 6, 6, 0x4a3a28, -876);
+        macizo(x, y, 8);
         this.pintarCirculo(x, y, 14, 0x2c3a29, -875);
         this.pintarCirculo(x - 3, y - 3, 8, 0x3a4c35, -874);
       } else if (tipo < 0.62) {
@@ -1373,6 +1379,7 @@ export const PintarCiudad = {
         img(2, 3, 11, 11, 0x05060a, -876, 0.35);
         img(0, 0, 10, 10, 0x3a3f45, -875);
         img(0, -1, 8, 3, 0x22262c, -874);
+        macizo(x + 0.5, y + 0.5, 5.5);
       } else if (tipo < 0.82) {
         // banco
         const vertical = rnd() > 0.5;
@@ -1381,11 +1388,13 @@ export const PintarCiudad = {
         img(2, 3, w, h, 0x05060a, -876, 0.35);
         img(0, 0, w, h, 0x5a4634, -875);
         img(0, 0, vertical ? 3 : w - 6, vertical ? h - 6 : 3, 0x6d5741, -874);
+        for (const o of [-9, 0, 9]) macizo(vertical ? x : x + o, vertical ? y + o : y, 5);
       } else {
         // boca de riego
         img(2, 3, 7, 9, 0x05060a, -876, 0.35);
         img(0, 0, 6, 8, 0xa8442f, -875);
         img(0, -3, 8, 2, 0x8a3526, -874);
+        macizo(x, y, 4.5);
       }
       puestos++;
     }

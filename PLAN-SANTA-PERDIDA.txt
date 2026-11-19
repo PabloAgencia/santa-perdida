@@ -3877,3 +3877,8 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · TESTIGO LLAMANDO (GTA 6): se ve un movil verde sobre el testigo y un arco
     rojo de 3 s; si lo callas antes no hay busca (ya existia la logica).
   · HUD: panel del coche subido sobre la chuleta de teclas (se pisaban).
+  · OBJETOS DE ACERA MACIZOS (v62): arboles (tronco), bancos, papeleras y bocas
+    de riego eran solo dibujo: se atravesaban a pie y en coche. Ahora son
+    circulos macizos (CityMap.agregarProp, 2.426 en la ciudad) que leen
+    isSolidPoint e isSolidBox; no se ponen en callejones de una casilla para no
+    cerrar pasos. Probado: a pie te paras contra el tronco.

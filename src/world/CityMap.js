@@ -30,6 +30,11 @@ export class CityMap {
     this.buildings = [];
     this.roadSpots = [];
     this.sidewalkSpots = [];
+    // objetos de acera (arboles, bancos, papeleras...): circulos macizos por
+    // casilla. No tocan `solid` (la acera sigue siendo acera para el camino
+    // de la gente): solo los miran isSolidPoint e isSolidBox.
+    this.props = new Map();
+    this.propsN = 0;
     this.hideout = null;
 
     // que barrio ocupa cada casilla, para saber de que banda es el territorio
@@ -109,8 +114,30 @@ export class CityMap {
     return this.solid[this.idx(tx, ty)] === 1;
   }
 
+  // un circulo macizo (un tronco, una papelera). Se apunta en cada casilla
+  // que toca.
+  agregarProp(x, y, r) {
+    const c = { x, y, r };
+    for (let ty = Math.floor((y - r) / TILE); ty <= Math.floor((y + r) / TILE); ty++) {
+      for (let tx = Math.floor((x - r) / TILE); tx <= Math.floor((x + r) / TILE); tx++) {
+        if (!this.inBounds(tx, ty)) continue;
+        const k = this.idx(tx, ty);
+        const a = this.props.get(k);
+        if (a) a.push(c); else this.props.set(k, [c]);
+      }
+    }
+    this.propsN++;
+  }
+
   isSolidPoint(px, py) {
-    return this.isSolidTile(Math.floor(px / TILE), Math.floor(py / TILE));
+    const tx = Math.floor(px / TILE);
+    const ty = Math.floor(py / TILE);
+    if (this.isSolidTile(tx, ty)) return true;
+    if (this.propsN) {
+      const a = this.props.get(this.idx(tx, ty));
+      if (a) for (const c of a) if ((px - c.x) * (px - c.x) + (py - c.y) * (py - c.y) < c.r * c.r) return true;
+    }
+    return false;
   }
 
   isSolidBox(px, py, halfW, halfH) {
@@ -121,6 +148,16 @@ export class CityMap {
     for (let ty = y0; ty <= y1; ty++) {
       for (let tx = x0; tx <= x1; tx++) {
         if (this.isSolidTile(tx, ty)) return true;
+        if (this.propsN) {
+          const a = this.props.get(this.idx(tx, ty));
+          if (a) {
+            for (const c of a) {
+              const cx = Math.max(px - halfW, Math.min(c.x, px + halfW));
+              const cy = Math.max(py - halfH, Math.min(c.y, py + halfH));
+              if ((c.x - cx) * (c.x - cx) + (c.y - cy) * (c.y - cy) < c.r * c.r) return true;
+            }
+          }
+        }
       }
     }
     return false;
