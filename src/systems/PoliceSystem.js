@@ -119,6 +119,10 @@ export class PoliceSystem {
   //     sigue en pie (si lo callas antes, no hay aviso)
   //   - nadie delante: nada
   denunciar(x, y, nivelMinimo) {
+    // en mitad de una batalla de mision (EscenaMision.oleadas) la policia no se
+    // mete: si no, te detenian a los 20 s de aguantar una barricada
+    const m = this.scene.missions;
+    if (m && m.escena && m.escena.enBatalla()) return false;
     if (this.vistoPorPolicia(x, y)) {
       this.reportarCrimen(x, y, nivelMinimo);
       return true;

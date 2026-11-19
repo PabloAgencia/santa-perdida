@@ -225,6 +225,11 @@ export class EscenaMision {
     return partes.length ? '  ·  ' + partes.join('  ·  ') : '';
   }
 
+  // ¿hay una batalla de mision en marcha? (oleadas): la policia no se mete
+  enBatalla() {
+    return !!(this.e && this.e.paso.oleadas);
+  }
+
   // ¿quedan enemigos a pie vivos? (para los pasos que piden limpiar la zona)
   enemigosVivos() {
     return this.e ? this.e.enemigos.filter((p) => !p.down).length : 0;
