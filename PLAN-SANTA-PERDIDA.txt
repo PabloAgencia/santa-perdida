@@ -3951,3 +3951,10 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
     coches te siguen.
   · Probado: sale la noticia al subir al coche, dos puntos rojos con dos
     perseguidores, rotulo con "2 coches detras", sin errores.
+
+[HECHO 19-nov, v67] MORIR Y QUE TE DETENGAN, A LO GTA.
+  Al morir o ser detenido la imagen se queda en gris (ColorMatrix de la camara),
+  la camara se acerca despacio 1,7 s, tiembla, suena un acorde y sale el cartel;
+  despues el fundido. Antes era un fundido a negro en seco. Probado.
+  Persecuciones: los perseguidores hacen la mitad de daño a tu coche (el bot
+  medio que un turismo duraba 15 s bajo fuego: en los GTA se aguanta mas).

@@ -996,7 +996,18 @@ export class CityScene extends Phaser.Scene {
 
     Audio.engine(false, 0, false);
     Audio.skid(0);
-    this.cameras.main.fadeOut(420, 0, 0, 0);
+
+    // EL MOMENTO GTA: la imagen se queda sin color, la camara se acerca despacio
+    // y sale el cartel; despues, fundido. Antes era un fundido a negro en seco.
+    const cam = this.cameras.main;
+    if (cam.postFX && !this.fxMuerte) {
+      this.fxMuerte = cam.postFX.addColorMatrix();
+      this.fxMuerte.grayscale(busted ? 0.75 : 1);
+    }
+    this.tweens.add({ targets: cam, zoom: cam.zoom * 1.35, duration: 1700, ease: 'Sine.inOut' });
+    cam.shake(240, busted ? 0.003 : 0.006);
+    Audio.notes(busted ? [392, 330, 262] : [196, 174.6, 146.8, 110], 0.28, 'sawtooth', 0.07);
+    this.time.delayedCall(1600, () => cam.fadeOut(500, 0, 0, 0));
 
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: busted ? 'TE HAN DETENIDO' : 'ESTAS MUERTO',
@@ -1005,7 +1016,8 @@ export class CityScene extends Phaser.Scene {
         : `Despiertas en el hospital sin armas. Te cobran ${fee} €`,
     });
 
-    this.time.delayedCall(1500, () => {
+    this.time.delayedCall(2200, () => {
+      if (this.fxMuerte) { cam.postFX.remove(this.fxMuerte); this.fxMuerte = null; }
       if (fee > 0) GameState.spendMoney(fee, reason);
       GameState.setWanted(0);
       GameState.heal(GameState.vidaMaxima);
@@ -1615,7 +1627,8 @@ export class CityScene extends Phaser.Scene {
     }
     const driving = !!this.drivingVehicle;
     const targetZoom = driving ? CAMERA.zoomDrive : CAMERA.zoomFoot;
-    cam.setZoom(Phaser.Math.Linear(cam.zoom, targetZoom, CAMERA.zoomLerp * 60 * dt));
+    // muriendo, el acercamiento lo lleva el tween de respawn()
+    if (!this.respawning) cam.setZoom(Phaser.Math.Linear(cam.zoom, targetZoom, CAMERA.zoomLerp * 60 * dt));
 
     // mirar un poco hacia donde vas: da tiempo de reaccion al conducir rapido
     let aheadX = 0;
