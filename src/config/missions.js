@@ -59,7 +59,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'centro', texto: 'Ve al centro, donde aparca' },
       { tipo: 'romper', texto: 'Destroza su coche' },
-      { tipo: 'perder', limite: 90, texto: 'Quitate a la policia de encima' },
+      { tipo: 'perder', texto: 'Quitate a la policia de encima' },
     ],
   },
   {
@@ -100,7 +100,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'residencial', texto: 'Localiza el coche' },
       { tipo: 'conducir', zona: 'puerto', limite: 120, texto: 'Llevalo al puerto' },
-      { tipo: 'perder', limite: 90, texto: 'Desaparece' },
+      { tipo: 'perder', texto: 'Desaparece' },
     ],
   },
   {
@@ -140,7 +140,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve al punto' },
       { tipo: 'aguantar', limite: 45, texto: 'Aguanta: vienen a por ti', oleadas: { faccion: 'rompiente', porOleada: 3, total: 2 } },
-      { tipo: 'perder', limite: 100, texto: 'Sal de ahi' },
+      { tipo: 'perder', texto: 'Sal de ahi' },
     ],
   },
   // ---------- ACTO 2: "TRES BANDAS, UNA CIUDAD" (HISTORIA-SANTA-PERDIDA.txt)
@@ -238,7 +238,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'recoger', zona: 'puerto', texto: 'Carga la mercancia' },
       { tipo: 'conducir', zona: 'residencial', limite: 150, checkpoint: true, persecutores: 2, busca: 2, titular: 'EL ULTIMO VIAJE', texto: 'Cruza la ciudad con media Santa Perdida detras' },
-      { tipo: 'perder', limite: 120, texto: 'Pierde a la policia' },
+      { tipo: 'perder', texto: 'Pierde a la policia' },
     ],
   },
   // ---------- ACTO 3: "EL HOMBRE DE FUERA" (HISTORIA-SANTA-PERDIDA.txt) ----------
@@ -305,7 +305,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'recoger', zona: 'residencial', texto: 'Recoge la carpeta de casa del notario' },
-      { tipo: 'perder', limite: 100, busca: 3, persecutores: 1, texto: 'Quitate de encima a quien te sigue' },
+      { tipo: 'perder', busca: 3, persecutores: 1, texto: 'Quitate de encima a quien te sigue' },
       { tipo: 'entregar', zona: 'centro', limite: 80, texto: 'Llevale los papeles al Licenciado' },
     ],
   },
@@ -521,7 +521,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'recoger', zona: 'residencial', texto: 'Recoge las cosas de Celeste del piso donde la tienen' },
       { tipo: 'conducir', zona: 'industrial', limite: 100, checkpoint: true, persecutores: 2, texto: 'Llevala a la estacion: los que la trajeron vienen detras' },
-      { tipo: 'perder', limite: 90, texto: 'Quitatelos de encima' },
+      { tipo: 'perder', texto: 'Quitatelos de encima' },
     ],
   },
   {
@@ -569,7 +569,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'industrial', texto: 'Ve al piso del otro chulo en el poligono' },
       { tipo: 'aguantar', limite: 50, checkpoint: true, texto: 'Aguanta: vienen sus hombres', oleadas: { faccion: 'fuera', porOleada: 4, total: 3 } },
-      { tipo: 'perder', limite: 90, texto: 'Desaparece' },
+      { tipo: 'perder', texto: 'Desaparece' },
     ],
   },
 
@@ -766,7 +766,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'seguir', limite: 60, texto: 'Sigue al camion del Consorcio hasta el muelle' },
       { tipo: 'romper', checkpoint: true, huye: true, blindado: 3, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
-      { tipo: 'perder', limite: 110, busca: 3, texto: 'Quitate de encima a la policia que paga Anzures' },
+      { tipo: 'perder', busca: 3, texto: 'Quitate de encima a la policia que paga Anzures' },
     ],
   },
   {
@@ -817,7 +817,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve a la barricada principal' },
       { tipo: 'aguantar', limite: 90, checkpoint: true, titular: 'LA NOCHE MAS LARGA', explosiones: 7, texto: 'Aguanta la noche', oleadas: { faccion: 'verdial', porOleada: 5, total: 5 } },
-      { tipo: 'perder', limite: 130, busca: 4, texto: 'Sal vivo de esta' },
+      { tipo: 'perder', busca: 3, texto: 'Sal vivo de esta' },
     ],
   },
   {
@@ -902,7 +902,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve a las barricadas del barrio' },
       { tipo: 'romper', texto: 'Revienta la furgoneta de Chispa' },
-      { tipo: 'perder', limite: 90, persecutores: 2, texto: 'Que nadie sepa que has sido tu: te persiguen' },
+      { tipo: 'perder', persecutores: 2, texto: 'Que nadie sepa que has sido tu: te persiguen' },
     ],
   },
   {
@@ -938,7 +938,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Ve al muelle donde se reunen las tres bandas' },
       { tipo: 'aguantar', limite: 80, checkpoint: true, titular: 'UNA NOCHE', explosiones: 8, texto: 'Aguanta junto a las tres bandas', oleadas: { faccion: 'fuera', porOleada: 6, total: 4 } },
-      { tipo: 'perder', limite: 120, busca: 4, texto: 'Sal de ahi antes de que llegue la policia' },
+      { tipo: 'perder', busca: 4, texto: 'Sal de ahi antes de que llegue la policia' },
     ],
   },
   {

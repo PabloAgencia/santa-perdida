@@ -239,6 +239,10 @@ window.__bot = (() => {
       c = g.scene.getScene('CityScene');
       // sin cinematicas: el bot no lee
       c.verCinematica = (planos, alAcabar) => { if (alAcabar) alAcabar(); };
+      // SIN DIBUJAR: el bot no mira la pantalla, solo la logica. Dibujar cada
+      // fotograma era lo que mas tardaba (y lo que cargaba el PC)
+      g.scene.render = () => {};
+      if (g.renderer) { g.renderer.preRender = () => {}; g.renderer.postRender = () => {}; }
       step(20);
       return MISSIONS.map((m) => m.id);
     },
