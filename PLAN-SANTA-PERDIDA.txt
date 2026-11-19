@@ -3983,3 +3983,8 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   (no se te baja la busca); el foco va a 235 px/s, asi que un coche rapido por
   calles anchas se le escapa. Con 5 estrellas dispara desde la puerta. Al bajar
   de 4 se va. Probado: llega, orbita a 150 px, dispara con 5★ y se va con 2★.
+  · (v70) Con lluvia, uno de cada tres peatones abre el paraguas (de colores,
+    con varillas) y el resto aprieta el paso. Lluvia rebajada a 1.100 gotas.
+  · (v70) BATALLAS: en una mision con oleadas los delitos no suben la busca
+    (el bot medio que en La noche mas larga te detenian a los 20 s de empezar
+    a aguantar la barricada); la policia entra en la huida de despues.

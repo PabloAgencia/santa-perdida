@@ -381,7 +381,10 @@ export class Pedestrian {
       return;
     }
 
-    const speed = this.baseSpeed * (this.state === 'fleeing' ? 2.1 : 1);
+    // con lluvia, el que no lleva paraguas aprieta el paso (TiempoSystem)
+    const lluvia = this.scene.tiempo ? this.scene.tiempo.intensidad : 0;
+    const prisa = lluvia > 0.3 && !this.paraguas ? 1.35 : 1;
+    const speed = this.baseSpeed * (this.state === 'fleeing' ? 2.1 : prisa);
     const hx = meta.x - this.x;
     const hy = meta.y - this.y;
     const hlen = Math.hypot(hx, hy) || 1;

@@ -296,6 +296,23 @@ export class NPCSystem {
     if (!this.gfxMoviles) this.gfxMoviles = this.scene.add.graphics().setDepth(4999);
     const g = this.gfxMoviles;
     g.clear();
+    // CON LLUVIA, PARAGUAS: uno de cada tres peatones de a pie lo abre (un
+    // circulo de color con sus varillas, por encima de la cabeza)
+    const lluvia = this.scene.tiempo ? this.scene.tiempo.intensidad : 0;
+    if (lluvia > 0.3) {
+      const cam = this.scene.cameras.main.worldView;
+      for (const p of this.people) {
+        if (p.paraguas === undefined) p.paraguas = !p.faction && Math.random() < 0.34 ? [0x2a3a5a, 0x8a2a2a, 0x2f5a3a, 0x15181d, 0xc8a465][Math.floor(Math.random() * 5)] : 0;
+        if (!p.paraguas || p.down || p.enCoche || p.grabando || p.state === 'fleeing') continue;
+        if (!cam.contains(p.x, p.y)) continue;
+        g.fillStyle(p.paraguas, 0.92).fillCircle(p.x, p.y - 2, 13);
+        g.lineStyle(1, 0x05060a, 0.5);
+        for (let k = 0; k < 4; k++) {
+          const a = k * Math.PI / 4;
+          g.lineBetween(p.x - Math.cos(a) * 13, p.y - 2 - Math.sin(a) * 13, p.x + Math.cos(a) * 13, p.y - 2 + Math.sin(a) * 13);
+        }
+      }
+    }
     for (const p of this.people) {
       if (!p.grabando) continue;
       if (p.down || p.state !== 'waiting') { p.grabando = 0; continue; }
