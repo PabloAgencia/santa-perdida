@@ -3885,3 +3885,11 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
     Peatones: rodean arboles y bancos (paso de lado), saltan el punto del
     camino si esta tapado, y si aparecen dentro de un objeto se les deja salir
     (antes de esto, 3 de 19 se quedaban clavados; ahora ninguno por objetos).
+  · SURTIDORES QUE EXPLOTAN (v62): los de las gasolineras son macizos y estallan
+    por un tiro o por un coche reventado a menos de 130 px; el de al lado se va
+    detras. Pillan a quien este cerca como cualquier reventon y, si lo ve
+    alguien, es delito (2 estrellas). Quedan negros. Probado el reventon y la
+    cadena; el tiro usa el mismo camino (CombatSystem -> danos.surtidorEn).
+  · NO TOCADO A PROPOSITO: el aerodromo no se coloca porque 85x19 no cabe en
+    Altos de la Sierra; meterlo cambiaria el trazado de TODA la ciudad (el
+    generador es determinista) y descolocaria pisos y negocios ya comprados.

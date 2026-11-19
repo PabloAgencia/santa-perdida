@@ -301,6 +301,10 @@ export class CombatSystem {
         impacto.vehiculo.syncSprite();
         if (this.scene.traffic) this.scene.traffic.reaccionAGolpe(impacto.vehiculo, player);
         algunoDentro = true;
+      } else if (this.scene.danos) {
+        // una bala contra un surtidor de gasolinera lo hace estallar
+        const surtidor = this.scene.danos.surtidorEn(impacto.x, impacto.y, 16);
+        if (surtidor) this.scene.danos.reventarSurtidor(surtidor, player);
       }
       this.pintarDisparo(player, impacto.x, impacto.y);
     }

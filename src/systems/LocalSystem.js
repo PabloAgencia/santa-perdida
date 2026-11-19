@@ -156,8 +156,11 @@ export class LocalSystem {
         p = en(a + 6, 8);
         rect(p.x, p.y, Math.min(12, L / 2 - a), 8, i % 2 ? 0xf2efe6 : local.cfg.color, 1, 1);
       }
+      local.surtidores = [];
       for (const a of [-L / 4, L / 4]) {
         p = en(a, 26);
+        local.surtidores.push({ x: p.x, y: p.y, roto: false });
+        this.map.agregarProp(p.x, p.y, 7);
         rect(p.x, p.y, 10, 18, 0x15181d, 1, 2);
         rect(p.x, p.y, 8, 16, 0xd9384a, 1, 3);
         rect(p.x, p.y - 0, 6, 5, 0xf2efe6, 1, 4);

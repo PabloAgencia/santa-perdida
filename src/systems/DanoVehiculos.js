@@ -199,6 +199,8 @@ export class DanoVehiculos {
     if (lejos < 700) cam.shake(320, 0.006 * (1 - lejos / 700));
 
     this.pillados(v, player);
+    const surtidor = this.surtidorEn(v.x, v.y, 130);
+    if (surtidor) this.reventarSurtidor(surtidor, player);
 
     // el chasis se queda negro. El coche NO se borra: estorbar en mitad de la
     // calle es parte de haberlo reventado.
@@ -232,6 +234,46 @@ export class DanoVehiculos {
     } else if (policia && lejos < 260) {
       policia.reportarCrimen(v.x, v.y, v.police || v.eraPatrulla ? 3 : 2);
     }
+  }
+
+  // LOS SURTIDORES DE LAS GASOLINERAS (GTA 6): una bala o un coche reventado
+  // cerca los hace estallar, y el de al lado se va detras. Pilla a quien este
+  // cerca como cualquier reventon y, si se ve, es delito.
+  surtidorEn(x, y, rango) {
+    const locales = this.scene.locales ? this.scene.locales.locales : [];
+    for (const l of locales) {
+      if (!l.surtidores) continue;
+      for (const s of l.surtidores) {
+        if (!s.roto && Phaser.Math.Distance.Between(s.x, s.y, x, y) < rango) return s;
+      }
+    }
+    return null;
+  }
+
+  reventarSurtidor(s, player) {
+    if (s.roto) return;
+    s.roto = true;
+    for (const [radio, color, vida, alpha] of [
+      [210, 0xfff1c0, 0.16, 0.95],
+      [150, 0xff8c2a, 0.32, 0.9],
+      [110, 0x1a1512, 1.6, 0.7],
+    ]) {
+      this.bocanada(s.x, s.y, { color, radio, vida, sube: 16, alpha });
+    }
+    // el surtidor se queda negro
+    this.scene.add.circle(s.x, s.y, 9, 0x15110e, 0.95).setDepth(-870);
+    Audio.crash(0.9);
+    const lejos = Phaser.Math.Distance.Between(s.x, s.y, player.x, player.y);
+    if (lejos < 650) this.scene.cameras.main.shake(280, 0.005 * (1 - lejos / 650));
+    this.pillados({ x: s.x, y: s.y }, player);
+    EventBus.emit(EVT.NOTIFY, { text: 'El surtidor ha estallado', tone: 'danger' });
+    const policia = this.scene.police;
+    if (policia && lejos < 300) policia.denunciar(s.x, s.y, 2);
+    // el de al lado, un instante despues
+    this.scene.time.delayedCall(260, () => {
+      const otro = this.surtidorEn(s.x, s.y, 110);
+      if (otro) this.reventarSurtidor(otro, this.scene.drivingVehicle || this.scene.player);
+    });
   }
 
   // A quien pilla el reventon: tu, la gente, la policia y los coches de al
