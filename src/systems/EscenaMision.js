@@ -163,7 +163,10 @@ export class EscenaMision {
     const combat = this.scene.combat;
     if (q.recarga <= 0 && d < PERSIGUE_DISPARA && combat && combat.veA(v, obj, PERSIGUE_DISPARA)) {
       q.recarga = PERSIGUE_CADENCIA * (0.8 + Math.random() * 0.5);
-      combat.disparoDeNPC({ x: v.x, y: v.y }, obj, q.dano, PERSIGUE_DISPARA, 11, 'subfusil');
+      // contra tu coche, la mitad: si no, un turismo duraba 15 s y en los GTA
+      // una persecucion se aguanta bastante mas (medido con el bot)
+      const dano = this.scene.drivingVehicle ? q.dano * 0.5 : q.dano;
+      combat.disparoDeNPC({ x: v.x, y: v.y }, obj, dano, PERSIGUE_DISPARA, 11, 'subfusil');
     }
   }
 

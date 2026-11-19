@@ -157,6 +157,13 @@ window.__bot = (() => {
     const v = c.drivingVehicle;
     const dest = m.objetivo;
     mejorArma();
+    // coche en llamas: fuera, como haria cualquiera, y a por otro
+    if (v && v.ardiendo > 0) { c.exitVehicle(); st.ruta = null; return; }
+    // a pie y con un coche ardiendo cerca: primero alejarse, que revienta
+    if (!v) {
+      const fuego = c.vehicles.find((q) => q.ardiendo > 0 && !q.quemado && Math.hypot(q.x - p.x, q.y - p.y) < 170);
+      if (fuego) { const dx = p.x - fuego.x, dy = p.y - fuego.y; pulsar({ right: dx > 0, left: dx < 0, down: dy > 0, up: dy < 0, run: true }); return; }
+    }
     const enemigos = c.npcs.people.filter((q) => q.deMision && !q.down && Math.hypot(q.x - p.x, q.y - p.y) < 420);
 
     switch (paso.tipo) {
