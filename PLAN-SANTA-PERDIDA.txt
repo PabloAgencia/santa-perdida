@@ -3996,3 +3996,15 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   separa. Al caer: la primera vez, "SALTO UNICO n de 10" y 500 €; si caes
   encima de algo, golpe del 35% y al primer hueco libre. Probado: despega,
   vuela, aterriza y paga.
+
+[HECHO 19-nov] PRUEBA DE LAS 60 MISIONES CON EL BOT (herramientas/probar-misiones.cjs).
+  58 de 60 pasan (hasta 3 intentos, el 2o y 3o con R desde el punto de control).
+  Lo que el bot destapo y se arreglo: te detenian en mitad de las batallas
+  (coches que revientan solos te apuntaban el delito), quitarse a la policia
+  tenia reloj (fuera), los coches a seguir podian ser motos o deportivos
+  imposibles (ahora normales y mas lentos), al volante F no apuntaba a coches
+  (ahora si), perseguidores y enemigos de oleada demasiado letales (bajados) y
+  varias oleadas reajustadas. Quedan 2 que el bot no termina: El ultimo barco
+  (quitarse 3 estrellas tras reventar el blindado) y El primero en caer (acabar
+  el coche que huye): son puntos flojos del bot (no usa el taller de pintura ni
+  esquiva bien), no fallos del juego que se hayan visto.
