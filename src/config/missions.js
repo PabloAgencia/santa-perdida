@@ -426,7 +426,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve al solar donde ha aparecido el cuerpo' },
       { tipo: 'seguir', limite: 80, texto: 'Sigue el coche que se aleja' },
-      { tipo: 'romper', huye: true, escolta: 1, texto: 'Cortale el paso' },
+      { tipo: 'romper', huye: true, texto: 'Cortale el paso' },
     ],
   },
   {
@@ -749,7 +749,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'conducir', zona: 'puerto', limite: 80, texto: 'Lleva a Marina al muelle' },
-      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta: no todos quieren escucharla', oleadas: { faccion: 'amarres', porOleada: 3, total: 3 } },
+      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta: no todos quieren escucharla', oleadas: { faccion: 'amarres', porOleada: 4, total: 3 } },
     ],
   },
   {
@@ -765,7 +765,7 @@ export const MISSIONS = [
     rep: 12,
     pasos: [
       { tipo: 'seguir', limite: 60, texto: 'Sigue al camion del Consorcio hasta el muelle' },
-      { tipo: 'romper', checkpoint: true, huye: true, blindado: 1.5, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
+      { tipo: 'romper', checkpoint: true, huye: true, blindado: 1.2, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
       { tipo: 'perder', busca: 3, texto: 'Quitate de encima a la policia que paga Anzures' },
     ],
   },
@@ -801,7 +801,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'recoger', zona: 'industrial', texto: 'Roba el material de las obras del Consorcio' },
       { tipo: 'entregar', zona: 'conflictivo', limite: 90, persecutores: 1, texto: 'Llevalo a las barricadas' },
-      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta mientras levantan la barricada', oleadas: { faccion: 'verdial', porOleada: 3, total: 3 } },
+      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta mientras levantan la barricada', oleadas: { faccion: 'verdial', porOleada: 4, total: 3 } },
     ],
   },
   {
@@ -937,7 +937,7 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Ve al muelle donde se reunen las tres bandas' },
-      { tipo: 'aguantar', limite: 80, checkpoint: true, titular: 'UNA NOCHE', explosiones: 8, texto: 'Aguanta junto a las tres bandas', oleadas: { faccion: 'fuera', porOleada: 6, total: 4 } },
+      { tipo: 'aguantar', limite: 80, checkpoint: true, titular: 'UNA NOCHE', explosiones: 10, texto: 'Aguanta junto a las tres bandas', oleadas: { faccion: 'fuera', porOleada: 4, total: 4 } },
       { tipo: 'perder', busca: 3, texto: 'Sal de ahi antes de que llegue la policia' },
     ],
   },
