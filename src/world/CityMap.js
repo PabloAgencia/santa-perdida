@@ -140,7 +140,7 @@ export class CityMap {
     return false;
   }
 
-  isSolidBox(px, py, halfW, halfH) {
+  isSolidBox(px, py, halfW, halfH, sinProps = false) {
     const x0 = Math.floor((px - halfW) / TILE);
     const x1 = Math.floor((px + halfW) / TILE);
     const y0 = Math.floor((py - halfH) / TILE);
@@ -148,7 +148,7 @@ export class CityMap {
     for (let ty = y0; ty <= y1; ty++) {
       for (let tx = x0; tx <= x1; tx++) {
         if (this.isSolidTile(tx, ty)) return true;
-        if (this.propsN) {
+        if (this.propsN && !sinProps) {
           const a = this.props.get(this.idx(tx, ty));
           if (a) {
             for (const c of a) {

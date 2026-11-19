@@ -3882,3 +3882,6 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
     circulos macizos (CityMap.agregarProp, 2.426 en la ciudad) que leen
     isSolidPoint e isSolidBox; no se ponen en callejones de una casilla para no
     cerrar pasos. Probado: a pie te paras contra el tronco.
+    Peatones: rodean arboles y bancos (paso de lado), saltan el punto del
+    camino si esta tapado, y si aparecen dentro de un objeto se les deja salir
+    (antes de esto, 3 de 19 se quedaban clavados; ahora ninguno por objetos).

@@ -345,7 +345,7 @@ export class Pedestrian {
     }
 
     // al llegar a un tramo, se pasa al siguiente
-    if (this.ruta && Math.hypot(meta.x - this.x, meta.y - this.y) < 14) {
+    if (this.ruta && Math.hypot(meta.x - this.x, meta.y - this.y) < 22) {
       this.rutaIdx++;
       if (this.rutaIdx < this.ruta.length) {
         this.syncSprite();
@@ -391,10 +391,25 @@ export class Pedestrian {
     const movedX = this.tryMove(stepX, 0);
     const movedY = this.tryMove(0, stepY);
 
+    // contra un arbol o un banco se rodea: un paso de lado, siempre hacia el
+    // mismo lado hasta que se libra (si no, el vaiven lo clavaba en el sitio)
+    let rodeo = false;
     if (!movedX && !movedY) {
+      this.lado = this.lado || (Math.random() < 0.5 ? 1 : -1);
+      const px = (-hy / hlen) * speed * dt * this.lado;
+      const py = (hx / hlen) * speed * dt * this.lado;
+      rodeo = this.tryMove(px, 0) | this.tryMove(0, py);
+      if (!rodeo) this.lado = -this.lado;
+    } else {
+      this.lado = 0;
+    }
+
+    if (!movedX && !movedY && !rodeo) {
       this.stuck += dt;
       if (this.stuck > 0.3 && this.ruta) {
-        this.trazarRuta();
+        // un arbol o un banco justo en el punto del camino: se salta ese punto
+        if (this.rutaIdx < this.ruta.length - 1) this.rutaIdx++;
+        else this.trazarRuta();
         this.stuck = 0;
       } else if (this.stuck > 0.7) {
         this.pickTarget(spots);
@@ -445,7 +460,13 @@ export class Pedestrian {
     if (dx === 0 && dy === 0) return false;
     const nx = this.x + dx;
     const ny = this.y + dy;
-    if (this.map.isSolidBox(nx, ny, this.radius, this.radius)) return false;
+    if (this.map.isSolidBox(nx, ny, this.radius, this.radius)) {
+      // metido DENTRO de un arbol o un banco (aparecio ahi o lo empujaron): se
+      // le deja salir, como al jugador, en vez de quedarse clavado
+      const r = this.radius;
+      const dentroDeProp = this.map.isSolidBox(this.x, this.y, r, r) && !this.map.isSolidBox(this.x, this.y, r, r, true);
+      if (!dentroDeProp || this.map.isSolidBox(nx, ny, r, r, true)) return false;
+    }
     if (this.chocaConParado(nx, ny)) return false;
     this.x = nx;
     this.y = ny;
