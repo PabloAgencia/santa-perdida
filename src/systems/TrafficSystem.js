@@ -88,7 +88,7 @@ export class TrafficSystem {
 
       const type = VEHICLE_KEYS[Math.floor(Math.random() * VEHICLE_KEYS.length)];
       const color = Math.floor(Math.random() * VEHICLES[type].palette.length);
-      const vehicle = new Vehicle(this.scene, this.map, type, p.x, p.y, edge.angle, { color });
+      const vehicle = new Vehicle(this.scene, this.map, type, p.x, p.y, edge.angle, { color, gasolina: 0.45 + Math.random() * 0.55 });
       vehicle.ai = true;
       vehicle.encendido = true;
       this.scene.vehicles.push(vehicle);

@@ -61,23 +61,27 @@ export class UIScene extends Phaser.Scene {
     this.buildWanted(w);
     this.buildHealth(h);
 
-    this.vehiclePanel = this.add.container(w - 20, h - 22).setVisible(false);
+    this.vehiclePanel = this.add.container(w - 20, h - 72).setVisible(false);
     const panelBg = this.add.image(0, 0, 'px')
       .setOrigin(1, 1)
-      .setDisplaySize(230, 76)
+      .setDisplaySize(230, 90)
       .setTint(0x000000)
       .setAlpha(0.45);
-    this.speedText = this.add.text(-16, -58, '', {
+    this.speedText = this.add.text(-16, -72, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 3, fontSize: '26px', color: COLORS.ink,
     }).setOrigin(1, 0);
-    this.vehicleName = this.add.text(-16, -28, '', {
+    this.vehicleName = this.add.text(-16, -42, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(1, 0);
     this.hpBarBg = this.add.image(-16, -14, 'px')
       .setOrigin(1, 1).setDisplaySize(198, 6).setTint(0x3a3f45);
     this.hpBar = this.add.image(-16, -14, 'px')
       .setOrigin(1, 1).setDisplaySize(198, 6).setTint(0x8fd694);
-    this.vehiclePanel.add([panelBg, this.speedText, this.vehicleName, this.hpBarBg, this.hpBar]);
+    this.gasBg = this.add.image(-16, -24, 'px')
+      .setOrigin(1, 1).setDisplaySize(198, 5).setTint(0x3a3f45);
+    this.gasBar = this.add.image(-16, -24, 'px')
+      .setOrigin(1, 1).setDisplaySize(198, 5).setTint(0x7fc4e8);
+    this.vehiclePanel.add([panelBg, this.speedText, this.vehicleName, this.hpBarBg, this.hpBar, this.gasBg, this.gasBar]);
 
     // La chuleta de teclas: antes era gris oscuro a 14 px sobre el asfalto y
     // no habia quien la leyera. Ahora va en dos lineas, mas grande, en claro
@@ -102,7 +106,7 @@ export class UIScene extends Phaser.Scene {
     this.buildBigMessage(w, h);
 
     // EL NOMBRE DEL BARRIO al entrar en uno, abajo a la derecha, y se va solo
-    this.distritoTexto = this.add.text(w - 26, h - 74, '', {
+    this.distritoTexto = this.add.text(w - 26, h - 166, '', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 6,
       fontSize: '38px', color: '#e6e1d4',
     }).setOrigin(1, 1).setAlpha(0).setDepth(50);
@@ -278,6 +282,7 @@ export class UIScene extends Phaser.Scene {
     if (cfg.accion === 'pintar') return `E para pintar el coche · ${cfg.precio} €`;
     if (cfg.accion === 'gimnasio') return `E para entrar al gimnasio · ${cfg.precio} €`;
     if (cfg.accion === 'club') return `E para entrar · ${cfg.nombre} · ${cfg.precio} €`;
+    if (cfg.accion === 'repostar') return 'E para repostar el deposito';
     if (cfg.accion === 'reparar') return `E para arreglar la chapa · ${cfg.precio} €`;
     return '';
   }
@@ -607,6 +612,11 @@ export class UIScene extends Phaser.Scene {
       this.vehicleName.setText(d.vehicleName.toUpperCase());
       this.hpBar.setDisplaySize(Math.max(0, 198 * d.hp), 6);
       this.hpBar.setTint(d.hp > 0.5 ? 0x8fd694 : d.hp > 0.2 ? 0xe8b54a : 0xd9584a);
+      const g = d.gasolina ?? 1;
+      this.gasBar.setDisplaySize(Math.max(0, 198 * g), 5);
+      // en reserva parpadea
+      const parpadeo = g <= 0.15 && Math.floor(this.time.now / 350) % 2 === 0;
+      this.gasBar.setTint(g > 0.15 ? 0x7fc4e8 : parpadeo ? 0xffffff : 0xd9584a);
     }
   }
 

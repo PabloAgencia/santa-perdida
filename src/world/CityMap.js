@@ -260,9 +260,14 @@ export class CityMap {
 
       if (L.type === 'plaza') {
         this.fillRect(L.x, L.y, L.w, L.h, T.SIDEWALK);
+        // LA FUENTE A JUEGO CON SU DIBUJO (arte/landmark-plaza.jpg, 15x9): la
+        // pileta con la estatua mide ~3 casillas y esta justo en el centro
+        // (7,5 x 4,5); antes solo el 2x2 de arriba a la izquierda era macizo y
+        // se pisaba el agua. Y las cuatro jardineras redondas de las esquinas.
         const mx = L.x + Math.floor(L.w / 2) - 1;
         const my = L.y + Math.floor(L.h / 2) - 1;
-        this.markSolidRect(mx, my, 2, 2);
+        this.markSolidRect(L.x + 6, L.y + 3, 3, 3);
+        for (const [jx, jy] of [[4, 1], [10, 1], [4, 7], [10, 7]]) this.markSolidRect(L.x + jx, L.y + jy, 1, 1);
         lm.monument = { px: (mx + 1) * TILE, py: (my + 1) * TILE };
       } else if (L.type === 'torre') {
         this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
@@ -273,12 +278,15 @@ export class CityMap {
         const cy = L.y + Math.floor(L.h / 2);
         // 2x2 centrado de verdad: el 3x3 de antes quedaba media casilla a
         // la derecha y abajo del dibujo (en un 6x6 no hay centro impar)
-        this.markSolidRect(cx - 1, cy - 1, 2, 2);
+        // la torre del dibujo (arte/landmark-faro.jpg) ocupa ~3,4 de las 6
+        // casillas: 4x4 centrado, con una casilla de paso alrededor
+        this.markSolidRect(cx - 2, cy - 2, 4, 4);
         lm.tower = { px: cx * TILE, py: cy * TILE };
       } else if (L.type === 'grua') {
         this.fillRect(L.x, L.y, L.w, L.h, T.DOCK);
         // solo la base estorba; el brazo pasa por encima
-        this.markSolidRect(L.x, L.y, 3, L.h);
+        // la cabina y las orugas del dibujo llegan a la casilla 5
+        this.markSolidRect(L.x, L.y, 5, L.h);
         lm.base = { px: (L.x + 1.5) * TILE, py: (L.y + L.h / 2) * TILE };
       } else if (L.type === 'playa') {
         // el rectangulo ya es arena (SAND se pinta antes, en generate()):
@@ -295,10 +303,12 @@ export class CityMap {
         this.markSolidRect(L.x, L.y, L.w, borde); // norte
         this.markSolidRect(L.x, L.y, borde, L.h); // oeste
         this.markSolidRect(L.x + L.w - borde, L.y, borde, L.h); // este
-        const entrada = L.x + Math.floor(L.w / 2) - 2;
+        // la entrada del dibujo es el pasillo de arena de en medio (3 casillas);
+        // a los lados hay escaleras y asientos, que no se pisan
+        const entrada = L.x + 7;
         this.markSolidRect(L.x, L.y + L.h - borde, entrada - L.x, borde);
         this.markSolidRect(
-          entrada + 5, L.y + L.h - borde, L.x + L.w - (entrada + 5), borde
+          entrada + 3, L.y + L.h - borde, L.x + L.w - (entrada + 3), borde
         );
         lm.borde = borde;
         lm.campo = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
@@ -307,9 +317,9 @@ export class CityMap {
         // si es un solo edificio grande y solido, con margen para los
         // puestos de fuera
         this.fillRect(L.x, L.y, L.w, L.h, T.SIDEWALK);
-        const mx = L.x + 3;
+        const mx = L.x + 2;
         const my = L.y + 2;
-        const mw = L.w - 6;
+        const mw = L.w - 4;
         const mh = L.h - 4;
         this.markSolidRect(mx, my, mw, mh);
         lm.pabellon = {
@@ -323,11 +333,16 @@ export class CityMap {
       } else if (L.type === 'casino') {
         // la acera de entrada alrededor es transitable; la fachada, solida
         this.fillRect(L.x, L.y, L.w, L.h, T.SIDEWALK);
-        const mx2 = L.x + 2;
-        const my2 = L.y + 2;
-        const mw2 = L.w - 4;
-        const mh2 = L.h - 4;
+        // a juego con el dibujo (arte/landmark-casino.jpg): el edificio va de
+        // la casilla 3 a la 13 y de la 1 a la 7; la alfombra roja y las dos
+        // fuentes de abajo se pisan (la puerta cae en la alfombra)
+        const mx2 = L.x + 3;
+        const my2 = L.y + 1;
+        const mw2 = 11;
+        const mh2 = 7;
         this.markSolidRect(mx2, my2, mw2, mh2);
+        this.markSolidRect(L.x + 4, L.y + 8, 2, 2);
+        this.markSolidRect(L.x + 11, L.y + 8, 2, 2);
         lm.fachada = {
           px: (mx2 + mw2 / 2) * TILE, py: (my2 + mh2 / 2) * TILE,
           pw: mw2 * TILE, ph: mh2 * TILE,
@@ -336,14 +351,17 @@ export class CityMap {
         // el patio entero se anda (ALLEY); solo el muro bajo del perimetro
         // es solido, con un hueco de entrada en el lado sur
         this.fillRect(L.x, L.y, L.w, L.h, T.ALLEY);
-        const borde2 = 2;
+        // a juego con el dibujo: el seto y el muro son una casilla (las plazas
+        // de los lados se pisan) y la entrada son los 3 pasos entre las dos
+        // jardineras
+        const borde2 = 1;
         this.markSolidRect(L.x, L.y, L.w, borde2);
         this.markSolidRect(L.x, L.y, borde2, L.h);
         this.markSolidRect(L.x + L.w - borde2, L.y, borde2, L.h);
-        const entrada2 = L.x + Math.floor(L.w / 2) - 3;
+        const entrada2 = L.x + 7;
         this.markSolidRect(L.x, L.y + L.h - borde2, entrada2 - L.x, borde2);
         this.markSolidRect(
-          entrada2 + 6, L.y + L.h - borde2, L.x + L.w - (entrada2 + 6), borde2
+          entrada2 + 3, L.y + L.h - borde2, L.x + L.w - (entrada2 + 3), borde2
         );
         lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       } else if (L.type === 'poligono') {
@@ -354,11 +372,18 @@ export class CityMap {
         this.markSolidRect(L.x, L.y, L.w, borde3);
         this.markSolidRect(L.x, L.y, borde3, L.h);
         this.markSolidRect(L.x + L.w - borde3, L.y, borde3, L.h);
-        const entrada3 = L.x + Math.floor(L.w / 2) - 3;
+        const entrada3 = L.x + 7;
         this.markSolidRect(L.x, L.y + L.h - borde3, entrada3 - L.x, borde3);
         this.markSolidRect(
-          entrada3 + 6, L.y + L.h - borde3, L.x + L.w - (entrada3 + 6), borde3
+          entrada3 + 3, L.y + L.h - borde3, L.x + L.w - (entrada3 + 3), borde3
         );
+        // las pilas de contenedores del dibujo (arte/landmark-poligono.jpg)
+        // son macizas; la de la izquierda tiene forma de L (el hueco de
+        // arriba es donde esta la carretilla) y entre las dos pasa la
+        // carretera del patio
+        this.markSolidRect(L.x + 3, L.y + 3, 2, 3);
+        this.markSolidRect(L.x + 3, L.y + 6, 5, 3);
+        this.markSolidRect(L.x + 10, L.y + 3, 4, 6);
         lm.patio = { px: (L.x + L.w / 2) * TILE, py: (L.y + L.h / 2) * TILE };
       } else if (L.type === 'aeropuerto') {
         // la pista va al sur (cerca del mar), evitando la calle del puerto

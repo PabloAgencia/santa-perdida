@@ -740,6 +740,8 @@ export class CityScene extends Phaser.Scene {
         // la mejora del taxista: 3% de velocidad extra por nivel, siempre
         atajos: GameState.nivelTrabajo('taxista') * 0.03,
       });
+      this.drivingVehicle.gastar(dt, !!up);
+      this.avisarGasolina(this.drivingVehicle);
       const metros = (this.drivingVehicle.speed * dt) / 10;
       GameState.bumpStat('metersDriven', metros);
       GameState.subirAtributo('volante', metros * ENTRENAR.volantePorMetro);
@@ -1661,6 +1663,19 @@ export class CityScene extends Phaser.Scene {
     return { objective: this.jobs.objectiveText(), remaining: this.jobs.remainingTime(), target: this.jobs.target };
   }
 
+  // el aviso de reserva y el de deposito vacio, una vez por tramo
+  avisarGasolina(v) {
+    if (v.gasolina <= 0 && v.avisoGas !== 2) {
+      v.avisoGas = 2;
+      EventBus.emit(EVT.NOTIFY, { text: 'Sin gasolina. Busca una gasolinera (G en el mapa)', tone: 'danger' });
+    } else if (v.gasolina <= 0.15 && v.gasolina > 0 && !v.avisoGas) {
+      v.avisoGas = 1;
+      EventBus.emit(EVT.NOTIFY, { text: 'Reserva: te queda poca gasolina', tone: 'danger' });
+    } else if (v.gasolina > 0.2) {
+      v.avisoGas = 0;
+    }
+  }
+
   emitHud() {
     const trabajo = this.trabajoActual();
     EventBus.emit(EVT.HUD_TICK, {
@@ -1671,6 +1686,7 @@ export class CityScene extends Phaser.Scene {
       speed: this.drivingVehicle ? this.drivingVehicle.speedKmh : 0,
       vehicleName: this.drivingVehicle ? this.drivingVehicle.stats.name : '',
       hp: this.drivingVehicle ? this.drivingVehicle.hp / this.drivingVehicle.stats.maxHp : 1,
+      gasolina: this.drivingVehicle ? this.drivingVehicle.gasolina : 1,
       target: trabajo.target,
       // el angulo es para la flecha del mapa: si vas en coche, manda el coche
       player: {

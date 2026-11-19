@@ -21,6 +21,9 @@ export class Vehicle {
     this.lateral = 0;
     this.crashCooldown = 0;
     this.occupied = false;
+    // el deposito, de 0 a 1 (GTA 6: el combustible se acaba y las gasolineras
+    // reponen). Solo se gasta cuando lo conduce el jugador (gastar).
+    this.gasolina = opts.gasolina ?? 1;
     // un coche aparcado y vacio no lleva los faros puestos
     this.encendido = opts.encendido ?? false;
     // si es tuyo de verdad (comprado o sacado del garaje) no hace falta
@@ -98,6 +101,14 @@ export class Vehicle {
     return Math.hypot(this.vx, this.vy);
   }
 
+  // Gasta deposito: un deposito lleno da unos 9 minutos a fondo; al ralenti
+  // casi nada. Sin gasolina el motor no empuja (ver update).
+  gastar(dt, acelerando) {
+    if (this.gasolina <= 0) return;
+    const r = Math.min(1, this.speed / this.stats.maxSpeed);
+    this.gasolina = Math.max(0, this.gasolina - dt * (0.0003 + r * (acelerando ? 0.0019 : 0.0007)));
+  }
+
   get speedKmh() {
     return Math.round(this.speed / 3.2);
   }
@@ -137,7 +148,7 @@ export class Vehicle {
 
     this.frenando = !!input.brake && vf > 1;
 
-    if (input.throttle) {
+    if (input.throttle && this.gasolina > 0) {
       // El empuje cae segun te acercas al tope. Antes la aceleracion era
       // plana y todos los coches llegaban a su maxima en un segundo: daba
       // igual conducir una furgoneta que un deportivo.

@@ -179,6 +179,7 @@ export class MapaScene extends Phaser.Scene {
       tienda24: this.iconoLetra('marca-tienda24', 0x7fd0e8, '24'),
       mecanico: this.iconoLetra('marca-mecanico', 0xe0a050, 'M'),
       bar: this.iconoLetra('marca-bar', 0xd08a5a, 'B'),
+      gasolinera: this.iconoLetra('marca-gasolinera', 0xe05a3a, 'G'),
     };
     for (const l of city.locales ? city.locales.locales : []) {
       if (!GameState.conoce(l.clave)) continue;

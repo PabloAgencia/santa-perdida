@@ -129,7 +129,10 @@ export class PoliceSystem {
       if (!this.lineOfSight(p.x, p.y, x, y)) continue;
       this.avisos = this.avisos || [];
       if (!this.avisos.some((a) => a.testigo === p)) {
-        this.avisos.push({ testigo: p, t: 3, x, y, nivel: nivelMinimo });
+        const aviso = { testigo: p, t: 3, x, y, nivel: nivelMinimo };
+        this.avisos.push(aviso);
+        if (GameState.wanted < nivelMinimo) this.pintarMovil(aviso);
+        if (GameState.wanted < nivelMinimo) EventBus.emit(EVT.NOTIFY, { text: 'Un testigo esta llamando a la policia. Callale antes de que cuelgue', tone: 'danger' });
       }
       return false;
     }
@@ -151,15 +154,45 @@ export class PoliceSystem {
     return false;
   }
 
+  // GTA 6: se VE quien esta llamando. Un movil verde sobre su cabeza y un
+  // arco rojo que se va llenando hasta que cuelga (a los 3 s). Si lo callas
+  // antes, el icono desaparece y no hay aviso.
+  pintarMovil(a) {
+    const sc = this.scene;
+    a.movil = sc.add.graphics().setDepth(5000);
+    a.dibujar = () => {
+      const g = a.movil;
+      const p = a.testigo;
+      g.clear();
+      const cx = p.x;
+      const cy = p.y - 26;
+      g.fillStyle(0x05060a, 0.85).fillRoundedRect(cx - 7, cy - 11, 14, 22, 3);
+      g.fillStyle(0x8fd694, 1).fillRect(cx - 5, cy - 8, 10, 13);
+      g.fillStyle(0xf2efe6, 1).fillRect(cx - 2, cy + 7, 4, 2);
+      // el arco: cuanto falta para que cuelgue
+      const frac = 1 - Math.max(0, a.t) / 3;
+      g.lineStyle(3, 0xd9584a, 1).beginPath()
+        .arc(cx, cy, 17, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac).strokePath();
+    };
+    a.dibujar();
+  }
+
+  quitarMovil(a) {
+    if (a.movil) { a.movil.destroy(); a.movil = null; }
+  }
+
   atenderAvisos(dt) {
     if (!this.avisos || this.avisos.length === 0) return;
     for (let i = this.avisos.length - 1; i >= 0; i--) {
       const a = this.avisos[i];
-      if (a.testigo.down) { this.avisos.splice(i, 1); continue; }
+      if (a.testigo.down) { this.quitarMovil(a); this.avisos.splice(i, 1); continue; }
       a.t -= dt;
       if (a.t <= 0) {
+        this.quitarMovil(a);
         this.avisos.splice(i, 1);
         this.reportarCrimen(a.x, a.y, a.nivel);
+      } else if (a.dibujar && a.movil) {
+        a.dibujar();
       }
     }
   }

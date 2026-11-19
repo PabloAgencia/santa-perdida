@@ -96,6 +96,20 @@ export const LOCALES = {
     // de pintura): es la opcion barata
     accion: 'reparar',
   },
+  // GTA 6: el combustible se acaba. Se entra con el coche y se llena el
+  // deposito (el precio es por cada 1%, ver LocalSystem.usarEnCoche).
+  gasolinera: {
+    clave: 'gasolinera',
+    nombre: 'Gasolinera',
+    corto: 'GASOLINERA',
+    cuantos: 7,
+    separacion: 1300,
+    precio: 0,
+    precioPorCien: 60,
+    enCoche: true,
+    color: 0xe05a3a,
+    accion: 'repostar',
+  },
   bar: {
     clave: 'bar',
     nombre: 'Bar',

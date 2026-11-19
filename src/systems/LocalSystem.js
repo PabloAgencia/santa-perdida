@@ -145,7 +145,24 @@ export class LocalSystem {
     });
 
     const enCoche = local.cfg.enCoche;
-    if (enCoche) {
+    if (local.cfg.clave === 'gasolinera') {
+      // la marquesina: una banda roja y blanca pegada al edificio y, hacia
+      // la calle, dos surtidores. Todo pintado (no choca): se entra con el
+      // coche por encima, como al taller.
+      const L = Math.min(lado - 10, 96);
+      let p = en(0, 24);
+      rect(p.x, p.y, L, 34, 0x05060a, 0.28);
+      for (let a = -L / 2, i = 0; a < L / 2; a += 12, i++) {
+        p = en(a + 6, 8);
+        rect(p.x, p.y, Math.min(12, L / 2 - a), 8, i % 2 ? 0xf2efe6 : local.cfg.color, 1, 1);
+      }
+      for (const a of [-L / 4, L / 4]) {
+        p = en(a, 26);
+        rect(p.x, p.y, 10, 18, 0x15181d, 1, 2);
+        rect(p.x, p.y, 8, 16, 0xd9384a, 1, 3);
+        rect(p.x, p.y - 0, 6, 5, 0xf2efe6, 1, 4);
+      }
+    } else if (enCoche) {
       const L = Math.min(lado - 10, 72);
       // la persiana, en el borde del tejado
       let p = en(0, -5);
@@ -235,6 +252,23 @@ export class LocalSystem {
 
   // el mecanico y el taller de pintura: se usan desde el coche
   usarEnCoche(cfg, vehiculo) {
+    if (cfg.accion === 'repostar') {
+      if (!vehiculo) return null;
+      const falta = 1 - vehiculo.gasolina;
+      if (falta < 0.02) return { texto: 'El deposito esta lleno', tono: 'dim' };
+      // se llena lo que te llegue: sin dinero para todo, medio deposito
+      const llena = Math.min(falta, GameState.money / cfg.precioPorCien);
+      const coste = Math.max(1, Math.ceil(llena * cfg.precioPorCien));
+      if (llena < 0.01 || !GameState.canAfford(coste)) {
+        return { texto: `Deposito vacio y sin dinero (${cfg.precioPorCien} € el lleno)`, tono: 'danger' };
+      }
+      GameState.spendMoney(coste, 'gasolina');
+      vehiculo.gasolina = Math.min(1, vehiculo.gasolina + llena);
+      vehiculo.avisoGas = 0;
+      Audio.notes([330, 392, 494], 0.08);
+      return { texto: `Repostado ${Math.round(llena * 100)}% · ${coste} €`, tono: 'money' };
+    }
+
     if (cfg.accion === 'reparar') {
       if (!vehiculo) return null;
       if (vehiculo.quemado) return { texto: 'Eso ya no tiene arreglo', tono: 'danger' };

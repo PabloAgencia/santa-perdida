@@ -3851,3 +3851,29 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
     personas; 7 marcas). No repite lo que ya estaba pendiente del 27-sep
     (18 tejados, Centella, atico), que sigue debajo; la del club se marca
     como hecha.
+
+[HECHO 19-nov, v62] COLISIONES A JUEGO CON LAS IMAGENES + IDEAS DE GTA 6.
+  Pablo: "si ponemos una imagen de Gemini, la montaña por ejemplo, no se
+  puede pasar por cualquier sitio: debe tener su construccion y coherencia".
+  · AUDITORIA: se pintaron las zonas macizas encima de cada lamina de
+    landmark (script en scratchpad, no versionado). Arreglado en CityMap:
+      plaza        fuente 3x3 centrada + 4 jardineras (antes un 2x2 torcido)
+      casino       edificio 11x7 a juego con el dibujo, fuentes macizas, la
+                   alfombra roja queda libre (ahi cae la puerta)
+      estadio      entrada de 3 casillas (antes 5: se pisaban las gradas)
+      mercado      pabellon 13 de ancho (antes se andaba por sus costados)
+      aparcamiento seto de 1 casilla (las plazas se pisan) y entrada de 3
+      poligono     pilas de contenedores macizas (la izquierda en L) y
+                   entrada de 3 casillas
+      faro         torre 4x4 (antes 2x2) · grua: cabina de 5 casillas
+    Interiores de locales (tienda, pollos, bar, hospital) y escondite:
+    auditados con script, todo alcanzable y nadie dentro de un mueble.
+    Ciudad: ningun edificio con puerta aislada (0 de 3.469).
+  · COMBUSTIBLE (GTA 6): barra azul bajo la vida (parpadea en reserva), el
+    deposito dura ~8 min a fondo, sin gasolina el motor no empuja. GASOLINERAS
+    (7 x escala, marquesina y surtidores, icono G en el mapa): entras con el
+    coche, E, 60 € el lleno (se llena lo que te llegue). Coches del trafico
+    salen con 45-100%; los tuyos, comprados y de mision, llenos.
+  · TESTIGO LLAMANDO (GTA 6): se ve un movil verde sobre el testigo y un arco
+    rojo de 3 s; si lo callas antes no hay busca (ya existia la logica).
+  · HUD: panel del coche subido sobre la chuleta de teclas (se pisaban).
