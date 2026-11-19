@@ -176,7 +176,7 @@ window.__bot = (() => {
           conducirHacia(dest, d < 200 ? 0.45 : 1, dt);
           // si te persiguen, devuelve los tiros por la ventanilla
           const pers = m.escena.e && m.escena.e.persecutores.find((q) => q.v.hp > 0 && Math.hypot(q.v.x - p.x, q.v.y - p.y) < 260);
-          if (pers) disparar(dt, { x: pers.v.x, y: pers.v.y });
+          if (pers) disparar(dt);
         } else andarHacia(dest);
         break;
       }
@@ -194,7 +194,7 @@ window.__bot = (() => {
         if (!b) break;
         if (!v) { cocheNuevo(); break; }
         conducirHacia({ x: b.x, y: b.y }, 1, dt);
-        if (Math.hypot(b.x - p.x, b.y - p.y) < 320) disparar(dt, { x: b.x, y: b.y });
+        if (Math.hypot(b.x - p.x, b.y - p.y) < 320) disparar(dt);
         break;
       }
       case 'seguir': {
@@ -216,7 +216,7 @@ window.__bot = (() => {
         }
         conducirHacia(st.destHuida, 1, dt);
         const pers = m.escena.e && m.escena.e.persecutores.find((q) => q.v.hp > 0 && Math.hypot(q.v.x - p.x, q.v.y - p.y) < 260);
-        if (pers) disparar(dt, { x: pers.v.x, y: pers.v.y });
+        if (pers) disparar(dt);
         break;
       }
     }
