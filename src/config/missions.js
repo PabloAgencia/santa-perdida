@@ -520,7 +520,7 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'recoger', zona: 'residencial', texto: 'Recoge las cosas de Celeste del piso donde la tienen' },
-      { tipo: 'conducir', zona: 'industrial', limite: 100, checkpoint: true, persecutores: 2, texto: 'Llevala a la estacion: los que la trajeron vienen detras' },
+      { tipo: 'conducir', zona: 'industrial', limite: 140, checkpoint: true, persecutores: 2, texto: 'Llevala a la estacion: los que la trajeron vienen detras' },
       { tipo: 'perder', texto: 'Quitatelos de encima' },
     ],
   },
@@ -765,7 +765,7 @@ export const MISSIONS = [
     rep: 12,
     pasos: [
       { tipo: 'seguir', limite: 60, texto: 'Sigue al camion del Consorcio hasta el muelle' },
-      { tipo: 'romper', checkpoint: true, huye: true, blindado: 3, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
+      { tipo: 'romper', checkpoint: true, huye: true, blindado: 1.5, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
       { tipo: 'perder', busca: 3, texto: 'Quitate de encima a la policia que paga Anzures' },
     ],
   },
@@ -938,7 +938,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Ve al muelle donde se reunen las tres bandas' },
       { tipo: 'aguantar', limite: 80, checkpoint: true, titular: 'UNA NOCHE', explosiones: 8, texto: 'Aguanta junto a las tres bandas', oleadas: { faccion: 'fuera', porOleada: 6, total: 4 } },
-      { tipo: 'perder', busca: 4, texto: 'Sal de ahi antes de que llegue la policia' },
+      { tipo: 'perder', busca: 3, texto: 'Sal de ahi antes de que llegue la policia' },
     ],
   },
   {

@@ -332,7 +332,13 @@ export class MissionSystem {
     // huya por ella (antes salia mirando al este y con un tramo cualquiera
     // de la ciudad como destino)
     const calle = this.net.edgeMasCercano(punto.x, punto.y) || this.net.randomEdge();
-    const tipo = VEHICLE_KEYS[Math.floor(Math.random() * VEHICLE_KEYS.length)];
+    // QUE COCHE (medido con el bot, 19-nov): antes salia cualquiera, y una moto
+    // o un deportivo huyendo se te iba en 6 s. Ahora, coches normales; y el
+    // blindado, algo pesado (lento pero duro), como en los GTA.
+    const NORMALES = ['chinchorro', 'bastion', 'taxi', 'pulga', 'ranchera', 'mulero', 'sierra', 'senador'];
+    const PESADOS = ['titan', 'carguero', 'mulero', 'sierra'];
+    const pool = (paso.blindado ? PESADOS : NORMALES).filter((k) => VEHICLES[k]);
+    const tipo = pool[Math.floor(Math.random() * pool.length)] || VEHICLE_KEYS[0];
     const v = new Vehicle(this.scene, this.map, tipo, punto.x, punto.y, calle.angle, {
       color: Math.floor(Math.random() * VEHICLES[tipo].palette.length),
     });
@@ -352,7 +358,9 @@ export class MissionSystem {
       vehicle: v,
       edge: calle,
       huyendo: paso.tipo === 'seguir' || !!paso.huye,
-      gracia: 4,
+      // a que ritmo va: siguiendolo, tranquilo; huyendo de ti, mas rapido
+      ritmo: paso.tipo === 'seguir' ? 0.62 : 0.7,
+      gracia: 7,
     };
     this.aro.setVisible(true);
   }
@@ -426,7 +434,13 @@ export class MissionSystem {
         const d = Phaser.Math.Distance.Between(
           this.blanco.vehicle.x, this.blanco.vehicle.y, player.x, player.y
         );
-        if (d > 700) { this.fallar('Le has perdido'); break; }
+        if (d > 900) { this.fallar('Le has perdido'); break; }
+        if (d > 560 && !this.activa.avisoLejos) {
+          this.activa.avisoLejos = true;
+          EventBus.emit(EVT.NOTIFY, { text: 'Que se te escapa!', tone: 'danger' });
+        } else if (d < 450) {
+          this.activa.avisoLejos = false;
+        }
         // `sigilo: true`: si te pegas demasiado, te ve (los seguimientos de
         // los GTA: ni muy lejos ni encima)
         if (paso.sigilo) {
@@ -471,7 +485,7 @@ export class MissionSystem {
       b.edge = this.net.nextEdge(b.edge) || this.net.randomEdge();
     }
     const destino = this.net.exitPoint(b.edge);
-    v.update(dt, steerTo(v, destino.x, destino.y, v.stats.maxSpeed * 0.72, false));
+    v.update(dt, steerTo(v, destino.x, destino.y, v.stats.maxSpeed * (b.ritmo || 0.7), false));
   }
 
   enObjetivo(player) {
