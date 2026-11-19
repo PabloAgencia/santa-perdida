@@ -810,3 +810,79 @@ siempre y se probaron por codigo; el ritmo y la dificultad de las misiones
 nuevas (sobre todo `seguir` con 75-80 s y `aguantar` en golpe-de-mano) conviene
 jugarlos. Los retratos de Teresa, Anzures, Salaverri, Sacau, Maximo y Empedrado
 siguen siendo los dibujados por codigo hasta que lleguen los de Gemini.
+
+
+================================================================================
+ESCRITO EL 19-NOV-2026 (2): EL DUQUE, LAS SUELTAS Y EL ACTO 4 CON SUS 5 FINALES  (v64)
+================================================================================
+Pablo: "buena historia, coherencia entre todo, insultos, amenazas, drogas,
+putas, que se hable de todo eso, sin ningun tipo de filtro". El tono sube:
+tacos, amenazas con todas las letras (menos la Doña, que sigue sin decirlas),
+la droga por su nombre (coca, farlopa, mierda cortada) y el club tal cual es
+(putas, chulos, clientes). Como en los GTA: se habla de todo, no se ENSEÑA nada.
+
+LA HISTORIA ESTA COMPLETA: 60 misiones en `config/missions.js`.
+
+NUEVO EN EL CODIGO
+  · `faccion: 'neutral'` + `dador` + `zonaDador`: contactos que no son de
+    ninguna banda, con su propio haz (color crema) y su cadena en paralelo.
+  · `decision` (lo elegido en una cinematica), `requiereAlguna`, `medallas`
+    (la-medalla-que-falta pide las 40) y `epilogo: true` (tras su cierre sale
+    CINEMATICAS.epilogo).
+  · `core/condiciones.js`: 'marca', '!marca', 'hecha:<id>', 'muerto:<id>',
+    'vivo:<id>'. Sirve en `solo` de un plano, en una opcion y en `decision`.
+  · Opciones con `repTodas: N` (solo si las tres bandas te tienen a N o mas).
+  · Un plano con `muere` o `marca` lo apunta solo por verse (muertes que no se
+    eligen y como acaba la historia: 'final-amarres'...).
+  · Personajes nuevos: CELESTE VARELA (la chica nueva, trajo un barco llamado
+    Poniente III con una deuda que no paraba de crecer) y AMPARO LISON (la
+    camarera, veinte años detras de la barra, llama «rey» a todos).
+
+ACTO 2.5 — EL BAJO MUNDO (tras bien-llevado): bienvenido-al-terciopelo (la Doña
+lava dinero en el club), alguien-no-paga (un putero que pega a Celeste),
+la-chica-nueva (sacar a Celeste: la trajeron en el Poniente III), lo-que-sabe-
+la-camarera (Amparo oye «Anzures»; si ya lo dijo Teresa, lo reconoce),
+proteccion y el-otro-chulo (los chulos de fuera vinieron en el mismo barco).
+
+SUELTAS: Puro (coches-con-historia, el-ojo-de-puro, deudas-viejas: le quemaron
+el taller por saber que un coche llevaba farlopa), Remedios (lo-que-se-ve-
+desde-el-faro, el-faro-no-miente: 42 barcos «Poniente» en un año;
+la-medalla-que-falta: con las 40 medallas encuentran la cabeza de la santa),
+el Pregonero (el-rumor-del-mercado: compran los pisos del barrio a los viejos
+y al que no vende le rompen un brazo) y el Abuelo (el-ultimo-favor: «Poniente
+Inversiones» compro los terrenos de la fabrica en 1996 y la cerro un mes
+despues; llevan treinta años esperando a que el barrio se muriera solo).
+
+ACTO 4 — tronco comun: la-ciudad-se-entera (como reacciona cada casa; Ferro, si
+vive, quiere vender) y elige-un-bando, que acaba en LA ELECCION de la plaza del
+Farol (Marina, Chispa, la Doña y Anzures te hablan a la vez):
+  CAMINO AMARRES      marina-toma-el-mando (si Ferro vive: ejecutarlo o
+                      echarlo) > el-ultimo-barco-de-anzures > el-consul-se-
+                      despide: EL CONSUL MUERE protegiendote de los sicarios
+                      de Anzures. Final «EL PUERTO ES NUESTRO».
+  CAMINO ROMPIENTE    barricadas-de-verdad > la-noche-mas-larga: CHISPA MUERE
+                      en la barricada > cuentas-pendientes (Vale manda: Maximo
+                      huye, Ferro si vive aparece en la bocana). Final «SE
+                      QUEMA TODO».
+  CAMINO VERDIAL      el-precio-de-la-doña: la Doña entrega a su propio hijo
+                      (Maximo mato al del solar): preso o muerto, eliges tu >
+                      fuera-anzures (el maletin lo hunde ante sus inversores) >
+                      lo-que-queda-entre-las-sombras. Final «GUANTE DE SEDA»:
+                      le debes una a la Doña para siempre.
+  CAMINO CONSORCIO    el-otro-lado-del-trato (revientas la furgoneta de Chispa
+                      y que parezca la Doña) > firma-y-listo: excavadoras en el
+                      barrio, CHISPA MUERE «en un accidente», tu eres rico.
+                      Final «SE VENDE LA CIUDAD».
+  CAMINO INDEPENDIENTE (solo con 50+ con las tres) las-tres-bandas-una-noche:
+                      EL CONSUL MUERE poniendose delante de Chispa >
+                      te-vas-de-santa-perdida. Final «NADIE TE PREGUNTA».
+  (Cambio sobre el plan de arriba: en el camino Verdial no muere un jefe sino el
+  HIJO de la Doña, que es su precio; pega mas con ella que matar a otro jefe.)
+  EPILOGO «UN AÑO DESPUES»: cambia segun el final y suma lineas si murieron
+  Sacau o Ferro, si encontraste a la santa o si salvaste a Celeste.
+
+PROBADO: los cinco caminos se cumplen de punta a punta (49-50 misiones cada
+uno, ninguna fuera de camino sin hacer), los contactos neutrales salen con su
+nombre, la eleccion de la plaza ofrece las 5 opciones con reputacion alta y
+cada rama suelta sus lineas, y el epilogo cambia con el final y las muertes.
+SIN PROBAR JUGANDO: el ritmo y la dificultad de cada mision.

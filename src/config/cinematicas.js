@@ -407,6 +407,419 @@ export const CINEMATICAS = {
     { quien: 'dona', texto: 'Por eso mismo, Licenciado. Por eso mismo.' },
     { fondo: 'ciudad', titulo: 'LA CIUDAD ELIGE', sub: 'Fin del Acto 3' },
   ],
+
+  // =====================================================================
+  // ACTO 2.5 — "EL BAJO MUNDO": El Duque, El Terciopelo y sus chicas
+  // =====================================================================
+  'bienvenido-al-terciopelo': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Pasa, pasa, cariño. Así que tú eres el famoso Cero. Me habían dicho que eras más alto.' },
+    { quien: 'duque', texto: 'Bienvenido a El Terciopelo: la única casa de la ciudad donde un juez, un concejal y un camello se toman la copa en la misma barra sin mirarse.' },
+    { quien: 'duque', texto: 'Aquí se viene a beber, a mirar y a subir con una de mis chicas. Lo que pasa arriba, se queda arriba. Lo que pasa en la caja... eso ya es otra historia.' },
+    { quien: 'duque', texto: 'Hay una bolsa en la puerta de atrás con la recaudación de la semana. No es mía del todo: la mitad es de la Doña, y la Doña no quiere que pase por sus libros.' },
+    { quien: 'duque', texto: 'Llévala a su banco antes de que abra. Y si la abres, cariño, cuenta bien: yo sé exactamente cuánto hay. Hasta el último billete con olor a puta.' },
+    { quien: 'amparo', texto: 'No le hagas caso, rey. Habla así para que no se le note que está muerto de miedo de la vieja.' },
+  ],
+  'bienvenido-al-terciopelo:fin': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Ni un billete de menos. Me gustas, Cero. Eres de los que no preguntan.' },
+    { quien: 'duque', texto: 'La Doña lava su dinero en mis sábanas y yo pago protección por el privilegio. Así funciona esta ciudad: todos le debemos algo a alguien.' },
+  ],
+
+  'alguien-no-paga': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Hay una regla en mi casa, una sola: a las chicas se les paga y no se les pone la mano encima.' },
+    { quien: 'duque', texto: 'Un gilipollas de traje se ha ido sin pagar a Celeste. Y antes de irse le ha partido el labio.' },
+    { quien: 'celeste', texto: 'Dijo que una puta no vale lo que cuesta. Que me pagaba con la hostia.' },
+    { quien: 'duque', texto: 'Está en el aparcamiento, arrancando su cochazo de mierda. No lo quiero muerto, cariño: los muertos no vuelven a pagar. Quiero que se acuerde de mí cada vez que coja el autobús.' },
+  ],
+  'alguien-no-paga:fin': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Mañana lo sabrá todo el centro: el que no paga en El Terciopelo, vuelve a casa andando.' },
+    { quien: 'celeste', texto: 'Gracias. Nadie hace estas cosas por nosotras. Solo por el dinero que damos.' },
+  ],
+
+  'la-chica-nueva': [
+    { fondo: 'ciudad', quien: 'celeste', texto: 'No le debo nada al Duque. Al Duque le pago su parte y me deja en paz. Le debo a los que me trajeron.' },
+    { quien: 'celeste', texto: 'Me dijeron que había trabajo en un hotel de la costa. Me pagaron el billete del barco. Cuando llegué no había hotel: había una deuda. Tres mil. Luego cinco mil. Luego ocho.' },
+    { quien: 'celeste', texto: 'Cada semana debo más. Me tienen en un piso del residencial con otras cuatro. Si me voy, dicen que le hacen algo a mi madre.' },
+    { quien: 'celeste', texto: 'Esta noche no hay nadie vigilando. Saca mis cosas de ese piso y llévame al autobús. No te pido más.' },
+    { quien: 'amparo', texto: 'Esos no son de aquí, rey. Los barcos que traen chicas no los descarga ni El Cónsul. Ten cuidado con quién te cruzas.' },
+  ],
+  'la-chica-nueva:fin': [
+    { fondo: 'carretera', texto: 'El autobús de la madrugada arranca con Celeste dentro. No mira por la ventanilla.' },
+    { quien: 'celeste', texto: 'El barco que me trajo se llamaba Poniente III. Por si algún día te sirve.' },
+  ],
+
+  'lo-que-sabe-la-camarera': [
+    { fondo: 'despacho', quien: 'amparo', texto: 'Siéntate, rey. ¿Una copa? Invita la casa, que la casa hoy está de buenas.' },
+    { quien: 'amparo', texto: 'Veinte años detrás de esta barra. He servido a tres alcaldes, a dos obispos y al Cónsul cuando todavía era guapo.' },
+    { quien: 'amparo', texto: 'Hay un señor que viene los jueves al reservado. No bebe, no sube con ninguna chica y no deja propina. Eso, aquí, es más raro que un cura sin pecados.' },
+    { quien: 'amparo', texto: 'El otro día se le escapó un nombre al que iba con él, borracho como una cuba. «Anzures». No es de aquí, rey. Aquí nadie se llama así.' },
+    { quien: 'amparo', texto: 'Esta noche es jueves. Cuando salga, síguele y mira dónde duerme.' },
+  ],
+  'lo-que-sabe-la-camarera:fin': [
+    { fondo: 'ciudad', texto: 'El hombre del reservado entra en un hotel del centro, cristal y mármol. El portero le abre la puerta antes de que llegue.' },
+    { solo: 'hecha:la-reportera', fondo: 'despacho', quien: 'amparo', texto: '¿Anzures? ¿El mismo que busca esa periodista? Ay, rey. Esto huele a muerto, y no precisamente al mío.' },
+    { solo: '!hecha:la-reportera', fondo: 'despacho', quien: 'amparo', texto: 'Apúntate ese nombre, rey. Anzures. Los que no beben en un puticlub es porque vienen a comprar algo más caro.' },
+  ],
+
+  'proteccion': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Hay un chulo de fuera que ha plantado a sus chicas en la esquina de la gasolinera. Sin pagarme a mí y, lo que es peor, sin pagarle a la Doña.' },
+    { quien: 'duque', texto: 'Si dejo pasar a uno, mañana tengo diez. Y pasado mañana la Doña me pregunta por qué cobro protección si no protejo nada.' },
+    { quien: 'duque', texto: 'Hazle una visita. Que su coche no vuelva a arrancar en esta ciudad. A las chicas no las toques: ellas no tienen la culpa de con quién duermen.' },
+  ],
+  'proteccion:fin': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Me dicen que el señor se ha ido a pie, llorando. Qué poco aguante tiene la gente de fuera.' },
+  ],
+
+  'el-otro-chulo': [
+    { fondo: 'despacho', quien: 'duque', texto: 'El hijo de puta ha vuelto. Con cinco hombres y un piso en el polígono. Dice que la zona comercial no es de nadie.' },
+    { quien: 'duque', texto: 'Ve a su piso y que lo entienda. Y si vienen sus perros, no me los mates en mi barrio: llévatelos lejos.' },
+    { quien: 'amparo', texto: 'Esos chulos de fuera llegaron con el mismo barco que la chica nueva, rey. Todo viene del mismo sitio.' },
+  ],
+  'el-otro-chulo:fin': [
+    { fondo: 'despacho', quien: 'duque', texto: 'Ya no queda nadie en ese piso. Las chicas se han venido a mi casa. Aquí al menos cobran lo que les toca.' },
+    { quien: 'duque', texto: 'No me mires así, Cero. Yo no soy un santo. Pero en esta ciudad hay cosas mucho peores que yo, y vienen en barco.' },
+  ],
+
+  // =====================================================================
+  // SUELTAS — la gente de la ciudad que no es de ninguna banda
+  // =====================================================================
+  'coches-con-historia': [
+    { fondo: 'ciudad', quien: 'puro', texto: 'A ver, chaval. Ese sedán azul que pasa por la zona comercial lo pinté yo hace diez años. Lo reconozco por la chapuza del aleta trasera. Mía, sí.' },
+    { quien: 'puro', texto: 'Lo robaron con algo dentro del maletero. Algo que no era mío pero que me hizo perder un taller.' },
+    { quien: 'puro', texto: 'Tráemelo. Entero. Un coche bien llevado dura; uno mal llevado se nota aunque lo pinte cien veces.' },
+  ],
+  'coches-con-historia:fin': [
+    { fondo: 'ciudad', quien: 'puro', texto: 'Vacío. Claro. Diez años, chaval. Pero el doble fondo sigue ahí, y huele todavía a la farlopa que llevaba.' },
+    { quien: 'puro', texto: 'Por eso me quemaron el primer taller. Por saber qué llevaba un coche que yo había pintado.' },
+  ],
+
+  'el-ojo-de-puro': [
+    { fondo: 'muelle', quien: 'puro', texto: 'Necesito piezas de un modelo que ya no se fabrica. Hay un contenedor en el puerto lleno de ellas. No es mío.' },
+    { quien: 'puro', texto: 'Tampoco es del que lo tiene, si a eso vamos. En esta ciudad nada es de quien lo tiene. Ve y tráemelas.' },
+  ],
+  'el-ojo-de-puro:fin': [
+    { fondo: 'ciudad', quien: 'puro', texto: 'Esto es oro, chaval. Con esto le dejo un coche a cualquiera de las tres bandas que parece recién salido de fábrica.' },
+    { quien: 'puro', texto: 'Y ya sabes: si alguna vez entras en mi taller con la policía detrás, yo no te he visto en mi vida.' },
+  ],
+
+  'deudas-viejas': [
+    { fondo: 'ciudad', quien: 'puro', texto: 'Veinte años, chaval. Veinte años sin decir nada. El que me quemó el taller vive en el residencial y se ha comprado un coche nuevo.' },
+    { quien: 'puro', texto: 'No quiero que le pase nada a él. Tiene nietos. Pero quiero que sepa lo que es oler tu trabajo ardiendo.' },
+  ],
+  'deudas-viejas:fin': [
+    { fondo: 'ciudad', quien: 'puro', texto: 'Gracias. No me siento mejor, no te creas. Pero duermo un poco más tranquilo.' },
+  ],
+
+  'lo-que-se-ve-desde-el-faro': [
+    { fondo: 'muelle', quien: 'remedios', texto: 'Ay, hijo, pasa, pasa. Que no muerdo. En el puerto dicen que estoy loca. Es que les da miedo lo que apunto.' },
+    { quien: 'remedios', texto: 'Mis pastillas del corazón están en la farmacia del centro. Nadie quiere subir al faro, y yo ya no bajo esas escaleras.' },
+  ],
+  'lo-que-se-ve-desde-el-faro:fin': [
+    { fondo: 'muelle', quien: 'remedios', texto: 'Gracias, hijo. Mi marido era el farero. Cuando automatizaron el faro me quedé aquí, y nadie se atrevió a echarme.' },
+    { quien: 'remedios', texto: 'Desde aquí arriba se ve todo lo que entra de noche. Los barcos sin luces. Llevo cuarenta años apuntándolos en una libreta.' },
+    { quien: 'remedios', texto: 'Desde hace un año entran más que nunca. Y no son del Cónsul. El Cónsul siempre ha llevado luces, el muy presumido.' },
+  ],
+
+  'el-faro-no-miente': [
+    { fondo: 'muelle', quien: 'remedios', texto: 'He leído a esa chica del periódico, la que pregunta por los barcos. Lleve mi libreta. Cuarenta años de barcos sin luces.' },
+    { quien: 'remedios', texto: 'Y dígale que el último año todos los barcos llevaban el mismo nombre pintado en la popa, con un número detrás.' },
+  ],
+  'el-faro-no-miente:fin': [
+    { fondo: 'ciudad', quien: 'teresa', texto: 'Poniente I. Poniente II. Poniente III... Cuarenta y dos barcos en un año, todos de noche, todos sin luces.' },
+    { quien: 'teresa', texto: 'Esa mujer ha hecho en una libreta lo que yo no he podido hacer en seis meses. Dile que le debo un artículo entero.' },
+  ],
+
+  'el-rumor-del-mercado': [
+    { fondo: 'ciudad', quien: 'pregonero', texto: '¡Hombre, Cero! ¡El más famoso del mercado sin haber comprado nunca un tomate!' },
+    { quien: 'pregonero', texto: 'Mira, le debo un dinerito a Casa Verdial, y si voy yo, la Doña me sonríe de esa forma que me quita el sueño una semana.' },
+    { quien: 'pregonero', texto: 'Llévales el sobre. A cambio, te cuento lo que se dice. Y en este mercado se dice todo, todo y todo.' },
+  ],
+  'el-rumor-del-mercado:fin': [
+    { fondo: 'ciudad', quien: 'pregonero', texto: 'Pagado. Gracias, chaval. Ahí va el rumor: dicen que unos de fuera están comprando los pisos del barrio alto a los viejos, a precio de saldo, y en metálico.' },
+    { quien: 'pregonero', texto: 'Y que a los que no venden se les rompe una ventana. O un brazo. Yo no he dicho nada, ¿eh? Yo vendo fruta.' },
+  ],
+
+  'la-medalla-que-falta': [
+    { fondo: 'muelle', quien: 'remedios', texto: 'Cuarenta medallas, hijo. Las cuarenta. Nadie las había juntado nunca. Mi marido decía que el que las juntara encontraría a la santa.' },
+    { quien: 'remedios', texto: 'Él sabía dónde se hundió el barco. En la bocana, entre las rocas negras. Esta noche baja la marea como no ha bajado en cincuenta años.' },
+    { quien: 'remedios', texto: 'Ya sé que suena a cuento de vieja. Pero ven conmigo. Por si acaso. Aquí todo se hace por si acaso.' },
+  ],
+  'la-medalla-que-falta:fin': [
+    { fondo: 'muelle', texto: 'Entre las rocas, cubierta de algas y de doscientos años de sal, asoma una cabeza de madera. Una mujer con los ojos cerrados.' },
+    { quien: 'remedios', texto: 'La Santa Perdida. Ya no está perdida.' },
+    { quien: 'remedios', texto: 'No se lo digas a nadie, hijo. Una ciudad que encuentra a su santa ya no tiene excusa para portarse mal.' },
+  ],
+
+  'el-ultimo-favor': [
+    { fondo: 'barrio', quien: 'abuelo', texto: 'Siéntate, chaval. Voy a contarte una cosa que no le he contado a nadie en treinta años. Ni a Chispa.' },
+    { quien: 'abuelo', texto: 'Cuando cerró la fábrica de redes nos dijeron que era la crisis, que no había pedidos. Mentira. Había pedidos para cinco años.' },
+    { quien: 'abuelo', texto: 'La cerraron porque alguien compró los terrenos. Una sociedad que nadie conocía. Tengo los papeles en una caja. Los robé de la oficina la noche que nos echaron.' },
+    { quien: 'abuelo', texto: 'Llévaselos a esa periodista. Ya es hora de que alguien los lea.' },
+  ],
+  'el-ultimo-favor:fin': [
+    { fondo: 'ciudad', quien: 'teresa', texto: '«Poniente Inversiones», 1996. Compraron los terrenos de la fábrica y la cerraron un mes después.' },
+    { quien: 'teresa', texto: 'Treinta años, Cero. Llevan treinta años esperando a que el barrio se muriera solo. Y como no se muere, ahora vienen a rematarlo.' },
+    { fondo: 'barrio', quien: 'abuelo', texto: 'Mi fábrica. Mis compañeros. Media vida. Y todo por un hijo de puta que ni siquiera vino a verlo cerrar.' },
+  ],
+
+  // =====================================================================
+  // ACTO 4 — "LA CIUDAD ELIGE"
+  // =====================================================================
+  'la-ciudad-se-entera': [
+    { fondo: 'ciudad', quien: 'teresa', texto: 'Está en todos los quioscos. Ya no pueden negarlo. Santa Perdida sabe que la están vendiendo por trozos.' },
+    { quien: 'teresa', texto: 'Mi editor me ha llamado tres veces para que lo retire. Alguien le ha llamado a él cuatro.' },
+    { quien: 'teresa', texto: 'Ve a ver cómo respira cada barrio. Quiero saber quién va a pelear y quién va a vender. Esta noche se decide todo.' },
+  ],
+  'la-ciudad-se-entera:fin': [
+    { fondo: 'barrio', quien: 'chispa', texto: '¿Treinta años? ¿Treinta putos años esperando a que nos muriéramos? Pues se van a cagar. Aquí no se muere nadie sin hacer ruido.' },
+    { quien: 'vale', texto: 'Chispa, piensa con la cabeza. Si salimos a quemar, les damos la excusa que buscan.' },
+    { fondo: 'muelle', quien: 'consul', texto: 'Me equivoqué, socio. Treinta años sin equivocarme y la única vez que lo hago, me cuesta el puerto.' },
+    { quien: 'marina', texto: 'No te ha costado nada todavía, papá. Todavía es nuestro.' },
+    { solo: 'vivo:ferro', quien: 'ferro', texto: 'Yo digo que vendamos. Que nos paguen y nos vayamos ricos antes de que esto reviente. El puerto ya está muerto, viejo.' },
+    { solo: 'muerto:ferro', quien: 'marina', texto: 'Ferro lo vio venir antes que nadie. Y yo le dejé morir por ello.' },
+    { fondo: 'despacho', quien: 'dona', texto: 'Licenciado, ¿cuántos de nuestros clientes han llamado hoy preguntando si Casa Verdial sigue existiendo?' },
+    { quien: 'empedrado', texto: 'Todos, señora. Absolutamente todos.' },
+    { quien: 'dona', texto: 'Entonces, mañana sigue existiendo. Cueste lo que cueste.' },
+    { solo: 'vivo:maximo', quien: 'maximo', texto: 'Madre, estás acabada. Si no tomas una decisión tú, la tomaré yo.' },
+  ],
+
+  'elige-un-bando': [
+    { fondo: 'ciudad', quien: 'teresa', texto: 'Esta noche te van a llamar todos, Cero. Te lo digo porque me han llamado a mí para saber dónde estás.' },
+    { quien: 'teresa', texto: 'Yo ya he hecho mi parte: lo he contado. Lo que pase ahora no lo decide un periódico. Lo decides tú.' },
+  ],
+  'elige-un-bando:fin': [
+    { fondo: 'ciudad', texto: 'Medianoche. La plaza del Farol está vacía. Y de pronto, no lo está.' },
+    { quien: 'marina', texto: 'Mi padre está viejo y cansado. Yo no. El puerto es de Los Amarres y lo va a seguir siendo. Te necesito conmigo.' },
+    { quien: 'chispa', texto: 'Si nos echan, que lo hagan sobre un barrio en llamas. Prefiero morirme en mi calle que vivir en un piso de mierda en las afueras. ¿Vienes, tío?' },
+    { quien: 'dona', texto: 'Yo le ofrezco algo más sensato: librarnos de ese caballero sin que nadie tenga que morir. Casi nadie. Con guantes, Cero. Como siempre.' },
+    { quien: 'anzures', texto: 'Y yo le ofrezco la única salida en la que usted gana seguro. Este sobre tiene más ceros de los que verá en su vida. Solo tiene que dejar de ayudar a quien ya ha perdido.' },
+    { texto: 'Cuatro voces. Cuatro ciudades distintas. Y solo una noche para elegir.',
+      opciones: [
+        { texto: 'Con Marina y Los Amarres: el puerto no se vende.', marca: 'camino-amarres' },
+        { texto: 'Con Chispa: si nos echan, que arda todo.', marca: 'camino-rompiente' },
+        { texto: 'Con la Doña: guante de seda.', marca: 'camino-verdial' },
+        { texto: 'Coger el sobre de Anzures.', marca: 'camino-consorcio' },
+        { texto: 'Con las tres a la vez, contra él.', marca: 'camino-independiente', repTodas: 50 },
+      ] },
+    { solo: 'camino-amarres', quien: 'marina', texto: 'Bien. Mañana, en el muelle. Y trae algo con lo que disparar.' },
+    { solo: 'camino-amarres', quien: 'chispa', texto: 'Vale, tío. Pero cuando te dejen tirado los del puerto, no vengas a llorar al barrio.' },
+    { solo: 'camino-rompiente', quien: 'chispa', texto: '¡Ese es mi Cero, joder! Mañana empezamos a levantar barricadas.' },
+    { solo: 'camino-rompiente', quien: 'dona', texto: 'Qué pena. Era usted el único con cabeza en esta ciudad.' },
+    { solo: 'camino-verdial', quien: 'dona', texto: 'Sabía que era usted un hombre sensato. Mañana tomaremos un café y le contaré lo que va a costar.' },
+    { solo: 'camino-verdial', quien: 'marina', texto: 'Te has vendido a la vieja. Espero que te pague bien, porque yo no voy a olvidarlo.' },
+    { solo: 'camino-consorcio', quien: 'anzures', texto: 'Una decisión excelente. Muy pocos saben reconocer cuándo una ciudad ya no tiene futuro.' },
+    { solo: 'camino-consorcio', quien: 'chispa', texto: 'Hijo de puta. Te dimos de comer. Ojalá te pudras con su dinero.' },
+    { solo: 'camino-independiente', quien: 'marina', texto: '¿Con los tres? ¿Con Chispa y con la vieja en el mismo muelle? Estás loco, Cero.' },
+    { solo: 'camino-independiente', quien: 'chispa', texto: 'Loco, sí. Pero si alguien puede juntarnos sin que nos matemos, es este cabrón.' },
+    { solo: 'camino-independiente', quien: 'dona', texto: 'Una noche. Les doy una noche. Después, cada uno vuelve a su casa.' },
+    { solo: 'camino-independiente', quien: 'anzures', texto: 'Qué romántico. Y qué poco rentable.' },
+  ],
+
+  // ---------------------------------------------------- CAMINO AMARRES
+  'marina-toma-el-mando': [
+    { fondo: 'muelle', quien: 'marina', texto: 'Esta noche hablo yo con los hombres. No mi padre. Yo.' },
+    { solo: 'vivo:ferro', quien: 'marina', texto: 'Ferro tiene a la mitad del muelle. La otra mitad está esperando a ver quién grita más fuerte.' },
+    { solo: 'muerto:ferro', quien: 'marina', texto: 'Desde que murió Ferro, los hombres no saben a quién mirar. Esta noche me van a mirar a mí.' },
+    { quien: 'consul', texto: 'Hija... hágalo usted. Yo ya he hablado demasiado en esta vida.' },
+    { quien: 'marina', texto: 'Llévame al muelle, Cero. Y si alguien saca un arma mientras hablo, ya sabes lo que tienes que hacer.' },
+  ],
+  'marina-toma-el-mando:fin': [
+    { fondo: 'muelle', quien: 'marina', texto: 'Escuchadme todos. El que quiera vender, que se suba ahora al barco de Anzures y no vuelva. El que se quede, que se quede para pelear.' },
+    { solo: 'vivo:ferro', quien: 'ferro', texto: '¿Y quién eres tú para decirnos qué hacer, niña? ¿La hija de papá que estudió fuera?' },
+    { solo: 'vivo:ferro', quien: 'marina', texto: 'Soy la que lleva diez años haciendo tu trabajo mientras tú gritabas. Cero, tú decides qué hacemos con él.',
+      opciones: [
+        { texto: 'Pegarle un tiro a Ferro delante de todos.', marca: 'ferro-ejecutado', muere: 'ferro', solo: 'vivo:ferro' },
+        { texto: 'Echarlo de la ciudad: que se vaya y no vuelva.', marca: 'ferro-exiliado', solo: 'vivo:ferro' },
+      ] },
+    { solo: 'ferro-ejecutado', texto: 'Ferro cae sobre los tablones del muelle. Nadie más dice que quiera vender.' },
+    { solo: 'ferro-exiliado', quien: 'ferro', texto: 'Esto no se acaba aquí, Cero. Os vais a ahogar todos en vuestro puerto de mierda.' },
+    { quien: 'marina', texto: 'Desde esta noche, Los Amarres tienen dueña.' },
+  ],
+
+  'el-ultimo-barco-de-anzures': [
+    { fondo: 'muelle', quien: 'sacau', solo: 'vivo:sacau', texto: 'Desde la grúa lo veo clarito: un camión sin matrícula y un barco esperando con el motor encendido. ¡Esa no es manera de despedirse!' },
+    { quien: 'marina', texto: 'Anzures quiere sacar lo que metió antes de que cerremos el muelle. Coca, armas y papeles. Mucho dinero.' },
+    { quien: 'marina', texto: 'Ni una caja sale de mi puerto. Sigue ese camión y revienta lo que lleve antes de que llegue al barco.' },
+  ],
+  'el-ultimo-barco-de-anzures:fin': [
+    { fondo: 'muelle', texto: 'El barco zarpa vacío. En el muelle, el camión del Consorcio arde con todo lo que llevaba dentro.' },
+    { quien: 'marina', texto: 'Que se lo cuente a sus inversores. Santa Perdida no se vende a quien no sabe nadar.' },
+  ],
+
+  'el-consul-se-despide': [
+    { fondo: 'muelle', quien: 'consul', texto: 'Socio, deme el gusto. Una última vuelta por lo que construí. Desde el muelle donde descargué mi primera caja hasta las naves del polígono.' },
+    { quien: 'consul', texto: 'Mañana mi hija firma como dueña de Los Amarres. Y un viejo como yo tiene derecho a despedirse de sus cosas.' },
+  ],
+  'el-consul-se-despide:fin': [
+    { fondo: 'carretera', quien: 'consul', texto: 'Treinta años, Cero. Empecé descargando cajas por un jornal de miseria. Y acabé vendiendo el puerto por miedo a perderlo. Qué estupidez.' },
+    { texto: 'Un coche sin luces se pone a vuestra altura. La ventanilla baja. Lo último que ves es el cañón.' },
+    { quien: 'consul', texto: '¡Al suelo, socio!' },
+    { texto: 'El Cónsul se echa encima de ti. Seis disparos. Ninguno te da a ti.', muere: 'consul' },
+    { quien: 'consul', texto: 'Dígale a mi hija... que lo hizo mejor que yo. Que siempre lo hizo mejor que yo.' },
+    { fondo: 'muelle', quien: 'marina', texto: 'Fue Anzures. Su último regalo antes de irse. Y se va a ir, Cero. Te lo juro sobre el cuerpo de mi padre.' },
+    { marca: 'final-amarres', fondo: 'ciudad', titulo: 'EL PUERTO ES NUESTRO', sub: 'Final de Los Amarres' },
+  ],
+
+  // ---------------------------------------------------- CAMINO ROMPIENTE
+  'barricadas-de-verdad': [
+    { fondo: 'barrio', quien: 'chispa', texto: 'Esta noche cerramos el barrio. Coches cruzados, contenedores, lo que sea. Que entren si tienen huevos.' },
+    { quien: 'vale', texto: 'Hace falta material. Las obras del Consorcio en el polígono tienen vallas, sacos y una puta grúa entera.' },
+    { quien: 'abuelo', texto: 'En el setenta y ocho hicimos lo mismo con la fábrica. Aguantamos once días. Luego vinieron los antidisturbios.' },
+    { quien: 'chispa', texto: 'Pues esta vez aguantamos doce, Abuelo.' },
+  ],
+  'barricadas-de-verdad:fin': [
+    { fondo: 'barrio', texto: 'Los Rompientes amanecen cerrados. En cada entrada, una barricada. En cada barricada, un chaval con la cara tapada.' },
+    { quien: 'chispa', texto: 'Mira esto, Cero. Mira mi barrio. Por fin parece que vale algo.' },
+  ],
+
+  'la-noche-mas-larga': [
+    { fondo: 'barrio', quien: 'vale', texto: 'Vienen todos. Los coches de la Doña, las furgonetas del Consorcio y la policía de Salaverri. A la vez.' },
+    { quien: 'chispa', texto: 'Que vengan. Esta es mi calle. Aquí nací y aquí me van a tener que sacar con los pies por delante.' },
+    { quien: 'vale', texto: 'No digas esas cosas, joder.' },
+    { quien: 'chispa', texto: 'Cero, a la barricada principal. Pase lo que pase, tú aguantas.' },
+  ],
+  'la-noche-mas-larga:fin': [
+    { fondo: 'barrio', texto: 'Amanece. Los coches de fuera se retiran. La barricada sigue en pie.' },
+    { texto: 'Chispa está sentado contra ella. No se levanta.', muere: 'chispa' },
+    { quien: 'vale', texto: 'Nando. Nando, joder, levántate. Levántate, cabrón, que hemos ganado.' },
+    { quien: 'abuelo', texto: 'Era un crío. Siempre fue un crío. Y era el mejor de todos nosotros.' },
+    { quien: 'vale', texto: 'No quería sangre en el barrio, Cero. Toda la que había la ha puesto él.' },
+  ],
+
+  'cuentas-pendientes': [
+    { fondo: 'barrio', quien: 'vale', texto: 'Mando yo ahora. No lo he pedido. Pero mando yo.' },
+    { quien: 'vale', texto: 'Tengo una lista. El primero es Máximo Verdial: mató a aquel hombre en nuestro solar para que nos echaran la culpa.' },
+    { solo: 'vivo:ferro', quien: 'vale', texto: 'El segundo es Ferro. Esta noche se ha visto con Anzures. Vendió al barrio por una comisión.' },
+    { quien: 'vale', texto: 'Chispa nunca quiso sangre. Yo no soy Chispa.' },
+  ],
+  'cuentas-pendientes:fin': [
+    { fondo: 'barrio', texto: 'El coche de Máximo Verdial acaba contra un muro del centro. Él sale vivo, cojeando, y no vuelve a pisar Santa Perdida.', marca: 'maximo-huye' },
+    { solo: 'vivo:ferro', texto: 'A Ferro lo encuentran dos días después flotando en la bocana. Nadie pregunta.', muere: 'ferro' },
+    { quien: 'vale', texto: 'Anzures se ha ido. Sin firmar nada. Dice el periódico que el Consorcio «reconsidera su inversión en la zona».' },
+    { quien: 'vale', texto: 'Ganamos, Cero. El barrio sigue siendo nuestro. Y la ciudad nos odia más que nunca. Así es como gana la gente como nosotros.' },
+    { marca: 'final-rompiente', fondo: 'ciudad', titulo: 'SE QUEMA TODO', sub: 'Final de la Cuadrilla' },
+  ],
+
+  // ---------------------------------------------------- CAMINO VERDIAL
+  'el-precio-de-la-dona': [
+    { fondo: 'despacho', quien: 'dona', texto: 'Siéntese, Cero. Esta vez sí acepte el café. Lo va a necesitar.' },
+    { quien: 'dona', texto: 'Anzures tiene un punto débil: necesita que todo sea limpio. Y el muerto del solar no es limpio. Si demostramos que fue alguien de dentro... alguien que trabajaba con él...' },
+    { quien: 'dona', texto: 'Mi hijo mató a ese hombre. Máximo. Creía que así me ayudaba. Es lo más estúpido que ha hecho nunca, y ha hecho muchas.' },
+    { quien: 'dona', texto: 'Recójalo en El Terciopelo y llévelo a la comisaría. Salaverri le espera. Dígale a mi hijo... no le diga nada. No lo entendería.' },
+    { quien: 'empedrado', texto: 'Señora... ¿está segura?' },
+    { quien: 'dona', texto: 'Licenciado, en treinta años nunca me ha preguntado si estoy segura. No empiece hoy.' },
+  ],
+  'el-precio-de-la-dona:fin': [
+    { fondo: 'carretera', quien: 'maximo', texto: '¿La comisaría? ¿Me lleva a la comisaría? ¿Mi madre me ha vendido, hijo de puta?' },
+    { texto: 'Máximo saca una pistola de la chaqueta. Le tiembla la mano.',
+      opciones: [
+        { texto: 'Quitarle el arma y entregarlo vivo.', marca: 'maximo-preso' },
+        { texto: 'Disparar primero.', marca: 'maximo-muerto', muere: 'maximo' },
+      ] },
+    { solo: 'maximo-preso', quien: 'salaverri', texto: 'Máximo Verdial. Queda usted detenido. Su madre ha sido muy... colaboradora.' },
+    { solo: 'maximo-muerto', quien: 'salaverri', texto: 'Vaya por Dios. Legítima defensa, ¿no? Yo no he visto nada. Yo nunca veo nada.' },
+    { fondo: 'despacho', quien: 'dona', texto: 'Ya está hecho. Ese era mi precio, Cero. Ahora el de Anzures.' },
+  ],
+
+  'fuera-anzures': [
+    { fondo: 'despacho', quien: 'empedrado', texto: 'Con el caso del solar abierto, cualquier papel que una a Anzures con él lo hunde ante sus inversores. Gente muy limpia, los inversores.' },
+    { quien: 'empedrado', texto: 'Su maletín está en la habitación del hotel. Tráigamelo. Por las vías adecuadas, Cero. Y esta vez, las vías adecuadas son la ventana.' },
+  ],
+  'fuera-anzures:fin': [
+    { fondo: 'despacho', quien: 'empedrado', texto: 'Transferencias al hombre del solar. Pagos a Salaverri. A Máximo. Un contrato para echar a seiscientas familias del barrio alto. Está todo.' },
+    { quien: 'dona', texto: 'Mándeselo a sus inversores, Licenciado. Con una nota muy educada.' },
+    { fondo: 'ciudad', quien: 'anzures', texto: 'Ha sido una negociación interesante, señora Verdial. Volveremos dentro de diez años. Las ciudades siempre se acaban vendiendo.' },
+    { fondo: 'despacho', quien: 'dona', texto: 'Dentro de diez años seguiré aquí, señor Anzures. Y usted tendrá diez años más.' },
+  ],
+
+  'lo-que-queda-entre-las-sombras': [
+    { fondo: 'despacho', quien: 'dona', texto: 'Pase, Cero. El café está recién hecho. Hoy no es una invitación: es una costumbre que vamos a tener usted y yo.' },
+  ],
+  'lo-que-queda-entre-las-sombras:fin': [
+    { fondo: 'despacho', quien: 'dona', texto: 'Anzures se ha ido. El puerto sigue siendo de Los Amarres, el barrio alto de esos chavales, y el centro, mío. Todo en su sitio. Casi todo.' },
+    { solo: 'maximo-preso', quien: 'dona', texto: 'Mi hijo me escribe desde la cárcel cada semana. No le contesto. Todavía no.' },
+    { solo: 'maximo-muerto', quien: 'dona', texto: 'A mi hijo lo enterré el martes. Usted no vino. Hizo bien.' },
+    { quien: 'dona', texto: 'Usted me ha dado una ciudad, Cero. Y yo le debo una para siempre. No hay deuda más cara en Santa Perdida que una que tengo yo.' },
+    { quien: 'dona', texto: 'Algún día le pediré algo. Y usted dirá que sí. Porque así funcionan las cosas aquí.' },
+    { marca: 'final-verdial', fondo: 'ciudad', titulo: 'GUANTE DE SEDA', sub: 'Final de Casa Verdial' },
+  ],
+
+  // ---------------------------------------------------- CAMINO CONSORCIO
+  'el-otro-lado-del-trato': [
+    { fondo: 'despacho', quien: 'anzures', texto: 'Bienvenido al lado correcto de la historia, Cero. Aquí no hay bandas: hay activos, pasivos y plazos.' },
+    { quien: 'anzures', texto: 'La Cuadrilla se ha atrincherado en el barrio alto con una furgoneta llena de lo que roban en mis obras. Sin furgoneta, no hay barricada.' },
+    { quien: 'anzures', texto: 'Hágalo limpio. Que piensen que fue Casa Verdial. Que se maten entre ellos: eso abarata mucho las cosas.' },
+  ],
+  'el-otro-lado-del-trato:fin': [
+    { fondo: 'barrio', quien: 'chispa', texto: '¡¿Quién ha sido?! ¡¿Quién coño ha sido?! ¡Ha sido la vieja, seguro, esa hija de puta!' },
+    { quien: 'vale', texto: 'No, Chispa. Ha sido alguien que conocía la furgoneta. Alguien de dentro.' },
+    { fondo: 'despacho', quien: 'anzures', texto: 'Excelente. El barrio se está devorando a sí mismo. A este ritmo, firmamos antes del viernes.' },
+  ],
+
+  'firma-y-listo': [
+    { fondo: 'despacho', quien: 'anzures', texto: 'Hoy se firma. La señora Verdial vende su parte por un doce por ciento. Los Amarres, sin el Cónsul al mando, venden por miedo. El barrio alto... el barrio alto no tiene que vender nada. Ya está expropiado.' },
+    { quien: 'anzures', texto: 'Lléveme a la notaría del puerto. Y después, cobre. Se lo ha ganado.' },
+  ],
+  'firma-y-listo:fin': [
+    { fondo: 'muelle', texto: 'Tres firmas. Un apretón de manos. Santa Perdida tiene nuevo dueño y no vive en ella.' },
+    { fondo: 'barrio', texto: 'Al día siguiente llegan las excavadoras a Los Rompientes. Chispa se sube a la primera con una barra de hierro.' },
+    { texto: 'Dicen que fue un accidente. Dicen que se cayó.', muere: 'chispa' },
+    { quien: 'vale', texto: 'Sé que fuiste tú, Cero. Lo sé. Y algún día voy a poder demostrarlo.' },
+    { fondo: 'ciudad', quien: 'anzures', texto: 'No se preocupe por ella. En cinco años aquí habrá un puerto deportivo, tres hoteles y nadie que se acuerde de cómo se llamaba este barrio.' },
+    { quien: 'anzures', texto: 'Usted es rico, Cero. La ciudad, no. Así funciona el progreso.' },
+    { marca: 'final-consorcio', fondo: 'ciudad', titulo: 'SE VENDE LA CIUDAD', sub: 'Final del Consorcio' },
+  ],
+
+  // ---------------------------------------------------- CAMINO INDEPENDIENTE
+  'las-tres-bandas-una-noche': [
+    { fondo: 'muelle', quien: 'marina', texto: 'Si alguien me hubiera dicho hace un año que iba a pelear al lado de esos chavales y de la vieja...' },
+    { quien: 'chispa', texto: 'Y yo al lado de los del puerto, que nos han vendido mierda cortada durante diez años.' },
+    { quien: 'dona', texto: 'Señores, por favor. Esta noche somos socios. Mañana pueden volver a odiarse con toda tranquilidad.' },
+    { quien: 'teresa', texto: 'Anzures tiene esta noche en el muelle a toda la gente que le queda. Si caen ellos, cae él.' },
+  ],
+  'las-tres-bandas-una-noche:fin': [
+    { fondo: 'muelle', texto: 'Cuando acaba, no queda nadie del Consorcio en pie. Pero hay alguien más en el suelo.' },
+    { texto: 'El Cónsul. Se puso delante de Chispa cuando le apuntaron.', muere: 'consul' },
+    { quien: 'chispa', texto: '¿Por qué, viejo? ¿Por qué coño has hecho eso? Si me odiabas.' },
+    { quien: 'consul', texto: 'Porque usted tiene veintitrés años, socio. Y yo ya he visto todo lo que tenía que ver.' },
+    { quien: 'marina', texto: 'Papá...' },
+    { quien: 'dona', texto: 'Era el último caballero de esta ciudad. Y no lo sabía nadie. Ni él.' },
+  ],
+
+  'te-vas-de-santa-perdida': [
+    { fondo: 'carretera', quien: 'teresa', texto: '¿Te vas? ¿Así, sin más? Las tres casas te ofrecen de todo para que te quedes.' },
+    { quien: 'teresa', texto: 'Claro. Por eso te vas. Si te quedas, acabas debiéndole algo a alguien.' },
+  ],
+  'te-vas-de-santa-perdida:fin': [
+    { fondo: 'carretera', texto: 'La carretera de la costa. Detrás, la ciudad, con sus tres casas en paz por primera vez. Una paz de mentira, pero paz.' },
+    { quien: 'marina', texto: 'El puerto siempre tendrá un sitio para ti, Cero.' },
+    { quien: 'chispa', texto: 'Y el barrio, tío. Cuando quieras. Sin preguntas.' },
+    { quien: 'dona', texto: 'Le echaré de menos, Cero. No se lo diga a nadie.' },
+    { texto: 'Llegaste sin nombre. Te vas sin deberle nada a nadie.' },
+    { marca: 'final-independiente', fondo: 'ciudad', titulo: 'NADIE TE PREGUNTA', sub: 'Final independiente' },
+  ],
+
+  // =====================================================================
+  // EPILOGO — UN AÑO DESPUES (sale detras del final de cada camino)
+  // =====================================================================
+  epilogo: [
+    { fondo: 'ciudad', titulo: 'UN AÑO DESPUES', sub: 'Santa Perdida' },
+    { solo: 'final-amarres', fondo: 'muelle', texto: 'Marina Roig manda en el puerto. Los barcos vuelven a entrar con luces. Lo que llevan dentro, eso no ha cambiado tanto.' },
+    { solo: 'final-amarres', texto: 'En el despacho del muelle hay una foto de su padre. Debajo, una sola palabra: «socio».' },
+    { solo: 'final-rompiente', fondo: 'barrio', texto: 'Los Rompientes siguen en pie. En la barricada principal hay un mural de tres metros: un chaval de veintitrés años con una sonrisa de pillo. Debajo pone «CHISPA».' },
+    { solo: 'final-rompiente', texto: 'Vale manda con la cabeza fría. Casa Verdial y el puerto no se atreven a subir al barrio. Nadie de fuera, tampoco.' },
+    { solo: 'final-verdial', fondo: 'despacho', texto: 'Casa Verdial es más fuerte que nunca. La Doña toma café cada mañana mirando al puerto. Ya no le dice a nadie lo que valdría bien llevado.' },
+    { solo: 'final-verdial', texto: 'El Licenciado Empedrado redacta los contratos de toda la ciudad. Ninguno de ellos demuestra nada.' },
+    { solo: 'final-consorcio', fondo: 'ciudad', texto: 'Donde estaba Los Rompientes hay un hotel de cinco estrellas. El puerto se llama ahora Marina Poniente. Los camareros vienen de fuera.' },
+    { solo: 'final-consorcio', texto: 'Tienes una casa en las afueras con piscina. Nadie te saluda por la calle. Nadie de los de antes queda en la calle para saludarte.' },
+    { solo: 'final-independiente', fondo: 'ciudad', texto: 'Las tres casas siguen peleándose, como siempre. Pero ninguna ha vuelto a vender un metro de Santa Perdida a nadie de fuera.' },
+    { solo: 'final-independiente', texto: 'Marina, Chispa y la Doña se ven una vez al año, en la plaza del Farol, el día que murió el Cónsul. No se dirigen la palabra. Pero van.' },
+    { solo: 'muerto:sacau', fondo: 'muelle', texto: 'En lo alto de la grúa alguien ha colgado una libreta vieja. Nadie la ha descolgado.' },
+    { solo: ['muerto:ferro', '!final-rompiente'], texto: 'A Ferro no lo llora nadie en voz alta. Pero en el muelle sur, los viejos todavía brindan por él.' },
+    { solo: 'hecha:la-medalla-que-falta', fondo: 'muelle', texto: 'En el faro, una anciana guarda una cabeza de madera con los ojos cerrados. Dice que la ciudad todavía no se la merece.' },
+    { solo: 'hecha:la-chica-nueva', texto: 'Una postal llega a El Terciopelo desde una ciudad del norte. Solo pone: «Estoy bien. C.»' },
+    { fondo: 'ciudad', texto: 'Santa Perdida le sigue rezando a una santa que nunca llegó. Por si acaso.' },
+    { titulo: 'SANTA PERDIDA', sub: 'Aquí nadie pregunta de dónde vienes' },
+  ],
 };
 
 // el decorado de cada banda, para las misiones sin dialogo propio

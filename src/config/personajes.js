@@ -216,6 +216,27 @@ export const PERSONAJES = {
     voz: 185, presentado: false,
     piel: 0xc9a882, ropa: 0x5a1a3a, pelo: 'peinado', colorPelo: 0x15120e, bigote: 0x15120e, extra: 'cadena',
   },
+  // las dos de El Terciopelo (Acto 2.5, 19-nov-2026)
+  celeste: {
+    nombre: 'Celeste Varela', alias: 'Celeste', edad: 24, banda: 'neutral',
+    oficio: 'Trabaja en El Terciopelo',
+    historia: 'Llegó a Santa Perdida en un barco, con una promesa de trabajo en un hotel y una deuda que crecía cada semana. El hotel no existía. El barco, sí.',
+    caracter: 'Dura por fuera, cansada por dentro. Se ríe de todo para no llorar delante de nadie.',
+    quiere: 'Pagar lo que dicen que debe e irse donde nadie la conozca.',
+    esconde: 'Sabe qué barco la trajo y quién lo pagaba.',
+    voz: 250, presentado: false,
+    piel: 0xb98a62, ropa: 0x7a1a4a, pelo: 'largo', colorPelo: 0x1a1210,
+  },
+  amparo: {
+    nombre: 'Amparo Lisón', alias: 'Amparo', edad: 47, banda: 'neutral',
+    oficio: 'Camarera de El Terciopelo',
+    historia: 'Lleva veinte años detrás de la barra del club. Ha visto pasar a todos los que mandan en la ciudad, con la corbata floja y la cartera abierta.',
+    caracter: 'Socarrona, de vuelta de todo, con una memoria que da miedo. Llama «rey» a todo el mundo.',
+    quiere: 'Que no le salpique nada a su hija, que estudia fuera.',
+    esconde: 'Apunta en una servilleta los nombres que se le escapan a los borrachos.',
+    voz: 205, presentado: false,
+    piel: 0xd8b48c, ropa: 0x24262c, pelo: 'mono', colorPelo: 0xb8862a,
+  },
 };
 
 // el color de la placa de cada banda (el `accent` de config/factions.js)

@@ -9,8 +9,11 @@ import { etiquetaFlotante } from '../world/etiquetas.js';
 import { CINEMATICAS, FONDO_BANDA, JEFE_BANDA } from '../config/cinematicas.js';
 import { PERSONAJES, sinTildes } from '../config/personajes.js';
 import { SaveSystem } from '../core/SaveSystem.js';
+import { cumpleTodas } from '../core/condiciones.js';
 
 const ALCANCE = 42;
+// el color del haz de quien da encargos sin ser de ninguna banda
+const COLOR_NEUTRAL = 0xd8cfa8;
 
 // Ejecuta las misiones de config/missions.js paso a paso. El sistema no sabe
 // nada de ninguna mision concreta: solo sabe ejecutar tipos de paso.
@@ -49,9 +52,22 @@ export class MissionSystem {
     for (const d of this.dadores) d.objetos.forEach((o) => o.destroy());
     this.dadores = [];
 
-    for (const key of Object.keys(FACTIONS)) {
-      const f = FACTIONS[key];
-      const libres = this.disponiblesDe(key);
+    // Las tres bandas, y ademas cada persona que da encargos por su cuenta
+    // (`faccion: 'neutral'` + `dador`: El Duque, Puro, Remedios, Teresa...).
+    // Cada uno enseña su primer encargo libre, en paralelo a los demas.
+    const grupos = Object.keys(FACTIONS).map((key) => ({
+      key, accent: FACTIONS[key].accent, zonas: FACTIONS[key].zones, libres: this.disponiblesDe(key),
+    }));
+    const neutrales = [...new Set(MISSIONS.filter((m) => m.faccion === 'neutral').map((m) => m.dador))];
+    for (const quien of neutrales) {
+      const libres = this.disponiblesDe('neutral', quien);
+      if (libres.length) grupos.push({ key: 'neutral', accent: COLOR_NEUTRAL, zonas: [libres[0].zonaDador || 'centro'], libres });
+    }
+
+    for (const grupo of grupos) {
+      const key = grupo.key;
+      const f = { accent: grupo.accent, zones: grupo.zonas };
+      const libres = grupo.libres;
       if (libres.length === 0) continue;
 
       libres.slice(0, 1).forEach((mision, i) => {
@@ -89,9 +105,9 @@ export class MissionSystem {
         // PROMPTS-PARA-GEMINI.txt); si no, uno de su banda
         // (si la mision la da otra persona, `dador`, su sprite y su nombre)
         const quienDa = mision.dador || JEFE_BANDA[key];
-        const jefe = `jefe-${quienDa}-0`;
-        const contacto = this.scene.add.image(punto.x, punto.y,
-          this.scene.textures.exists(jefe) ? jefe : `gang-${key}-0`)
+        const sprite = this.scene.textures.exists(`jefe-${quienDa}-0`) ? `jefe-${quienDa}-0`
+          : (FACTIONS[key] ? `gang-${key}-0` : 'ped-3-0');
+        const contacto = this.scene.add.image(punto.x, punto.y, sprite)
           .setDepth(punto.y);
         objetos.push(contacto);
         this.scene.tweens.add({
@@ -117,7 +133,7 @@ export class MissionSystem {
         objetos.push(et.texto, et.placa, et.raya);
 
         this.dadores.push({
-          faccion: key, mision, x: punto.x, y: punto.y, objetos,
+          faccion: key, mision, x: punto.x, y: punto.y, objetos, color: f.accent,
         });
       });
     }
@@ -137,13 +153,14 @@ export class MissionSystem {
   // jefe de la banda. Sin tildes: las etiquetas van en la fuente del juego.
   nombreDador(mision, faccion) {
     const p = mision.dador && PERSONAJES[mision.dador];
-    return sinTildes(p ? p.alias : FACTIONS[faccion].jefe.alias);
+    if (p) return sinTildes(p.alias);
+    return sinTildes(FACTIONS[faccion] ? FACTIONS[faccion].jefe.alias : 'Alguien');
   }
 
   // para pintarlos en el minimapa
   puntos() {
     return this.dadores.map((d) => ({
-      x: d.x, y: d.y, color: FACTIONS[d.faccion].accent,
+      x: d.x, y: d.y, color: d.color,
     }));
   }
 
@@ -180,14 +197,25 @@ export class MissionSystem {
 
   // ---------- empezar ----------
 
-  disponiblesDe(faccion) {
+  // Lo que pide una mision para salir:
+  //   requiere        todas estas hechas
+  //   requiereAlguna  al menos una de estas hecha
+  //   decision        lo elegido en una cinematica ('marca' o '!marca', ver
+  //                   CinematicaScene.cumple): los caminos del Acto 4
+  //   medallas        cuantas medallas de la Santa Perdida hay que tener
+  //   minRep          reputacion con su banda (las neutrales no la miran)
+  disponiblesDe(faccion, dador = null) {
     const hechas = GameState.flags.misiones || {};
     return MISSIONS.filter(
       (m) =>
         m.faccion === faccion &&
+        (!dador || m.dador === dador) &&
         !hechas[m.id] &&
         (m.requiere || []).every((id) => hechas[id]) &&
-        GameState.factionRep(faccion) >= m.minRep
+        (!m.requiereAlguna || m.requiereAlguna.some((id) => hechas[id])) &&
+        cumpleTodas(m.decision) &&
+        (!m.medallas || Object.keys(GameState.medallasRecogidas || {}).length >= m.medallas) &&
+        (!FACTIONS[faccion] || GameState.factionRep(faccion) >= (m.minRep ?? -100))
     );
   }
 
@@ -393,7 +421,7 @@ export class MissionSystem {
     this.ultimoCerca = cerca;
     if (!cerca) return;
     EventBus.emit(EVT.NOTIFY, {
-      text: `E para hablar con ${FACTIONS[cerca.faccion].jefe.alias}: ${cerca.mision.nombre}`,
+      text: `E para hablar con ${this.nombreDador(cerca.mision, cerca.faccion)}: ${cerca.mision.nombre}`,
       tone: 'objective',
     });
   }
@@ -435,7 +463,7 @@ export class MissionSystem {
   completar() {
     const def = this.activa.def;
     GameState.addMoney(def.pago, `mision ${def.id}`);
-    GameState.changeFaction(def.faccion, def.rep);
+    if (FACTIONS[def.faccion]) GameState.changeFaction(def.faccion, def.rep);
     GameState.addReputation(3);
     if (!GameState.flags.misiones) GameState.flags.misiones = {};
     GameState.flags.misiones[def.id] = true;
@@ -447,7 +475,7 @@ export class MissionSystem {
 
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: 'MISION CUMPLIDA',
-      subtitle: `+${def.pago} €  ·  ${FACTIONS[def.faccion].short} +${def.rep}`,
+      subtitle: FACTIONS[def.faccion] ? `+${def.pago} €  ·  ${FACTIONS[def.faccion].short} +${def.rep}` : `+${def.pago} €`,
       color: '#8fd694',
     });
     EventBus.emit(EVT.MISSION_END, { mision: def, ok: true });
@@ -462,6 +490,17 @@ export class MissionSystem {
       this.hablando = true;
       this.scene.time.delayedCall(2200, () => {
         this.scene.verCinematica(cierre, () => {
+          // el final de la historia: el epilogo comun, que cambia segun el
+          // camino y quien haya muerto (CINEMATICAS.epilogo)
+          if (def.epilogo && CINEMATICAS.epilogo) {
+            GameState.flags.historiaAcabada = true;
+            this.scene.verCinematica(CINEMATICAS.epilogo, () => {
+              this.hablando = false;
+              this.refrescarDadores();
+              SaveSystem.save();
+            });
+            return;
+          }
           this.hablando = false;
           this.refrescarDadores();
           SaveSystem.save();
@@ -477,7 +516,7 @@ export class MissionSystem {
     this.activa = null;
     this.objetivo = null;
 
-    GameState.changeFaction(def.faccion, -4);
+    if (FACTIONS[def.faccion]) GameState.changeFaction(def.faccion, -4);
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: 'MISION FALLIDA',
       subtitle: motivo,

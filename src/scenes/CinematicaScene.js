@@ -2,6 +2,7 @@ import { Audio } from '../core/Audio.js';
 import { PERSONAJES, COLOR_BANDA, sinTildes } from '../config/personajes.js';
 import { GameState } from '../core/GameState.js';
 import { texturaRetrato } from '../world/retratos.js';
+import { cumpleTodas } from '../core/condiciones.js';
 
 const FONT = 'Pricedown, Anton, Impact, sans-serif';
 const TEXTO = 'Georgia, "Times New Roman", serif';
@@ -97,10 +98,12 @@ export class CinematicaScene extends Phaser.Scene {
   // Un plano con `solo` se salta si no se cumple: 'marca' (hay que haberla
   // elegido antes) o '!marca' (NO haberla elegido). Es como una mision
   // posterior recuerda lo que decidiste en una anterior (GameState.flags.decisiones).
+  // (las condiciones posibles, en core/condiciones.js). Una opcion puede
+  // llevar tambien `solo`, y `repTodas: N` = solo si tienes al menos N de
+  // reputacion con las tres bandas a la vez (el camino independiente).
   cumple(p) {
-    if (!p.solo) return true;
-    const dec = GameState.flags.decisiones || {};
-    return [].concat(p.solo).every((c) => (c[0] === '!' ? !dec[c.slice(1)] : !!dec[c]));
+    if (p.repTodas && !['amarres', 'rompiente', 'verdial'].every((b) => GameState.factionRep(b) >= p.repTodas)) return false;
+    return cumpleTodas(p.solo);
   }
 
   siguiente() {
@@ -112,6 +115,16 @@ export class CinematicaScene extends Phaser.Scene {
     }
     const p = this.planos[this.indice];
     this.planoActual = p;
+    // un plano tambien puede apuntar algo solo por verse: una muerte que no
+    // se elige (`muere`) o como acaba la historia (`marca`)
+    if (p.muere) {
+      GameState.flags.muertos = GameState.flags.muertos || {};
+      for (const id of [].concat(p.muere)) GameState.flags.muertos[id] = true;
+    }
+    if (p.marca && !p.opciones) {
+      GameState.flags.decisiones = GameState.flags.decisiones || {};
+      GameState.flags.decisiones[p.marca] = true;
+    }
     if (p.fondo && p.fondo !== this.fondoActual) this.ponerFondo(p.fondo);
     // si la cinematica empieza sin decorado, el primero que aparezca en ella
     // (o la ciudad): nunca un fondo negro
@@ -190,15 +203,16 @@ export class CinematicaScene extends Phaser.Scene {
   // con ESC se para en la siguiente eleccion: no se decide por accidente.
   mostrarOpciones(p) {
     const x0 = 330;
-    const y0 = 292;
-    const n = p.opciones.length;
+    const opciones = p.opciones.filter((o) => this.cumple(o));
+    const n = opciones.length;
+    const y0 = Math.max(150, 292 - (n - 2) * 50);
     const objs = [];
     objs.push(this.add.image(x0 - 24, y0 - 48, 'px').setOrigin(0, 0)
       .setDisplaySize(W - x0 - 10, 64 + n * 50).setTint(0x000000).setAlpha(0.72).setDepth(70));
     objs.push(this.add.text(x0, y0 - 38, 'QUE HACES', {
       fontFamily: FONT, fontSize: '22px', color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
     }).setDepth(71));
-    const filas = p.opciones.map((o, i) => {
+    const filas = opciones.map((o, i) => {
       const t = this.add.text(x0, y0 + i * 50, o.texto, {
         fontFamily: TEXTO, fontSize: '24px', color: '#f2efe6', stroke: '#05060a', strokeThickness: 3,
         wordWrap: { width: W - x0 - 60 },
@@ -207,7 +221,7 @@ export class CinematicaScene extends Phaser.Scene {
       objs.push(t);
       return t;
     });
-    this.eleccion = { ops: p.opciones, sel: 0, objs, filas };
+    this.eleccion = { ops: opciones, sel: 0, objs, filas };
     this.ayuda.setText('W/S elegir  ·  ENTER confirmar');
     this.pintarSeleccion();
   }

@@ -3902,3 +3902,9 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · Probado: la cadena entera se cumple sin atascos (31 misiones), una eleccion
     marca decisiones y muertos y salta las lineas de la otra rama, el dador
     Teresa sale con su nombre.
+
+[HECHO 19-nov, v64] LA HISTORIA COMPLETA: 60 MISIONES Y 5 FINALES.
+  Acto 2.5 de El Duque (6), sueltas (8) y Acto 4 (16) con cinco caminos, cada
+  uno con su final, y un epilogo comun que cambia segun lo que hiciste. Tono
+  sin filtro en el dialogo (pedido de Pablo). Contactos neutrales en el mapa.
+  Detalle en HISTORIA-SANTA-PERDIDA.txt, seccion "19-NOV-2026 (2)".
