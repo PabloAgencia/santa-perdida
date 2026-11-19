@@ -3988,3 +3988,11 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · (v70) BATALLAS: en una mision con oleadas los delitos no suben la busca
     (el bot medio que en La noche mas larga te detenian a los 20 s de empezar
     a aguantar la barricada); la policia entra en la huida de despues.
+
+[HECHO 19-nov, v71] SALTOS UNICOS (los de San Andreas).
+  10 rampas amarillas y negras en las avenidas mas largas (sitio fijo). Si
+  entras derecho y a mas del 62% de la velocidad maxima, el coche vuela: camara
+  lenta (el mundo al 40%), la camara se abre, el coche crece y su sombra se
+  separa. Al caer: la primera vez, "SALTO UNICO n de 10" y 500 €; si caes
+  encima de algo, golpe del 35% y al primer hueco libre. Probado: despega,
+  vuela, aterriza y paga.

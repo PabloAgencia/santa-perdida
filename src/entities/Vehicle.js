@@ -130,6 +130,13 @@ export class Vehicle {
 
   update(dt, input) {
     const s = this.stats;
+    // volando por una rampa (SaltosSystem): sigue recto, sin volante ni choques
+    if (this.enElAire) {
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+      this.syncSprite();
+      return;
+    }
     if (this.crashCooldown > 0) this.crashCooldown -= dt;
 
     const cos = Math.cos(this.angle);
@@ -261,7 +268,9 @@ export class Vehicle {
     this.sprite.setPosition(this.x, this.y);
     this.sprite.setRotation(this.angle);
     this.sprite.setDepth(this.y);
-    this.shadow.setPosition(this.x + 3, this.y + 4);
+    // en el aire (salto unico) la sombra se separa del coche
+    const alto = this.alturaSalto || 0;
+    this.shadow.setPosition(this.x + 3 + alto * 26, this.y + 4 + alto * 34);
     this.shadow.setRotation(this.angle);
     this.shadow.setDepth(this.y - 1);
 

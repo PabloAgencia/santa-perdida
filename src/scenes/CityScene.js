@@ -1,3 +1,4 @@
+import { SaltosSystem } from '../systems/SaltosSystem.js';
 import { TiempoSystem } from '../systems/TiempoSystem.js';
 import { CityMap } from '../world/CityMap.js';
 import { CITY } from '../config/city.js';
@@ -126,6 +127,7 @@ export class CityScene extends Phaser.Scene {
     this.diaNoche = new DiaNocheSystem();
     this.radio = new RadioSystem(this.map);
     this.tiempo = new TiempoSystem();
+    this.saltos = new SaltosSystem(this, this.net);
     this.events.once('shutdown', () => this.radio.destroy());
     this.encuentros = new EncuentroSystem(this, this.map);
     this.combat = new CombatSystem(this);
@@ -634,7 +636,10 @@ export class CityScene extends Phaser.Scene {
   // ---------- bucle ----------
 
   update(time, delta) {
-    const dt = Math.min(delta / 1000, 0.05);
+    const dtReal = Math.min(delta / 1000, 0.05);
+    // un salto unico va a camara lenta (el salto en si cuenta en tiempo real)
+    if (this.saltos) this.saltos.update(dtReal, this.drivingVehicle);
+    const dt = this.saltos && this.saltos.camaraLenta ? dtReal * 0.4 : dtReal;
     const k = this.keys;
     GameState.avanzarCooldownVenta(dt);
     if (GameState.avanzarPerdidaBusca(dt)) {
