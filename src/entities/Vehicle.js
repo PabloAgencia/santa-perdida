@@ -155,7 +155,8 @@ export class Vehicle {
       const falta = Phaser.Math.Clamp(1 - Math.abs(vf) / topSpeed, 0, 1);
       vf += s.accel * power * (0.18 + 0.82 * Math.pow(falta, 0.7)) * dt;
     } else if (input.brake) {
-      if (vf > 1) vf = Math.max(0, vf - s.brake * dt);
+      // con lluvia se frena peor (TiempoSystem, input.lluvia 0..1)
+      if (vf > 1) vf = Math.max(0, vf - s.brake * (1 - 0.3 * (input.lluvia || 0)) * dt);
       // el freno, con el coche ya casi parado, mete la marcha atras
       else vf = Math.max(-s.reverseSpeed * (0.8 + 0.2 * salud), vf - s.accel * 0.9 * dt);
     } else {
@@ -183,7 +184,9 @@ export class Vehicle {
     }
 
     // menos retencion lateral = mas agarre y menos derrape
-    const agarre = s.lateralRetention * (1 - pericia * 0.07);
+    let agarre = s.lateralRetention * (1 - pericia * 0.07);
+    // el asfalto mojado: la cola se va mas (retencion mas cerca de 1 = derrapa)
+    if (input.lluvia) agarre += (1 - agarre) * 0.45 * input.lluvia;
     const retention = input.handbrake ? DRIVING.handbrakeRetention : agarre;
     vr *= Math.pow(retention, dt * 60);
     this.lateral = Math.abs(vr);

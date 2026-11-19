@@ -1,3 +1,4 @@
+import { TiempoSystem } from '../systems/TiempoSystem.js';
 import { CityMap } from '../world/CityMap.js';
 import { CITY } from '../config/city.js';
 import { CIUDAD_GRANDE } from '../config/ciudadGrande.js';
@@ -124,6 +125,7 @@ export class CityScene extends Phaser.Scene {
     this.justiciero = new JusticieroSystem(this, this.map, this.net);
     this.diaNoche = new DiaNocheSystem();
     this.radio = new RadioSystem(this.map);
+    this.tiempo = new TiempoSystem();
     this.events.once('shutdown', () => this.radio.destroy());
     this.encuentros = new EncuentroSystem(this, this.map);
     this.combat = new CombatSystem(this);
@@ -745,6 +747,7 @@ export class CityScene extends Phaser.Scene {
         pericia: GameState.atributo('volante') / 100,
         // la mejora del taxista: 3% de velocidad extra por nivel, siempre
         atajos: GameState.nivelTrabajo('taxista') * 0.03,
+        lluvia: this.tiempo.intensidad,
       });
       this.drivingVehicle.gastar(dt, !!up);
       this.avisarGasolina(this.drivingVehicle);
@@ -759,6 +762,7 @@ export class CityScene extends Phaser.Scene {
     // con un robo en marcha el reloj va al ritmo de San Andreas (config/robos.js)
     this.diaNoche.update(this.robos.activo ? dt * ROBO.ritmoReloj : dt);
     this.radio.update(dt, !!this.drivingVehicle);
+    this.tiempo.update(dt);
     this.lights.update(dt, this.player.x, this.player.y);
 
     // Para el trafico tu tambien eres un peaton cuando vas a pie: antes no
@@ -1789,6 +1793,7 @@ export class CityScene extends Phaser.Scene {
       enemigos: this.enemigosEnMapa(),
       contactos: this.missions.puntos().concat(this.encuentros.puntos()),
       diaNoche: this.diaNoche.velo(),
+      lluvia: this.tiempo.intensidad,
     });
   }
 }

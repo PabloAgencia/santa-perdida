@@ -27,6 +27,33 @@ export class UIScene extends Phaser.Scene {
     this.veloNoche = this.add.image(0, 0, 'px').setOrigin(0, 0)
       .setDisplaySize(w, h).setBlendMode(Phaser.BlendModes.MULTIPLY)
       .setTint(0xffffff).setAlpha(0);
+    // LA LLUVIA (TiempoSystem): un velo gris encima del de la noche, las gotas
+    // cayendo en diagonal por toda la pantalla y el fogonazo de los relampagos
+    this.veloLluvia = this.add.image(0, 0, 'px').setOrigin(0, 0)
+      .setDisplaySize(w, h).setTint(0x3a4450).setAlpha(0);
+    if (!this.textures.exists('gota')) {
+      const gg = this.make.graphics({}, false);
+      gg.fillStyle(0xcfe0f0, 1).fillRect(0, 0, 2, 14);
+      gg.generateTexture('gota', 2, 14);
+      gg.destroy();
+    }
+    this.gotas = this.add.particles(0, 0, 'gota', {
+      x: { min: -100, max: w + 200 }, y: -20,
+      speedY: { min: 900, max: 1200 }, speedX: { min: -260, max: -200 },
+      rotate: 14, lifespan: 800, alpha: { start: 0.6, end: 0.25 },
+      quantity: 0, frequency: 16, emitting: true,
+    });
+    this.relampago = this.add.image(0, 0, 'px').setOrigin(0, 0)
+      .setDisplaySize(w, h).setTint(0xeef4ff).setAlpha(0);
+    this.onRayo = () => {
+      this.tweens.killTweensOf(this.relampago);
+      this.relampago.setAlpha(0.65);
+      this.tweens.add({ targets: this.relampago, alpha: 0, duration: 380, ease: 'Expo.out' });
+      this.time.delayedCall(700 + Math.random() * 900, () => Audio.crash(0.55));
+    };
+    EventBus.on('tiempo:rayo', this.onRayo);
+    this.events.once('shutdown', () => EventBus.off('tiempo:rayo', this.onRayo));
+
     // LAS LUCES DE LOS LOCALES, justo encima del velo (ver pintarLucesNoche)
     this.lucesNoche = [];
     for (let i = 0; i < 16; i++) {
@@ -580,6 +607,12 @@ export class UIScene extends Phaser.Scene {
     for (let i = n; i < this.lucesNoche.length; i++) this.lucesNoche[i].setVisible(false);
   }
 
+  updateLluvia(i) {
+    this.veloLluvia.setAlpha(0.22 * i);
+    // de nada a unas 22 gotas por tanda con tormenta (unas 1.100 en pantalla)
+    this.gotas.setQuantity(Math.round(i * 22));
+  }
+
   updateDiaNoche(velo) {
     if (!velo) return;
     this.veloNoche.setTint(velo.color).setAlpha(velo.alpha);
@@ -659,6 +692,7 @@ export class UIScene extends Phaser.Scene {
     this.updateTerritory(d.territory);
     this.updateGuerra(d.guerraActiva);
     this.updateDiaNoche(d.diaNoche);
+    this.updateLluvia(d.lluvia || 0);
 
     this.vehiclePanel.setVisible(d.driving);
     if (d.driving) {

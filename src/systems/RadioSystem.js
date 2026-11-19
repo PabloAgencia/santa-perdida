@@ -22,6 +22,16 @@ export class RadioSystem {
     // cuenta, con el barrio. Como mucho uno cada tres minutos.
     this.onViral = (q) => this.viral(q);
     EventBus.on('npc:viral', this.onViral);
+    this.onTiempo = (t) => {
+      const frases = {
+        lluvia: 'Empieza a llover sobre Santa Perdida. El asfalto mojado no perdona: frenad antes, que los del barrio alto conducen igual llueva o nieve.',
+        tormenta: 'Tormenta seria entrando por la bocana. Rayos, agua y un tío en el puerto intentando atar un barco con los dientes. Quedaos en casa. O no, que esto es Santa Perdida.',
+        despejado: 'Deja de llover. Sale el sol, se secan las calles y vuelven los de siempre a hacer lo de siempre.',
+        nublado: 'Se nubla la ciudad. Cielo gris, humor gris. Lo normal en un lunes cualquiera.',
+      };
+      if (frases[t.ahora]) { this.cola.unshift(frases[t.ahora]); if (this.cola.length > 2) this.cola.pop(); }
+    };
+    EventBus.on('tiempo:cambio', this.onTiempo);
     this.t = 4;
     this.enCoche = false;
     this.ultimaBusca = 0;
@@ -31,6 +41,7 @@ export class RadioSystem {
 
   destroy() {
     EventBus.off('npc:viral', this.onViral);
+    EventBus.off('tiempo:cambio', this.onTiempo);
   }
 
   update(dt, conduciendo) {

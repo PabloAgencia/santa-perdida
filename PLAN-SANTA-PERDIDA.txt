@@ -3968,3 +3968,10 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   Probado: dos curiosos grabando, el video corre y la radio dice "un coche
   reventando en Lomas del Norte". Arreglado de paso: el curioso se iba en el
   mismo fotograma en que acababa y el video no salia nunca.
+
+[HECHO 19-nov, v69] EL TIEMPO: LLUVIA Y TORMENTAS.
+  TiempoSystem: despejado (62%), nublado, lluvia (16%) y tormenta (8%),
+  cambiando cada 4-8 min con una rampa de 25 s. Con lluvia: gotas en diagonal
+  por toda la pantalla (unas 1.100), cielo mas gris, y el coche agarra menos
+  (la cola se va mas) y frena un 30% peor. Con tormenta, relampagos con su
+  trueno un segundo despues. Marejada FM avisa de cada cambio.
