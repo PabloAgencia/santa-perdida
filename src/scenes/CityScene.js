@@ -339,9 +339,9 @@ export class CityScene extends Phaser.Scene {
       upArrow: 'UP', downArrow: 'DOWN', leftArrow: 'LEFT', rightArrow: 'RIGHT',
       run: 'SHIFT', enter: 'E', handbrake: 'SPACE', save: 'K', newJob: 'J',
       mapa: 'M', mute: 'N', pausa: 'ESC', progreso: 'P', libreta: 'L',
-      atacar: 'F', objetivo: 'Q', arma: 'TAB',
+      atacar: 'F', objetivo: 'Q', arma: 'TAB', reintentar: 'R',
     });
-    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,P,L,SHIFT,ESC,F,Q,TAB');
+    this.input.keyboard.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D,E,K,J,M,N,P,L,SHIFT,ESC,F,Q,TAB,R');
 
     // el raton tambien pega, y al volante tambien dispara
     this.input.on('pointerdown', (p) => {
@@ -704,6 +704,9 @@ export class CityScene extends Phaser.Scene {
       }
       if (Phaser.Input.Keyboard.JustDown(k.arma)) this.combat.cambiarArma(1);
     }
+
+    // R: reintentar la mision que acabas de fallar (como en los GTA)
+    if (Phaser.Input.Keyboard.JustDown(k.reintentar) && this.missions) this.missions.reintentar();
 
     if (Phaser.Input.Keyboard.JustDown(k.mapa)) {
       this.abrirMapa();

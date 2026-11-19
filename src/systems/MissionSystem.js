@@ -10,6 +10,7 @@ import { CINEMATICAS, FONDO_BANDA, JEFE_BANDA } from '../config/cinematicas.js';
 import { PERSONAJES, sinTildes } from '../config/personajes.js';
 import { SaveSystem } from '../core/SaveSystem.js';
 import { cumpleTodas } from '../core/condiciones.js';
+import { EscenaMision } from './EscenaMision.js';
 
 const ALCANCE = 42;
 // el color del haz de quien da encargos sin ser de ninguna banda
@@ -32,6 +33,8 @@ export class MissionSystem {
       duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut',
     });
 
+    this.escena = new EscenaMision(scene, map);
+    this.reintento = null;
     this.crearDadores();
   }
 
@@ -247,13 +250,16 @@ export class MissionSystem {
     return [{ fondo: FONDO_BANDA[def.faccion], quien: JEFE_BANDA[def.faccion], texto: def.intro }];
   }
 
-  empezar(def) {
+  // `desde` = el paso por el que se empieza (reintentar desde un punto de
+  // control, como en los GTA: no hace falta repetir la mision entera)
+  empezar(def, desde = 0) {
     for (const d of this.dadores) d.objetos.forEach((o) => o.setVisible(false));
+    this.reintento = null;
     this.activa = {
       def,
-      paso: 0,
+      paso: desde,
       tiempo: 0,
-      llevaCarga: false,
+      llevaCarga: def.pasos.slice(0, desde).some((p) => p.tipo === 'recoger'),
     };
     // el nombre de la mision, como en los GTA al acabar de hablar; lo que
     // hay que hacer ya lo dice el primer paso (prepararPaso)
@@ -295,9 +301,13 @@ export class MissionSystem {
     if (this.objetivo) this.aro.setPosition(this.objetivo.x, this.objetivo.y).setDisplaySize(64, 64);
 
     if (paso.tipo === 'perder') GameState.raiseWanted(2);
-    if (paso.tipo === 'aguantar') GameState.raiseWanted(1);
+    if (paso.tipo === 'aguantar' && !paso.oleadas) GameState.raiseWanted(1);
+    this.activa.cerca = 0;
+    this.activa.avisoCerca = false;
 
     EventBus.emit(EVT.NOTIFY, { text: paso.texto, tone: 'objective' });
+    // la accion del paso: oleadas, persecuciones, explosiones (EscenaMision)
+    this.escena.montar(paso);
   }
 
   crearBlanco(paso) {
@@ -329,12 +339,19 @@ export class MissionSystem {
     v.ai = true;
     v.esBlanco = true;
     v.encendido = true;
+    // `blindado: N` = aguanta N veces mas (el camion del Consorcio, el coche
+    // de Maximo...); `huye: true` = en un 'romper' sale corriendo en vez de
+    // esperarte aparcado
+    if (paso.blindado) {
+      v.hp = v.stats.maxHp * paso.blindado;
+      v.sprite.setTint(0xb8b0a0);
+    }
     this.scene.vehicles.push(v);
 
     this.blanco = {
       vehicle: v,
       edge: calle,
-      huyendo: paso.tipo === 'seguir',
+      huyendo: paso.tipo === 'seguir' || !!paso.huye,
       gracia: 4,
     };
     this.aro.setVisible(true);
@@ -373,6 +390,7 @@ export class MissionSystem {
     }
 
     if (this.blanco) this.moverBlanco(dt);
+    this.escena.update(dt);
 
     switch (paso.tipo) {
       case 'ir':
@@ -408,7 +426,22 @@ export class MissionSystem {
         const d = Phaser.Math.Distance.Between(
           this.blanco.vehicle.x, this.blanco.vehicle.y, player.x, player.y
         );
-        if (d > 700) this.fallar('Le has perdido');
+        if (d > 700) { this.fallar('Le has perdido'); break; }
+        // `sigilo: true`: si te pegas demasiado, te ve (los seguimientos de
+        // los GTA: ni muy lejos ni encima)
+        if (paso.sigilo) {
+          if (d < 120) {
+            if (!this.activa.avisoCerca) {
+              this.activa.avisoCerca = true;
+              EventBus.emit(EVT.NOTIFY, { text: 'No te acerques tanto, que te ve', tone: 'danger' });
+            }
+            this.activa.cerca += dt;
+            if (this.activa.cerca > 2.5) this.fallar('Te ha visto');
+          } else {
+            this.activa.cerca = Math.max(0, this.activa.cerca - dt * 0.5);
+            if (d > 200) this.activa.avisoCerca = false;
+          }
+        }
         break;
       }
     }
@@ -452,6 +485,7 @@ export class MissionSystem {
     const paso = this.pasoActual;
     if (paso && paso.tipo === 'recoger') this.activa.llevaCarga = true;
 
+    this.escena.limpiar();
     this.activa.paso++;
     if (this.activa.paso >= this.activa.def.pasos.length) {
       this.completar();
@@ -462,6 +496,7 @@ export class MissionSystem {
 
   completar() {
     const def = this.activa.def;
+    this.escena.limpiar();
     GameState.addMoney(def.pago, `mision ${def.id}`);
     if (FACTIONS[def.faccion]) GameState.changeFaction(def.faccion, def.rep);
     GameState.addReputation(3);
@@ -511,6 +546,15 @@ export class MissionSystem {
 
   fallar(motivo) {
     const def = this.activa.def;
+    // REINTENTAR, como en los GTA: R durante 25 s y se vuelve a empezar desde
+    // el ultimo punto de control (`checkpoint: true` en un paso) sin volver a
+    // ver la charla
+    let desde = 0;
+    for (let i = this.activa.paso; i >= 0; i--) {
+      if (def.pasos[i] && def.pasos[i].checkpoint) { desde = i; break; }
+    }
+    this.reintento = { def, desde, hasta: this.scene.time.now + 25000 };
+    this.escena.limpiar();
     this.limpiarBlanco();
     this.aro.setVisible(false);
     this.activa = null;
@@ -519,7 +563,7 @@ export class MissionSystem {
     if (FACTIONS[def.faccion]) GameState.changeFaction(def.faccion, -4);
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: 'MISION FALLIDA',
-      subtitle: motivo,
+      subtitle: `${motivo}  ·  R para reintentar`,
       color: '#d9584a',
     });
     EventBus.emit(EVT.MISSION_END, { mision: def, ok: false, motivo });
@@ -528,6 +572,15 @@ export class MissionSystem {
 
   abortar(motivo) {
     if (this.activa) this.fallar(motivo);
+  }
+
+  // R tras fallar: se vuelve a empezar desde el punto de control
+  reintentar() {
+    const r = this.reintento;
+    if (!r || this.activa || this.hablando || this.scene.time.now > r.hasta) return false;
+    this.empezar(r.def, r.desde);
+    if (r.desde > 0) EventBus.emit(EVT.NOTIFY, { text: 'Desde el ultimo punto de control', tone: 'objective' });
+    return true;
   }
 
   // ---------- para el HUD ----------

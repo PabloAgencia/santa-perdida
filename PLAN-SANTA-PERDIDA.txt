@@ -3908,3 +3908,31 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   uno con su final, y un epilogo comun que cambia segun lo que hiciste. Tono
   sin filtro en el dialogo (pedido de Pablo). Contactos neutrales en el mapa.
   Detalle en HISTORIA-SANTA-PERDIDA.txt, seccion "19-NOV-2026 (2)".
+
+[HECHO 19-nov, v65] RITMO Y DIFICULTAD A LO GTA, Y MISIONES ESPECTACULARES.
+  Pablo: "ritmo y dificultad como en un gta, y que algunas misiones sean
+  totalmente espectaculares".
+  · src/systems/EscenaMision.js: cualquier paso puede traer oleadas de
+    enemigos armados (te disparan aunque vayas en coche), coches que te
+    persiguen embistiendo y disparando por la ventanilla, coches que prenden y
+    revientan cerca (explosiones), busca forzada, titular a pantalla grande.
+    En 'romper': `blindado` (N veces mas vida), `huye` y `escolta`. En
+    'seguir': `sigilo` (si te pegas a menos de 120 px 2,5 s, te ve y fallas).
+  · REINTENTAR como en los GTA: al fallar (o morir/detenido en mision), R
+    durante 25 s vuelve a empezar SIN la charla, desde el ultimo paso con
+    `checkpoint: true`.
+  · LA CURVA: Acto 1 casi sin accion (Aguanta ahi: 2 oleadas de 3). Los
+    seguimientos de espia con sigilo (el soplon, el hombre del traje, la
+    grua, la foto). Las grandes, al cerrar cada acto o camino:
+      el ultimo viaje        2 coches detras + 2 estrellas, titular
+      golpe de mano          persecucion + 4 oleadas de 4 + coches reventando
+      el ultimo barco        camion blindado x3 huyendo con 2 de escolta + 3★
+      el consul se despide   3 sicarios persiguiendote
+      la noche mas larga     90 s: 5 oleadas de 5, explosiones, 3★ y luego 4★
+      firma y listo          3 persecutores + 2★
+      las tres bandas        80 s: 4 oleadas de 6 del Consorcio + explosiones
+    y otras con un persecutor o una huida (papeles, la chica nueva, el otro
+    chulo, el precio de la Doña, fuera Anzures...).
+  · Probado en el navegador: oleadas que salen y disparan, escolta que te
+    embiste y te dispara, camion blindado con el triple de vida y huyendo,
+    coche que prende cerca, reintentar desde el punto de control.

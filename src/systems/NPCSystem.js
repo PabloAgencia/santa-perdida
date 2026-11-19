@@ -66,7 +66,7 @@ export class NPCSystem {
     }
 
     this.checkVehicles(vehicles, playerVehicle);
-    if (player && onFoot) this.checkAttacks(player, dt);
+    if (player) this.checkAttacks(player, dt, onFoot);
   }
 
   updateHostility(px, py, onFoot) {
@@ -87,7 +87,9 @@ export class NPCSystem {
       // reputacion (te la has buscado tu solo entrando ahi a montarla)
       if (p.guerraTerritorio) {
         const cercaGuerra = Phaser.Math.Distance.Between(p.x, p.y, px, py) < HOSTILE_RANGE;
-        p.hostile = cercaGuerra && onFoot;
+        // los de una escena de mision (EscenaMision) te disparan aunque vayas
+        // en coche: si no, quedarte dentro del coche era invencible
+        p.hostile = cercaGuerra && (onFoot || p.deMision);
         p.chaseTarget = p.hostile && !p.plantado ? { x: px, y: py } : null;
         continue;
       }
@@ -101,10 +103,12 @@ export class NPCSystem {
     }
   }
 
-  checkAttacks(player, dt) {
+  checkAttacks(player, dt, onFoot = true) {
     this.turnoGolpe = Math.max(0, (this.turnoGolpe || 0) - dt);
     for (const p of this.people) {
       if (!p.hostile || p.down) continue;
+      // yendo en coche solo te tiran los de una escena de mision, y solo a tiros
+      if (!onFoot && !(p.deMision && p.armado)) continue;
 
       // el que lleva hierro dispara de lejos; el resto tiene que llegar hasta ti
       if (p.armado) {
@@ -122,6 +126,7 @@ export class NPCSystem {
           continue;
         }
       }
+      if (!onFoot) continue;
 
       p.plantado = false;
       if (p.attackCooldown > 0) continue;

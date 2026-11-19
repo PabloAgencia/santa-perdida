@@ -125,8 +125,8 @@ export const MISSIONS = [
     pago: 280,
     rep: 11,
     pasos: [
-      { tipo: 'seguir', limite: 75, texto: 'Sigue al coche sin perderlo' },
-      { tipo: 'romper', texto: 'Cortale el paso' },
+      { tipo: 'seguir', limite: 75, sigilo: true, texto: 'Sigue al coche sin perderlo y sin que te vea' },
+      { tipo: 'romper', huye: true, texto: 'Cortale el paso' },
     ],
   },
   {
@@ -139,7 +139,7 @@ export const MISSIONS = [
     rep: 14,
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve al punto' },
-      { tipo: 'aguantar', limite: 60, texto: 'Aguanta 60 segundos' },
+      { tipo: 'aguantar', limite: 45, texto: 'Aguanta: vienen a por ti', oleadas: { faccion: 'rompiente', porOleada: 3, total: 2 } },
       { tipo: 'perder', limite: 100, texto: 'Sal de ahi' },
     ],
   },
@@ -169,7 +169,7 @@ export const MISSIONS = [
     rep: 12,
     pasos: [
       { tipo: 'recoger', zona: 'conflictivo', texto: 'Recoge a Renco antes de que alguien se te adelante' },
-      { tipo: 'conducir', zona: 'industrial', limite: 110, texto: 'Sacalo por la carretera del poligono, lejos de todos' },
+      { tipo: 'conducir', zona: 'industrial', limite: 110, persecutores: 1, texto: 'Sacalo por la carretera del poligono: los que le pagaban le buscan' },
     ],
   },
   {
@@ -237,7 +237,7 @@ export const MISSIONS = [
     rep: 20,
     pasos: [
       { tipo: 'recoger', zona: 'puerto', texto: 'Carga la mercancia' },
-      { tipo: 'conducir', zona: 'residencial', limite: 150, texto: 'Cruza la ciudad' },
+      { tipo: 'conducir', zona: 'residencial', limite: 150, checkpoint: true, persecutores: 2, busca: 2, titular: 'EL ULTIMO VIAJE', texto: 'Cruza la ciudad con media Santa Perdida detras' },
       { tipo: 'perder', limite: 120, texto: 'Pierde a la policia' },
     ],
   },
@@ -258,7 +258,7 @@ export const MISSIONS = [
     rep: 8,
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Acercate al muelle norte y mira sin que te vean' },
-      { tipo: 'seguir', limite: 80, texto: 'Sigue el coche negro del desconocido' },
+      { tipo: 'seguir', limite: 80, sigilo: true, texto: 'Sigue el coche negro del desconocido, sin pegarte' },
       { tipo: 'ir', zona: 'centro', texto: 'Mira donde para' },
     ],
   },
@@ -288,8 +288,8 @@ export const MISSIONS = [
     rep: 9,
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve donde estan midiendo el barrio' },
-      { tipo: 'seguir', limite: 80, texto: 'Sigue la furgoneta de los cascos' },
-      { tipo: 'romper', texto: 'Cortales el paso' },
+      { tipo: 'seguir', limite: 80, sigilo: true, texto: 'Sigue la furgoneta de los cascos' },
+      { tipo: 'romper', huye: true, texto: 'Cortales el paso' },
       { tipo: 'entregar', zona: 'conflictivo', limite: 70, texto: 'Llevale a Vale lo que han dejado caer' },
     ],
   },
@@ -305,7 +305,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'recoger', zona: 'residencial', texto: 'Recoge la carpeta de casa del notario' },
-      { tipo: 'perder', limite: 90, texto: 'Quitate de encima a quien te sigue' },
+      { tipo: 'perder', limite: 100, busca: 3, persecutores: 1, texto: 'Quitate de encima a quien te sigue' },
       { tipo: 'entregar', zona: 'centro', limite: 80, texto: 'Llevale los papeles al Licenciado' },
     ],
   },
@@ -321,7 +321,7 @@ export const MISSIONS = [
     rep: 7,
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Reunete con Sacau en los muelles' },
-      { tipo: 'seguir', limite: 75, texto: 'Sigue al camion sin sello' },
+      { tipo: 'seguir', limite: 75, sigilo: true, texto: 'Sigue al camion sin sello, sin que te vean' },
       { tipo: 'ir', zona: 'industrial', texto: 'Mira donde descarga' },
     ],
   },
@@ -336,7 +336,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'recoger', zona: 'centro', texto: 'Recoge al Licenciado en el hotel' },
-      { tipo: 'conducir', zona: 'comercial', limite: 90, texto: 'Llevalo a casa de la Doña sin que os vean' },
+      { tipo: 'conducir', zona: 'comercial', limite: 90, persecutores: 1, texto: 'Llevalo a casa de la Doña: os sigue un coche' },
     ],
   },
   {
@@ -410,7 +410,7 @@ export const MISSIONS = [
     rep: 6,
     pasos: [
       { tipo: 'ir', zona: 'centro', texto: 'Esperate frente al hotel con la camara de Teresa' },
-      { tipo: 'seguir', limite: 80, texto: 'Sigue el coche de Anzures' },
+      { tipo: 'seguir', limite: 80, sigilo: true, texto: 'Sigue el coche de Anzures: que no te vea' },
       { tipo: 'ir', zona: 'puerto', texto: 'Llega al muelle: ahi se encontrara con alguien' },
     ],
   },
@@ -426,7 +426,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve al solar donde ha aparecido el cuerpo' },
       { tipo: 'seguir', limite: 80, texto: 'Sigue el coche que se aleja' },
-      { tipo: 'romper', texto: 'Cortale el paso' },
+      { tipo: 'romper', huye: true, escolta: 1, texto: 'Cortale el paso' },
     ],
   },
   {
@@ -439,8 +439,8 @@ export const MISSIONS = [
     pago: 600,
     rep: 12,
     pasos: [
-      { tipo: 'conducir', zona: 'puerto', limite: 75, texto: 'Llega al despacho del puerto antes de medianoche' },
-      { tipo: 'aguantar', limite: 45, texto: 'Aguanta mientras Marina saca a su gente' },
+      { tipo: 'conducir', zona: 'puerto', limite: 80, persecutores: 2, texto: 'Llega al despacho del puerto antes que las furgonetas de Ferro' },
+      { tipo: 'aguantar', limite: 60, checkpoint: true, titular: 'GOLPE DE MANO', explosiones: 9, texto: 'Aguanta mientras Marina saca a su gente', oleadas: { faccion: 'amarres', porOleada: 4, total: 4 } },
     ],
   },
   {
@@ -505,7 +505,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'comercial', texto: 'Ve al aparcamiento del club' },
       { tipo: 'seguir', limite: 70, texto: 'Sigue al cliente que se ha ido sin pagar' },
-      { tipo: 'romper', texto: 'Revientale el coche' },
+      { tipo: 'romper', huye: true, texto: 'Revientale el coche' },
     ],
   },
   {
@@ -520,8 +520,8 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'recoger', zona: 'residencial', texto: 'Recoge las cosas de Celeste del piso donde la tienen' },
-      { tipo: 'conducir', zona: 'industrial', limite: 100, texto: 'Llevala a la estacion de autobuses del poligono' },
-      { tipo: 'perder', limite: 90, texto: 'Quitate de encima a los que la buscan' },
+      { tipo: 'conducir', zona: 'industrial', limite: 100, checkpoint: true, persecutores: 2, texto: 'Llevala a la estacion: los que la trajeron vienen detras' },
+      { tipo: 'perder', limite: 90, texto: 'Quitatelos de encima' },
     ],
   },
   {
@@ -553,7 +553,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'comercial', texto: 'Ve a la esquina donde trabaja el chulo de fuera' },
       { tipo: 'seguir', limite: 70, texto: 'Sigue su coche' },
-      { tipo: 'romper', texto: 'Destrozaselo' },
+      { tipo: 'romper', huye: true, texto: 'Destrozaselo' },
     ],
   },
   {
@@ -568,7 +568,7 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'ir', zona: 'industrial', texto: 'Ve al piso del otro chulo en el poligono' },
-      { tipo: 'aguantar', limite: 45, texto: 'Aguanta: vienen sus hombres' },
+      { tipo: 'aguantar', limite: 50, checkpoint: true, texto: 'Aguanta: vienen sus hombres', oleadas: { faccion: 'fuera', porOleada: 4, total: 3 } },
       { tipo: 'perder', limite: 90, texto: 'Desaparece' },
     ],
   },
@@ -616,7 +616,7 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'ir', zona: 'residencial', texto: 'Ve a la calle donde vive el que le quemo el taller' },
-      { tipo: 'seguir', limite: 70, texto: 'Siguele' },
+      { tipo: 'seguir', limite: 70, sigilo: true, texto: 'Siguele sin que te vea' },
       { tipo: 'romper', texto: 'Quemale tu el coche a el' },
     ],
   },
@@ -749,7 +749,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'conducir', zona: 'puerto', limite: 80, texto: 'Lleva a Marina al muelle' },
-      { tipo: 'aguantar', limite: 45, texto: 'Aguanta mientras Marina habla con los hombres' },
+      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta: no todos quieren escucharla', oleadas: { faccion: 'amarres', porOleada: 3, total: 3 } },
     ],
   },
   {
@@ -764,9 +764,9 @@ export const MISSIONS = [
     pago: 1200,
     rep: 12,
     pasos: [
-      { tipo: 'seguir', limite: 90, texto: 'Sigue al camion del Consorcio hasta el barco' },
-      { tipo: 'romper', texto: 'Destrozalo antes de que embarque' },
-      { tipo: 'perder', limite: 100, texto: 'Quitate de encima a la policia que paga Anzures' },
+      { tipo: 'seguir', limite: 60, texto: 'Sigue al camion del Consorcio hasta el muelle' },
+      { tipo: 'romper', checkpoint: true, huye: true, blindado: 3, escolta: 2, titular: 'EL ULTIMO BARCO', texto: 'Revienta el camion blindado antes de que embarque' },
+      { tipo: 'perder', limite: 110, busca: 3, texto: 'Quitate de encima a la policia que paga Anzures' },
     ],
   },
   {
@@ -783,7 +783,7 @@ export const MISSIONS = [
     rep: 15,
     pasos: [
       { tipo: 'recoger', zona: 'puerto', texto: 'Recoge a El Consul en su despacho' },
-      { tipo: 'conducir', zona: 'industrial', limite: 110, texto: 'Dale una ultima vuelta por lo que construyo' },
+      { tipo: 'conducir', zona: 'industrial', limite: 120, checkpoint: true, persecutores: 3, titular: 'SICARIOS', texto: 'Sacale del puerto: los de Anzures vienen a por el' },
     ],
   },
 
@@ -800,8 +800,8 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'recoger', zona: 'industrial', texto: 'Roba el material de las obras del Consorcio' },
-      { tipo: 'entregar', zona: 'conflictivo', limite: 90, texto: 'Llevalo a las barricadas' },
-      { tipo: 'aguantar', limite: 40, texto: 'Aguanta mientras levantan la barricada' },
+      { tipo: 'entregar', zona: 'conflictivo', limite: 90, persecutores: 1, texto: 'Llevalo a las barricadas' },
+      { tipo: 'aguantar', limite: 45, checkpoint: true, texto: 'Aguanta mientras levantan la barricada', oleadas: { faccion: 'verdial', porOleada: 3, total: 3 } },
     ],
   },
   {
@@ -816,8 +816,8 @@ export const MISSIONS = [
     rep: 15,
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve a la barricada principal' },
-      { tipo: 'aguantar', limite: 90, texto: 'Aguanta la noche' },
-      { tipo: 'perder', limite: 120, texto: 'Sal vivo de esta' },
+      { tipo: 'aguantar', limite: 90, checkpoint: true, titular: 'LA NOCHE MAS LARGA', busca: 3, explosiones: 7, texto: 'Aguanta la noche', oleadas: { faccion: 'verdial', porOleada: 5, total: 5 } },
+      { tipo: 'perder', limite: 130, busca: 4, texto: 'Sal vivo de esta' },
     ],
   },
   {
@@ -833,8 +833,8 @@ export const MISSIONS = [
     pago: 4000,
     rep: 15,
     pasos: [
-      { tipo: 'seguir', limite: 80, texto: 'Sigue el coche de Maximo Verdial' },
-      { tipo: 'romper', texto: 'Cortale el paso' },
+      { tipo: 'seguir', limite: 60, texto: 'Sigue el coche de Maximo Verdial' },
+      { tipo: 'romper', checkpoint: true, huye: true, blindado: 2, escolta: 2, texto: 'Cortale el paso: lleva escolta' },
     ],
   },
 
@@ -851,7 +851,7 @@ export const MISSIONS = [
     rep: 10,
     pasos: [
       { tipo: 'recoger', zona: 'comercial', texto: 'Recoge a Maximo en El Terciopelo' },
-      { tipo: 'conducir', zona: 'centro', limite: 90, texto: 'Llevalo a la comisaria, donde espera Salaverri' },
+      { tipo: 'conducir', zona: 'centro', limite: 90, persecutores: 2, texto: 'Llevalo a la comisaria: sus hombres no le van a dejar ir' },
     ],
   },
   {
@@ -868,7 +868,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'centro', texto: 'Ve al hotel de Anzures' },
       { tipo: 'recoger', zona: 'centro', texto: 'Coge el maletin de su habitacion' },
-      { tipo: 'entregar', zona: 'comercial', limite: 90, texto: 'Llevaselo al Licenciado' },
+      { tipo: 'entregar', zona: 'comercial', limite: 90, checkpoint: true, persecutores: 2, busca: 2, texto: 'Llevaselo al Licenciado: su seguridad te ha visto' },
     ],
   },
   {
@@ -902,7 +902,7 @@ export const MISSIONS = [
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve a las barricadas del barrio' },
       { tipo: 'romper', texto: 'Revienta la furgoneta de Chispa' },
-      { tipo: 'perder', limite: 90, texto: 'Que nadie sepa que has sido tu' },
+      { tipo: 'perder', limite: 90, persecutores: 2, texto: 'Que nadie sepa que has sido tu: te persiguen' },
     ],
   },
   {
@@ -919,7 +919,7 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'recoger', zona: 'centro', texto: 'Recoge a Anzures en el hotel' },
-      { tipo: 'conducir', zona: 'puerto', limite: 100, texto: 'Llevalo a la notaria del puerto' },
+      { tipo: 'conducir', zona: 'puerto', limite: 110, checkpoint: true, persecutores: 3, busca: 2, titular: 'LA FIRMA', texto: 'Llevalo a la notaria: la ciudad entera quiere pararte' },
     ],
   },
 
@@ -937,8 +937,8 @@ export const MISSIONS = [
     rep: 0,
     pasos: [
       { tipo: 'ir', zona: 'puerto', texto: 'Ve al muelle donde se reunen las tres bandas' },
-      { tipo: 'aguantar', limite: 60, texto: 'Aguanta junto a las tres bandas' },
-      { tipo: 'perder', limite: 100, texto: 'Sal de ahi antes de que llegue la policia' },
+      { tipo: 'aguantar', limite: 80, checkpoint: true, titular: 'UNA NOCHE', explosiones: 8, texto: 'Aguanta junto a las tres bandas', oleadas: { faccion: 'fuera', porOleada: 6, total: 4 } },
+      { tipo: 'perder', limite: 120, busca: 4, texto: 'Sal de ahi antes de que llegue la policia' },
     ],
   },
   {
