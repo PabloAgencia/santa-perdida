@@ -1,7 +1,7 @@
 PROMPTS PENDIENTES DE GENERAR  -  Santa Perdida               (4-oct-2026)
 ================================================================================
 
-AQUI ESTA TODO LO QUE FALTA, Y SOLO ESO: 132 imagenes.
+AQUI ESTA TODO LO QUE FALTA, Y SOLO ESO: 132 imagenes (+12 nuevas del 19-nov, al final).
 Lo que ya esta hecho no sale. Cada bloque de abajo es un prompt COMPLETO:
 se copia entero, se pega en Gemini y ya. Si sale torcido, se repite.
 
@@ -76,6 +76,12 @@ LA LISTA PARA IR TACHANDO  ([ ] = falta)
     [ ] retrato-renco.png        [ ] retrato-dona.png         [ ] retrato-empedrado.png
     [ ] cine-ciudad.png          [ ] cine-carretera.png       [ ] cine-muelle.png
     [ ] cine-barrio.png          [ ] cine-despacho.png
+    (19-nov, nuevos)
+    [ ] retrato-sacau.png        [ ] retrato-maximo.png       [ ] retrato-salaverri.png
+    [ ] retrato-anzures.png      [ ] retrato-teresa.png       [ ] retrato-puro.png
+    [ ] retrato-remedios.png     [ ] retrato-pregonero.png    [ ] retrato-duque.png
+    [ ] retrato-celeste.png      [ ] retrato-amparo.png
+    [ ] gasolinera.png   (edificios)
 
 
 LOS PROMPTS, uno detras de otro
@@ -2684,4 +2690,264 @@ readable writing or watermark. NO people. NO car (the game places its own
 sprite on the parking spot). Nothing on top of the bed, the parking spot or
 the doorway.
 
+################################################################################
+#  19-NOV-2026: LO QUE HA SALIDO NUEVO HOY                         12 PROMPTS
+################################################################################
+Los personajes que hablan en las misiones nuevas (Acto 2.5, sueltas y
+Acto 4) y no tenian retrato, y el tejado de la gasolinera. Mismo estilo
+que los retratos de arriba. Donde va cada uno:
+   retrato-*.png   ->  sprites\originales\cine\
+   gasolinera.png  ->  sprites\originales\edificios\
+Con el script nuevo ya no hay que pasar los de cine a mano: los preparo
+yo y salen solos en las cinematicas y en PERSONAJES.
 
+--------------------------------------------------------------------------------
+  retrato-sacau.png                 Sacau, el gruista del puerto
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A chubby man in his late fifties, the crane operator of the port who sees
+everything from his cabin and sells every bit of gossip. Bald on top with a
+grey fringe, a bushy brown moustache, tanned skin, a worn orange cap pushed
+back, a high-visibility orange work vest over a checked shirt. Cheeky,
+amused, conspiratorial grin, one eyebrow raised as if about to tell you a
+secret that will cost you money.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark teal green, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-maximo.png                Maximo Verdial, el hijo de la Dona
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man of about thirty, the spoiled heir of an old-money crime family.
+Slicked-back dark brown hair, smooth pale skin, expensive dark charcoal suit
+with an open collar, a heavy signet ring visible near the chin. Arrogant,
+impatient, slightly contemptuous half-smile: he thinks his mother has become
+slow and that it is his turn.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-salaverri.png             El Inspector Salaverri
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man of about fifty, a corrupt police inspector who arrived wanting to
+clean the city and has taken envelopes for twelve years. Grey hair, a grey
+moustache, tired heavy eyes with dark circles, light olive skin. Rumpled
+steel-blue jacket over a white shirt with a loosened dark tie, a police badge
+clipped to the belt just visible. Weary, cynical, polite: he thinks he is
+better than the people who pay him.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark steel blue, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-anzures.png               Inigo Anzures, el hombre de fuera
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his late forties, the representative of an outside investment
+consortium that wants to buy the whole city. Immaculate slicked-back black
+hair, pale clean-shaven face, thin rimless glasses, a flawless black suit,
+white shirt and a dark silver tie. Perfectly polite, cold, calculating
+smile that does not reach the eyes: he looks at people as numbers on a
+spreadsheet. Elegant and unsettling.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of charcoal grey, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-teresa.png                Teresa Alba, la periodista
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A woman in her early thirties, a freelance investigative journalist.
+Long wavy chestnut-red hair, light skin with a few freckles, round
+glasses, a worn brown leather jacket over a dark top, a pen behind one ear.
+Sharp, tenacious, quick-witted expression, slightly defiant: she does not
+work for anyone and does not scare easily.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-puro.png                  Puro, el mecanico del taller de pintura
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his late fifties, a grumpy, wise car painter and mechanic.
+Short grey hair, a grey stubble beard, deep wrinkles, tanned brown skin with
+grease smudges on the cheek, a cigar butt in the corner of the mouth, navy
+blue work overalls stained with paint. Gruff, unimpressed, knowing look:
+he judges people by how they treat their cars.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-remedios.png              Remedios, la del faro
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+An old woman of about seventy-seven, widow of the last lighthouse keeper,
+who lives alone in the lighthouse. White hair in a tight bun, a deeply
+lined kind face, sharp pale eyes, a navy blue knitted cardigan with a
+shawl. Slow, ironic, wise half-smile: she has written down every ship that
+entered the port without lights for forty years.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-pregonero.png             Paco, el Pregonero del mercado
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his early sixties, a loud and friendly market stall seller.
+Short grey hair, a thick dark grey moustache, ruddy cheeks, a maroon
+apron over a white shirt with rolled-up sleeves, a pencil behind the ear.
+Mouth open mid-shout, cheerful and nosy, but with calculating eyes: the
+first to hear every rumour and the last to share it for free.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-duque.png                 El Duque, dueno de El Terciopelo
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A man in his early fifties, the owner of the only nightclub in the city.
+Slicked black hair, a thin black moustache, olive skin, a burgundy velvet
+jacket over an open black shirt, a thick gold chain and several gold rings
+visible near the chin. Charming, smooth, salesman smile, a little sleazy:
+he never stops smiling in front of a client.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark plum purple, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-celeste.png               Celeste, la chica nueva del club
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A young woman of about twenty-four who works at a nightclub after being
+brought to the city with a debt she can never pay. Long straight black hair,
+light brown skin, a small cut healing on the lip, light evening make-up
+slightly smudged, a dark magenta top with a cheap faux-fur jacket. Tough,
+tired, guarded expression with a defiant chin: she laughs at everything so
+nobody sees her cry. Tasteful and dignified, NOT sexualised.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  retrato-amparo.png                Amparo, la camarera de El Terciopelo
+--------------------------------------------------------------------------------
+Create a PORTRAIT image, 7:8 aspect ratio (a bit taller than wide).
+A woman in her late forties, the veteran bartender of a nightclub who has
+seen every powerful man in the city drunk. Bleached blonde hair up in a
+messy bun, light skin, heavy eyeliner, a black waistcoat over a white
+shirt, a bar towel on one shoulder. Sardonic, knowing, amused smirk: she
+calls everyone "king" and remembers every name they let slip.
+STYLE: illustrated character portrait in the style of the painted loading
+screen artwork of GTA San Andreas: bold dark ink outlines, cel-shaded
+painted colours, strong light from one side, slightly exaggerated features,
+gritty 2000s crime-game mood. NOT photorealistic, NOT a 3D render, NOT a
+photo, NOT anime.
+FRAMING: head and shoulders, centred, looking slightly towards the camera,
+the face takes the upper half of the image, shoulders cut at the bottom
+edge.
+BACKGROUND: a plain soft gradient of dark warm grey-brown, nothing else.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or watermark. NO
+other people. NO real person, NO character from any existing game or film.
+
+--------------------------------------------------------------------------------
+  gasolinera.png                    Tejado de la gasolinera  (carpeta edificios)
+--------------------------------------------------------------------------------
+Create a SQUARE image, 1:1, seen EXACTLY from straight above (top-down,
+orthographic, 90 degrees overhead, no perspective at all).
+The flat roof of a small petrol station shop in a run-down Spanish coastal
+city: grey roofing with a big red and white striped canopy edge on one side,
+two square air-conditioning units, a few vents, a faded painted fuel drop
+symbol in the middle, a bit of rust and bird droppings.
+STYLE: same as a GTA 2 / early top-down GTA game tile: clean pixel-painted
+detail, strong readable shapes, muted colours, slight dirt. NOT 3D, NOT
+isometric, NOT a photo.
+FRAMING: the roof fills the whole image edge to edge, nothing outside it.
+MUST NOT CONTAIN: NO text, letters, numbers, logos or brand names. NO cars,
+NO people, NO shadows falling outside the roof.

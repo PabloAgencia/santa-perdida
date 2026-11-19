@@ -297,6 +297,8 @@ def preparar_edificios(hechos):
         # 4-oct-2026: los locales que faltaban y los dos barrios del mapa
         # grande que no tenian tejado (Casco Viejo y Afueras)
         'tienda24', 'bar', 'mecanico', 'casco', 'afueras',
+        # 19-nov-2026: la gasolinera
+        'gasolinera',
     ]
     # LAS VARIANTES DE CADA BARRIO (4-oct-2026, "que no haya casas iguales
     # una pegada a la otra"): <barrio>-c1, -c2... cuadradas y <barrio>-a1,
@@ -485,6 +487,54 @@ def preparar_objetos(hechos):
         print(f'  {fichero}: {nombre_juego} a {an}x{al} px')
 
 
+def preparar_cine():
+    """Los retratos y decorados de las cinematicas (sprites/originales/cine).
+
+    No son sprites: van enteros a arte/ (retrato-<id>.jpg a 380x428, el 7:8 del
+    marco; cine-<decorado>.jpg a 1280x720) y se apuntan en arte/lista.json, que
+    es lo que carga BootScene. Antes esto se hacia a mano."""
+    carpeta = os.path.join(ORIGEN, 'cine')
+    if not os.path.isdir(carpeta):
+        return
+    arte = os.path.join(RAIZ, 'arte')
+    lista_path = os.path.join(arte, 'lista.json')
+    with open(lista_path, encoding='utf-8') as f:
+        lista = json.load(f)
+    hechos = 0
+    for fichero in sorted(os.listdir(carpeta)):
+        if not fichero.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
+            continue
+        clave = os.path.splitext(fichero)[0].lower().strip()
+        if clave.startswith('retrato-'):
+            ancho, alto = 380, 428
+        elif clave.startswith('cine-'):
+            ancho, alto = 1280, 720
+        else:
+            print(f'  ! "{fichero}": en cine/ solo van retrato-<id> y cine-<decorado>')
+            continue
+        img = Image.open(os.path.join(carpeta, fichero)).convert('RGB')
+        # recorte centrado a la proporcion que toca y al tamaño final
+        an, al = img.size
+        quiero = ancho / alto
+        if an / al > quiero:
+            nuevo = int(al * quiero)
+            img = img.crop(((an - nuevo) // 2, 0, (an - nuevo) // 2 + nuevo, al))
+        else:
+            nuevo = int(an / quiero)
+            img = img.crop((0, (al - nuevo) // 2, an, (al - nuevo) // 2 + nuevo))
+        img = img.resize((ancho, alto), Image.LANCZOS)
+        nombre = clave + '.jpg'
+        img.save(os.path.join(arte, nombre), quality=88)
+        if nombre not in lista:
+            lista.append(nombre)
+        hechos += 1
+        print(f'  {fichero} -> arte/{nombre}')
+    with open(lista_path, 'w', encoding='utf-8') as f:
+        json.dump(sorted(lista), f)
+    if hechos:
+        print(f'  {hechos} de cinematicas en arte/ (y en arte/lista.json)')
+
+
 def main():
     os.makedirs(DESTINO, exist_ok=True)
     vehiculos = leer_vehiculos()
@@ -500,6 +550,8 @@ def main():
     preparar_iconos(hechos)
     print('Objetos:')
     preparar_objetos(hechos)
+    print('Cinematicas:')
+    preparar_cine()
 
     with open(os.path.join(DESTINO, 'lista.json'), 'w', encoding='utf-8') as f:
         json.dump(sorted(hechos), f)
