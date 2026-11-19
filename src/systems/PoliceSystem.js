@@ -3,6 +3,7 @@ import { GameState } from '../core/GameState.js';
 import { EventBus, EVT } from '../core/EventBus.js';
 import { steerTo, forwardBlocked, paredDelante } from './driving.js';
 import { Officer } from '../entities/Officer.js';
+import { Helicoptero } from './Helicoptero.js';
 
 export const ESTADO = {
   PATRULLA: 'patrulla',
@@ -240,6 +241,13 @@ export class PoliceSystem {
       if (!u.robada) this.runUnit(u, dt, player, ve, playerVehicle);
       this.updateOfficers(u, dt, player, playerVehicle, ve);
       this.updateSiren(u, dt);
+    }
+
+    // el helicoptero (4 estrellas o mas): mientras te tenga en el foco, te ven
+    if (!this.helicoptero) this.helicoptero = new Helicoptero(this.scene);
+    if (this.helicoptero.update(dt, player, playerVehicle)) {
+      algunoVe = true;
+      this.lastKnown = { x: player.x, y: player.y };
     }
 
     if (GameState.wanted > 0) {
@@ -935,6 +943,7 @@ export class PoliceSystem {
 
   clearAll() {
     for (let i = this.units.length - 1; i >= 0; i--) this.removeUnit(i);
+    if (this.helicoptero) this.helicoptero.destruir();
     this.sinVer = 0;
     this.lastKnown = null;
   }

@@ -3975,3 +3975,11 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   por toda la pantalla (unas 1.100), cielo mas gris, y el coche agarra menos
   (la cola se va mas) y frena un 30% peor. Con tormenta, relampagos con su
   trueno un segundo despues. Marejada FM avisa de cada cambio.
+
+[HECHO 19-nov, v70] EL HELICOPTERO DE LA POLICIA.
+  Con 4 estrellas o mas llega un helicoptero (systems/Helicoptero.js): vuela
+  por encima de todo, da vueltas a tu alrededor con su sombra, sus palas y la
+  baliza roja y azul, y te sigue con un FOCO. Dentro del foco la policia te ve
+  (no se te baja la busca); el foco va a 235 px/s, asi que un coche rapido por
+  calles anchas se le escapa. Con 5 estrellas dispara desde la puerta. Al bajar
+  de 4 se va. Probado: llega, orbita a 150 px, dispara con 5★ y se va con 2★.
