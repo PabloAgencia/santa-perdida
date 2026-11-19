@@ -232,7 +232,10 @@ export class DanoVehiculos {
       // tal ya no existe, o sus agentes se quedan persiguiendo un coche que
       // ya no va a ningun sitio
       policia.perderUnidadPorExplosion(v);
-    } else if (policia && lejos < 260) {
+    } else if (policia && lejos < 260 && !v.deEscena && !(this.scene.missions && this.scene.missions.escena.enBatalla())) {
+      // OJO: los coches que revientan solos en una escena de mision (v.deEscena)
+      // no son cosa tuya. Antes te apuntaban 2 estrellas y en La noche mas
+      // larga te acababa deteniendo la policia en mitad de la barricada.
       policia.reportarCrimen(v.x, v.y, v.police || v.eraPatrulla ? 3 : 2);
     }
   }
