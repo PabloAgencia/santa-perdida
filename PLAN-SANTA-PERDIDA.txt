@@ -4008,3 +4008,11 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   (quitarse 3 estrellas tras reventar el blindado) y El primero en caer (acabar
   el coche que huye): son puntos flojos del bot (no usa el taller de pintura ni
   esquiva bien), no fallos del juego que se hayan visto.
+
+PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
+  1. Pablo: las 49 imagenes de PROMPTS-PENDIENTES.txt (retratos primero; 3 a
+     repetir: casco-c4, residencial-c5, tienda24). Las deja en E:\Descargas y
+     se pasan con herramientas/preparar-sprites.py tras revisarlas a ojo.
+  2. Revisar El ultimo barco y El primero en caer (el bot no las termina).
+  3. Quiza endurecer Marina toma el mando y Barricadas (el bot las pasa enteras).
+  4. Correr entera la prueba de humo: node herramientas/probar-escenas.cjs
