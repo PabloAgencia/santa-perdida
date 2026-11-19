@@ -118,8 +118,12 @@ export class NPCSystem {
         const combat = this.scene.combat;
         if (dist < TIRO_BANDA.alcance && combat && combat.veA(p, player, TIRO_BANDA.alcance)) {
           if (p.recarga <= 0) {
-            p.recarga = TIRO_BANDA.cadencia * (0.75 + Math.random() * 0.6);
-            combat.disparoDeNPC(p, player, TIRO_BANDA.dano, TIRO_BANDA.alcance, TIRO_BANDA.dispersion);
+            // los de una escena de mision, algo menos letales: vienen en
+            // oleadas y si pegaran como uno suelto no habia batalla que
+            // aguantar (medido con el bot: morias en 30-40 s)
+            const deMision = p.deMision ? 1 : 0;
+            p.recarga = TIRO_BANDA.cadencia * (0.75 + Math.random() * 0.6) * (1 + 0.3 * deMision);
+            combat.disparoDeNPC(p, player, TIRO_BANDA.dano - deMision, TIRO_BANDA.alcance, TIRO_BANDA.dispersion);
           }
           // planta cara en vez de pegarse a ti
           p.plantado = dist < TIRO_BANDA.seQuedanA;

@@ -172,13 +172,32 @@ export class CombatSystem {
     }
 
     this.espera = this.cadenciaDe(arma) * 1.25;   // se dispara mas lento al volante
+    // AL VOLANTE SE APUNTA TAMBIEN A COCHES, como en los GTA: primero el coche
+    // de la mision (el que hay que destrozar) o los que te persiguen; antes el
+    // autoapuntado solo buscaba personas y a un coche que huye no le dabas
     const objetivo = this.objetivoDeClic(clic, arma)
+      || this.cocheObjetivo(vehiculo, arma)
       || (this.objetivo && !this.objetivo.down
         ? this.objetivo
         : this.buscarObjetivo(vehiculo));
 
     const marcha = Phaser.Math.Clamp(vehiculo.speed / vehiculo.stats.maxSpeed, 0, 1);
     return this.disparar(vehiculo, objetivo, arma, true, 1 + marcha * 2);
+  }
+
+  cocheObjetivo(vehiculo, arma) {
+    const m = this.scene.missions;
+    const lista = [];
+    if (m && m.blanco && m.blanco.vehicle.hp > 0) lista.push(m.blanco.vehicle);
+    const e = m && m.escena && m.escena.e;
+    if (e) for (const q of e.persecutores) if (q.v.hp > 0) lista.push(q.v);
+    let mejor = null;
+    let mejorD = arma.alcance;
+    for (const v of lista) {
+      const d = Phaser.Math.Distance.Between(v.x, v.y, vehiculo.x, vehiculo.y);
+      if (d < mejorD) { mejorD = d; mejor = v; }
+    }
+    return mejor;
   }
 
   golpear(player, objetivo, arma) {
