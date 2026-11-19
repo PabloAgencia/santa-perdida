@@ -199,6 +199,7 @@ export class DanoVehiculos {
     if (lejos < 700) cam.shake(320, 0.006 * (1 - lejos / 700));
 
     this.pillados(v, player);
+    if (this.scene.npcs) this.scene.npcs.scare(v.x, v.y, 520, 'explosion');
     const surtidor = this.surtidorEn(v.x, v.y, 130);
     if (surtidor) this.reventarSurtidor(surtidor, player);
 

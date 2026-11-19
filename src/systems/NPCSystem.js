@@ -67,6 +67,7 @@ export class NPCSystem {
 
     this.checkVehicles(vehicles, playerVehicle);
     if (player) this.checkAttacks(player, dt, onFoot);
+    this.pintarMoviles(dt);
   }
 
   updateHostility(px, py, onFoot) {
@@ -268,9 +269,46 @@ export class NPCSystem {
     }
   }
 
-  scare(x, y, radius = 260) {
+  // GTA 6: no todos huyen. Con `motivo` (un tiroteo, un coche que revienta),
+  // de los que no estan encima, casi uno de cada cinco se para, saca el movil
+  // y graba. Si aguanta los 5 s grabando, el video corre (evento 'viral', lo
+  // cuenta Marejada FM).
+  scare(x, y, radius = 260, motivo = null) {
     for (const p of this.people) {
-      if (Phaser.Math.Distance.Between(p.x, p.y, x, y) < radius) p.flee(x, y, 3);
+      const d = Phaser.Math.Distance.Between(p.x, p.y, x, y);
+      if (d >= radius) continue;
+      if (motivo && d > 150 && !p.faction && !p.hostile && !p.enCoche && !p.down && Math.random() < 0.18) {
+        p.state = 'waiting';
+        p.stateTimer = 5.6;   // un poco mas que la grabacion: si no, se iba justo al acabar sin subir el video
+        p.grabando = 5;
+        p.grabandoQue = { x, y, motivo };
+        p.angle = Math.atan2(y - p.y, x - p.x);
+        continue;
+      }
+      p.grabando = 0;
+      p.flee(x, y, 3);
+    }
+  }
+
+  // los moviles en alto: un rectangulo con la pantalla encendida sobre la
+  // cabeza de cada uno que esta grabando
+  pintarMoviles(dt) {
+    if (!this.gfxMoviles) this.gfxMoviles = this.scene.add.graphics().setDepth(4999);
+    const g = this.gfxMoviles;
+    g.clear();
+    for (const p of this.people) {
+      if (!p.grabando) continue;
+      if (p.down || p.state !== 'waiting') { p.grabando = 0; continue; }
+      p.grabando -= dt;
+      if (p.grabando <= 0) {
+        p.grabando = 0;
+        EventBus.emit('npc:viral', p.grabandoQue);
+        continue;
+      }
+      const cx = p.x + Math.cos(p.angle) * 9;
+      const cy = p.y + Math.sin(p.angle) * 9 - 14;
+      g.fillStyle(0x05060a, 0.9).fillRect(cx - 4, cy - 6, 8, 12);
+      g.fillStyle(Math.floor(p.grabando * 3) % 2 ? 0xe8463a : 0x9fd8f0, 1).fillRect(cx - 3, cy - 5, 6, 9);
     }
   }
 

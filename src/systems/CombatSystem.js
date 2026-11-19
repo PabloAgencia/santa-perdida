@@ -327,7 +327,7 @@ export class CombatSystem {
     // Un tiro se oye y la gente sale corriendo. Pero la policia solo se
     // entera si queda alguien para contarlo: pegar un tiro en un callejon
     // vacio no deberia traerte una patrulla de la nada.
-    this.scene.npcs.scare(player.x, player.y, arma.ruido || 500);
+    this.scene.npcs.scare(player.x, player.y, arma.ruido || 500, 'tiroteo');
     this.scene.police.denunciar(player.x, player.y, 1);
     return true;
   }

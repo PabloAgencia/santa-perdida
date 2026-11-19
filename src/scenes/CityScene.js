@@ -123,7 +123,8 @@ export class CityScene extends Phaser.Scene {
     });
     this.justiciero = new JusticieroSystem(this, this.map, this.net);
     this.diaNoche = new DiaNocheSystem();
-    this.radio = new RadioSystem();
+    this.radio = new RadioSystem(this.map);
+    this.events.once('shutdown', () => this.radio.destroy());
     this.encuentros = new EncuentroSystem(this, this.map);
     this.combat = new CombatSystem(this);
     this.danos = new DanoVehiculos(this);

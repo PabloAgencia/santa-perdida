@@ -3958,3 +3958,13 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   despues el fundido. Antes era un fundido a negro en seco. Probado.
   Persecuciones: los perseguidores hacen la mitad de daño a tu coche (el bot
   medio que un turismo duraba 15 s bajo fuego: en los GTA se aguanta mas).
+
+[HECHO 19-nov, v68] LA GENTE GRABA CON EL MOVIL (GTA 6).
+  Con un tiroteo o un coche que revienta, de los que no estan encima casi uno
+  de cada cinco no huye: se para, mira hacia alli y graba (movil en alto con la
+  luz roja parpadeando). Si aguanta los 5 s, el video corre y Marejada FM lo
+  cuenta con el barrio donde paso (como mucho un video cada 3 minutos). Si le
+  asustas antes, se va sin grabar. NPCSystem.scare(x, y, radio, motivo).
+  Probado: dos curiosos grabando, el video corre y la radio dice "un coche
+  reventando en Lomas del Norte". Arreglado de paso: el curioso se iba en el
+  mismo fotograma en que acababa y el video no salia nunca.
