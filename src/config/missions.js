@@ -816,7 +816,7 @@ export const MISSIONS = [
     rep: 15,
     pasos: [
       { tipo: 'ir', zona: 'conflictivo', texto: 'Ve a la barricada principal' },
-      { tipo: 'aguantar', limite: 90, checkpoint: true, titular: 'LA NOCHE MAS LARGA', busca: 3, explosiones: 7, texto: 'Aguanta la noche', oleadas: { faccion: 'verdial', porOleada: 5, total: 5 } },
+      { tipo: 'aguantar', limite: 90, checkpoint: true, titular: 'LA NOCHE MAS LARGA', explosiones: 7, texto: 'Aguanta la noche', oleadas: { faccion: 'verdial', porOleada: 5, total: 5 } },
       { tipo: 'perder', limite: 130, busca: 4, texto: 'Sal vivo de esta' },
     ],
   },
