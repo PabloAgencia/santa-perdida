@@ -79,8 +79,13 @@ export class CinematicaScene extends Phaser.Scene {
     this.flecha = this.add.triangle(W - 60, H - FRANJA - 26, 0, 0, 16, 0, 8, 10, 0xe8b54a).setDepth(64).setVisible(false);
     this.tweens.add({ targets: this.flecha, y: this.flecha.y + 5, duration: 420, yoyo: true, repeat: -1 });
 
-    this.teclas = this.input.keyboard.addKeys({ entrar: 'ENTER', espacio: 'SPACE', saltar: 'ESC', e: 'E' });
-    this.input.keyboard.addCapture('ENTER,SPACE,ESC');
+    this.teclas = this.input.keyboard.addKeys({
+      entrar: 'ENTER', espacio: 'SPACE', saltar: 'ESC', e: 'E',
+      arriba: 'UP', abajo: 'DOWN', w: 'W', s: 'S',
+    });
+    this.input.keyboard.addCapture('ENTER,SPACE,ESC,UP,DOWN');
+    this.eleccion = null;
+    this.planoActual = null;
     this.input.on('pointerdown', () => this.avanzar());
 
     this.cameras.main.fadeIn(500, 0, 0, 0);
@@ -89,13 +94,24 @@ export class CinematicaScene extends Phaser.Scene {
 
   // ---- PLANOS ---------------------------------------------------------------
 
+  // Un plano con `solo` se salta si no se cumple: 'marca' (hay que haberla
+  // elegido antes) o '!marca' (NO haberla elegido). Es como una mision
+  // posterior recuerda lo que decidiste en una anterior (GameState.flags.decisiones).
+  cumple(p) {
+    if (!p.solo) return true;
+    const dec = GameState.flags.decisiones || {};
+    return [].concat(p.solo).every((c) => (c[0] === '!' ? !dec[c.slice(1)] : !!dec[c]));
+  }
+
   siguiente() {
     this.indice++;
+    while (this.indice < this.planos.length && !this.cumple(this.planos[this.indice])) this.indice++;
     if (this.indice >= this.planos.length) {
       this.acabar();
       return;
     }
     const p = this.planos[this.indice];
+    this.planoActual = p;
     if (p.fondo && p.fondo !== this.fondoActual) this.ponerFondo(p.fondo);
     // si la cinematica empieza sin decorado, el primero que aparezca en ella
     // (o la ciudad): nunca un fondo negro
@@ -160,15 +176,93 @@ export class CinematicaScene extends Phaser.Scene {
     this.ultimoQuien = id;
   }
 
+  // la frase ya esta entera: la flecha de seguir, o las opciones si el plano
+  // trae una eleccion
+  textoCompleto() {
+    const p = this.planoActual;
+    if (p && p.opciones && !this.eleccion) this.mostrarOpciones(p);
+    else if (!this.eleccion) this.flecha.setVisible(true);
+  }
+
+  // UNA ELECCION (plano con `opciones`): cada opcion lleva `marca` (se apunta
+  // en flags.decisiones) y, si alguien muere por ella, `muere: 'id'`. W/S o
+  // flechas para elegir, ENTER o clic para confirmar. Al saltar la cinematica
+  // con ESC se para en la siguiente eleccion: no se decide por accidente.
+  mostrarOpciones(p) {
+    const x0 = 330;
+    const y0 = 292;
+    const n = p.opciones.length;
+    const objs = [];
+    objs.push(this.add.image(x0 - 24, y0 - 48, 'px').setOrigin(0, 0)
+      .setDisplaySize(W - x0 - 10, 64 + n * 50).setTint(0x000000).setAlpha(0.72).setDepth(70));
+    objs.push(this.add.text(x0, y0 - 38, 'QUE HACES', {
+      fontFamily: FONT, fontSize: '22px', color: '#e8b54a', stroke: '#05060a', strokeThickness: 3,
+    }).setDepth(71));
+    const filas = p.opciones.map((o, i) => {
+      const t = this.add.text(x0, y0 + i * 50, o.texto, {
+        fontFamily: TEXTO, fontSize: '24px', color: '#f2efe6', stroke: '#05060a', strokeThickness: 3,
+        wordWrap: { width: W - x0 - 60 },
+      }).setDepth(71).setInteractive({ useHandCursor: true })
+        .on('pointerover', () => { if (this.eleccion) { this.eleccion.sel = i; this.pintarSeleccion(); } });
+      objs.push(t);
+      return t;
+    });
+    this.eleccion = { ops: p.opciones, sel: 0, objs, filas };
+    this.ayuda.setText('W/S elegir  ·  ENTER confirmar');
+    this.pintarSeleccion();
+  }
+
+  pintarSeleccion() {
+    const e = this.eleccion;
+    if (!e) return;
+    e.filas.forEach((t, i) => {
+      t.setColor(i === e.sel ? '#e8c860' : '#a49c8a');
+      t.setText((i === e.sel ? '> ' : '   ') + e.ops[i].texto.replace(/^> /, ''));
+    });
+  }
+
+  confirmarEleccion() {
+    const e = this.eleccion;
+    if (!e) return;
+    const op = e.ops[e.sel];
+    GameState.flags.decisiones = GameState.flags.decisiones || {};
+    if (op.marca) GameState.flags.decisiones[op.marca] = true;
+    if (op.muere) {
+      GameState.flags.muertos = GameState.flags.muertos || {};
+      for (const id of [].concat(op.muere)) GameState.flags.muertos[id] = true;
+    }
+    Audio.menuSelect();
+    this.ayuda.setText('ENTER seguir  ·  ESC saltar');
+    e.objs.forEach((o) => o.destroy());
+    this.eleccion = null;
+    this.planoActual = { ...this.planoActual, opciones: null };
+    this.siguiente();
+  }
+
+  // ESC: salta hasta la proxima eleccion que toque, o termina
+  saltar() {
+    if (this.eleccion) return;
+    for (let j = this.indice + 1; j < this.planos.length; j++) {
+      if (this.planos[j].opciones && this.cumple(this.planos[j])) {
+        this.indice = j - 1;
+        this.siguiente();
+        return;
+      }
+    }
+    this.acabar();
+  }
+
   avanzar() {
     if (this.acabando) return;
+    if (this.eleccion) { this.confirmarEleccion(); return; }
     if (this.escribiendo && this.escribiendo.letras < this.escribiendo.completo.length) {
       // terminar la frase de golpe
       this.escribiendo.letras = this.escribiendo.completo.length;
       this.texto.setText(this.escribiendo.completo);
-      this.flecha.setVisible(true);
+      this.textoCompleto();
       return;
     }
+    if (this.planoActual && this.planoActual.opciones) return;
     Audio.menuMove();
     this.siguiente();
   }
@@ -187,7 +281,15 @@ export class CinematicaScene extends Phaser.Scene {
   update(time, delta) {
     const dt = Math.min(delta / 1000, 0.05);
     const k = this.teclas;
-    if (Phaser.Input.Keyboard.JustDown(k.saltar)) { this.acabar(); return; }
+    if (Phaser.Input.Keyboard.JustDown(k.saltar)) { this.saltar(); return; }
+    if (this.eleccion) {
+      const e = this.eleccion;
+      if (Phaser.Input.Keyboard.JustDown(k.arriba) || Phaser.Input.Keyboard.JustDown(k.w)) {
+        e.sel = (e.sel + e.ops.length - 1) % e.ops.length; Audio.menuMove(); this.pintarSeleccion();
+      } else if (Phaser.Input.Keyboard.JustDown(k.abajo) || Phaser.Input.Keyboard.JustDown(k.s)) {
+        e.sel = (e.sel + 1) % e.ops.length; Audio.menuMove(); this.pintarSeleccion();
+      }
+    }
     if (Phaser.Input.Keyboard.JustDown(k.entrar) || Phaser.Input.Keyboard.JustDown(k.espacio) ||
         Phaser.Input.Keyboard.JustDown(k.e)) this.avanzar();
 
@@ -205,7 +307,7 @@ export class CinematicaScene extends Phaser.Scene {
           Audio.notes([e.voz * (0.92 + Math.random() * 0.16)], 0.035, 'square', 0.025);
         }
       }
-      if (e.letras >= e.completo.length) this.flecha.setVisible(true);
+      if (e.letras >= e.completo.length) this.textoCompleto();
     }
   }
 

@@ -66,7 +66,7 @@ export class PersonajesScene extends Phaser.Scene {
     const c = { ...(GameState.flags.conocidos || {}) };
     const apuntar = (planos) => { for (const p of planos || []) if (p.quien) c[p.quien] = true; };
     if (GameState.flags.prologoVisto) apuntar(CINEMATICAS.prologo);
-    for (const id of Object.keys(GameState.flags.misiones || {})) apuntar(CINEMATICAS[id]);
+    for (const id of Object.keys(GameState.flags.misiones || {})) { apuntar(CINEMATICAS[id]); apuntar(CINEMATICAS[`${id}:fin`]); }
     return c;
   }
 
@@ -133,6 +133,13 @@ export class PersonajesScene extends Phaser.Scene {
     add(this.add.text(tx, 218, p.oficio, {
       fontFamily: TEXTO, fontStyle: 'italic', fontSize: '18px', color: '#c8c0a8',
     }));
+    // quien ha muerto en tu partida (flags.muertos, ver CinematicaScene)
+    if ((GameState.flags.muertos || {})[id]) {
+      add(this.add.image(x0 + 130, 245, 'px').setDisplaySize(209, 235).setTint(0x000000).setAlpha(0.45));
+      add(this.add.text(x0 + 130, 245, 'FALLECIDO', {
+        fontFamily: FONT, fontSize: '30px', color: '#d9584a', stroke: '#05060a', strokeThickness: 5,
+      }).setOrigin(0.5).setAngle(-12));
+    }
     add(this.add.text(tx, 246, NOMBRE_BANDA[p.banda] || '', {
       fontFamily: FONT, fontSize: '15px', color: '#' + color.toString(16).padStart(6, '0'),
     }));

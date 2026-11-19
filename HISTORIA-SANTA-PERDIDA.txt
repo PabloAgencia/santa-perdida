@@ -745,3 +745,68 @@ QUE QUEDA (la parte grande, para las proximas tandas — por orden logico)
      genere, falta escribir `ClubScene.js` (si se quiere entrar de verdad,
      como el gimnasio) o un `NEGOCIO` mas simple (solo por fuera, como los
      demas) segun cuanto peso quiera darle al sitio.
+
+
+================================================================================
+ESCRITO EL 19-NOV-2026: MISIONES 13-15 Y EL ACTO 3 ENTERO  (v63)
+================================================================================
+Ya estan en `config/missions.js` (31 misiones en total) con su dialogo de entrada
+y, casi todas, un CIERRE (`'<id>:fin'` en `config/cinematicas.js`) que sale al
+cumplirlas. Estan HECHAS: 13, 14, 15, 20-34 de la lista de arriba. NO estan las
+del Acto 2.5 de El Duque (16-19) ni el Acto 4 (35-50) ni las sueltas (51-60).
+
+Orden real por banda (el array manda, `requiere` cruza bandas):
+  AMARRES   ... la-duda-de-ferro > cuentas-claras > ultimo-viaje >
+            el-hombre-del-traje > lo-que-vio-la-grua (Sacau) > ferro-se-harta >
+            golpe-de-mano > se-sabe (Teresa)
+  ROMPIENTE ... lo-que-hizo-renco > vale-toma-cartas > ojos-en-el-barrio >
+            el-barrio-no-se-vende > nadie-se-fia-de-nadie > el-primero-en-caer
+  VERDIAL   ... bien-llevado > el-favor-de-empedrado > la-reportera (Teresa) >
+            papeles (Empedrado) > la-dona-no-duerme > un-sobre-para-el-inspector
+            (Empedrado) > la-foto-de-teresa (Teresa) > el-trato
+  `se-sabe` (cierra el Acto 3) exige golpe-de-mano, el-trato, el-primero-en-caer
+  y la-foto-de-teresa. Comprobado en el navegador: cumpliendolas en orden se
+  llega a las 31 sin atascos.
+
+EL HILO QUE CIERRAN
+  · Marina descubre en los libros que su padre vende el puerto a plazos y que la
+    mercancia ya es droga ("polvo"): cuentas-claras.
+  · Vale averigua que a Renco le pagaba un coche de Casa Verdial, pero que Renco
+    hablaba de gente de fuera: dos cosas distintas (vale-toma-cartas).
+  · Primera vez que se oye ANZURES: Teresa (la-reportera). Antes, el "hombre del
+    traje" sin nombre (el-hombre-del-traje) y el maletin sin cara (el-favor).
+  · Los papeles traen tres apellidos subrayados: Verdial, Roig, Ecija (papeles).
+  · La Doña, acorralada: "hasta el viernes" (la-dona-no-duerme); el Inspector
+    Salaverri cobra tambien del de fuera (un-sobre).
+  · Alguien mata a uno de los de los cascos y el anillo apunta a MAXIMO VERDIAL
+    (el-primero-en-caer): semilla del Acto 4, Maximo mata por su cuenta.
+  · Anzures habla por primera vez en el-trato:fin: "una ciudad que se destroza
+    sola es un activo barato"; ofrece un 12% a la Doña y ofertas por separado.
+
+ELECCIONES (NUEVO: `opciones` en un plano de CinematicaScene; se apuntan en
+`GameState.flags.decisiones`, y `solo: 'marca'` / `'!marca'` en un plano lo
+muestra solo si se eligio / no se eligio; `muere: 'id'` apunta en
+`GameState.flags.muertos` y la ficha de PERSONAJES dice FALLECIDO):
+  · ferro-se-harta:fin   -> 'marina-sabe' (se lo cuentas todo) o 'ferro-confia'.
+  · golpe-de-mano:fin    -> EL MOMENTO QUE MUERDE DEL ACTO 3:
+        'ferro-cae'  (disparas a Ferro)            muere FERRO
+        'sacau-cae'  (bajas el arma)               muere SACAU y Ferro se queda
+                                                   con el puerto
+  · el-trato:fin         -> 'grabado' (grabas a Anzures con la camara de Teresa)
+                            o 'sin-grabacion'. se-sabe lo recuerda.
+  ESC en una cinematica ya no se salta una eleccion: para en la siguiente.
+  PARA EL ACTO 4: leer `decisiones` y `muertos`. Si ferro-cae, Ferro no puede
+  salir ya ("vender el puerto" del final Amarres sin el); si sacau-cae, Ferro
+  vivo manda en el muelle y Marina tiene que recuperarlo. Maximo y la Doña
+  quedan listos para el camino Verdial.
+
+LO NUEVO EN MISSIONSYSTEM: `dador: 'id'` (quien da la mision si no es el jefe:
+su nombre en la etiqueta y en el aviso), `requiere: [ids]` (misiones que tienen
+que estar hechas) y el cierre `'<id>:fin'` (sale unos 2 s despues del cartel de
+MISION CUMPLIDA y guarda la partida al acabar).
+
+OJO — NO PROBADO JUGANDO: los pasos (ir/seguir/romper/entregar) son los de
+siempre y se probaron por codigo; el ritmo y la dificultad de las misiones
+nuevas (sobre todo `seguir` con 75-80 s y `aguantar` en golpe-de-mano) conviene
+jugarlos. Los retratos de Teresa, Anzures, Salaverri, Sacau, Maximo y Empedrado
+siguen siendo los dibujados por codigo hasta que lleguen los de Gemini.

@@ -3893,3 +3893,12 @@ ORDEN DE TRABAJO QUE QUEDA (el de IDEAS-2, que se mantiene)
   · NO TOCADO A PROPOSITO: el aerodromo no se coloca porque 85x19 no cabe en
     Altos de la Sierra; meterlo cambiaria el trazado de TODA la ciudad (el
     generador es determinista) y descolocaria pisos y negocios ya comprados.
+
+[HECHO 19-nov, v63] MISIONES 13-15 Y ACTO 3 (la historia, detalle en HISTORIA-SANTA-PERDIDA.txt).
+  · 18 misiones nuevas (cuentas-claras, vale-toma-cartas, el-favor-de-empedrado y
+    las 15 del Acto 3), cada una con dialogo y casi todas con cierre ':fin'.
+  · Sistema nuevo: elecciones en las cinematicas (opciones/solo/muere), FALLECIDO
+    en la ficha de PERSONAJES, `dador` y `requiere` en las misiones.
+  · Probado: la cadena entera se cumple sin atascos (31 misiones), una eleccion
+    marca decisiones y muertos y salta las lineas de la otra rama, el dador
+    Teresa sale con su nombre.

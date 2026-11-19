@@ -7,6 +7,8 @@ import { VEHICLE_KEYS, VEHICLES } from '../config/vehicles.js';
 import { steerTo } from './driving.js';
 import { etiquetaFlotante } from '../world/etiquetas.js';
 import { CINEMATICAS, FONDO_BANDA, JEFE_BANDA } from '../config/cinematicas.js';
+import { PERSONAJES, sinTildes } from '../config/personajes.js';
+import { SaveSystem } from '../core/SaveSystem.js';
 
 const ALCANCE = 42;
 
@@ -85,7 +87,9 @@ export class MissionSystem {
         );
         // el jefe en persona si ya tiene su sprite (`jefe-consul`...,
         // PROMPTS-PARA-GEMINI.txt); si no, uno de su banda
-        const jefe = `jefe-${JEFE_BANDA[key]}-0`;
+        // (si la mision la da otra persona, `dador`, su sprite y su nombre)
+        const quienDa = mision.dador || JEFE_BANDA[key];
+        const jefe = `jefe-${quienDa}-0`;
         const contacto = this.scene.add.image(punto.x, punto.y,
           this.scene.textures.exists(jefe) ? jefe : `gang-${key}-0`)
           .setDepth(punto.y);
@@ -108,7 +112,7 @@ export class MissionSystem {
         // Antes decia "AMARRES"/"ROMPIENTE"/"VERDIAL" (una sigla); ahora
         // dice el alias de quien de verdad te esta dando el encargo.
         const et = etiquetaFlotante(
-          this.scene, punto.x, punto.y + 34, f.jefe.alias.toUpperCase(), f.accent, 14
+          this.scene, punto.x, punto.y + 34, this.nombreDador(mision, key).toUpperCase(), f.accent, 14
         );
         objetos.push(et.texto, et.placa, et.raya);
 
@@ -123,10 +127,17 @@ export class MissionSystem {
       if (antes.has(d.mision.id)) continue;
       if (antes.size === 0) continue;   // al empezar la partida no se avisa
       EventBus.emit(EVT.NOTIFY, {
-        text: `${FACTIONS[d.faccion].jefe.alias} te espera para un trabajo nuevo`,
+        text: `${this.nombreDador(d.mision, d.faccion)} te espera para un trabajo nuevo`,
         tone: 'objective',
       });
     }
+  }
+
+  // quien da la mision: su `dador` (Sacau, Teresa, el Inspector...) o el
+  // jefe de la banda. Sin tildes: las etiquetas van en la fuente del juego.
+  nombreDador(mision, faccion) {
+    const p = mision.dador && PERSONAJES[mision.dador];
+    return sinTildes(p ? p.alias : FACTIONS[faccion].jefe.alias);
   }
 
   // para pintarlos en el minimapa
@@ -175,6 +186,7 @@ export class MissionSystem {
       (m) =>
         m.faccion === faccion &&
         !hechas[m.id] &&
+        (m.requiere || []).every((id) => hechas[id]) &&
         GameState.factionRep(faccion) >= m.minRep
     );
   }
@@ -219,7 +231,7 @@ export class MissionSystem {
     // hay que hacer ya lo dice el primer paso (prepararPaso)
     EventBus.emit(EVT.BIG_MESSAGE, {
       title: def.nombre.toUpperCase(),
-      subtitle: FACTIONS[def.faccion].jefe.alias,
+      subtitle: this.nombreDador(def, def.faccion),
       color: '#e8b54a',
     });
     EventBus.emit(EVT.MISSION_START, { mision: def });
@@ -440,6 +452,22 @@ export class MissionSystem {
     });
     EventBus.emit(EVT.MISSION_END, { mision: def, ok: true });
     this.refrescarDadores();
+
+    // EL CIERRE (CINEMATICAS['<id>:fin']): lo que pasa justo despues, con su
+    // golpe de efecto o su eleccion. Sale un momento despues del cartel de
+    // "MISION CUMPLIDA" y la partida se guarda al acabar, que una decision
+    // no se pierda por cerrar el juego.
+    const cierre = CINEMATICAS[`${def.id}:fin`];
+    if (cierre && this.scene.verCinematica) {
+      this.hablando = true;
+      this.scene.time.delayedCall(2200, () => {
+        this.scene.verCinematica(cierre, () => {
+          this.hablando = false;
+          this.refrescarDadores();
+          SaveSystem.save();
+        });
+      });
+    }
   }
 
   fallar(motivo) {
