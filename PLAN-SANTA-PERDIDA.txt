@@ -4013,7 +4013,7 @@ PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
   1. Pablo: las 49 imagenes de PROMPTS-PENDIENTES.txt (retratos primero; 3 a
      repetir: casco-c4, residencial-c5, tienda24). Las deja en E:\Descargas y
      se pasan con herramientas/preparar-sprites.py tras revisarlas a ojo.
-  2. Revisar El ultimo barco y El primero en caer (el bot no las termina).
+  2. [HECHO 20-nov] Revisar El ultimo barco y El primero en caer (ver abajo).
   3. Quiza endurecer Marina toma el mando y Barricadas (el bot las pasa enteras).
   4. Correr entera la prueba de humo: node herramientas/probar-escenas.cjs
 
@@ -4036,3 +4036,24 @@ PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
   Comprobado en Playwright limpio: texturas cargadas, cinematica con retrato
   del Consul y decorado nuevo, sin errores. PROMPTS-PENDIENTES.txt queda vacio.
   Pendientes que siguen: los puntos 2-4 de arriba.
+
+[HECHO 20-nov] EL ULTIMO BARCO Y EL PRIMERO EN CAER YA LAS ACABA EL BOT (60/60).
+  Trazando el bot paso a paso salieron dos fallos:
+  - DEL BOT: al volante llevaba el subfusil (dos manos) y desde el coche solo
+    valen las de una mano: no disparaba NI UNA bala, se pasaba 300 s pegado al
+    coche que huye. Ahora al volante coge la pistola, como haria una persona.
+    Con eso revienta el coche en ~5 s.
+  - DEL JUEGO: cualquier choque con una patrulla cerca te subia una estrella,
+    tambien cuando la patrulla te embestia A TI para cortarte el paso (y cada
+    0,35 s si seguiais pegados). En 'perder' con 3 estrellas la busca subia
+    sola hasta 6 y no habia forma de escapar. Ahora VehicleCollisions dice
+    quien embiste a quien (el que va mas deprisa hacia el otro) y CityScene
+    .onCrash solo sube si eres TU quien embiste, como mucho una cada 5 s.
+    Choque de patrulla contra pared: nunca es tuyo.
+  Repetidas las 12 misiones con policia ('perder'): todas OK. Las tres bandas
+  fallo una tanda por las oleadas a pie (no tocadas) y paso en las dos
+  repeticiones: es la mas dura, varia.
+  IDEA SIN HACER (preguntar a Pablo): en 'romper' con `huye`, si el coche se
+  te escapa lejos la mision no falla nunca (en una traza se fue a 6.000 px y
+  ahi se quedo). En los GTA falla con "se ha escapado", como ya hace 'seguir'
+  a 900 px.

@@ -133,8 +133,12 @@ window.__bot = (() => {
     pulsar({ right: dx > 6, left: dx < -6, down: dy > 6, up: dy < -6, run: true });
   }
 
+  // Al volante solo valen las de una mano (CombatSystem.dispararDesdeCoche):
+  // antes el bot llevaba el subfusil en el coche y no disparaba NI UNA bala,
+  // por eso no acababa El primero en caer ni El ultimo barco (20-nov).
   function mejorArma() {
-    for (const a of ['rifle', 'subfusil', 'escopeta', 'pistola']) {
+    const lista = c.drivingVehicle ? ['pistola'] : ['rifle', 'subfusil', 'escopeta', 'pistola'];
+    for (const a of lista) {
       if (GS.tieneArma(a) && GS.puedeDisparar(a)) { GS.armaActual = a; return; }
     }
   }

@@ -370,7 +370,7 @@ export class CityScene extends Phaser.Scene {
 
   setupEvents() {
     this.onBeforeSave = () => this.captureState();
-    this.onCrash = ({ vehicle, impact }) => {
+    this.onCrash = ({ vehicle, impact, otro, meEmbisten }) => {
       // Solo tiembla la pantalla si el golpe es TUYO o te pilla al lado.
       // Antes temblaba por cualquier choque del trafico al otro lado de la
       // ciudad, y sonaba igual de fuerte estuviera donde estuviera.
@@ -389,15 +389,18 @@ export class CityScene extends Phaser.Scene {
       if (vehicle === this.drivingVehicle && impact > 210) {
         GameState.damage((impact - 210) * 0.05, 'choque');
       }
-      // embestir a una patrulla te sube el nivel de busca
-      if (
-        vehicle.police &&
-        this.drivingVehicle &&
-        impact > 120 &&
-        Phaser.Math.Distance.Between(
-          vehicle.x, vehicle.y, this.drivingVehicle.x, this.drivingVehicle.y
-        ) < 130
-      ) {
+      // EMBESTIR a una patrulla te sube el nivel de busca. Solo si eres TU
+      // quien embiste (20-nov-2026): antes contaba cualquier choque con una
+      // patrulla cerca, tambien cuando ella te embestia a ti para cortarte el
+      // paso, y en una persecucion de 3 estrellas subias solo hasta 6 sin
+      // poder hacer nada (otra vez el fallo de apuntarte lo que hacen otros).
+      // Y como mucho una estrella cada pocos segundos: pegado a la patrulla,
+      // el choque se repetia cada 0,35 s.
+      // (un choque de la patrulla contra una pared no lleva `otro`: no es tuyo)
+      const tuyo = !!otro && otro === this.drivingVehicle && meEmbisten;
+      if (vehicle.police && this.drivingVehicle && impact > 120 && tuyo
+        && this.time.now - (this.ultimaEmbestida || -1e9) > 5000) {
+        this.ultimaEmbestida = this.time.now;
         this.police.report(this.player.x, this.player.y, 1);
       }
     };

@@ -319,8 +319,10 @@ export class Vehicle {
     return { x: this.x, y: this.y };
   }
 
-  // empujon recibido de otro vehiculo, ya resuelto por VehicleCollisions
-  push(dx, dy, impulseX, impulseY, impact) {
+  // empujon recibido de otro vehiculo, ya resuelto por VehicleCollisions.
+  // `otro` es con quien choca y `meEmbisten` si fue el otro el que vino a por
+  // este (y no al reves)
+  push(dx, dy, impulseX, impulseY, impact, otro = null, meEmbisten = false) {
     if (!this.hitsWorld(this.x + dx, this.y + dy, this.angle)) {
       this.x += dx;
       this.y += dy;
@@ -337,6 +339,8 @@ export class Vehicle {
         impact,
         damage: impact * DRIVING.crashDamagePerSpeed * 0.7,
         hp: this.hp,
+        otro,
+        meEmbisten,
       });
     }
   }

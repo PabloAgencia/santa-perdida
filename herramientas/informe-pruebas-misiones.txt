@@ -1,9 +1,9 @@
-PRUEBA AUTOMATICA DE MISIONES · 2026-11-19T20:51:55.222Z
+PRUEBA AUTOMATICA DE MISIONES · 2026-11-19T20:51:55.222Z  ·  actualizado 2026-11-20 (12 misiones con policia repetidas: todas OK)
 El bot juega cada mision (hasta 3 intentos, el 2o y 3o con R desde el punto de control).
 
 OK   las-tres-bandas-una-noche        intento 2    95 s  vida min 110  
-MAL  el-ultimo-barco-de-anzures       intento 3   342 s  vida min  98  el bot no lo acaba (atascado o sin tiempo) (paso 3/3)
-MAL  el-primero-en-caer               intento 3   356 s  vida min 110  el bot no lo acaba (atascado o sin tiempo) (paso 3/3)
+OK   el-ultimo-barco-de-anzures       intento 1    91 s  vida min 110  (20-nov, tras arreglar bot y embestidas de patrulla)
+OK   el-primero-en-caer               intento 1   101 s  vida min 103  (20-nov, tras arreglar el arma del bot al volante)
 OK   marina-toma-el-mando             intento 1    53 s  vida min 110  
 OK   barricadas-de-verdad             intento 1   129 s  vida min 110  
 

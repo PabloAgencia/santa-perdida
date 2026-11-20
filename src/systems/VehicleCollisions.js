@@ -41,8 +41,14 @@ function resolvePair(a, b) {
       let j = along < 0 ? (-(1 + RESTITUTION) * along) / invSum : 0;
       j = Math.min(j, MAX_IMPULSE);
 
-      a.push(-nx * sepA, -ny * sepA, -nx * j * invA, -ny * j * invA, impact);
-      b.push(nx * sepB, ny * sepB, nx * j * invB, ny * j * invB, impact);
+      // QUIEN EMBISTE A QUIEN (20-nov-2026): el que va mas deprisa hacia el
+      // otro. Sin esto, una patrulla que te embestia a ti te subia la busca
+      // (CityScene.onCrash) y con 3 estrellas era imposible quitartelas.
+      const vaA = a.vx * nx + a.vy * ny;
+      const vaB = -(b.vx * nx + b.vy * ny);
+      const embisteA = vaA >= vaB;
+      a.push(-nx * sepA, -ny * sepA, -nx * j * invA, -ny * j * invA, impact, b, !embisteA);
+      b.push(nx * sepB, ny * sepB, nx * j * invB, ny * j * invB, impact, a, embisteA);
       return;
     }
   }
