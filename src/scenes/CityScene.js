@@ -1448,6 +1448,7 @@ export class CityScene extends Phaser.Scene {
     this.interiorDoor = { x: piso.x, y: piso.y, edificio: piso.edificio };
     this.abrirInterior({
       clave: piso.clave, nombre: piso.nombre, plazas: piso.plazas, lamina: piso.lamina,
+      distribucion: piso.distribucion,
     });
     return true;
   }

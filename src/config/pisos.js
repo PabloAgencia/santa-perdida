@@ -85,6 +85,28 @@ export const PISO_ATICO = {
   precio: 28000,
   plazas: 5,
   lamina: 'interior-piso-atico',
+  // 20-nov-2026: la lamina del atico no sigue el plano de los otros pisos, asi
+  // que trae su propia distribucion, medida sobre el dibujo (sala de 600x380).
+  // Solo se usa si la lamina esta cargada. muebles = [x, y, ancho, alto], el
+  // centro del rectangulo macizo.
+  distribucion: {
+    cama: { x: 136, y: 196 },       // a los pies de la cama doble
+    armario: { x: 36, y: 154 },     // la consola de la pared izquierda
+    guardar: { x: 330, y: 235 },    // suelo libre bajo la plaza del garaje
+    muebles: [
+      [136, 118, 103, 136],  // cama doble
+      [72, 69, 24, 34],      // mesilla izquierda
+      [196, 69, 24, 34],     // mesilla derecha
+      [36, 154, 25, 128],    // consola de la pared
+      [60, 285, 65, 73],     // mesa redonda con sillas
+      [175, 288, 106, 56],   // isla de la cocina
+      [424, 67, 61, 41],     // carrito del bar
+      [484, 125, 132, 47],   // sofa
+      [478, 184, 85, 47],    // mesa de centro
+      [553, 201, 48, 57],    // butaca
+      [496, 277, 129, 43],   // mueble de la tele
+    ],
+  },
 };
 
 // La clave con la que vive dentro de GameState.propiedades. Sirve igual

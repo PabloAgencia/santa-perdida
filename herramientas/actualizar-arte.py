@@ -41,7 +41,9 @@ ESPERADOS = {
     'interior-piso-nave': 'la nave            7.500 $',
     'interior-piso-almacen': 'el almacen        11.000 $',
     'interior-piso-centro': 'el del Centro     16.000 $',
+    'interior-piso-atico': 'el atico de la Torre 28.000 $',
     'interior-piso': 'generica de piso (opcional, de reserva)',
+    'interior-club': 'el club de El Duque',
     'interior-concesionario': 'el concesionario por dentro',
     'interior-gimnasio': 'el gimnasio por dentro',
     'landmark-plaza': 'Plaza del Farol',
@@ -79,6 +81,10 @@ def main():
         clave = os.path.splitext(n)[0]
         claves.add(clave)
         que = ESPERADOS.get(clave)
+        if not que and clave.startswith('retrato-'):
+            que = 'retrato de cinematica'
+        elif not que and clave.startswith('cine-'):
+            que = 'decorado de cinematica'
         kb = os.path.getsize(os.path.join(ARTE, n)) / 1024
         if que:
             print('  %-26s %6.0f KB   -> %s' % (n, kb, que))

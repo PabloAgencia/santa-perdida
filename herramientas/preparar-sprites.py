@@ -45,6 +45,9 @@ VOLTEAR = {'avispa'}
 # de ser un coche de policia, y un taxi que no es amarillo tampoco es un taxi.
 SIN_TENIR = {'patrulla', 'furgon', 'taxi', 'ambulancia'}
 
+# Los que Gemini saco con la chapa gris: se tine el gris (ver tenir)
+CHAPA_GRIS = {'centella'}
+
 ALIAS = {
     'coche 1970s': 'bastion',
     'coche 1980s': 'chinchorro',
@@ -227,12 +230,17 @@ def encajar(img, largo, ancho):
     return lienzo
 
 
-def tenir(img, color_destino):
-    """Cambia el tono de la chapa dejando cristales, ruedas y faros."""
+def tenir(img, color_destino, chapa_gris=False):
+    """Cambia el tono de la chapa dejando cristales, ruedas y faros.
+
+    chapa_gris (20-nov-2026, el Centella): si Gemini pinta el coche gris, la
+    chapa ES gris y la regla de siempre la confunde con cristal y no la tine
+    (salian cinco Centellas iguales con el parabrisas de color). En esos se
+    tine el gris claro y se dejan los grises oscuros (cristal, tomas de aire)."""
     rd = ((color_destino >> 16) & 255) / 255
     gd = ((color_destino >> 8) & 255) / 255
     bd = (color_destino & 255) / 255
-    h_destino, s_destino, _ = colorsys.rgb_to_hsv(rd, gd, bd)
+    h_destino, s_destino, v_destino = colorsys.rgb_to_hsv(rd, gd, bd)
 
     salida = img.copy()
     pix = salida.load()
@@ -243,6 +251,12 @@ def tenir(img, color_destino):
             if a < 40:
                 continue
             h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+            if chapa_gris:
+                if s < 0.25 and 0.38 < v < 0.94:
+                    nv = min(1, v * (0.55 + v_destino * 0.6))
+                    nr, ng, nb = colorsys.hsv_to_rgb(h_destino, s_destino * 0.85, nv)
+                    pix[x, y] = (int(nr * 255), int(ng * 255), int(nb * 255), a)
+                continue
             # gris, casi negro o casi blanco: es cristal, rueda o faro
             if s < 0.16 or v < 0.14 or v > 0.94:
                 continue
@@ -275,7 +289,7 @@ def preparar_coches(vehiculos, hechos):
 
         for i, color in enumerate(v['paleta']):
             nombre = f'veh-{clave}-{i}.png'
-            salida = img if clave in SIN_TENIR else tenir(img, color)
+            salida = img if clave in SIN_TENIR else tenir(img, color, clave in CHAPA_GRIS)
             salida.save(os.path.join(DESTINO, nombre))
             hechos.append(nombre)
         print(f'  {fichero}: {len(v["paleta"])} colores de {v["largo"]}x{v["ancho"]} px')
@@ -297,6 +311,36 @@ def recortar_borde_blanco(img):
         print(f'    (recortado el borde blanco: {an}x{al} -> {x1 - x0}x{y1 - y0})')
         return img.crop((int(x0), int(y0), int(x1), int(y1)))
     return img
+
+
+# Tejados que Gemini saco con un trozo de fachada asomando por un lado (la
+# perspectiva se le escapa): fraccion de la imagen que se corta por abajo.
+CORTE_ABAJO = {'piso-comercial': 0.09}
+
+
+def quitar_transparencia(img):
+    """20-nov-2026: a veces Pablo quita el fondo a mano y el tejado llega con
+    huecos transparentes en los bordes (casco-c4) o con un toldo colgando por
+    debajo con los lados vacios (comida). Un tejado se estira sobre el edificio
+    entero, asi que un hueco dejaria ver el suelo. Se recortan las filas y
+    columnas que no estan casi enteras y lo poco que quede se rellena de
+    oscuro (parece sombra, como los contornos del dibujo)."""
+    a = np.asarray(img.convert('RGBA'))
+    opaco = a[:, :, 3] > 200
+    if opaco.all():
+        return img
+    an, al = img.size
+    # primero filas y luego columnas SOBRE lo que queda: si no, un toldo
+    # colgando por debajo deja todas las columnas con hueco y no se recorta nada
+    filas = np.where(opaco.mean(axis=1) > 0.97)[0]
+    if len(filas) > al * 0.5:
+        opaco = opaco[filas[0]:filas[-1] + 1]
+        cols = np.where(opaco.mean(axis=0) > 0.97)[0]
+        if len(cols) > an * 0.5:
+            img = img.crop((int(cols[0]), int(filas[0]), int(cols[-1]) + 1, int(filas[-1]) + 1))
+            print(f'    (recortado lo transparente: {an}x{al} -> {img.size[0]}x{img.size[1]})')
+    fondo = Image.new('RGBA', img.size, (30, 24, 20, 255))
+    return Image.alpha_composite(fondo, img.convert('RGBA'))
 
 
 def preparar_edificios(hechos):
@@ -343,7 +387,11 @@ def preparar_edificios(hechos):
                   f'({", ".join(TEJADOS)}, o <barrio>-c1 / <barrio>-a1)')
             continue
 
-        img = recortar_borde_blanco(Image.open(os.path.join(carpeta, fichero)).convert('RGBA'))
+        img = recortar_borde_blanco(quitar_transparencia(
+            Image.open(os.path.join(carpeta, fichero)).convert('RGBA')))
+        if clave in CORTE_ABAJO:
+            an, al = img.size
+            img = img.crop((0, 0, an, int(al * (1 - CORTE_ABAJO[clave]))))
         an, al = img.size
         if m and m.group(2) == 'a':
             # ALARGADA: de pie (mas alta que ancha) y recortada a 2:3

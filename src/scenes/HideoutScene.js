@@ -29,6 +29,7 @@ export class HideoutScene extends Phaser.Scene {
       nombre: datos?.nombre ?? 'TU ESCONDITE',
       plazas: datos?.plazas ?? 0,
       lamina: datos?.lamina ?? null,
+      distribucion: datos?.distribucion ?? null,
     };
   }
 
@@ -77,14 +78,20 @@ export class HideoutScene extends Phaser.Scene {
     }
 
     this.conLamina = conLamina;
-    this.cama = { x: s.x + 90, y: s.y + 101 };
+    // Un piso con lamina de distribucion propia (el atico) trae donde caen su
+    // cama, armario, guardado y muebles macizos, sacados del dibujo: lo que se
+    // ve macizo es macizo y no hay paredes invisibles en el suelo libre. Sin
+    // lamina se queda la distribucion de siempre, que es la del dibujo por
+    // codigo.
+    const dist = conLamina ? this.sitio.distribucion : null;
+    this.cama = dist ? { x: s.x + dist.cama.x, y: s.y + dist.cama.y } : { x: s.x + 90, y: s.y + 101 };
     this.add.text(this.cama.x, this.cama.y + 44, 'DORMIR', {
       fontFamily: FONT, stroke: '#05060a', strokeThickness: 2, fontSize: '13px', color: COLORS.dim,
     }).setOrigin(0.5);
 
     // EL ARMARIO (punto 23 del plan). Sitio libre de los demas muebles: no
     // se pisa con la cama, la mesilla, el garaje, la mesa ni el sofa.
-    this.armario = { x: s.x + 170, y: s.y + 230 };
+    this.armario = dist ? { x: s.x + dist.armario.x, y: s.y + dist.armario.y } : { x: s.x + 170, y: s.y + 230 };
     if (!conLamina) {
       this.add.image(this.armario.x, this.armario.y, 'px').setOrigin(0.5)
         .setDisplaySize(52, 70).setTint(0x4a3626);
@@ -100,11 +107,15 @@ export class HideoutScene extends Phaser.Scene {
 
     // los muebles no se atraviesan (cama, mesilla, mesa, sofa y armario)
     this.fisica = new FisicaInterior(this);
-    this.fisica.rect(s.x + 90, s.y + 101, 100, 46);
-    this.fisica.rect(s.x + 57, s.y + 187, 40, 40);
-    this.fisica.rect(s.x + s.w - 100, s.y + 80, 120, 28);
-    this.fisica.rect(s.x + 295, s.y + 285, 150, 50);
-    this.fisica.rect(this.armario.x, this.armario.y, 40, 54);
+    if (dist) {
+      for (const [x, y, an, al] of dist.muebles) this.fisica.rect(s.x + x, s.y + y, an, al);
+    } else {
+      this.fisica.rect(s.x + 90, s.y + 101, 100, 46);
+      this.fisica.rect(s.x + 57, s.y + 187, 40, 40);
+      this.fisica.rect(s.x + s.w - 100, s.y + 80, 120, 28);
+      this.fisica.rect(s.x + 295, s.y + 285, 150, 50);
+      this.fisica.rect(this.armario.x, this.armario.y, 40, 54);
+    }
 
     // luz de la bombilla. Con ilustracion se baja: el dibujo ya trae su
     // propia luz pintada y sumarle otra encima lo lavaba entero.
@@ -128,7 +139,7 @@ export class HideoutScene extends Phaser.Scene {
     }
 
     // punto de guardado
-    this.save = { x: s.x + s.w - 110, y: s.y + s.h - 110 };
+    this.save = dist ? { x: s.x + dist.guardar.x, y: s.y + dist.guardar.y } : { x: s.x + s.w - 110, y: s.y + s.h - 110 };
     this.discoAro = this.add.image(this.save.x, this.save.y, 'ring')
       .setDisplaySize(76, 76).setTint(0x8fd694);
     this.tweens.add({

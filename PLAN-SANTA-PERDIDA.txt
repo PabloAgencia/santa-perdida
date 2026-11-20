@@ -4016,3 +4016,23 @@ PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
   2. Revisar El ultimo barco y El primero en caer (el bot no las termina).
   3. Quiza endurecer Marina toma el mando y Barricadas (el bot las pasa enteras).
   4. Correr entera la prueba de humo: node herramientas/probar-escenas.cjs
+
+[HECHO 20-nov] TODO EL ARTE PENDIENTE DENTRO (48 imagenes; tienda24 con "SHOP"
+  se queda, lo pidio Pablo). 20 retratos y 5 decorados de cinematica, 22
+  tejados (los 6 pisos, los 6 negocios, armeria, taller, comida, gimnasio,
+  concesionario, desguace, gasolinera y las repetidas casco-c4 y
+  residencial-c5), el Centella y el interior del atico. Revisadas a ojo antes
+  de entrar. Cambios para que encajen:
+  - preparar-sprites.py: quitar_transparencia (tejados que llegan con huecos
+    transparentes o un toldo colgando: se recorta y lo que quede, oscuro),
+    CORTE_ABAJO (piso-comercial traia un 9% de fachada abajo) y CHAPA_GRIS (el
+    Centella es gris y el tenido de siempre se saltaba la chapa: salian cinco
+    iguales).
+  - El atico NO sigue el plano de los otros pisos: PISO_ATICO.distribucion
+    (cama, armario, guardar y muebles macizos medidos sobre el dibujo) y
+    HideoutScene la usa si la lamina esta cargada. Comprobado en navegador con
+    los rectangulos pintados encima: cuadran con cama, cocina, sofa, tele...
+  - actualizar-arte.py ya conoce retrato-*, cine-*, el atico y el club.
+  Comprobado en Playwright limpio: texturas cargadas, cinematica con retrato
+  del Consul y decorado nuevo, sin errores. PROMPTS-PENDIENTES.txt queda vacio.
+  Pendientes que siguen: los puntos 2-4 de arriba.
