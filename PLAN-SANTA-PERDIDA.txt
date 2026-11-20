@@ -4014,6 +4014,8 @@ PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
      repetir: casco-c4, residencial-c5, tienda24). Las deja en E:\Descargas y
      se pasan con herramientas/preparar-sprites.py tras revisarlas a ojo.
   2. [HECHO 20-nov] Revisar El ultimo barco y El primero en caer (ver abajo).
+  2b. [APROBADO 20-nov, PENDIENTE] 'romper' con huye: fallar si se escapa
+      (ver la entrada del 20-nov mas abajo).
   3. Quiza endurecer Marina toma el mando y Barricadas (el bot las pasa enteras).
   4. Correr entera la prueba de humo: node herramientas/probar-escenas.cjs
 
@@ -4053,7 +4055,9 @@ PENDIENTE AL CERRAR EL 19-NOV-2026 (por orden)
   Repetidas las 12 misiones con policia ('perder'): todas OK. Las tres bandas
   fallo una tanda por las oleadas a pie (no tocadas) y paso en las dos
   repeticiones: es la mas dura, varia.
-  IDEA SIN HACER (preguntar a Pablo): en 'romper' con `huye`, si el coche se
-  te escapa lejos la mision no falla nunca (en una traza se fue a 6.000 px y
-  ahi se quedo). En los GTA falla con "se ha escapado", como ya hace 'seguir'
-  a 900 px.
+  APROBADO POR PABLO (20-nov), SIN HACER: en 'romper' con `huye`, si el coche
+  se te escapa lejos la mision no falla nunca (en una traza se fue a 6.000 px
+  y ahi se quedo). Hacerlo como en los GTA: falla con "Se ha escapado", igual
+  que 'seguir' (aviso "Que se te escapa!" a 560 px, falla a 900 px, con los
+  segundos de gracia del principio). Sitio: MissionSystem.update, case
+  'romper'. Despues, repetir con el bot las misiones con 'romper' + huye.
